@@ -5,7 +5,6 @@ import java.util.LinkedList;
 
 import edu.kit.student.graphmodel.Graph;
 import edu.kit.student.graphmodel.GraphModel;
-import edu.kit.student.joana.MethodGraphLayout;
 import edu.kit.student.parameter.Settings;
 import edu.kit.student.plugin.LayoutOption;
 import edu.kit.student.plugin.PluginManager;
@@ -60,7 +59,7 @@ public class GAnsApplication extends Application {
 	private GraphViewSelectionModel graphViewSelectionModel;
 
 	private File currentFile;
-	private MethodGraphLayout methodlayout = new MethodGraphLayout();
+//	private MethodGraphLayout methodlayout = new MethodGraphLayout();
 
 	/**
 	 * Main method.
@@ -253,7 +252,7 @@ public class GAnsApplication extends Application {
 		changeLayoutItem.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
-				openParameterDialog(methodlayout.getSettings());
+//				openParameterDialog(methodlayout.getSettings());
 
 			}
 		});
