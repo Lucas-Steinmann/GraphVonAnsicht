@@ -25,7 +25,6 @@ import javafx.util.Callback;
  * @author Lucas
  */
 public class ParameterDialogGenerator extends ParameterVisitor {
-
 	private GridPane parent;
 	private int parameterCount = 0;
 
