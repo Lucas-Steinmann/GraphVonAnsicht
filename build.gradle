@@ -30,14 +30,6 @@ dependencies {
     testCompile 'junit:junit:4.12'
 }
 
-//Closure cl = { task -> println "I'm $task.project.name" }
-//allprojects {
-//    task hello << { task -> println "I'm $task.project.name" }
-//}
-//subprojects {
-//    hello << {println "- I depend on main"}
-//}
-
 project(':plugins:sugiyama') {
 
 }
@@ -48,6 +40,7 @@ project(':plugins:joana') {
 
 allprojects {
 	apply plugin: 'java'
+	apply plugin: 'eclipse'
 }
 
 subprojects {
