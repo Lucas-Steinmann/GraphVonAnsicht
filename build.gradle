@@ -31,12 +31,17 @@ dependencies {
 }
 
 project(':plugins:sugiyama') {
-
+	dependencies
+	{
+	}
 }
 
 project(':plugins:joana') {
-    dependencies { }
+     dependencies {
+        project(':plugins:sugiyama')
+    }
 }
+
 
 allprojects {
 	apply plugin: 'java'
@@ -46,3 +51,20 @@ allprojects {
 subprojects {
     dependencies { }
 }
+
+
+
+//eclipse {
+//    classpath {
+//        file {
+//		  whenMerged { classpath ->
+//			//you can tinker with the Classpath here
+//			def cons = classpath.entries.findAll { it.kind == 'con' }
+//			cons.all().collect { entry ->
+//					entry.accessRules.add(new org.gradle.plugins.ide.eclipse.model.AccessRule('accessible', 'javafx/**'))
+//                }
+//            }
+//        }
+//    }
+//}
+//

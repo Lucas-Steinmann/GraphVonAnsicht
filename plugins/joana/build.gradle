@@ -1,0 +1,13 @@
+eclipse {
+	classpath {
+	    file {
+	      //if you want to mess with the resulting XML in whatever way you fancy
+	      withXml 
+		  {
+	        def node = it.asNode()
+			node.appendNode('classpathentry', [ combineaccessrules: false, exported: true, kind: 'src', path: '/sugiyama' ])
+			node.appendNode('classpathentry', [ combineaccessrules: false, exported: true, kind: 'src', path: '/Graph von Ansicht' ])
+		  }
+		}
+	}
+}
