@@ -1,7 +1,11 @@
 package edu.kit.student.joana;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import edu.kit.student.graphmodel.GraphModel;
 import edu.kit.student.graphmodel.IGraphModelBuilder;
+import edu.kit.student.parameter.Parameter;
 import edu.kit.student.parameter.Settings;
 import edu.kit.student.plugin.Workspace;
 
@@ -11,23 +15,46 @@ import edu.kit.student.plugin.Workspace;
  * {@link JoanaGraphModel}.
  */
 public class JoanaWorkspace implements Workspace {
+	
+	private Settings settings;
+	private JoanaGraphModelBuilder builder;
+	private JoanaGraphModel model;
 
+	public JoanaWorkspace() {
+		Map<String, Parameter<?,?>> parameters = new HashMap<String, Parameter<?,?>>();
+		//TODO: Welche Parameter werden in den Settings benötigt?
+		
+		settings = new Settings(parameters);
+		
+		builder = new JoanaGraphModelBuilder(this);
+	}
+	
 	@Override
 	public void initialize() {
 	}
 
 	@Override
 	public IGraphModelBuilder getGraphModelBuilder() {
-		return null;
+		return builder;
+	}
+	
+	/**
+	 * Sets the specialized GraphModel in the workspace.
+	 * Should only be called from inside of the builder!
+	 * 
+	 * @param model The model that will be set.
+	 */
+	public void setGraphModel(JoanaGraphModel model) {
+		this.model = model;
 	}
 
 	@Override
 	public GraphModel getGraphModel() {
-		return null;
+		return model;
 	}
 
 	@Override
 	public Settings getSettings() {
-		return null;
+		return settings;
 	}
 }

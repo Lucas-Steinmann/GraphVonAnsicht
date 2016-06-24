@@ -9,6 +9,12 @@ import edu.kit.student.graphmodel.IGraphModelBuilder;
  * creates a {@link JoanaGraphModel}.
  */
 public class JoanaGraphModelBuilder implements IGraphModelBuilder {
+	
+	private JoanaWorkspace workspace;
+	
+	public JoanaGraphModelBuilder(JoanaWorkspace workspace) {
+		this.workspace = workspace;
+	}
 
 	@Override
 	public IGraphBuilder getGraphBuilder(String graphID) {
@@ -18,7 +24,7 @@ public class JoanaGraphModelBuilder implements IGraphModelBuilder {
 
 	@Override
 	public GraphModel build() {
-		// TODO Auto-generated method stub
+		//TODO: vor dem Return die spezielle JoanaGraphModel-Instanz im workspace.setGraphModel(JoanaGraphModel model) setzen.
 		return null;
 	}
 
