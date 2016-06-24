@@ -29,7 +29,7 @@ public class MethodGraphLayout implements LayeredLayoutAlgorithm<MethodGraph, Jo
 		options.add("option2");
 		options.add("option3");
 		MultipleChoiceParameter p4 = new MultipleChoiceParameter("Multiple-Choice-Test", options, 2);
-		HashMap<String, Parameter> parameter = new HashMap<String, Parameter>();
+		HashMap<String, Parameter<?,?>> parameter = new HashMap<String, Parameter<?,?>>();
 		parameter.put(p1.getName(), p1);
 		parameter.put(p2.getName(), p2);
 		parameter.put(p3.getName(), p3);

@@ -16,12 +16,6 @@ public class BooleanParameter extends Parameter<BooleanParameter, Boolean> {
 
 	@Override
 	public void accept(ParameterVisitor visitor) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public int compareTo(BooleanParameter o) {
-		// TODO Auto-generated method stub
-		return 0;
+		visitor.visit(this);
 	}
 }

@@ -7,8 +7,7 @@ import java.util.List;
  * MultipleChoiceParameter are parameters with an predefined String value space.
  */
 public class MultipleChoiceParameter extends Parameter<MultipleChoiceParameter, String> {
-
-	private int selected;
+	private int selectedIndex;
 	private List<String> values;
 
 	/**
@@ -16,12 +15,12 @@ public class MultipleChoiceParameter extends Parameter<MultipleChoiceParameter, 
 	 * choices and initialized index.
 	 * @param name The name of the parameter.
 	 * @param choices The choices of the parameter.
-	 * @param init The initialized index of the parameter.
+	 * @param initIndex The initialized index of the parameter.
 	 */
-	public MultipleChoiceParameter(String name, List<String> choices, int init) {
-		super(name, choices.get(init));
+	public MultipleChoiceParameter(String name, List<String> choices, int initIndex) {
+		super(name, choices.get(initIndex));
 		this.values = choices;
-		this.selected = Integer.min(Integer.max(0, init), choices.size() - 1);
+		this.selectedIndex = Integer.min(Integer.max(0, initIndex), choices.size() - 1);
 	}
 
 	/**
@@ -32,7 +31,7 @@ public class MultipleChoiceParameter extends Parameter<MultipleChoiceParameter, 
 	public MultipleChoiceParameter(String name) {
 		super(name, "");
 		this.values = new ArrayList<String>();
-		this.selected = 0;
+		this.selectedIndex = 0;
 	}
 
 	/**
@@ -41,7 +40,7 @@ public class MultipleChoiceParameter extends Parameter<MultipleChoiceParameter, 
 	 * @param selected The position in values that has been selected and will be set as value.
 	 */
 	public void setValue(int selected) {
-		this.selected = selected;
+		this.selectedIndex = selected;
 		super.setValue(values.get(selected));
 	}
 
@@ -75,17 +74,12 @@ public class MultipleChoiceParameter extends Parameter<MultipleChoiceParameter, 
 	 * Returns the index of the currently selected choice.
 	 * @return The index of the currently selected choice.
 	 */
-	public int getSelectionIndex() {
-		return selected;
+	public int getSelectedIndex() {
+		return selectedIndex;
 	}
 
 	@Override
 	public void accept(ParameterVisitor visitor) {
 		visitor.visit(this);
-	}
-
-	@Override
-	public int compareTo(MultipleChoiceParameter o) {
-		return 0;
 	}
 }

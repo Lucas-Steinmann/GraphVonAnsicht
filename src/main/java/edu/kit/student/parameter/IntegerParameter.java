@@ -20,11 +20,6 @@ public class IntegerParameter extends Parameter<IntegerParameter, Integer> {
         this.max = max;
     }
 
-    @Override
-    public int compareTo(IntegerParameter iw) {
-        return this.getValue() - iw.getValue();
-    }
-
 	@Override
 	public void accept(ParameterVisitor visitor) {
 		visitor.visit(this);		

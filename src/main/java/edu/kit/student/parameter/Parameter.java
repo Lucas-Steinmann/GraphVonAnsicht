@@ -8,7 +8,7 @@ import edu.kit.student.objectproperty.GAnsProperty;
  * Clients can set Listeners to track changes of the value.
  * Classes inheriting from this class can visited by a ParameterVisitor.
  */
-public abstract class Parameter<T, V extends Object> extends GAnsProperty<V> implements Comparable<T> {
+public abstract class Parameter<T, V extends Object> extends GAnsProperty<V> {
 	
 	/**
 	 * Constructor, setting the name and value of the property.
@@ -27,7 +27,4 @@ public abstract class Parameter<T, V extends Object> extends GAnsProperty<V> imp
      * @param visitor The visitor to visit
      */
     public abstract void accept(ParameterVisitor visitor);
-
-    @Override
-    public abstract int compareTo(T o);
 }
