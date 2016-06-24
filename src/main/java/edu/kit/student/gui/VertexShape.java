@@ -1,5 +1,6 @@
 package edu.kit.student.gui;
 
+import edu.kit.student.graphmodel.Vertex;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
@@ -26,17 +27,16 @@ public class VertexShape extends GAnsGraphElement {
 
 		getChildren().addAll(rectangle, text);
 	}
-
+	
 	/**
-	 * Constructor which directly sets the text.
-	 * 
-	 * @param text
-	 *            The text that will be displayed in the vertex.
+	 * Constructor. All settings are being automatically set through the supplied vertex.
+	 * @param vertex The vertex that will be represented.
 	 */
-	public VertexShape(String text) {
+	public VertexShape(Vertex vertex) {
 		this();
 
-		setText(text);
+		setText(vertex.getLabel());
+		relocate(vertex.getX(), vertex.getY());
 	}
 
 	@Override

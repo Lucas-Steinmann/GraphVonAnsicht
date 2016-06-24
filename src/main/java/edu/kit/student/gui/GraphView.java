@@ -1,6 +1,8 @@
 package edu.kit.student.gui;
 
+import edu.kit.student.graphmodel.Edge;
 import edu.kit.student.graphmodel.Graph;
+import edu.kit.student.graphmodel.Vertex;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.canvas.Canvas;
@@ -108,16 +110,9 @@ public class GraphView extends Pane {
 	 * @param graph
 	 *            The graph to be visualized in the view.
 	 */
-	public void setGraph(Graph<?, ?> graph) {
+	public void setGraph(Graph<Vertex,Edge<Vertex>> graph) {
 		graphFactory = new GraphViewGraphFactory(graph);
 
-		getChildren().addAll(graphFactory.getGraphicalElements());
-	}
-
-	/**
-	 * Updates the shown graph.
-	 */
-	public void updateGraph() {
 		getChildren().addAll(graphFactory.getGraphicalElements());
 	}
 
@@ -129,22 +124,6 @@ public class GraphView extends Pane {
 	public GraphViewGraphFactory getFactory() {
 		return graphFactory;
 	}
-
-	// /**
-	// * Adds a single vertex in the GraphView.
-	// *
-	// * @param x
-	// * The x position in the view.
-	// * @param y
-	// * The y position in the view.
-	// * @param Text
-	// * The text of the vertex.
-	// */
-	// public void addVertex(double x, double y, String text) {
-	// VertexShape test = new VertexShape(text);
-	// test.relocate(x, y);
-	// getChildren().add(test);
-	// }
 
 	/**
 	 * Sets the selection model for the GraphView.

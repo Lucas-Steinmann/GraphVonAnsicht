@@ -1,7 +1,9 @@
 package edu.kit.student.gui;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.Map;
+import java.util.Set;
 
 import edu.kit.student.graphmodel.Edge;
 import edu.kit.student.graphmodel.Graph;
@@ -16,9 +18,9 @@ import javafx.util.Pair;
  */
 public class GraphViewGraphFactory {
 
-	private Graph<?, ?> graph;
+	private Graph<Vertex,Edge<Vertex>> graph;
 	private Map<VertexShape, Vertex> vertices;
-	private Map<EdgeShape, Edge<?>> edges;
+	private Map<EdgeShape, Edge<Vertex>> edges;
 
 	/**
 	 * Constructor. Sets the graph and generates the vertices and edges for
@@ -27,9 +29,13 @@ public class GraphViewGraphFactory {
 	 * @param graph
 	 *            The graph data that will be shown.
 	 */
-	public GraphViewGraphFactory(Graph<?, ?> graph) {
+	public GraphViewGraphFactory(Graph<Vertex,Edge<Vertex>> graph) {
+		vertices = new HashMap<VertexShape, Vertex>();
+		edges = new HashMap<EdgeShape, Edge<Vertex>>();
 		this.graph = graph;
-		// TODO: parsen des graphs und erstellen von vertex und danach edges.
+		
+		createVertices();
+		createEdges();
 	}
 
 	/**
@@ -72,8 +78,25 @@ public class GraphViewGraphFactory {
 	 * @return A Pair of width and height of the vertex.
 	 */
 	public static Pair<Double, Double> getSizeOfVertex(String text) {
-		VertexShape shape = new VertexShape(text);
+		VertexShape shape = new VertexShape();
+		shape.setText(text);
 		Pair<Double, Double> pair = new Pair<Double, Double>(shape.getWidth(), shape.getHeight());
 		return pair;
+	}
+	
+	private void createVertices() {
+		Set<Vertex> set = graph.getVertexSet();
+		for(Vertex vertex : set) {
+			VertexShape shape = new VertexShape(vertex);
+			vertices.put(shape, vertex);
+		}
+	}
+	
+	private void createEdges() {
+		Set<Edge<Vertex>> set = graph.getEdgeSet();
+		for(Edge<Vertex> edge : set) {
+			EdgeShape shape = new EdgeShape(edge);
+			edges.put(shape, edge);
+		}
 	}
 }
