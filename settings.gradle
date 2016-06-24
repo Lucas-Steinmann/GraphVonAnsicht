@@ -17,3 +17,5 @@ include 'services:webservice'
 */
 
 rootProject.name = 'Graph von Ansicht'
+include 'plugins:sugiyama'
+include 'plugins:joana'
