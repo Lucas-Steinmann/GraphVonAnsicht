@@ -4,7 +4,6 @@ package edu.kit.student.parameter;
  * DoubleParameters are parameters with an double value space.
  */
 public class DoubleParameter extends Parameter<DoubleParameter, Double> {
-
 	private Double min;
 	private Double max;
 	
@@ -23,13 +22,7 @@ public class DoubleParameter extends Parameter<DoubleParameter, Double> {
 
 	@Override
 	public void accept(ParameterVisitor visitor) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public int compareTo(DoubleParameter o) {
-		// TODO Auto-generated method stub
-		return 0;
+		visitor.visit(this);
 	}
 
 	/**

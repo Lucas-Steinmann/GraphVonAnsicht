@@ -24,4 +24,16 @@ public abstract class ParameterVisitor {
 	 * @param parameter The parameter to visit
 	 */
 	public abstract void visit(MultipleChoiceParameter parameter);
+	
+	/**
+	 * Visits the specified parameter and performs some by the subclass chosen actions on it.
+	 * @param parameter The parameter to visit
+	 */
+	public abstract void visit(BooleanParameter parameter);
+	
+	/**
+	 * Visits the specified parameter and performs some by the subclass chosen actions on it.
+	 * @param parameter The parameter to visit
+	 */
+	public abstract void visit(DoubleParameter parameter);
 }

@@ -4,7 +4,6 @@ package edu.kit.student.parameter;
  * StringParameter are parameters with an freely set String value space.
  */
 public class StringParameter extends Parameter<StringParameter, String> {
-    private String value;
 
     /**
      * Constructs a new StringParameter, sets its name and its default value.
@@ -13,11 +12,6 @@ public class StringParameter extends Parameter<StringParameter, String> {
      */
     public StringParameter(String name, String value) {
         super(name, value);
-    }
-
-    @Override
-    public int compareTo(StringParameter o) {
-        return this.value.compareTo(o.getValue());
     }
 
 	@Override
