@@ -33,26 +33,31 @@ dependencies {
 project(':plugins:sugiyama') {
 	dependencies
 	{
+        rootProject
 	}
 }
 
 project(':plugins:joana') {
-     dependencies {
-        project(':plugins:sugiyama')
-    }
+    dependencies { }
 }
 
 
 allprojects {
 	apply plugin: 'java'
 	apply plugin: 'eclipse'
+    group = 'edu.kit.student.gans'
+    version = '0.1.0'
 }
 
 subprojects {
     dependencies { }
 }
 
-
+jar {
+    manifest {
+        attributes 'Main-Class': 'edu.kit.student.gui.GAnsApplication'
+    }
+}
 
 //eclipse {
 //    classpath {

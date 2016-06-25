@@ -6,7 +6,7 @@ eclipse {
 		  {
 	        def node = it.asNode()
 			node.appendNode('classpathentry', [ combineaccessrules: false, exported: true, kind: 'src', path: '/sugiyama' ])
-			node.appendNode('classpathentry', [ combineaccessrules: false, exported: true, kind: 'src', path: '/Graph von Ansicht' ])
+			node.appendNode('classpathentry', [ combineaccessrules: false, exported: true, kind: 'src', path: '/shared' ])
 		  }
 		}
 	}
