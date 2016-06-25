@@ -1,6 +1,7 @@
 package edu.kit.student.gui;
 
 import edu.kit.student.objectproperty.GAnsProperty;
+import javafx.beans.property.SimpleListProperty;
 import javafx.collections.ObservableList;
 import javafx.scene.control.MultipleSelectionModel;
 
@@ -21,19 +22,20 @@ public class GraphViewSelectionModel extends MultipleSelectionModel<GAnsGraphEle
 		// TODO: diese Funktion wird vom listener aufgerufen der auf ein changed
 		// des Selectionmodel hoert und �bergibt diese liste an die
 		// informationview
-		return null;
+		// TODO: Falscher Listentyp!
+		return new SimpleListProperty<GAnsProperty>();
 	}
 	
 	@Override
 	public ObservableList<Integer> getSelectedIndices() {
-		// TODO Auto-generated method stub
-		return null;
+		// TODO: Falscher Listentyp!
+		return new SimpleListProperty<Integer>();
 	}
 
 	@Override
 	public ObservableList<GAnsGraphElement> getSelectedItems() {
-		// TODO Auto-generated method stub
-		return null;
+		// TODO: Falscher Listentyp!
+		return new SimpleListProperty<GAnsGraphElement>();
 	}
 
 	@Override
