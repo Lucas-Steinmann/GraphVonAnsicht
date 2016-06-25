@@ -1,5 +1,6 @@
 package edu.kit.student.graphmodel;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
 
@@ -17,12 +18,36 @@ public class DirectedEdge<V extends Vertex> implements Edge<V> {
 	private GAnsProperty<String> label;
 
 	/**
+	 * Constructor
+	 * 
+	 * @param name of the new edge
+	 * @param label of the new edge
+	 * @param id of the new edge
+	 */
+    public DirectedEdge(String name, String label, Integer id) {
+        this.vertices = new ArrayList<V>();
+        
+        this.name = new GAnsProperty<String>("graphName", name);
+        this.label = new GAnsProperty<String>("label", label);
+        this.id = new GAnsProperty<Integer>("graphID", id);
+    }
+    
+    public void setVertices(V source, V target) {
+        //set source to first index and target to second
+        this.vertices.add(source);
+        this.vertices.add(target);
+    }
+	
+	/**
 	 * Returns the source vertex of this directed edge.
 	 * 
 	 * @return The vertex the edge is coming from.
 	 */
 	public V getSource() {
-		return null;
+	    if(this.vertices.size() == 1) {
+	        return this.vertices.get(0);
+	    }
+	    return null;		
 	}
 
 	/**
@@ -31,12 +56,15 @@ public class DirectedEdge<V extends Vertex> implements Edge<V> {
 	 * @return The vertex the edge is pointing at/going to.
 	 */
 	public V getTarget() {
-		return null;
+        if(this.vertices.size() == 2) {
+            return this.vertices.get(1);
+        }
+        return null;
 	}
 
 	@Override
 	public List<V> getVertices() {
-		return null;
+		return this.vertices;
 	}
 
 	@Override
@@ -56,11 +84,12 @@ public class DirectedEdge<V extends Vertex> implements Edge<V> {
 
 	@Override
 	public void addToFastGraphAccessor(FastGraphAccessor fga) {
-
+	    //TODO: 
 	}
 
 	@Override
 	public SerializedEdge<V> serialize(List<Entry<String, String>> attributes) {
+	    //TODO:
 		return null;
 	}
 

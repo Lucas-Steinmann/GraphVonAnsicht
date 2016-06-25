@@ -18,21 +18,31 @@ public class DefaultVertex implements Vertex {
 	private int x;
 	private int y;
 
+	/**
+	 * Constructor
+	 * 
+	 * @param name of the new vertex
+	 * @param label of the new vertex
+	 * @param id of the new vertex
+	 */
+	public DefaultVertex(String name, String label, Integer id) {
+        this.name = new GAnsProperty<String>("graphName", name);
+        this.label = new GAnsProperty<String>("label", label);
+        this.id = new GAnsProperty<Integer>("graphID", id);
+	}
+	
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
 		return name.getValue();
 	}
 
 	@Override
 	public Integer getID() {
-		// TODO Auto-generated method stub
 		return id.getValue();
 	}
 
 	@Override
 	public String getLabel() {
-		// TODO Auto-generated method stub
 		return label.getValue();
 	}
 
@@ -50,13 +60,11 @@ public class DefaultVertex implements Vertex {
 
 	@Override
 	public int getX() {
-		// TODO Auto-generated method stub
 		return x;
 	}
 
 	@Override
 	public int getY() {
-		// TODO Auto-generated method stub
 		return y;
 	}
 }
