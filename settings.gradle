@@ -17,4 +17,4 @@ include 'services:webservice'
 */
 
 rootProject.name = 'Graph von Ansicht'
-include 'plugins:sugiyama', 'plugins:joana', 'plugins:svg', 'shared', 'app' 
+include 'plugins:sugiyama', 'plugins:joana', 'plugins:svg', 'plugins:graphml', 'shared', 'app' 
