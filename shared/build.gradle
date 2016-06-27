@@ -1,0 +1,14 @@
+eclipse {
+    classpath {
+        file {
+            whenMerged { classpath ->
+           	    def cons = classpath.getEntries().findAll { it.kind == 'con' }.findAll { it.path.contains('JRE_CONTAINER') }
+           	    println cons.get(0).path
+           	    
+           	    cons.findAll{ it.path.contains("JRE_CONTAINER")}.collect { entry ->
+           	  	  entry.accessRules.add(new org.gradle.plugins.ide.eclipse.model.AccessRule('accessible', 'javafx/**'))
+           	    }
+            }
+        }
+    }
+}
