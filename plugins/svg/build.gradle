@@ -10,3 +10,6 @@ eclipse {
 		}
 	}
 }
+dependencies {
+    compile project(":shared")
+}

@@ -12,14 +12,6 @@
 dependencies {
 }
 
-project(':plugins:sugiyama') {
-}
-
-project(':plugins:joana') {
-    dependencies { }
-}
-
-
 allprojects {
 	apply plugin: 'eclipse'
     group = 'edu.kit.student.gans'
