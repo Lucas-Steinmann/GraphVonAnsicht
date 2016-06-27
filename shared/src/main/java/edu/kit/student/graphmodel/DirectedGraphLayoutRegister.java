@@ -1,5 +1,6 @@
 package edu.kit.student.graphmodel;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import edu.kit.student.plugin.LayoutOption;
@@ -11,7 +12,7 @@ import edu.kit.student.plugin.LayoutRegister;
  */
 public class DirectedGraphLayoutRegister implements LayoutRegister<DirectedGraphLayoutOption> {
 
-	private List<LayoutOption> options;
+	private List<LayoutOption> options = new ArrayList<LayoutOption>();
 
 	@Override
 	public List<LayoutOption> getLayoutOptions() {
