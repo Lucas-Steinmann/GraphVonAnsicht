@@ -2,6 +2,8 @@ package edu.kit.student.sugiyama;
 
 import java.util.List;
 
+import edu.kit.student.graphmodel.Edge;
+import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.plugin.EdgeFilter;
 import edu.kit.student.plugin.Exporter;
 import edu.kit.student.plugin.Importer;
@@ -33,13 +35,13 @@ public class SugiyamaPlugin implements Plugin {
 	}
 
 	@Override
-	public List<VertexFilter> getVertexFilter() {
+	public List<VertexFilter<? extends Vertex>> getVertexFilter() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public List<EdgeFilter> getEdgeFilter() {
+	public List<EdgeFilter<? extends Edge<? extends Vertex>, ? extends Vertex>> getEdgeFilter() {
 		// TODO Auto-generated method stub
 		return null;
 	}
