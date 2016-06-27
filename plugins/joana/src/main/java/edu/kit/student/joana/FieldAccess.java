@@ -15,7 +15,8 @@ public class FieldAccess extends JoanaVertex implements CompoundVertex {
 	 * 
 	 * @param graph The FieldAccessGraph that will be set in the FieldAccess.
 	 */
-	public FieldAccess(FieldAccessGraph graph) {
+	public FieldAccess(FieldAccessGraph graph, String name, String label, Integer id) {
+	    super(name, label, id);
 	}
 
 	@Override

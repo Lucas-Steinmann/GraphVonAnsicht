@@ -14,7 +14,12 @@ import edu.kit.student.plugin.LayoutRegister;
  */
 public class MethodGraph extends JoanaGraph {
 
-	private static LayoutRegister register;
+	public MethodGraph(String name, Integer id) {
+        super(name, id);
+        // TODO Auto-generated constructor stub
+    }
+
+    private static LayoutRegister register;
 	
 	/**
 	 * Returns the entry vertex of a method.

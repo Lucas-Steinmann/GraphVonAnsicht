@@ -9,7 +9,12 @@ import edu.kit.student.objectproperty.GAnsProperty;
  */
 public class JoanaEdge extends DirectedEdge<JoanaVertex> {
 
-	private GAnsProperty<String> edgeKind;
+	public JoanaEdge(String name, String label, Integer id) {
+        super(name, label, id);
+        // TODO Auto-generated constructor stub
+    }
+
+    private GAnsProperty<String> edgeKind;
 
 	/**
 	 * Returns the edgeKind of the JoanaEdge.

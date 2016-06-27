@@ -9,7 +9,12 @@ import edu.kit.student.graphmodel.LayeredGraph;
  */
 public class FieldAccessGraph extends JoanaGraph {
 
-	@Override
+	public FieldAccessGraph(String name, Integer id) {
+        super(name, id);
+        // TODO Auto-generated constructor stub
+    }
+
+    @Override
 	public int getLayerWidth(int layerN) {
 		// TODO Auto-generated method stub
 		return 0;

@@ -12,7 +12,12 @@ import edu.kit.student.graphmodel.Vertex;
  */
 public class CallGraph extends JoanaGraph {
 
-	@Override
+    public CallGraph(String name, Integer id) {
+        super(name, id);
+        // TODO Auto-generated constructor stub
+    }
+
+    @Override
 	public CompoundVertex collapse(Set<JoanaVertex> subset) {
 		// TODO Auto-generated method stub
 		return null;

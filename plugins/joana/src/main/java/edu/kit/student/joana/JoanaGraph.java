@@ -10,7 +10,7 @@ import edu.kit.student.graphmodel.LayeredGraph;
  */
 public abstract class JoanaGraph extends DefaultDirectedGraph<JoanaVertex, JoanaEdge> implements LayeredGraph<JoanaVertex, JoanaEdge> {
 
-	public JoanaGraph(String name, Integer id) {
+    public JoanaGraph(String name, Integer id) {
         super(name, id);
         // TODO Auto-generated constructor stub
     }
