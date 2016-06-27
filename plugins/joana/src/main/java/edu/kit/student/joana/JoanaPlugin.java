@@ -2,6 +2,8 @@ package edu.kit.student.joana;
 
 import java.util.List;
 
+import edu.kit.student.graphmodel.Edge;
+import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.parameter.Settings;
 import edu.kit.student.plugin.EdgeFilter;
 import edu.kit.student.plugin.Exporter;
@@ -70,10 +72,16 @@ public class JoanaPlugin implements Plugin {
 	}
 
 	@Override
-	public List<VertexFilter> getVertexFilter() {
+	public List<VertexFilter<? extends Vertex>> getVertexFilter() {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
+    @Override
+    public List<EdgeFilter<? extends Edge<? extends Vertex>, ? extends Vertex>> getEdgeFilter() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
 	@Override
 	public List<Exporter> getExporter() {
@@ -83,12 +91,6 @@ public class JoanaPlugin implements Plugin {
 
 	@Override
 	public List<Importer> getImporter() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public List<EdgeFilter> getEdgeFilter() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -124,4 +126,5 @@ public class JoanaPlugin implements Plugin {
 			return null;
 		}
 	}
+
 }

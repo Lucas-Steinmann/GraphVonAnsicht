@@ -1,5 +1,10 @@
 package edu.kit.student.plugin;
 
+import edu.kit.student.graphmodel.Edge;
+import edu.kit.student.graphmodel.Vertex;
+
+import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.ServiceLoader;
 
@@ -11,63 +16,89 @@ import java.util.ServiceLoader;
  */
 public class PluginManager {
 
-	private List<WorkspaceOption> workspaceOptions;
-	private List<Importer> importers;
-	private List<Exporter> exporters;
-    private ServiceLoader<Plugin> loader;	
-    private List<LayoutAlgorithm> layoutAlgorithms;
+    private ServiceLoader<Plugin> loader;
+    private List<Plugin> plugins;
 
-	private static PluginManager mgr;
+    private static PluginManager mgr;
 
-	/**
-	 * constructs an instance of a plugin manager
-	 */
-	private PluginManager() {}
-	
-	/**
-	 * Returns the singleton instance of the plugin manager.
-	 * @return the plugin manager
-	 */
-	public static PluginManager getPluginManager() {
-		if (mgr == null) {
-			mgr = new PluginManager();
-		}
-		return mgr;
-	}
+    /** Constructs an instance of a plugin manager.
+     */
+    private PluginManager() {
+        loader = ServiceLoader.load(Plugin.class);
 
-	/**
-	 * Returns all {@link WorkspaceOption}s provided by plugins.
-	 * @return a list of all workspace options
-	 */
-	public List<WorkspaceOption> getWorkspaceOptions() { return null; } 
-	
-	/**
-	 * Returns all vertex filter provided by plugins.
-	 * @return a list of all vertex filter
-	 */
-	public List<VertexFilter> getVertexFilter() { return null; }
-	
-	/**
-	 * Returns a list of all edge filter provided by plugins.
-	 * @return a list of all edge filter
-	 */
-	public List<EdgeFilter> getEdgeFilter() { return null; }
-	
-	/**
-	 * Returns a list of all plugins loaded by the ServiceLoader.
-	 * @return all loaded plugins
-	 */
-	public List<Plugin> getPlugins() { return null; }
-	
-	/**
-	 * Returns the {@link Exporter} provided by all plugins. 
-	 * @return a list of provided exporter
-	 */
-	public List<Exporter> getExporter() { return null; }
-	
-	/**
-	 * Returns the {@link Importer} provided by all plugins. 
-	 * @return a list of provided importer
-	 */
-	public List<Importer> getImporter() { return null; }	
+        // Saves all plugins in a list.
+        for ( Iterator<Plugin> it = loader.iterator(); it.hasNext(); ) {
+            plugins.add(it.next());
+        }
+    }
+    
+    /**
+     * Returns the singleton instance of the plugin manager.
+     * @return the plugin manager
+     */
+    public static PluginManager getPluginManager() {
+        if (mgr == null) {
+            mgr = new PluginManager();
+        }
+        return mgr;
+    }
+
+    /**
+     * Returns all {@link WorkspaceOption}s provided by plugins.
+     * @return a list of all workspace options
+     */
+    public List<WorkspaceOption> getWorkspaceOptions() { 
+        LinkedList<WorkspaceOption> result = new LinkedList<>();
+        plugins.forEach((plugin) -> result.addAll(plugin.getWorkspaceOptions()));
+        return result;
+    } 
+    
+    /**
+     * Returns all vertex filter provided by plugins.
+     * @return a list of all vertex filter
+     */
+    public List<VertexFilter<? extends Vertex>> getVertexFilter() { 
+        LinkedList<VertexFilter<? extends Vertex>> result = new LinkedList<>();
+        plugins.forEach((plugin) -> result.addAll(plugin.getVertexFilter()));
+        return result;
+    }
+    
+    /**
+     * Returns a list of all edge filter provided by plugins.
+     * @return a list of all edge filter
+     */
+    public List<EdgeFilter<? extends Edge<? extends Vertex>, ? extends Vertex>> getEdgeFilter() {
+        LinkedList<EdgeFilter<? extends Edge<? extends Vertex>, ? extends Vertex>> result =
+                new LinkedList<>();
+        plugins.forEach((plugin) -> result.addAll(plugin.getEdgeFilter()));
+        return result;
+    }
+    
+    /**
+     * Returns a list of all plugins loaded by the ServiceLoader.
+     * @return all loaded plugins
+     */
+    public List<Plugin> getPlugins() {
+        return new LinkedList<>(plugins);
+    }
+    
+    /**
+     * Returns the {@link Exporter} provided by all plugins. 
+     * @return a list of provided exporter
+     */
+    public List<Exporter> getExporter() { 
+        LinkedList<Exporter> result = new LinkedList<>();
+        plugins.forEach((plugin) -> result.addAll(plugin.getExporter()));
+        return result;
+    }
+    
+    /**
+     * Returns the {@link Importer} provided by all plugins. 
+     * @return a list of provided importer
+     */
+    public List<Importer> getImporter() { 
+        LinkedList<Importer> result = new LinkedList<>();
+        plugins.forEach((plugin) -> result.addAll(plugin.getImporter()));
+        return result;
+    }
 }
