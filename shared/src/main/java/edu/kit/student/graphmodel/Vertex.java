@@ -46,6 +46,20 @@ public interface Vertex {
 	 * @return The Y-coordinate of the vertex.
 	 */
 	public int getY();
+	
+	/**
+     * Set the X-coordinate of the vertex.
+     * 
+     * @param The X-coordinate of this vertex.
+     */
+    public void setX(int x);
+
+    /**
+     * Set the Y-coordinate of the vertex.
+     * 
+     * @param The Y-coordinate of the vertex.
+     */
+    public void setY(int y);
 
 	/**
 	 * Adds the vertex to a {@link FastGraphAccessor}.

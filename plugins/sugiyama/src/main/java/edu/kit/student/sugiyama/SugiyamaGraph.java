@@ -254,7 +254,11 @@ public class SugiyamaGraph<G extends DirectedGraph<V, E>, V extends Vertex, E ex
 	 */
 	public static class SupplementPath extends DirectedEdge<DummyVertex>
 	{
-		/**
+		public SupplementPath(String name, String label, Integer id) {
+            super(name, label, id);
+        }
+
+        /**
 		 * Returns the number of vertices including source and target.
 		 * @return the length of the path
 		 */
@@ -281,12 +285,21 @@ public class SugiyamaGraph<G extends DirectedGraph<V, E>, V extends Vertex, E ex
 	/**
 	 * A supplement edge which is part of a {@link SupplementPath}.
 	 */
-	public static class SupplementEdge extends DirectedEdge<DefaultVertex> {}
+	public static class SupplementEdge extends DirectedEdge<DefaultVertex> {
+
+        public SupplementEdge(String name, String label, Integer id) {
+            super(name, label, id);
+        }}
 	
 	/**
 	 * A supplement vertex which is part of a {@link SupplementPath}.
 	 */
-	public static class DummyVertex extends DefaultVertex {}
+	public static class DummyVertex extends DefaultVertex {
+
+        public DummyVertex(String name, String label, Integer id) {
+            super(name, label, id);
+            // TODO Auto-generated constructor stub
+        }}
 	
 	/**
 	 * A wrapper class for vertices used in the sugiyama framework. 
@@ -294,7 +307,12 @@ public class SugiyamaGraph<G extends DirectedGraph<V, E>, V extends Vertex, E ex
 	 */
 	public static class SugiyamaVertex extends DefaultVertex
 	{
-		public boolean isDummyVertex() {return false;}
+		public SugiyamaVertex(String name, String label, Integer id) {
+            super(name, label, id);
+            // TODO Auto-generated constructor stub
+        }
+
+        public boolean isDummyVertex() {return false;}
 		//private V getVertex() {return null;}
 		
 	}
@@ -306,7 +324,9 @@ public class SugiyamaGraph<G extends DirectedGraph<V, E>, V extends Vertex, E ex
 	public static class SugiyamaEdge extends DirectedEdge<SugiyamaVertex>
 	{
 
-		private SugiyamaEdge() {}
+		private SugiyamaEdge(String name, String label, Integer id) {
+		    super(name, label, id);
+		}
 		
 		//private E getEdge() { return null; }
 		/**

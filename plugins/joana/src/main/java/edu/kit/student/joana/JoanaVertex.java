@@ -9,7 +9,12 @@ import edu.kit.student.objectproperty.GAnsProperty;
  */
 public class JoanaVertex extends DefaultVertex {
 
-	private GAnsProperty<String> nodeKind;
+	public JoanaVertex(String name, String label, Integer id) {
+        super(name, label, id);
+        // TODO Auto-generated constructor stub
+    }
+
+    private GAnsProperty<String> nodeKind;
 	private GAnsProperty<String> nodeSource;
 	private GAnsProperty<Integer> nodeProc;
 	private GAnsProperty<String> nodeOperation;
