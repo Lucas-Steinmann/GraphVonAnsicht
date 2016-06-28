@@ -1,7 +1,7 @@
 package edu.kit.student.graphml;
 
 
-import edu.kit.student.graphmodel.IGraphModelBuilder;
+import edu.kit.student.graphmodel.builder.IGraphModelBuilder;
 import edu.kit.student.plugin.Importer;
 
 import java.io.FileInputStream;
