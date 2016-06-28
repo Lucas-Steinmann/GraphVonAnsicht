@@ -5,8 +5,8 @@ eclipse {
 	      withXml 
 		  {
 	        def node = it.asNode()
-			node.appendNode('classpathentry', [ combineaccessrules: false, exported: true, kind: 'src', path: '/sugiyama' ])
-			node.appendNode('classpathentry', [ combineaccessrules: false, exported: true, kind: 'src', path: '/shared' ])
+			//node.appendNode('classpathentry', [ combineaccessrules: false, exported: true, kind: 'src', path: '/sugiyama' ])
+			//node.appendNode('classpathentry', [ combineaccessrules: false, exported: true, kind: 'src', path: '/shared' ])
 		  }
 		}
 	}
