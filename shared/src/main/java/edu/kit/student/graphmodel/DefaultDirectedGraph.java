@@ -9,7 +9,8 @@ import java.util.*;
  * A {@link DefaultDirectedGraph} is a specific Graph which only contains
  * {@link DirectedEdge} as edges.
  */
-public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>> implements DirectedGraph<V, E>, ViewableGraph<V, E> {
+public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
+		implements DirectedGraph<V, E>, ViewableGraph<V, E> {
 
 	private DirectedGraphLayoutRegister register;
 	private GAnsProperty<String> name;
@@ -18,50 +19,51 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>> i
 	private Set<V> vertexSet;
 	private Set<E> edgeSet;
 
-	
 	/**
 	 * Constructor
 	 * 
 	 * @param name
-	 *     The name of the new graph
+	 *            The name of the new graph
 	 * @param id
-	 *     The id of the new graph
+	 *            The id of the new graph
 	 */
 	public DefaultDirectedGraph(String name, Integer id) {
-	    //create Sets
-	    this.vertexSet = new HashSet<V>();
-	    this.edgeSet = new HashSet<E>();
-	    this.name = new GAnsProperty<String>("graphName", name);
-	    this.id = new GAnsProperty<Integer>("graphID", id);
+		// create Sets
+		this.vertexSet = new HashSet<V>();
+		this.edgeSet = new HashSet<E>();
+		this.name = new GAnsProperty<String>("graphName", name);
+		this.id = new GAnsProperty<Integer>("graphID", id);
 		this.fga = new FastGraphAccessor();
 	}
-	
-    @Override
-    public String getName() {
-        return name.getValue();
-    }
 
-    @Override
-    public Integer getID() {
-        return id.getValue();
-    }
-    
-    /**
-     * Adds an edge to the edgeSet
-     * @param edge
-     */
-    public void addEdge(E edge) {
-        this.edgeSet.add(edge);
-    }
-	
-    /**
-     * Adds an vertex to the vertexSet
-     * @param vertex
-     */
-    public void addVertex(V vertex) {
-        this.vertexSet.add(vertex);
-    }
-    
+	@Override
+	public String getName() {
+		return name.getValue();
+	}
+
+	@Override
+	public Integer getID() {
+		return id.getValue();
+	}
+
+	/**
+	 * Adds an edge to the edgeSet
+	 * 
+	 * @param edge
+	 */
+	public void addEdge(E edge) {
+		this.edgeSet.add(edge);
+	}
+
+	/**
+	 * Adds an vertex to the vertexSet
+	 * 
+	 * @param vertex
+	 */
+	public void addVertex(V vertex) {
+		this.vertexSet.add(vertex);
+	}
+
 	/**
 	 * Returns the source of a edge of the graph.
 	 * 
@@ -70,39 +72,34 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>> i
 	 * @return The vertex which the edge is coming from.
 	 */
 	public V getSource(E edge) {
-	    //TODO: is this method necessary? because caller already has the edge
-	    if(this.edgeSet.contains(edge)){
-	        return edge.getSource();
-	    }
+		// TODO: is this method necessary? because caller already has the edge
+		if (this.edgeSet.contains(edge)) {
+			return edge.getSource();
+		}
 		return null;
 	}
-	
 
-    @Override
-    public Set<V> getVertexSet() {
-        return this.vertexSet;
-    }
+	@Override
+	public Set<V> getVertexSet() {
+		return this.vertexSet;
+	}
 
-    @Override
-    public Set<E> getEdgeSet() {
-        return this.edgeSet;
-    }
-	
+	@Override
+	public Set<E> getEdgeSet() {
+		return this.edgeSet;
+	}
 
 	@Override
 	public List<LayoutOption> getRegisteredLayouts() {
 		return register.getLayoutOptions();
 	}
 
-
 	@Override
 	public Integer outdegreeOf(V vertex) {
 		Integer outdegree = 0;
-		Iterator<E> itr = this.edgeSet.iterator();
-		while(itr.hasNext()) {
-		    if(itr.next().getSource() == vertex) {
-		        outdegree++;
-		    }
+		for (E edge : edgeSet) {
+			if (edge.getSource() == vertex)
+				outdegree++;
 		}
 		
 		return outdegree;
@@ -110,51 +107,42 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>> i
 
 	@Override
 	public Integer indegreeOf(V vertex) {
-	      Integer indegree = 0;
-	      Iterator<E> itr = this.edgeSet.iterator();
-	      while(itr.hasNext()) {
-	          if(itr.next().getTarget() == vertex) {
-	              indegree++;
-	          }
-	      }
-	      
-	      return indegree;
+		Integer indegree = 0;
+		for (E edge : edgeSet) {
+			if (edge.getTarget() == vertex)
+				indegree++;
+		}
+		
+		return indegree;
 	}
 
 	@Override
 	public Set<E> outgoingEdgesOf(V vertex) {
-	      Set<E> outgoing = new HashSet<E>();
-	      Iterator<E> itr = this.edgeSet.iterator();
-	      while(itr.hasNext()) {
-	          E next = itr.next();
-	          if(next.getSource() == vertex) {
-	              outgoing.add(next);
-	          }
-	      }
-	        
-	      return outgoing;
+		Set<E> outgoing = new HashSet<E>();
+		for (E edge : edgeSet) {
+			if (edge.getSource() == vertex)
+				outgoing.add(edge);
+		}
+
+		return outgoing;
 	}
 
 	@Override
 	public Set<E> incomingEdgesOf(V vertex) {
-        Set<E> ingoing = new HashSet<E>();
-        Iterator<E> itr = this.edgeSet.iterator();
-        while(itr.hasNext()) {
-            E next = itr.next();
-            if(next.getTarget() == vertex) {
-                ingoing.add(next);
-            }
-        }
-          
-        return ingoing;
-	}
+		Set<E> incoming = new HashSet<E>();
+		for (E edge : edgeSet) {
+			if (edge.getTarget() == vertex)
+				incoming.add(edge);
+		}
 
+		return incoming;
+	}
 
 	@Override
 	public Set<E> edgesOf(V vertex) {
 		Set<E> result = this.incomingEdgesOf(vertex);
 		result.addAll(this.outgoingEdgesOf(vertex));
-        return result;
+		return result;
 	}
 
 	@Override
@@ -164,10 +152,10 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>> i
 
 	@Override
 	public void addToFastGraphAccessor(FastGraphAccessor fga) {
-		for (Vertex v : this.vertexSet) {
+		for (V v : this.vertexSet) {
 			v.addToFastGraphAccessor(fga);
 		}
-		for (Edge e : this.edgeSet) {
+		for (E e : this.edgeSet) {
 			e.addToFastGraphAccessor(fga);
 		}
 	}
@@ -179,12 +167,12 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>> i
 
 		for (Vertex v : this.vertexSet) {
 			SerializedVertex vertex = v.serialize();
-			//TODO add to graph
+			// TODO add to graph
 		}
 
 		for (Edge e : this.edgeSet) {
 			SerializedEdge edge = e.serialize();
-			//TODO add to graph
+			// TODO add to graph
 		}
 
 		return graph;
@@ -204,7 +192,6 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>> i
 
 	@Override
 	public boolean isCompound(Vertex vertex) {
-		// TODO Auto-generated method stub
 		return false;
 	}
 
