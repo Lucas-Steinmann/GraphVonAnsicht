@@ -1,6 +1,6 @@
 package edu.kit.student.graphmodel.directed;
 
-import edu.kit.student.graphmodel.CompoundVertex;
+import edu.kit.student.graphmodel.CollapsedVertex;
 import edu.kit.student.graphmodel.Edge;
 import edu.kit.student.graphmodel.FastGraphAccessor;
 import edu.kit.student.graphmodel.SerializedEdge;
@@ -26,6 +26,7 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
 	private FastGraphAccessor fga;
 	private Set<V> vertexSet;
 	private Set<E> edgeSet;
+	private Set<CollapsedVertex<V, E>> collapsedVertex;
 
 	/**
 	 * Constructor
@@ -109,7 +110,7 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
 			if (edge.getSource() == vertex)
 				outdegree++;
 		}
-		
+
 		return outdegree;
 	}
 
@@ -120,7 +121,7 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
 			if (edge.getTarget() == vertex)
 				indegree++;
 		}
-		
+
 		return indegree;
 	}
 
@@ -187,19 +188,51 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
 	}
 
 	@Override
-	public CompoundVertex collapse(Set<V> subset) {
-		// TODO Auto-generated method stub
+	public CollapsedVertex<V, E> collapse(Set<V> subset) {
+		//TODO: Id übergeben
+		DefaultDirectedGraph<V,E> collapsedGraph = new DefaultDirectedGraph<V,E>("", 0);
+		CollapsedVertex<V,E> collapsed = new CollapsedVertex<V,E>("", "", 0);
+		subset.forEach((v) -> collapsedGraph.addVertex(v));
+		for(E edge : edgeSet) {
+			boolean containsSource = subset.contains(edge.getSource());
+			boolean containsTarget = subset.contains(edge.getTarget());
+			
+			if(containsSource && containsTarget) {
+				collapsedGraph.addEdge(edge);
+				edgeSet.remove(edge);
+			} else if(!containsSource && !containsTarget) {
+				continue; //TODO: Nicht sehr schön, aber dadurch wird darunter eine fast vollständige Wiederholung des Codes vermieden.
+			} else {
+				collapsed.addRemovedEdge(edge);
+				edgeSet.remove(edge);
+				DirectedEdge<V> newEdge = new DirectedEdge<V>("", "", 0);
+				if(containsSource && !containsTarget) {
+					newEdge.setVertices((V)collapsed, edge.getTarget());
+				} else if(!containsSource && containsTarget) {
+					newEdge.setVertices(edge.getSource(), (V)collapsed);
+				}
+				edgeSet.add((E) newEdge);
+			}
+		}
+		
+		vertexSet.removeAll(subset);
+		collapsed.setGraph(collapsedGraph);
+		collapsedVertex.add(collapsed);
+		return collapsed;
+	}
+
+	@Override
+	public Set<V> expand(CollapsedVertex<V, E> vertex) {
+		// TODO: Wie Collapse nur rückwärts :D
 		return null;
 	}
 
 	@Override
-	public Set<V> expand(CompoundVertex vertex) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean isCompound(Vertex vertex) {
+	public boolean isCollapsed(V vertex) {
+		for (CollapsedVertex<V, E> collapsed : collapsedVertex) {
+			if (collapsed.getGraph().getVertexSet().contains(vertex))
+				return true;
+		}
 		return false;
 	}
 

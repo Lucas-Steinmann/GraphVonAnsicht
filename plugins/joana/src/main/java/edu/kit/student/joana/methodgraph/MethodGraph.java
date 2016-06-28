@@ -3,6 +3,7 @@ package edu.kit.student.joana.methodgraph;
 import java.util.List;
 import java.util.Set;
 
+import edu.kit.student.graphmodel.CollapsedVertex;
 import edu.kit.student.graphmodel.CompoundVertex;
 import edu.kit.student.graphmodel.LayeredGraph;
 import edu.kit.student.graphmodel.Vertex;
@@ -65,19 +66,19 @@ public class MethodGraph extends JoanaGraph {
 	}
 
 	@Override
-	public CompoundVertex collapse(Set<JoanaVertex> subset) {
+	public CollapsedVertex<JoanaVertex, JoanaEdge> collapse(Set<JoanaVertex> subset) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Set<JoanaVertex> expand(CompoundVertex vertex) {
+	public Set<JoanaVertex> expand(CollapsedVertex<JoanaVertex, JoanaEdge> vertex) {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public boolean isCompound(Vertex vertex) {
+	public boolean isCollapsed(JoanaVertex vertex) {
 		// TODO Auto-generated method stub
 		return false;
 	}
