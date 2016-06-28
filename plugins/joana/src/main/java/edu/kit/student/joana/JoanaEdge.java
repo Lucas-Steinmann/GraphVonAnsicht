@@ -1,6 +1,6 @@
 package edu.kit.student.joana;
 
-import edu.kit.student.graphmodel.DirectedEdge;
+import edu.kit.student.graphmodel.directed.DirectedEdge;
 import edu.kit.student.objectproperty.GAnsProperty;
 
 /**

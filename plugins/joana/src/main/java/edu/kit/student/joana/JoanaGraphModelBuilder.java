@@ -1,8 +1,8 @@
 package edu.kit.student.joana;
 
 import edu.kit.student.graphmodel.GraphModel;
-import edu.kit.student.graphmodel.IGraphBuilder;
-import edu.kit.student.graphmodel.IGraphModelBuilder;
+import edu.kit.student.graphmodel.builder.IGraphBuilder;
+import edu.kit.student.graphmodel.builder.IGraphModelBuilder;
 
 /**
  * The JoanaGraphModelBuilder implements the {@link IGraphModelBuilder} and

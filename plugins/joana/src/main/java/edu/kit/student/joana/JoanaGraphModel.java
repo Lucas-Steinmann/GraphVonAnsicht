@@ -4,6 +4,8 @@ import java.util.List;
 
 import edu.kit.student.graphmodel.Graph;
 import edu.kit.student.graphmodel.GraphModel;
+import edu.kit.student.joana.callgraph.CallGraph;
+import edu.kit.student.joana.methodgraph.MethodGraph;
 
 /**
  * A Joana specific {@link GraphModel}. It can only contain {@link MethodGraph}

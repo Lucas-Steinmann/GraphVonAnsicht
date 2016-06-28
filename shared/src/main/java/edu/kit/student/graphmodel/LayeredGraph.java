@@ -2,6 +2,9 @@ package edu.kit.student.graphmodel;
 
 import java.util.List;
 
+import edu.kit.student.graphmodel.directed.DirectedEdge;
+import edu.kit.student.graphmodel.directed.DirectedGraph;
+
 /**
  * A DirectedGraph which in addition to coordinates saves the relative position of all vertices
  * in a layered structure.

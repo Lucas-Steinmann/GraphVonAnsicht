@@ -3,7 +3,7 @@
  */
 package edu.kit.student.sugiyama;
 
-import edu.kit.student.graphmodel.DirectedEdge;
+import edu.kit.student.graphmodel.directed.DirectedEdge;
 import edu.kit.student.graphmodel.Graph;
 import edu.kit.student.graphmodel.LayeredGraph;
 import edu.kit.student.graphmodel.Vertex;

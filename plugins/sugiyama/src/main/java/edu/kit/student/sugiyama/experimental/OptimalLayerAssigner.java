@@ -2,9 +2,9 @@ package edu.kit.student.sugiyama.experimental;
 
 import java.util.Set;
 
-import edu.kit.student.sugiyama.ILayerAssigner;
-import edu.kit.student.sugiyama.ILayerAssignerGraph;
 import edu.kit.student.sugiyama.RelativeLayerConstraint;
+import edu.kit.student.sugiyama.graph.ILayerAssignerGraph;
+import edu.kit.student.sugiyama.steps.ILayerAssigner;
 
 /**
  * Implements layer assigning for directed acyclic graphs to achieve minimal height with fixed width, set by max width.

@@ -6,7 +6,7 @@ package edu.kit.student.sugiyama;
 import java.util.Set;
 
 import edu.kit.student.plugin.Constraint;
-import edu.kit.student.sugiyama.SugiyamaGraph.SugiyamaVertex;
+import edu.kit.student.sugiyama.graph.SugiyamaGraph.SugiyamaVertex;
 
 /**
  * A absolute constraint, regarding layer assignment, for one set of vertices.

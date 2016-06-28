@@ -2,7 +2,7 @@ package edu.kit.student.joana;
 
 import java.util.List;
 
-import edu.kit.student.graphmodel.DefaultDirectedGraph;
+import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
 import edu.kit.student.graphmodel.LayeredGraph;
 
 /**

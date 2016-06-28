@@ -1,7 +1,7 @@
 package edu.kit.student.joana;
 
 import edu.kit.student.graphmodel.Edge;
-import edu.kit.student.graphmodel.IEdgeBuilder;
+import edu.kit.student.graphmodel.builder.IEdgeBuilder;
 
 /**
  * The JoanaEdgeBuilder is a {@link IEdgeBuilder}, specifically for building
