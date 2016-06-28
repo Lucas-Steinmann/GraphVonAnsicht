@@ -3,7 +3,7 @@ eclipse {
         file {
             withXml {
                 def node = it.asNode()
-                node.appendNode('classpathentry', [ combineaccessrules: false, exported: true, kind: 'src', path: '/shared' ])
+                //node.appendNode('classpathentry', [ combineaccessrules: false, exported: true, kind: 'src', path: '/shared' ])
             }
             whenMerged { classpath ->
            	    def cons = classpath.getEntries().findAll { it.kind == 'con' }.findAll { it.path.contains('JRE_CONTAINER') }
