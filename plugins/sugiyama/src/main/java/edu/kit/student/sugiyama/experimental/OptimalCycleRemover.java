@@ -2,9 +2,9 @@ package edu.kit.student.sugiyama.experimental;
 
 import java.util.Set;
 
-import edu.kit.student.sugiyama.ICycleRemover;
-import edu.kit.student.sugiyama.ICycleRemoverGraph;
-import edu.kit.student.sugiyama.SugiyamaGraph.SugiyamaEdge;
+import edu.kit.student.sugiyama.graph.ICycleRemoverGraph;
+import edu.kit.student.sugiyama.graph.SugiyamaGraph.SugiyamaEdge;
+import edu.kit.student.sugiyama.steps.ICycleRemover;
 
 /**
  * An algorithm for transforming a given graph into an maximal DAG (Directed Acyclic Graph).

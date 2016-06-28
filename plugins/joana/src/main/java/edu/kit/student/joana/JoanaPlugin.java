@@ -5,6 +5,8 @@ import java.util.List;
 
 import edu.kit.student.graphmodel.Edge;
 import edu.kit.student.graphmodel.Vertex;
+import edu.kit.student.joana.callgraph.CallGraphLayoutOption;
+import edu.kit.student.joana.methodgraph.MethodGraphLayoutOption;
 import edu.kit.student.parameter.Settings;
 import edu.kit.student.plugin.EdgeFilter;
 import edu.kit.student.plugin.Exporter;

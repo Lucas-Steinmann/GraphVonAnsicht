@@ -1,10 +1,15 @@
 package edu.kit.student.sugiyama;
 
-import edu.kit.student.graphmodel.DirectedEdge;
-import edu.kit.student.graphmodel.DirectedGraph;
+import edu.kit.student.graphmodel.directed.DirectedEdge;
+import edu.kit.student.graphmodel.directed.DirectedGraph;
 import edu.kit.student.graphmodel.LayeredGraph;
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.parameter.Settings;
+import edu.kit.student.sugiyama.steps.ICrossMinimizer;
+import edu.kit.student.sugiyama.steps.ICycleRemover;
+import edu.kit.student.sugiyama.steps.IEdgeDrawer;
+import edu.kit.student.sugiyama.steps.ILayerAssigner;
+import edu.kit.student.sugiyama.steps.IVertexPositioner;
 
 /**
  * This class supports a customizable implementation of the Sugiyama-framework.

@@ -1,7 +1,7 @@
 package edu.kit.student.sugiyama.experimental;
 
-import edu.kit.student.sugiyama.ICrossMinimizer;
-import edu.kit.student.sugiyama.ICrossMinimizerGraph;
+import edu.kit.student.sugiyama.graph.ICrossMinimizerGraph;
+import edu.kit.student.sugiyama.steps.ICrossMinimizer;
 
 /**
  * An implementation for a CrossMinimizer solving the Problem of minimizing cross sections for every 2 Layer

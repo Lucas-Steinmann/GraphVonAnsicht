@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import edu.kit.student.graphmodel.GraphModel;
-import edu.kit.student.graphmodel.IGraphModelBuilder;
+import edu.kit.student.graphmodel.builder.IGraphModelBuilder;
 import edu.kit.student.parameter.Parameter;
 import edu.kit.student.parameter.Settings;
 import edu.kit.student.plugin.Workspace;

@@ -1,7 +1,7 @@
 package edu.kit.student.joana;
 
-import edu.kit.student.graphmodel.IGraphBuilder;
-import edu.kit.student.graphmodel.IVertexBuilder;
+import edu.kit.student.graphmodel.builder.IGraphBuilder;
+import edu.kit.student.graphmodel.builder.IVertexBuilder;
 import edu.kit.student.graphmodel.Vertex;
 
 /**

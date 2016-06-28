@@ -2,7 +2,7 @@ package edu.kit.student.plugin;
 
 
 import edu.kit.student.graphmodel.GraphModel;
-import edu.kit.student.graphmodel.IGraphModelBuilder;
+import edu.kit.student.graphmodel.builder.IGraphModelBuilder;
 import edu.kit.student.parameter.Settings;
 
 /**

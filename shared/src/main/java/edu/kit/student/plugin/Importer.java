@@ -2,7 +2,7 @@ package edu.kit.student.plugin;
 
 import java.io.FileInputStream;
 
-import edu.kit.student.graphmodel.IGraphModelBuilder;
+import edu.kit.student.graphmodel.builder.IGraphModelBuilder;
 
 /**
  * The importer interface is implemented when writting a class that can import files.
