@@ -1,14 +1,9 @@
 package edu.kit.student.graphmodel;
 
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Map.Entry;
-
 import edu.kit.student.objectproperty.GAnsProperty;
 import edu.kit.student.plugin.LayoutOption;
 
-import java.util.Set;
+import java.util.*;
 
 /**
  * A {@link DefaultDirectedGraph} is a specific Graph which only contains
@@ -38,6 +33,7 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>> i
 	    this.edgeSet = new HashSet<E>();
 	    this.name = new GAnsProperty<String>("graphName", name);
 	    this.id = new GAnsProperty<Integer>("graphID", id);
+		this.fga = new FastGraphAccessor();
 	}
 	
     @Override
@@ -168,14 +164,30 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>> i
 
 	@Override
 	public void addToFastGraphAccessor(FastGraphAccessor fga) {
-		// TODO Auto-generated method stub
-
+		for (Vertex v : this.vertexSet) {
+			v.addToFastGraphAccessor(fga);
+		}
+		for (Edge e : this.edgeSet) {
+			e.addToFastGraphAccessor(fga);
+		}
 	}
 
 	@Override
-	public SerializedGraph serialize(List<Entry<String, String>> attributes) {
-		// TODO Auto-generated method stub
-		return null;
+	public SerializedGraph serialize() {
+		List<String[]> attributes = new LinkedList<>();
+		SerializedGraph graph = new SerializedGraph(attributes, this.name, this.id, this.fga);
+
+		for (Vertex v : this.vertexSet) {
+			SerializedVertex vertex = v.serialize();
+			//TODO add to graph
+		}
+
+		for (Edge e : this.edgeSet) {
+			SerializedEdge edge = e.serialize();
+			//TODO add to graph
+		}
+
+		return graph;
 	}
 
 	@Override

@@ -1,10 +1,8 @@
 package edu.kit.student.graphmodel;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map.Entry;
-
 import edu.kit.student.objectproperty.GAnsProperty;
+
+import java.util.*;
 
 /**
  * A {@link DirectedEdge} is an edge that has one source and one target vertex.
@@ -84,13 +82,28 @@ public class DirectedEdge<V extends Vertex> implements Edge<V> {
 
 	@Override
 	public void addToFastGraphAccessor(FastGraphAccessor fga) {
-	    //TODO: 
+	    fga.addEdgeForAttribute(this, "name", this.name.toString());
+	    fga.addEdgeForAttribute(this, "id", this.id.getValue());
+	    fga.addEdgeForAttribute(this, "label", this.label.toString());
+
+		if(this.vertices.size() == 1) {
+			fga.addEdgeForAttribute(this, "sourceVertex", this.vertices.get(0).getID());
+		}
+
+		if(this.vertices.size() == 2) {
+			fga.addEdgeForAttribute(this, "targetVertex", this.vertices.get(1).getID());
+		}
 	}
 
 	@Override
-	public SerializedEdge<V> serialize(List<Entry<String, String>> attributes) {
-	    //TODO:
-		return null;
+	public SerializedEdge<V> serialize() {
+		List<String[]> attributes = new LinkedList<>();
+		attributes.add(new String[] {"name", this.name.toString()});
+		attributes.add(new String[] {"id", this.id.toString()});
+		attributes.add(new String[] {"label", this.label.toString()});
+		//TODO: add Vertices
+
+		return new SerializedEdge<>(attributes, this.name.toString(), this.id.getValue(), this.label.toString());
 	}
 
 	@Override

@@ -12,10 +12,18 @@ import java.util.Map.Entry;
  * SerializedEdge are not synchronized with the origin {@link Edge} attributes.
  */
 public class SerializedEdge<V extends Vertex> implements Edge<V> {
+	private final List<String[]> attributes;
 	private String name;
 	private int id;
 	private String label;
-	
+
+	public SerializedEdge(List<String[]> attributes, String name, int id, String label) {
+		this.attributes = attributes;
+		this.name = name;
+		this.id = id;
+		this.label = label;
+	}
+
 	@Override
 	public String getName() {
 		return name;
@@ -46,12 +54,12 @@ public class SerializedEdge<V extends Vertex> implements Edge<V> {
 	 * @return The Map of serialized Attributes
 	 * @see Map
 	 */
-	public Map<String, String> getAttributes() {
-		return null;
+	public List<String[]> getAttributes() {
+		return this.attributes;
 	}
 
 	@Override
-	public SerializedEdge serialize(List<Entry<String, String>> attributes) {
+	public SerializedEdge serialize() {
 		return this;
 	}
 

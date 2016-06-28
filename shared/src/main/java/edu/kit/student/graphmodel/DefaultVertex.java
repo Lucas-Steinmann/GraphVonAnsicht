@@ -1,9 +1,9 @@
 package edu.kit.student.graphmodel;
 
-import java.util.List;
-import java.util.Map.Entry;
-
 import edu.kit.student.objectproperty.GAnsProperty;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * This is an DefaultVertex, which has basic functions and is provided by the
@@ -48,14 +48,24 @@ public class DefaultVertex implements Vertex {
 
 	@Override
 	public void addToFastGraphAccessor(FastGraphAccessor fga) {
-		// TODO Auto-generated method stub
-
+		fga.addVertexForAttribute(this, "name", this.name.toString());
+		fga.addVertexForAttribute(this, "id", this.id.getValue());
+		fga.addVertexForAttribute(this, "label", this.label.toString());
+		fga.addVertexForAttribute(this, "x", x);
+		fga.addVertexForAttribute(this, "y", y);
 	}
 
 	@Override
-	public SerializedVertex serialize(List<Entry<String, String>> attributes) {
-		// TODO Auto-generated method stub
-		return null;
+	public SerializedVertex serialize() {
+		List<String[]> attributes = new LinkedList<>();
+		attributes.add(new String[] {"name", this.name.toString()});
+		attributes.add(new String[] {"id", this.id.toString()});
+		attributes.add(new String[] {"label", this.label.toString()});
+		attributes.add(new String[] {"x", Integer.toString(this.x)});
+		attributes.add(new String[] {"y", Integer.toString(this.y)});
+		//TODO: add Vertices
+
+		return new SerializedVertex(attributes, this.name.toString(), this.id.getValue(), this.label.toString());
 	}
 
 	@Override
@@ -70,13 +80,11 @@ public class DefaultVertex implements Vertex {
 
     @Override
     public void setX(int x) {
-        // TODO Auto-generated method stub
         this.x = x;
     }
 
     @Override
     public void setY(int y) {
-        // TODO Auto-generated method stub
         this.y = y;
     }
 }

@@ -61,9 +61,8 @@ public interface Viewable<V extends Vertex, E extends Edge<V>> {
 	
 	/**
 	 * Returns a {@link SerializedGraph} representation of the graph.
-	 * @param attributes The attributes that have to be serialized.
 	 * @return The {@link SerializedGraph} representation of the graph.
 	 */
-	public SerializedGraph serialize(List<Entry<String, String>> attributes);
+	public SerializedGraph serialize();
 	
 }

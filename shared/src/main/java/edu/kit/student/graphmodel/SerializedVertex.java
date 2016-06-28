@@ -1,11 +1,9 @@
 package edu.kit.student.graphmodel;
 
-import java.util.HashMap;
+import edu.kit.student.plugin.Exporter;
+
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
-
-import edu.kit.student.plugin.Exporter;
 
 /**
  * A serialized version of a {@link Vertex}.
@@ -15,17 +13,16 @@ import edu.kit.student.plugin.Exporter;
  * SerializedVertex are not synchronized with the origin {@link Vertex} attributes.
  */
 public class SerializedVertex implements Vertex {
+	private final List<String[]> attributes;
 	private String name;
 	private int id;
 	private String label;
-	private final List<Entry<String, String>> attributes;
 
-	/**
-	 * creates
-	 * @param attributes
-     */
-	public SerializedVertex(List<Entry<String, String>> attributes) {
+	public SerializedVertex(List<String[]> attributes, String name, int id, String label) {
 		this.attributes = attributes;
+		this.name = name;
+		this.id = id;
+		this.label = label;
 	}
 
 	@Override
@@ -57,12 +54,12 @@ public class SerializedVertex implements Vertex {
 	 * @return The Map of serialized Attributes
 	 * @see Map
 	 */
-	public Map<String, String> getAttributes() {
-		return new HashMap<String, String>();
+	public List<String[]> getAttributes() {
+		return this.attributes;
 	}
 
 	@Override
-	public SerializedVertex serialize(List<Entry<String, String>> attributes) {
+	public SerializedVertex serialize() {
 		return this;
 	}
 

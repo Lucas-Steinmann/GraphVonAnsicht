@@ -1,8 +1,5 @@
 package edu.kit.student.graphmodel;
 
-import java.util.List;
-import java.util.Map.Entry;
-
 /**
  * This vertex interface specifies a vertex. Every vertex contains an ID, a name
  * and a label. The ID of a vertex is unique.
@@ -50,14 +47,14 @@ public interface Vertex {
 	/**
      * Set the X-coordinate of the vertex.
      * 
-     * @param The X-coordinate of this vertex.
+     * @param x X-coordinate of this vertex.
      */
     public void setX(int x);
 
     /**
      * Set the Y-coordinate of the vertex.
      * 
-     * @param The Y-coordinate of the vertex.
+     * @param y The Y-coordinate of the vertex.
      */
     public void setY(int y);
 
@@ -72,8 +69,7 @@ public interface Vertex {
 
 	/**
 	 * Returns a {@link SerializedVertex} representation of the graph.
-	 * @param attributes The attributes that have to be serialized.
 	 * @return The {@link SerializedVertex} representation of the graph.
 	 */
-	public SerializedVertex serialize(List<Entry<String, String>> attributes);
+	public SerializedVertex serialize();
 }

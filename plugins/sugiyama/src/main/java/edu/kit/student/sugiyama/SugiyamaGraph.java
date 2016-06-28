@@ -1,15 +1,8 @@
 package edu.kit.student.sugiyama;
 
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import edu.kit.student.graphmodel.*;
 
-import edu.kit.student.graphmodel.DefaultVertex;
-import edu.kit.student.graphmodel.DirectedEdge;
-import edu.kit.student.graphmodel.DirectedGraph;
-import edu.kit.student.graphmodel.FastGraphAccessor;
-import edu.kit.student.graphmodel.LayeredGraph;
-import edu.kit.student.graphmodel.Vertex;
+import java.util.*;
 
 
 /**
@@ -22,98 +15,108 @@ import edu.kit.student.graphmodel.Vertex;
  * @param <V> the vertex class used in the graph
  * @param <E> the edge class used in the graph
  */
-public class SugiyamaGraph<G extends DirectedGraph<V, E>, V extends Vertex, E extends DirectedEdge<V>> 
-	implements ICycleRemoverGraph, 
-			   ILayerAssignerGraph,
-			   ICrossMinimizerGraph,
-			   IVertexPositionerGraph,
-			   IEdgeDrawerGraph
+public class SugiyamaGraph<G extends DirectedGraph<V, E>, V extends Vertex, E extends DirectedEdge<V>>
+		implements ICycleRemoverGraph,
+		ILayerAssignerGraph,
+		ICrossMinimizerGraph,
+		IVertexPositionerGraph,
+		IEdgeDrawerGraph
 {
-	
-	private List<List<V>> layers;
+
+	private List<E> reversedEdges;
+	private List<List<SugiyamaVertex>> layers;
+	private List<Integer> layerPositions;
 	private Map<V, Integer> vertexToLayer;
 	private Set<E> brokenCycleEdges;
 	private Set<V> insertedVertices;
 	private G graph;
 	private FastGraphAccessor fga;
-	
+
 	/**
 	 * Constructs a new SugiyamaGraph and sets the Graph which is the underlying representation.
 	 * To fulfill the invariant that all vertices are assigned to a layer, all vertices
 	 * will be assigned to layer 0.
-	 * 
+	 *
 	 * @param graph the graph used as underlying representation.
 	 */
-	public SugiyamaGraph(G graph) {}
+	public SugiyamaGraph(G graph) {
+		this.graph = graph;
+		this.fga = new FastGraphAccessor();
+		this.reversedEdges = new LinkedList<E>();
+		layers = new LinkedList<>();
+		List<SugiyamaVertex> startingLayer = new LinkedList<>();
+
+		for (Vertex v: graph.getVertexSet()) {
+			startingLayer.add((SugiyamaVertex) new SugiyamaVertex((V) v, 0));
+		}
+
+		layers.add(startingLayer);
+		layerPositions = new LinkedList<>();
+		layerPositions.add(0);
+	}
 
 	/**
 	 * Replaces the specified edge with a path of dummy vertices of the specified length.
-	 * Replaced edges are removed from the set of edges but saved for later retrieval 
+	 * Replaced edges are removed from the set of edges but saved for later retrieval
 	 * with {@code getReplacedEdges()} or restored with {@code restoreReplacedEdges}.
-	 * 
+	 *
 	 * @param edge the edge to be replaced
 	 * @param length the length of the path which replaces the edge
 	 */
-	private void replaceWithSupplementPath(SugiyamaEdge edge, int length) {}
+	private void replaceWithSupplementPath(SugiyamaEdge edge, int length) {
+		//TODO implement
+	}
 
 	@Override
 	public int getLayerCount() {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.layers.size();
 	}
 
 	@Override
 	public int getVertexCount(int layerNum) {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.layers.get(layerNum).size();
 	}
 
 	@Override
 	public void reverseEdge(SugiyamaEdge edge) {
-		// TODO Auto-generated method stub
-		
+		edge.setReversed(true);
 	}
 
 	@Override
 	public boolean isReversed(SugiyamaEdge edge) {
-		// TODO Auto-generated method stub
-		return false;
+		return edge.isReversed();
 	}
 
 	@Override
 	public void swapVertices(SugiyamaVertex first, SugiyamaVertex second) {
-		// TODO Auto-generated method stub
-		
+		//first.g;
 	}
 
 	@Override
 	public int getLayer(SugiyamaVertex vertex) {
-		// TODO Auto-generated method stub
-		return 0;
+		return vertex.getLayer();
 	}
 
 	@Override
 	public List<SugiyamaVertex> getLayer(int layerNum) {
-		// TODO Auto-generated method stub
-		return null;
+		return this.layers.get(layerNum); //TODO check if it would be wiser to change the method signature to List<V>
 	}
 
 	@Override
 	public List<List<SugiyamaVertex>> getLayers() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.layers; //TODO see getLayer()
 	}
 
 	@Override
 	public void addEdgeCorner(SugiyamaEdge edge, int x, int y, int index) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
 	public void removeEdgeCorner(SugiyamaEdge edge, int index) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -123,21 +126,24 @@ public class SugiyamaGraph<G extends DirectedGraph<V, E>, V extends Vertex, E ex
 	}
 
 	@Override
-	public void setLayerY(int layerN, int y) {
-		// TODO Auto-generated method stub
-		
+	public void setLayerY(int layerNum, int y) {
+		if (layerNum >= layerPositions.size()) {
+			throw new IndexOutOfBoundsException();
+		}
+
+		layerPositions.set(layerNum, y);
 	}
 
 	@Override
 	public void setX(SugiyamaVertex vertex, int x) {
-		// TODO Auto-generated method stub
-		
+		//vertex.
+
 	}
 
 	@Override
 	public void assignToLayer(SugiyamaVertex vertex, int layerNum) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -185,7 +191,7 @@ public class SugiyamaGraph<G extends DirectedGraph<V, E>, V extends Vertex, E ex
 	@Override
 	public void addToFastGraphAccessor(FastGraphAccessor fga) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 	@Override
@@ -193,7 +199,7 @@ public class SugiyamaGraph<G extends DirectedGraph<V, E>, V extends Vertex, E ex
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	@Override
 	public String getName() {
 		// Is not needed in this graph.
@@ -247,7 +253,7 @@ public class SugiyamaGraph<G extends DirectedGraph<V, E>, V extends Vertex, E ex
 		// TODO Auto-generated method stub
 		return null;
 	}
-	
+
 	/**
 	 * A supplement path for connecting vertices, which are more than one layer apart.
 	 * They are stored in the SugiyamaEdge along with the substituted edge.
@@ -255,27 +261,27 @@ public class SugiyamaGraph<G extends DirectedGraph<V, E>, V extends Vertex, E ex
 	public static class SupplementPath extends DirectedEdge<DummyVertex>
 	{
 		public SupplementPath(String name, String label, Integer id) {
-            super(name, label, id);
-        }
+			super(name, label, id);
+		}
 
-        /**
+		/**
 		 * Returns the number of vertices including source and target.
 		 * @return the length of the path
 		 */
 		public int getLength() {return 0;}
-		
+
 		/**
 		 * Returns the list of vertices on the path sorted from source to target excluding the source and target.
 		 * @return the list of vertices
 		 */
 		public List<DummyVertex> getDummyVertices() {return null;}
-		
+
 		/**
 		 * Returns the list of edges on the path from source to target
 		 * @return the edges
 		 */
 		public List<SupplementEdge> getEdges() {return null;}
-		
+
 		/**
 		 * Returns the edge which is substituted by this path
 		 * @return the replaced edge
@@ -286,74 +292,111 @@ public class SugiyamaGraph<G extends DirectedGraph<V, E>, V extends Vertex, E ex
 	 * A supplement edge which is part of a {@link SupplementPath}.
 	 */
 	public static class SupplementEdge extends DirectedEdge<DefaultVertex> {
+		public SupplementEdge(String name, String label, Integer id) {
+			super(name, label, id);
+		}
+	}
 
-        public SupplementEdge(String name, String label, Integer id) {
-            super(name, label, id);
-        }}
-	
 	/**
 	 * A supplement vertex which is part of a {@link SupplementPath}.
 	 */
 	public static class DummyVertex extends DefaultVertex {
+		public DummyVertex(String name, String label, Integer id) {
+			super(name, label, id);
+			// TODO Auto-generated constructor stub
+		}
 
-        public DummyVertex(String name, String label, Integer id) {
-            super(name, label, id);
-            // TODO Auto-generated constructor stub
-        }}
-	
+		public boolean isDummyVertex() {
+			return true;
+		}
+	}
+
 	/**
-	 * A wrapper class for vertices used in the sugiyama framework. 
+	 * A wrapper class for vertices used in the sugiyama framework.
 	 * A SugiyamaVertex can be a {@link DefaultVertex} or a {@link DummyVertex}
 	 */
-	public static class SugiyamaVertex extends DefaultVertex
+	public class SugiyamaVertex extends DefaultVertex
 	{
-		public SugiyamaVertex(String name, String label, Integer id) {
-            super(name, label, id);
-            // TODO Auto-generated constructor stub
-        }
+		private final V vertex;
+		private int layer;
 
-        public boolean isDummyVertex() {return false;}
-		//private V getVertex() {return null;}
-		
+		public SugiyamaVertex(String name, String label, Integer id) {
+			super(name, label, id);
+			// TODO Auto-generated constructor stub
+		}
+
+		public SugiyamaVertex(V vertex, int layer) {
+			this.vertex = vertex;
+			this.layer = layer;
+		}
+
+		public boolean isDummyVertex() {
+			return false;
+		}
+
+		public V getVertex() {
+			return vertex;
+		}
+
+		public int getLayer() {
+			return layer;
+		}
+
+		public void setLayer(int layer) {
+			this.layer = layer;
+		}
 	}
 
 	/**
 	 * A wrapper class for directed edges to implement additional functionality
 	 * to apply the sugiyama layout to the SugiyamaGraph containing them.
 	 */
-	public static class SugiyamaEdge extends DirectedEdge<SugiyamaVertex>
+	public class SugiyamaEdge extends DirectedEdge<SugiyamaVertex>
 	{
+		List<Vector<Integer>> corners;
+		private boolean reversed;
+
 
 		private SugiyamaEdge(String name, String label, Integer id) {
-		    super(name, label, id);
+			super(name, label, id);
+			reversed = false;
 		}
-		
+
 		//private E getEdge() { return null; }
 		/**
 		 * Returns true, if this edge has been reversed in order to break cycles in the first step of sugiyama, false otherwise.
 		 * @return
 		 * 		true if this edge is reversed, false otherwise
 		 */
-		private boolean isReversed() { return false; }
-		
+		private boolean isReversed() {
+			return false;
+		}
+
 		/**
 		 * Sets this edge to be reversed or not.
-		 * @param rev
+		 * @param reversed
 		 * 		sets, if this edge is reversed or not
 		 */
-		private void setReversed(boolean rev) {}
-		
+		private void setReversed(boolean reversed) {
+			this.reversed = reversed;
+		}
+
 		/**
 		 * Returns true, if this edge was replaced by a {@link SupplementPath} that contains source and target vertices and at least one dummy vertex.
 		 * @return
 		 * 		True if this edge is an supplement path, false otherwise
 		 */
-		private boolean isReplaced() { return false; }
-		
+		private boolean isReplaced() {
+			return false;
+		}
+
 		/**
 		 * Returns the {@link SupplementPath} which this {@link SugiyamaEdge} represents.
 		 * @return
 		 */
-		private SupplementPath getSupplement() { return null; }
+		private SupplementPath getSupplementPath() {
+			SupplementPath supplement = new SupplementPath();//TODO implement
+			return supplement;
+		}
 	}
 }

@@ -1,6 +1,9 @@
 package edu.kit.student.graphmodel;
 
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This class provides a fast lookup of {@link Vertex} and {@link Edge} for a given Attribute value pair without traversing a {@link Graph}.
@@ -10,35 +13,55 @@ import java.util.List;
  * after changes when needed for following steps. This should be done by reverting and adding the values again.
  */
 public class FastGraphAccessor {
-	/**
-	 * Adds an {@link Edge} for a given attribute with a given value.
-	 * @param name name of the attribute
-	 * @param value value of the attribute
-	 * @param edge edge that has this value for the given attribute
-	 */
-	public void addEdgeForAttribute(String name, String value, Edge edge) {
-		// TODO Auto-generated method
+	private Map<String, Map<String, List<Edge>>> attributeValueEdgeData;
+	private Map<String, Map<String, List<Vertex>>> attributeValueVertexData;
+
+	public FastGraphAccessor() {
+		this.attributeValueEdgeData = new HashMap<>();
+		this.attributeValueVertexData = new HashMap<>();
 	}
 
 	/**
 	 * Adds an {@link Edge} for a given attribute with a given value.
+	 * @param edge edge that has this value for the given attribute
 	 * @param name name of the attribute
 	 * @param value value of the attribute
-	 * @param edge edge that has this value for the given attribute
 	 */
-	public void addEdgeForAttribute(String name, Edge edge, int value) {
-		// TODO Auto-generated method
+	public void addEdgeForAttribute(Edge edge, String name, String value) {
+		if (!this.attributeValueEdgeData.containsKey(name)) {
+			this.attributeValueEdgeData.put(name, new HashMap<>());
+		}
+
+		if (!this.attributeValueEdgeData.get(name).containsKey(value)) {
+			this.attributeValueEdgeData.get(name).put(value, new LinkedList<Edge>());
+		}
+
+		this.attributeValueEdgeData.get(name).get(value).add(edge);
+	}
+
+	/**
+	 * Adds an {@link Edge} for a given attribute with a given value.
+	 * @param edge edge that has this value for the given attribute
+	 * @param name name of the attribute
+	 * @param value value of the attribute
+	 */
+	public void addEdgeForAttribute(Edge edge, String name, int value) {
+		//TODO should concider different maps
+		this.addEdgeForAttribute(edge, name, Integer.toString(value));
 	}
 
 	/**
 	 * gets a List of {@link Edge} that contains all {@link Edge} that have the value for given attribute
 	 * @param name name of the attribute
 	 * @param value value of the attribute
-	 * @return a {@link List} of {@link Edge} that has tthe value for given attribute
+	 * @return a {@link List} of {@link Edge} that has the value for given attribute.
 	 */
 	public List<Edge> getEdgesByAttribute(String name, String value) {
-		// TODO Auto-generated method
-		return null;
+		if (!this.attributeValueEdgeData.containsKey(name)) {
+			return null;
+		}
+
+		return this.attributeValueEdgeData.get(name).get(value);
 	}
 
 	/**
@@ -48,28 +71,35 @@ public class FastGraphAccessor {
 	 * @return a {@link List} of {@link Edge} that has the value for given attribute
 	 */
 	public List<Edge> getEdgesByAttribute(String name, int value) {
-		// TODO Auto-generated method
-		return null;
+		return this.getEdgesByAttribute(name, Integer.toString(value));
 	}
 
 	/**
 	 * adds an {@link Vertex} for a given attribute with a given value
+	 * @param vertex vertex that has this value for the given attribute
 	 * @param name name of the attribute
 	 * @param value value of the attribute
-	 * @param vertex vertex that has this value for the given attribute
 	 */
 	public void addVertexForAttribute(Vertex vertex, String value, String name) {
-		// TODO Auto-generated method
+		if (!this.attributeValueVertexData.containsKey(name)) {
+			this.attributeValueVertexData.put(name, new HashMap<>());
+		}
+
+		if (!this.attributeValueVertexData.get(name).containsKey(value)) {
+			this.attributeValueVertexData.get(name).put(value, new LinkedList<Vertex>());
+		}
+
+		this.attributeValueVertexData.get(name).get(value).add(vertex);
 	}
 
 	/**
 	 * adds an {@link Vertex} for a given attribute with a given value
+	 * @param vertex vertex that has this value for the given attribute
 	 * @param name name of the attribute
 	 * @param value value of the attribute
-	 * @param vertex vertex that has this value for the given attribute
 	 */
-	public void addVertexForAttribute(Vertex vertex, String value, int name) {
-		// TODO Auto-generated method
+	public void addVertexForAttribute(Vertex vertex, String name, int value) {
+		this.addVertexForAttribute(vertex, name, Integer.toString(value));
 	}
 
 	/**
@@ -79,8 +109,11 @@ public class FastGraphAccessor {
 	 * @return a {@link List} of {@link Vertex} that has the value for given attribute
 	 */
 	public List<Vertex> getVerticesByAttribute(String name, String value) {
-		// TODO Auto-generated method
-		return null;
+		if (!this.attributeValueVertexData.containsKey(name)) {
+			return null;
+		}
+
+		return this.attributeValueVertexData.get(name).get(value);
 	}
 
 	/**
@@ -90,8 +123,7 @@ public class FastGraphAccessor {
 	 * @return a {@link List} of {@link Vertex} that has the value for given attribute
 	 */
 	public List<Vertex> getVerticesByAttribute(String name, int value) {
-		// TODO Auto-generated method
-		return null;
+		return this.getVerticesByAttribute(name, Integer.toString(value));
 	}
 
 	/**
@@ -100,7 +132,8 @@ public class FastGraphAccessor {
 	 * This is necessary when updating the FastGraphAccessor
 	 */
 	public void reset() {
-		// TODO Auto-generated method
+		this.attributeValueEdgeData = new HashMap<>();
+		this.attributeValueVertexData = new HashMap<>();
 	}
 
 }

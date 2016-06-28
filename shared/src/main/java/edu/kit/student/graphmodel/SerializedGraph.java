@@ -1,11 +1,11 @@
 package edu.kit.student.graphmodel;
 
+import edu.kit.student.objectproperty.GAnsProperty;
+import edu.kit.student.plugin.Exporter;
+
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-import edu.kit.student.objectproperty.GAnsProperty;
-import edu.kit.student.plugin.Exporter;
 
 /**
  * A serialized version of a {@link Graph}.
@@ -16,10 +16,18 @@ import edu.kit.student.plugin.Exporter;
  */
 public class SerializedGraph<V extends SerializedVertex, E extends SerializedEdge<V>>
 		implements Graph<V, E> {
-	
+
+	private final List<String[]> attributes;
 	private GAnsProperty<String> name;
 	private GAnsProperty<Integer> id;
 	private FastGraphAccessor fga;
+
+	public SerializedGraph(List<String[]> attributes, GAnsProperty<String> name, GAnsProperty<Integer> id, FastGraphAccessor fga) {
+		this.attributes = attributes;
+		this.name = name;
+		this.id = id;
+		this.fga = fga;
+	}
 
 	/**
 	 * Gets all serialized Attributes as a Map from String to String.
@@ -30,8 +38,8 @@ public class SerializedGraph<V extends SerializedVertex, E extends SerializedEdg
 	 * @return The Map of serialized Attributes
 	 * @see Map
      */
-	public Map<String, String> getAttributes() {
-		return null;
+	public List<String[]> getAttributes() {
+		return this.attributes;
 	}
 
 	@Override
@@ -54,7 +62,7 @@ public class SerializedGraph<V extends SerializedVertex, E extends SerializedEdg
 
 	@Override
 	public FastGraphAccessor getFastGraphAccessor() {
-		return null;
+		return this.fga;
 	}
 
 	@Override

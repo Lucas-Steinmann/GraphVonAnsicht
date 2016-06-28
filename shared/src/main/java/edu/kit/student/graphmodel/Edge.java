@@ -1,7 +1,6 @@
 package edu.kit.student.graphmodel;
 
 import java.util.List;
-import java.util.Map.Entry;
 
 /**
  * This edge interface specifies an edge. An edge contains two vertices, an ID,
@@ -46,11 +45,10 @@ public interface Edge<V extends Vertex> {
 
 	/**
 	 * Returns a {@link SerializedEdge} representation of the edge.
-	 * 
-	 * @param attributes The attributes that have to be serialized.
+	 *
 	 * @return The {@link SerializedEdge} representation of the edge.
 	 */
-	public SerializedEdge<V> serialize(List<Entry<String, String>> attributes);
+	public SerializedEdge<V> serialize();
 	
 	
 	/**
