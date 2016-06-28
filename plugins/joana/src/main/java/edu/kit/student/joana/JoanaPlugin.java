@@ -1,5 +1,6 @@
 package edu.kit.student.joana;
 
+import java.util.LinkedList;
 import java.util.List;
 
 import edu.kit.student.graphmodel.Edge;
@@ -53,6 +54,7 @@ public class JoanaPlugin implements Plugin {
 				return this.ws.getSettings();
 			}
 		};
+		wsOptions = new LinkedList<WorkspaceOption>();
 		wsOptions.add(joanaws);
 	}
 

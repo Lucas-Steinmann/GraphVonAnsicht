@@ -15,7 +15,7 @@ import java.util.*;
  * @param <V> the vertex class used in the graph
  * @param <E> the edge class used in the graph
  */
-public class SugiyamaGraph<G extends DirectedGraph<V, E>, V extends Vertex, E extends DirectedEdge<V>>
+public class SugiyamaGraph
 		implements ICycleRemoverGraph,
 		ILayerAssignerGraph,
 		ICrossMinimizerGraph,
@@ -23,13 +23,13 @@ public class SugiyamaGraph<G extends DirectedGraph<V, E>, V extends Vertex, E ex
 		IEdgeDrawerGraph
 {
 
-	private List<E> reversedEdges;
+	private List<Edge<Vertex>> reversedEdges;
 	private List<List<SugiyamaVertex>> layers;
 	private List<Integer> layerPositions;
-	private Map<V, Integer> vertexToLayer;
-	private Set<E> brokenCycleEdges;
-	private Set<V> insertedVertices;
-	private G graph;
+	private Map<Vertex, Integer> vertexToLayer;
+	private Set<Edge<Vertex>> brokenCycleEdges;
+	private Set<Vertex> insertedVertices;
+	private Graph<Vertex,Edge<Vertex>> graph;
 	private FastGraphAccessor fga;
 
 	/**
@@ -39,15 +39,15 @@ public class SugiyamaGraph<G extends DirectedGraph<V, E>, V extends Vertex, E ex
 	 *
 	 * @param graph the graph used as underlying representation.
 	 */
-	public SugiyamaGraph(G graph) {
+	public SugiyamaGraph(Graph<Vertex, Edge<Vertex>> graph) {
 		this.graph = graph;
 		this.fga = new FastGraphAccessor();
-		this.reversedEdges = new LinkedList<E>();
+		this.reversedEdges = new LinkedList<Edge<Vertex>>();
 		layers = new LinkedList<>();
 		List<SugiyamaVertex> startingLayer = new LinkedList<>();
 
 		for (Vertex v: graph.getVertexSet()) {
-			startingLayer.add((SugiyamaVertex) new SugiyamaVertex((V) v, 0));
+			startingLayer.add((SugiyamaVertex) new SugiyamaVertex(v, 0));
 		}
 
 		layers.add(startingLayer);
@@ -315,17 +315,12 @@ public class SugiyamaGraph<G extends DirectedGraph<V, E>, V extends Vertex, E ex
 	 * A wrapper class for vertices used in the sugiyama framework.
 	 * A SugiyamaVertex can be a {@link DefaultVertex} or a {@link DummyVertex}
 	 */
-	public class SugiyamaVertex extends DefaultVertex
+	public static class SugiyamaVertex implements Vertex
 	{
-		private final V vertex;
+		private final Vertex vertex;
 		private int layer;
 
-		public SugiyamaVertex(String name, String label, Integer id) {
-			super(name, label, id);
-			// TODO Auto-generated constructor stub
-		}
-
-		public SugiyamaVertex(V vertex, int layer) {
+		public SugiyamaVertex(Vertex vertex, int layer) {
 			this.vertex = vertex;
 			this.layer = layer;
 		}
@@ -334,7 +329,7 @@ public class SugiyamaGraph<G extends DirectedGraph<V, E>, V extends Vertex, E ex
 			return false;
 		}
 
-		public V getVertex() {
+		public Vertex getVertex() {
 			return vertex;
 		}
 
@@ -345,13 +340,67 @@ public class SugiyamaGraph<G extends DirectedGraph<V, E>, V extends Vertex, E ex
 		public void setLayer(int layer) {
 			this.layer = layer;
 		}
+
+        @Override
+        public String getName() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        @Override
+        public Integer getID() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        @Override
+        public String getLabel() {
+            // TODO Auto-generated method stub
+            return null;
+        }
+
+        @Override
+        public int getX() {
+            // TODO Auto-generated method stub
+            return 0;
+        }
+
+        @Override
+        public int getY() {
+            // TODO Auto-generated method stub
+            return 0;
+        }
+
+        @Override
+        public void setX(int x) {
+            // TODO Auto-generated method stub
+            
+        }
+
+        @Override
+        public void setY(int y) {
+            // TODO Auto-generated method stub
+            
+        }
+
+        @Override
+        public void addToFastGraphAccessor(FastGraphAccessor fga) {
+            // TODO Auto-generated method stub
+            
+        }
+
+        @Override
+        public SerializedVertex serialize() {
+            // TODO Auto-generated method stub
+            return null;
+        }
 	}
 
 	/**
 	 * A wrapper class for directed edges to implement additional functionality
 	 * to apply the sugiyama layout to the SugiyamaGraph containing them.
 	 */
-	public class SugiyamaEdge extends DirectedEdge<SugiyamaVertex>
+	public static class SugiyamaEdge extends DirectedEdge<SugiyamaVertex>
 	{
 		List<Vector<Integer>> corners;
 		private boolean reversed;
@@ -395,8 +444,9 @@ public class SugiyamaGraph<G extends DirectedGraph<V, E>, V extends Vertex, E ex
 		 * @return
 		 */
 		private SupplementPath getSupplementPath() {
-			SupplementPath supplement = new SupplementPath();//TODO implement
-			return supplement;
+//			SupplementPath supplement = new SupplementPath();//TODO implement
+//			return supplement;
+		    return null;
 		}
 	}
 }

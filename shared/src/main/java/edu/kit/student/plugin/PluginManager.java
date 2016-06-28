@@ -25,6 +25,7 @@ public class PluginManager {
      */
     private PluginManager() {
         loader = ServiceLoader.load(Plugin.class);
+        plugins = new LinkedList<>();
 
         // Saves all plugins in a list.
         for ( Iterator<Plugin> it = loader.iterator(); it.hasNext(); ) {
