@@ -79,25 +79,6 @@ public class MethodGraph extends JoanaGraph {
     protected static void setRegister(LayoutRegister<MethodGraphLayoutOption> register) {
         MethodGraph.register = register;
     }
-    
-
-    @Override
-    public CollapsedVertex<JoanaVertex, JoanaEdge> collapse(Set<JoanaVertex> subset) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Set<JoanaVertex> expand(CollapsedVertex<JoanaVertex, JoanaEdge> vertex) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public boolean isCollapsed(JoanaVertex vertex) {
-        // TODO Auto-generated method stub
-        return false;
-    }
 
     @Override
     public List<LayoutOption> getRegisteredLayouts() {
