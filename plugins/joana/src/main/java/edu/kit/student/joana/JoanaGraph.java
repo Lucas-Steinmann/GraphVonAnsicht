@@ -3,11 +3,8 @@ package edu.kit.student.joana;
 import edu.kit.student.graphmodel.LayeredGraph;
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
 
-import java.util.HashMap;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 
 /**
  * An abstract superclass for all JOANA specific graphs.
@@ -15,44 +12,42 @@ import java.util.Set;
 public abstract class JoanaGraph 
     extends DefaultDirectedGraph<JoanaVertex, JoanaEdge> 
     implements LayeredGraph<JoanaVertex, JoanaEdge> {
-    
 
-    public JoanaGraph(String name, Integer id) {
-        this(name, id, null, null);
-    }
+    // TODO: Ist eine statische maximalbreite hier richtig?
+    private static int maxWidth = 600;
+    private List<List<JoanaVertex>> layers;
     
-    public JoanaGraph(String name, Integer id, Set<JoanaVertex> vertices, Set<JoanaEdge> edges) {
+    public JoanaGraph(String name, Integer id) {
         super(name, id);
+        layers = new ArrayList<List<JoanaVertex>>();
     }
 
     @Override
     public int getLayerCount() {
-        // TODO Auto-generated method stub
-        return 0;
+        return layers.size();
     }
 
     @Override
     public int getVertexCount(int layerNum) {
-        // TODO Auto-generated method stub
-        return 0;
+        return layers.get(layerNum).size();
     }
 
     @Override
-    public int getLayer(JoanaVertex vertex) {
-        // TODO Auto-generated method stub
-        return 0;
+    public int getLayerFromVertex(JoanaVertex vertex) {
+        for(int i = 0; i < layers.size(); i++){
+            if(layers.get(i).contains(vertex)) return i;
+        }
+        return -1;
     }
 
     @Override
     public List<JoanaVertex> getLayer(int layerNum) {
-        // TODO Auto-generated method stub
-        return null;
+        return layers.get(layerNum);
     }
 
     @Override
     public List<List<JoanaVertex>> getLayers() {
-        // TODO Auto-generated method stub
-        return null;
+        return layers;
     }
 
     @Override
@@ -63,48 +58,12 @@ public abstract class JoanaGraph
 
     @Override
     public int getMaxWidth() {
-        // TODO Auto-generated method stub
-        return 0;
+        return maxWidth;
     }
 
     @Override
     public int getLayerWidth(int layerN) {
         // TODO Auto-generated method stub
         return 0;
-    }
-
-    
-    private class Layering {
-        
-        //private Map<JoanaVertex, Point> v2p = new HashMap<>();
-        public int getLayer(JoanaVertex vertex) {
-            // TODO Auto-generated method stub
-            return 0;
-        }
-
-        public List<JoanaVertex> getLayer(int layerNum) {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        public List<List<JoanaVertex>> getLayers() {
-            // TODO Auto-generated method stub
-            return null;
-        }
-
-        public int getHeight() {
-            // TODO Auto-generated method stub
-            return 0;
-        }
-
-        public int getMaxWidth() {
-            // TODO Auto-generated method stub
-            return 0;
-        }
-
-        public int getLayerWidth(int layerN) {
-            // TODO Auto-generated method stub
-            return 0;
-        }
     }
 }

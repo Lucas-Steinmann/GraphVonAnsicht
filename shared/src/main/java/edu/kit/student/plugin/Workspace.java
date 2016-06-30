@@ -13,7 +13,7 @@ import edu.kit.student.parameter.Settings;
 public interface Workspace {
 
 	/**
-	 * Initializes this workspace with the settings if they have not been adjusted.
+	 * Initializes this workspace with the settings if they have been adjusted.
 	 * If the settings have not been adjusted, default values will be used.
 	 */
 	public void initialize();

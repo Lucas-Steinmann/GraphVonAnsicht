@@ -1,5 +1,6 @@
 package edu.kit.student.joana.methodgraph;
 
+import edu.kit.student.graphmodel.CollapsedVertex;
 import edu.kit.student.graphmodel.LayeredGraph;
 import edu.kit.student.joana.FieldAccess;
 import edu.kit.student.joana.JoanaEdge;
@@ -51,7 +52,6 @@ public class MethodGraph extends JoanaGraph {
         return null;
     }
 
-
     /**
      * Returns a list of all {@link FieldAccess} in the MethodGraph.
      * 
@@ -69,7 +69,7 @@ public class MethodGraph extends JoanaGraph {
     public List<JoanaVertex> getMethodCalls() { 
         // TODO Auto-generated method
         return null;
-    }
+    } 
 
     /**
      * Sets the {@link LayoutRegister}, which stores the available 
@@ -80,6 +80,24 @@ public class MethodGraph extends JoanaGraph {
         MethodGraph.register = register;
     }
     
+
+    @Override
+    public CollapsedVertex<JoanaVertex, JoanaEdge> collapse(Set<JoanaVertex> subset) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Set<JoanaVertex> expand(CollapsedVertex<JoanaVertex, JoanaEdge> vertex) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public boolean isCollapsed(JoanaVertex vertex) {
+        // TODO Auto-generated method stub
+        return false;
+    }
 
     @Override
     public List<LayoutOption> getRegisteredLayouts() {

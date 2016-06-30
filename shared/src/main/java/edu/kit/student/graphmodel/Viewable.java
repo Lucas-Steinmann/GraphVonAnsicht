@@ -1,7 +1,6 @@
 package edu.kit.student.graphmodel;
 
 import java.util.List;
-import java.util.Map.Entry;
 
 import edu.kit.student.plugin.LayoutOption;
 
@@ -21,7 +20,7 @@ public interface Viewable<V extends Vertex, E extends Edge<V>> {
 	 * @param subset the subset to collapse
 	 * @return		 the resulting collapsed vertex
 	 */
-	public CompoundVertex collapse(Set<V> subset);
+	public CollapsedVertex<V, E> collapse(Set<V> subset);
 	
 	/**
 	 * Expands a collapsed vertex into its substituted set of vertices
@@ -32,14 +31,14 @@ public interface Viewable<V extends Vertex, E extends Edge<V>> {
 	 * @param vertex the collapsed vertex to expand
 	 * @return 		 the set of vertices which was substituted by the collapsed vertex
 	 */
-	public Set<V> expand(CompoundVertex vertex);
+	public Set<V> expand(CollapsedVertex<V, E> vertex);
 	
 	/**
 	 * Returns true if the specified vertex is a compound vertex
 	 * @param vertex the vertex to check
 	 * @return 		 true if the vertex is a compound, false otherwise
 	 */
-	public boolean isCompound(Vertex vertex);
+	public boolean isCollapsed(V vertex);
 
 	/**
 	 * Returns a list of layouts which have been registered at the corresponding

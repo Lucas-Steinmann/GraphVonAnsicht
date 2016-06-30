@@ -8,7 +8,7 @@ import edu.kit.student.graphmodel.FastGraphAccessor;
  * This specifies the vertex representation of FieldAccesses in a MethodGraph It
  * contains a {@code FieldAccessGraph}.
  */
-public class FieldAccess extends JoanaVertex implements CompoundVertex {
+public class FieldAccess extends JoanaVertex implements CompoundVertex<JoanaVertex, Edge<JoanaVertex>> {
 
 	/**
 	 * Constructor.
@@ -31,7 +31,7 @@ public class FieldAccess extends JoanaVertex implements CompoundVertex {
 	}
 
 	@Override
-	public JoanaVertex getConnectedVertex(Edge edge) {
+	public JoanaVertex getConnectedVertex(Edge<JoanaVertex> edge) {
 		// TODO Auto-generated method stub
 		return null;
 	}

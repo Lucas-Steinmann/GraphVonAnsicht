@@ -4,14 +4,14 @@ package edu.kit.student.graphmodel;
  * A interface of a vertex that contains an entire subgraph.
  *
  */
-public interface CompoundVertex extends Vertex {
+public interface CompoundVertex<V extends Vertex, E extends Edge<V>> extends Vertex {
 
 	/**
 	 * Returns the graph contained in the vertex.
 	 * 
 	 * @return the graph contained in the vertex.
 	 */
-	public Graph getGraph();
+	public Graph<? extends V, ? extends E> getGraph();
 	
 	
 	/**
@@ -20,5 +20,5 @@ public interface CompoundVertex extends Vertex {
 	 * @param edge the edge to get the vertex to
 	 * @return the connected vertex if the edge is valid
 	 */
-	public Vertex getConnectedVertex(Edge edge);
+	public Vertex getConnectedVertex(E edge);
 }
