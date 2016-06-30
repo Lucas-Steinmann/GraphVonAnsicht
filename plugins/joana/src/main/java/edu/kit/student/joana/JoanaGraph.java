@@ -1,5 +1,6 @@
 package edu.kit.student.joana;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
@@ -12,41 +13,39 @@ public abstract class JoanaGraph extends DefaultDirectedGraph<JoanaVertex, Joana
 
 	// TODO: Ist eine statische maximalbreite hier richtig?
 	private static int maxWidth = 600;
-	private int layerCount;
+	private List<List<JoanaVertex> > layers;
 	
     public JoanaGraph(String name, Integer id) {
         super(name, id);
-        // TODO Auto-generated constructor stub
+        layers = new ArrayList<List<JoanaVertex>>();
     }
 
     @Override
 	public int getLayerCount() {
-		// TODO Auto-generated method stub
-		return 0;
+    	return layers.size();
 	}
 
 	@Override
 	public int getVertexCount(int layerNum) {
-		// TODO Auto-generated method stub
-		return 0;
+		return layers.get(layerNum).size();
 	}
 
 	@Override
-	public int getLayer(JoanaVertex vertex) {
-		// TODO Auto-generated method stub
-		return 0;
+	public int getLayerFromVertex(JoanaVertex vertex) {
+		for(int i = 0; i < layers.size(); i++){
+			if(layers.get(i).contains(vertex)) return i;
+		}
+		return -1;
 	}
 
 	@Override
 	public List<JoanaVertex> getLayer(int layerNum) {
-		// TODO Auto-generated method stub
-		return null;
+		return layers.get(layerNum);
 	}
 
 	@Override
 	public List<List<JoanaVertex>> getLayers() {
-		// TODO Auto-generated method stub
-		return null;
+		return layers;
 	}
 
 	@Override

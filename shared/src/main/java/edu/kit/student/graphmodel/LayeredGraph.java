@@ -31,12 +31,12 @@ public interface LayeredGraph<V extends Vertex, E extends DirectedEdge<V>> exten
 	public int getVertexCount(int layerNum);
 	
 	/**
-	 * Get the layer from the vertex
+	 * Get the layer from the vertex if vertex is not contained in the graph -1 is returned.
 	 * 
 	 * @param vertex the vertex to get its layer from
 	 * @return  	 the layer number from this vertex
 	 */
-	public int getLayer(V vertex);
+	public int getLayerFromVertex(V vertex);
 	
 	/**
 	 * Get all vertices from a certain layer.

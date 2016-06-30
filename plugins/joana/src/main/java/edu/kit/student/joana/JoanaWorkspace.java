@@ -31,6 +31,7 @@ public class JoanaWorkspace implements Workspace {
 	
 	@Override
 	public void initialize() {
+		//TODO: Setzen der werte aus den Parametern(falls benötigt)
 	}
 
 	@Override
