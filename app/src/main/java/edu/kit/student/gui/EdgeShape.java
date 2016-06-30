@@ -4,7 +4,7 @@ import java.util.Set;
 
 import edu.kit.student.graphmodel.Edge;
 import edu.kit.student.graphmodel.EdgePath;
-import edu.kit.student.graphmodel.EdgePath.Point;
+import edu.kit.student.util.Point;
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.directed.DirectedEdge;
 import javafx.scene.paint.Color;
@@ -32,7 +32,7 @@ public class EdgeShape extends GAnsGraphElement {
 	 * @param edge The Edge that supplies the information for building an EdgeShape.
 	 */
 	public EdgeShape(Edge<?> edge) {
-		//TODO: Woher weiß man welche vertex die am nähsten an dem ersten punkt des pfads ist?! (Damit auch von wo aus dem knoten die kante gehen soll!)
+		//TODO: Woher weiï¿½ man welche vertex die am nï¿½hsten an dem ersten punkt des pfads ist?! (Damit auch von wo aus dem knoten die kante gehen soll!)
 		
 		EdgePath path = edge.getPath();
 		

@@ -2,6 +2,8 @@ package edu.kit.student.graphmodel;
 
 import java.util.List;
 
+import edu.kit.student.util.Point;
+
 /**
  * An orthogonal edge path used as standard graphical edge representation.
  */

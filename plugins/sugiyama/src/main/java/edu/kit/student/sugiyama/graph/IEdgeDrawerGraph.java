@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Set;
 
 import edu.kit.student.graphmodel.LayeredGraph;
-import edu.kit.student.graphmodel.EdgePath.Point;
+import edu.kit.student.util.Point;
 import edu.kit.student.sugiyama.graph.SugiyamaGraph.SugiyamaEdge;
 import edu.kit.student.sugiyama.graph.SugiyamaGraph.SugiyamaVertex;
 
