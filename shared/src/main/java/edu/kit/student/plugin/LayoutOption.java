@@ -1,6 +1,5 @@
 package edu.kit.student.plugin;
 
-
 import edu.kit.student.parameter.Settings;
 
 /**
@@ -10,28 +9,27 @@ import edu.kit.student.parameter.Settings;
  * When selected the layout will be applied to the graph.
  *
  */
-public abstract class LayoutOption extends EntryPointOption implements Cloneable
-{ 
-	/**
-	 * This should execute the layout on the graph, which should be
-	 * specified on construction, or in beforehand.
-	 * The settings, which are accessible over {@code getSettings()} will be used
-	 * to instantiate the LayoutAlgorithm.
-	 */
-	public abstract void applyLayout();
-	
-	/**
-	 * Get the set of parameters for an algorithm of this option.
-	 * {@code choose()} has to be called up front.
-	 * 
-	 * @return the set of parameters
-	 */
-	public abstract Settings getSettings();
-	
-	
-	/**
-	 * Called when this layout option is chosen.
-	 * This allows the layout option to prepare the actual LayoutAlgorithm.
-	 */
-	public abstract void chooseLayout();
+public abstract class LayoutOption extends EntryPointOption implements Cloneable {
+    /**
+     * This should execute the layout on the graph, which should be
+     * specified on construction, or in beforehand.
+     * The settings, which are accessible over {@code getSettings()} will be used
+     * to instantiate the LayoutAlgorithm.
+     */
+    public abstract void applyLayout();
+    
+    /**
+     * Get the set of parameters for an algorithm of this option.
+     * {@code choose()} has to be called up front.
+     * 
+     * @return the set of parameters
+     */
+    public abstract Settings getSettings();
+    
+    
+    /**
+     * Called when this layout option is chosen.
+     * This allows the layout option to prepare the actual LayoutAlgorithm.
+     */
+    public abstract void chooseLayout();
 }

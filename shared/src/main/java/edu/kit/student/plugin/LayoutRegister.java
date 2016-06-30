@@ -7,16 +7,16 @@ import java.util.List;
  * This allows the client to select fitted layouts for every graph.
  */
 public interface LayoutRegister<E extends LayoutOption> {
-	
-	/**
-	 * Adds a layout option to this register.
-	 * @param option the layout option
-	 */
-	public void addLayoutOption(E option);
-	
-	/**
-	 * Returns all available layouts for the graph associated with this register.
-	 * @return the available layouts
-	 */
-	public List<LayoutOption> getLayoutOptions();
+    
+    /**
+     * Adds a layout option to this register.
+     * @param option the layout option
+     */
+    public void addLayoutOption(E option);
+    
+    /**
+     * Returns all available layouts for the graph associated with this register.
+     * @return the available layouts
+     */
+    public List<LayoutOption> getLayoutOptions();
 }

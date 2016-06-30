@@ -39,7 +39,7 @@ public class JoanaPlugin implements Plugin {
 
 			{
 				this.setName("JOANA-Workspace");
-				this.setID("joana");
+				this.setId("joana");
 				this.ws = new JoanaWorkspace();
 			}
 
