@@ -10,6 +10,10 @@ import edu.kit.student.graphmodel.LayeredGraph;
  */
 public abstract class JoanaGraph extends DefaultDirectedGraph<JoanaVertex, JoanaEdge> implements LayeredGraph<JoanaVertex, JoanaEdge> {
 
+	// TODO: Ist eine statische maximalbreite hier richtig?
+	private static int maxWidth = 600;
+	private int layerCount;
+	
     public JoanaGraph(String name, Integer id) {
         super(name, id);
         // TODO Auto-generated constructor stub
@@ -53,7 +57,6 @@ public abstract class JoanaGraph extends DefaultDirectedGraph<JoanaVertex, Joana
 
 	@Override
 	public int getMaxWidth() {
-		// TODO Auto-generated method stub
-		return 0;
+		return maxWidth;
 	}
 }

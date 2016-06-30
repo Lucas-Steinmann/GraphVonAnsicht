@@ -9,12 +9,7 @@ import edu.kit.student.objectproperty.GAnsProperty;
  */
 public class JoanaVertex extends DefaultVertex {
 
-	public JoanaVertex(String name, String label, Integer id) {
-        super(name, label, id);
-        // TODO Auto-generated constructor stub
-    }
-
-    private GAnsProperty<String> nodeKind;
+	private GAnsProperty<String> nodeKind;
 	private GAnsProperty<String> nodeSource;
 	private GAnsProperty<Integer> nodeProc;
 	private GAnsProperty<String> nodeOperation;
@@ -24,6 +19,35 @@ public class JoanaVertex extends DefaultVertex {
 	private GAnsProperty<Integer> nodeSc;
 	private GAnsProperty<Integer> nodeEr;
 	private GAnsProperty<Integer> nodeEc;
+	
+	public JoanaVertex(String name, String label, Integer id) {
+		super(name, label, id);
+		
+		nodeKind = new GAnsProperty<String>("nodeKind", "");
+		nodeSource = new GAnsProperty<String>("nodeSource", "");
+		nodeProc = new GAnsProperty<Integer>("nodeProc", 0);
+		nodeOperation = new GAnsProperty<String>("nodeOperation", "");
+		nodeBcName = new GAnsProperty<String>("nodeBcName", "");
+		nodeBCIndex = new GAnsProperty<Integer>("nodeBCIndex", 0);
+		nodeSr = new GAnsProperty<Integer>("nodeSr", 0);
+		nodeSc = new GAnsProperty<Integer>("nodeSc", 0);
+		nodeEr = new GAnsProperty<Integer>("nodeEr", 0);
+		nodeEc = new GAnsProperty<Integer>("nodeEc", 0);
+	}
+
+	public void setProperties(String nodeKind, String nodeSource, Integer nodeProc, String nodeOperation,
+			String nodeBcName, Integer nodeBCIndex, Integer nodeSr, Integer nodeSc, Integer nodeEr, Integer nodeEc) {
+		this.nodeKind.setValue(nodeKind);
+		this.nodeSource.setValue(nodeSource);
+		this.nodeProc.setValue(nodeProc);
+		this.nodeOperation.setValue(nodeOperation);
+		this.nodeBcName.setValue(nodeBcName);
+		this.nodeBCIndex.setValue(nodeBCIndex);
+		this.nodeSr.setValue(nodeSr);
+		this.nodeSc.setValue(nodeSc);
+		this.nodeEr.setValue(nodeEr);
+		this.nodeEc.setValue(nodeEc);
+	}
 
 	/**
 	 * Returns the nodeKind of the JoanaVertex.

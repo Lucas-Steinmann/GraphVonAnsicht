@@ -8,13 +8,17 @@ import edu.kit.student.objectproperty.GAnsProperty;
  * used/usefull in {@link JoanaGraph}.
  */
 public class JoanaEdge extends DirectedEdge<JoanaVertex> {
+	
+	private GAnsProperty<String> edgeKind;
 
 	public JoanaEdge(String name, String label, Integer id) {
         super(name, label, id);
-        // TODO Auto-generated constructor stub
+        edgeKind = new GAnsProperty<String>("edgeKind", "");
     }
-
-    private GAnsProperty<String> edgeKind;
+	
+	public void setProperties(String edgeKind) {
+		this.edgeKind.setValue(edgeKind);
+	}
 
 	/**
 	 * Returns the edgeKind of the JoanaEdge.
@@ -24,5 +28,4 @@ public class JoanaEdge extends DirectedEdge<JoanaVertex> {
 	public String getEdgeKind() {
 		return edgeKind.getValue();
 	}
-
 }
