@@ -30,7 +30,7 @@ public class SugiyamaGraph
 	private Map<Vertex, Integer> vertexToLayer;
 	private Set<Edge<Vertex>> brokenCycleEdges;
 	private Set<Vertex> insertedVertices;
-	private Graph<Vertex,Edge<Vertex>> graph;
+	private Graph<? extends Vertex, ? extends Edge<? extends Vertex>> graph;
 	private FastGraphAccessor fga;
 
 	/**
@@ -40,7 +40,7 @@ public class SugiyamaGraph
 	 *
 	 * @param graph the graph used as underlying representation.
 	 */
-	public SugiyamaGraph(Graph<Vertex, Edge<Vertex>> graph) {
+	public SugiyamaGraph(Graph<? extends Vertex, ? extends Edge<? extends Vertex>> graph) {
 		this.graph = graph;
 		this.fga = new FastGraphAccessor();
 		this.reversedEdges = new LinkedList<Edge<Vertex>>();
@@ -410,6 +410,10 @@ public class SugiyamaGraph
 		private SugiyamaEdge(String name, String label, Integer id) {
 			super(name, label, id);
 			reversed = false;
+		}
+		
+		public SugiyamaEdge(DirectedEdge<SugiyamaVertex> edge){
+			this(edge.getName(),edge.getLabel(),edge.getID());
 		}
 
 		//private E getEdge() { return null; }

@@ -13,11 +13,10 @@ import edu.kit.student.sugiyama.graph.SugiyamaGraph.SugiyamaVertex;
  * so that the resulting Graph G' = (V, E\E_) is a DAG(Directed Acyclic Graph).
  */
 public class CycleRemover implements ICycleRemover {
-	private DefaultDirectedGraph DDGraph = new DefaultDirectedGraph("", 0);
+	private DefaultDirectedGraph<SugiyamaVertex, SugiyamaEdge> DDGraph = new DefaultDirectedGraph<SugiyamaVertex, SugiyamaEdge>("", 0);
 	
 	@Override
 	public Set<SugiyamaEdge> removeCycles(ICycleRemoverGraph graph) {
-
 		Set<SugiyamaVertex> graphVertices = graph.getVertexSet();
 		Set<SugiyamaEdge> graphEdges = graph.getEdgeSet();
 		for(SugiyamaVertex vertex:graphVertices){
@@ -31,8 +30,7 @@ public class CycleRemover implements ICycleRemover {
 		Set<SugiyamaEdge> DDEdges = DDGraph.getEdgeSet();
 		
 
-		//DDGraph.vertex set instead of vertices !!!!!!!
-		while(!graphVertices.isEmpty()){
+		while(!DDVertices.isEmpty()){
 			SugiyamaVertex u = getSink(DDVertices);
 			while(u!=null){	//add sink vertices to the edge set in the final directed acyclic graph
 				DAGEdges.addAll(DDGraph.incomingEdgesOf(u));
