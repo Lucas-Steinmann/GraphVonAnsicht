@@ -1,6 +1,5 @@
 package edu.kit.student.joana.methodgraph;
 
-import edu.kit.student.graphmodel.CollapsedVertex;
 import edu.kit.student.graphmodel.LayeredGraph;
 import edu.kit.student.joana.FieldAccess;
 import edu.kit.student.joana.JoanaEdge;
