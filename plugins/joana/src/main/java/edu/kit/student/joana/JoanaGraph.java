@@ -5,6 +5,7 @@ import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
 
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 
@@ -65,9 +66,17 @@ public abstract class JoanaGraph
         // TODO Auto-generated method stub
         return 0;
     }
+
+    @Override
+    public int getLayerWidth(int layerN) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
+
     
     private class Layering {
         
+        //private Map<JoanaVertex, Point> v2p = new HashMap<>();
         public int getLayer(JoanaVertex vertex) {
             // TODO Auto-generated method stub
             return 0;
@@ -89,6 +98,11 @@ public abstract class JoanaGraph
         }
 
         public int getMaxWidth() {
+            // TODO Auto-generated method stub
+            return 0;
+        }
+
+        public int getLayerWidth(int layerN) {
             // TODO Auto-generated method stub
             return 0;
         }

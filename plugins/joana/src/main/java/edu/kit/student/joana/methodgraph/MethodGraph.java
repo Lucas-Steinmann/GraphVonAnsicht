@@ -1,8 +1,6 @@
 package edu.kit.student.joana.methodgraph;
 
-import edu.kit.student.graphmodel.CompoundVertex;
 import edu.kit.student.graphmodel.LayeredGraph;
-import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.joana.FieldAccess;
 import edu.kit.student.joana.JoanaEdge;
 import edu.kit.student.joana.JoanaGraph;
@@ -10,6 +8,8 @@ import edu.kit.student.joana.JoanaVertex;
 import edu.kit.student.plugin.LayoutOption;
 import edu.kit.student.plugin.LayoutRegister;
 
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -21,16 +21,12 @@ public class MethodGraph extends JoanaGraph {
     private static final String ENTRY_NAME = "Entry";
     private static LayoutRegister<MethodGraphLayoutOption> register;
     private JoanaVertex entry;
-    private List<FieldAccess> fieldAccesess;
-
-//    private MethodGraph(String name, Integer id) {
-//        super(name, id);
-//    }
+    private HashSet<FieldAccess> fieldAccesses;
 
     public MethodGraph(Set<JoanaVertex> vertices, Set<JoanaEdge> edges, 
-            List<FieldAccess> fieldAccesses, String methodName, Integer id) {
+            Set<FieldAccess> fieldAccesses, String methodName, Integer id) {
         super(methodName, id);
-        this.fieldAccesess = fieldAccesses;
+        this.fieldAccesses = new HashSet<>(fieldAccesses);
     }
     
     /**
@@ -62,7 +58,7 @@ public class MethodGraph extends JoanaGraph {
      * @return A list of all {@link FieldAccess} in the MethodGraph.
      */
     public List<FieldAccess> getFieldAccesses() { 
-        return null;
+        return new LinkedList<>(fieldAccesses);
     }
 
     /**
@@ -80,37 +76,22 @@ public class MethodGraph extends JoanaGraph {
      * {@link LayoutOption} for all method graphs statically.
      * @param register The {@link LayoutRegister} that will be set.
      */
-    protected static void setRegister(LayoutRegister register) {
+    protected static void setRegister(LayoutRegister<MethodGraphLayoutOption> register) {
         MethodGraph.register = register;
     }
+    
 
     @Override
-    public CompoundVertex collapse(Set<JoanaVertex> subset) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public Set<JoanaVertex> expand(CompoundVertex vertex) {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public boolean isCompound(Vertex vertex) {
-        // TODO Auto-generated method stub
-        return false;
-    }
-
-    @Override
-    public int getLayerWidth(int layerN) {
-        // TODO Auto-generated method stub
-        return 0;
+    public List<LayoutOption> getRegisteredLayouts() {
+        List<LayoutOption> result = super.getRegisteredLayouts();
+        result.addAll(MethodGraph.register.getLayoutOptions());
+        return result;
     }
 
     @Override
     public List<LayeredGraph<JoanaVertex, JoanaEdge>> getSubgraphs() {
-        // TODO Auto-generated method stub
-        return null;
+        List<LayeredGraph<JoanaVertex, JoanaEdge>> faGraphs = new LinkedList<>();
+        this.getFieldAccesses().forEach((fa) -> faGraphs.add(fa.getGraph()));
+        return faGraphs;
     }
 }
