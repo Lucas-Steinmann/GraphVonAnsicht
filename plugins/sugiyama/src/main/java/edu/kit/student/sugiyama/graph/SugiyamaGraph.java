@@ -2,6 +2,7 @@ package edu.kit.student.sugiyama.graph;
 
 import edu.kit.student.graphmodel.*;
 import edu.kit.student.graphmodel.directed.DirectedEdge;
+import edu.kit.student.graphmodel.directed.DirectedGraph;
 
 import java.util.*;
 
@@ -32,6 +33,8 @@ public class SugiyamaGraph
 	private Set<Vertex> insertedVertices;
 	private Graph<? extends Vertex, ? extends Edge<? extends Vertex>> graph;
 	private FastGraphAccessor fga;
+	private Set<SugiyamaVertex> vertexSet;
+	private Set<SugiyamaEdge> edgeSet;
 
 	/**
 	 * Constructs a new SugiyamaGraph and sets the Graph which is the underlying representation.
@@ -40,7 +43,9 @@ public class SugiyamaGraph
 	 *
 	 * @param graph the graph used as underlying representation.
 	 */
-	public SugiyamaGraph(Graph<? extends Vertex, ? extends Edge<? extends Vertex>> graph) {
+	public SugiyamaGraph(DirectedGraph<? extends Vertex, ? extends DirectedEdge<? extends Vertex>> graph) {
+		this.vertexSet = new HashSet<SugiyamaVertex>();
+		this.edgeSet = new HashSet<SugiyamaEdge>();
 		this.graph = graph;
 		this.fga = new FastGraphAccessor();
 		this.reversedEdges = new LinkedList<Edge<Vertex>>();
@@ -48,7 +53,13 @@ public class SugiyamaGraph
 		List<SugiyamaVertex> startingLayer = new LinkedList<>();
 
 		for (Vertex v: graph.getVertexSet()) {
-			startingLayer.add((SugiyamaVertex) new SugiyamaVertex(v, 0));
+			SugiyamaVertex w = new SugiyamaVertex(v,0);
+			startingLayer.add(w);	//fills first layer with all vertices and default layer number
+			vertexSet.add(w);	//fills vertexset with all wrapped vertices
+		}
+		for(DirectedEdge e: graph.getEdgeSet()){
+			SugiyamaEdge f = new SugiyamaEdge(e);
+			edgeSet.add(f);	//fills edgeset witt all wrapped edges
 		}
 
 		layers.add(startingLayer);
@@ -170,14 +181,24 @@ public class SugiyamaGraph
 
 	@Override
 	public Integer outdegreeOf(SugiyamaVertex vertex) {
-		//TODO: 
-		return null;
+		Integer outdegree = 0;
+		for (SugiyamaEdge edge : this.edgeSet) {
+			if (edge.getSource().getID() == vertex.getID())
+				outdegree++;
+		}
+
+		return outdegree;
 	}
 
 	@Override
 	public Integer indegreeOf(SugiyamaVertex vertex) {
-		// TODO Auto-generated method stub
-		return null;
+		Integer indegree = 0;
+		for (SugiyamaEdge edge : this.edgeSet) {
+			if (edge.getTarget().getID() == vertex.getID())
+				indegree++;
+		}
+
+		return indegree;
 	}
 
 	@Override
@@ -188,14 +209,12 @@ public class SugiyamaGraph
 
 	@Override
 	public Set<SugiyamaVertex> getVertexSet() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.vertexSet;
 	}
 
 	@Override
 	public Set<SugiyamaEdge> getEdgeSet() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.edgeSet;
 	}
 
 	@Override
@@ -455,5 +474,11 @@ public class SugiyamaGraph
 //			return supplement;
 		    return null;
 		}
+	}
+
+	@Override
+	public int getLayerFromVertex(SugiyamaVertex vertex) {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 }
