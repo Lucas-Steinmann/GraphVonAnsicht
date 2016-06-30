@@ -1,14 +1,16 @@
 package edu.kit.student.graphmodel;
 
-import java.util.Set;
+import java.util.HashMap;
+import java.util.Map;
 
 public class CollapsedVertex<V extends Vertex, E extends Edge<V>> extends DefaultVertex implements CompoundVertex<V, E> {
 	
 	private Graph<V, E> graph;
-	private Set<E> removedIncomingEdges;
+	private Map<E,V> modifiedEdgeMap;
 
 	public CollapsedVertex(String name, String label, Integer id) {
 		super(name, label, id);
+		modifiedEdgeMap = new HashMap<E,V>();
 	}
 	
 	public void setGraph(Graph<V, E> graph) {
@@ -30,11 +32,11 @@ public class CollapsedVertex<V extends Vertex, E extends Edge<V>> extends Defaul
 		return null;
 	}
 	
-	public void addRemovedEdge(E edge) {
-		removedIncomingEdges.add(edge);
+	public void addModifiedEdge(E edge, V vertex) {
+		modifiedEdgeMap.put(edge, vertex);
 	}
 	
-	public Set<E> getRemovedEdges() {
-		return removedIncomingEdges;
+	public V getVertexForEdge(E edge) {
+		return modifiedEdgeMap.get(edge);
 	}
 }
