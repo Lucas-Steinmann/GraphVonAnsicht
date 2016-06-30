@@ -2,6 +2,7 @@ package edu.kit.student.sugiyama.graph;
 
 import edu.kit.student.graphmodel.*;
 import edu.kit.student.graphmodel.directed.DirectedEdge;
+import edu.kit.student.util.Point;
 
 import java.util.*;
 
@@ -129,7 +130,7 @@ public class SugiyamaGraph
 	}
 
 	@Override
-	public List<edu.kit.student.graphmodel.EdgePath.Point> getEdgeCorners(SugiyamaEdge edge) {
+	public List<Point> getEdgeCorners(SugiyamaEdge edge) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -456,4 +457,10 @@ public class SugiyamaGraph
 		    return null;
 		}
 	}
+
+    @Override
+    public int getLayerFromVertex(SugiyamaVertex vertex) {
+        // TODO Auto-generated method stub
+        return 0;
+    }
 }

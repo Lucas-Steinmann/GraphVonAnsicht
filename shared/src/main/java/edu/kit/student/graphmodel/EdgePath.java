@@ -2,6 +2,8 @@ package edu.kit.student.graphmodel;
 
 import java.util.List;
 
+import edu.kit.student.util.Point;
+
 /**
  * An abstract super class for edge paths.
  * Contains basic information every edge path must provide.
@@ -22,19 +24,5 @@ public abstract class EdgePath {
 	 */
 	public abstract List<Point> getNodes();
 
-
-	/**
-	 * This class is a standard immutable 2D Vector with integer values as it's components.
-	 */
-	public class Point 
-	{
-		public final int x;
-		public final int y;
-		
-		public Point(int x, int y) {
-			this.x = x;
-			this.y = y;
-		}
-	}
 
 }
