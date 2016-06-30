@@ -15,7 +15,8 @@ import java.util.*;
  */
 public class DirectedEdge<V extends Vertex> implements Edge<V> {
 
-	private List<V> vertices;
+	private V target;
+	private V source;
 	private GAnsProperty<String> name;
 	private GAnsProperty<Integer> id;
 	private GAnsProperty<String> label;
@@ -27,9 +28,7 @@ public class DirectedEdge<V extends Vertex> implements Edge<V> {
 	 * @param label of the new edge
 	 * @param id of the new edge
 	 */
-    public DirectedEdge(String name, String label, Integer id) {
-        this.vertices = new ArrayList<V>();
-        
+    public DirectedEdge(String name, String label, Integer id) {       
         this.name = new GAnsProperty<String>("graphName", name);
         this.label = new GAnsProperty<String>("label", label);
         this.id = new GAnsProperty<Integer>("graphID", id);
@@ -37,8 +36,8 @@ public class DirectedEdge<V extends Vertex> implements Edge<V> {
     
     public void setVertices(V source, V target) {
         //set source to first index and target to second
-        this.vertices.add(source);
-        this.vertices.add(target);
+        this.source = source;
+        this.target = target;
     }
 	
 	/**
@@ -47,10 +46,7 @@ public class DirectedEdge<V extends Vertex> implements Edge<V> {
 	 * @return The vertex the edge is coming from.
 	 */
 	public V getSource() {
-	    if(this.vertices.size() == 1) {
-	        return this.vertices.get(0);
-	    }
-	    return null;		
+	    return this.source;		
 	}
 
 	/**
@@ -59,15 +55,15 @@ public class DirectedEdge<V extends Vertex> implements Edge<V> {
 	 * @return The vertex the edge is pointing at/going to.
 	 */
 	public V getTarget() {
-        if(this.vertices.size() == 2) {
-            return this.vertices.get(1);
-        }
-        return null;
+        return this.target;
 	}
 
 	@Override
 	public List<V> getVertices() {
-		return this.vertices;
+		List<V> vertices = new ArrayList<V>();
+		vertices.add(this.source);
+		vertices.add(this.target);
+	    return vertices;
 	}
 
 	@Override
@@ -91,13 +87,8 @@ public class DirectedEdge<V extends Vertex> implements Edge<V> {
 	    fga.addEdgeForAttribute(this, "id", this.id.getValue());
 	    fga.addEdgeForAttribute(this, "label", this.label.toString());
 
-		if(this.vertices.size() == 1) {
-			fga.addEdgeForAttribute(this, "sourceVertex", this.vertices.get(0).getID());
-		}
-
-		if(this.vertices.size() == 2) {
-			fga.addEdgeForAttribute(this, "targetVertex", this.vertices.get(1).getID());
-		}
+	    fga.addEdgeForAttribute(this, "sourceVertex", this.source.getID());
+	    fga.addEdgeForAttribute(this, "targetVertex", this.target.getID());
 	}
 
 	@Override
