@@ -23,7 +23,7 @@ public class CycleRemoverTest {
 
 	@Test
 	public void testSimpleCycle(){
-		MethodGraph MGraph = new MethodGraph("",0);
+//		MethodGraph MGraph = new MethodGraph("",0);	also works with a method graph if necessary
 		DefaultDirectedGraph<JoanaVertex, JoanaEdge> DDGraph = new DefaultDirectedGraph<JoanaVertex, JoanaEdge>("",0);
 		JoanaVertex v1 = new JoanaVertex("v1", "", 1);
 		JoanaVertex v2 = new JoanaVertex("v2", "", 2);

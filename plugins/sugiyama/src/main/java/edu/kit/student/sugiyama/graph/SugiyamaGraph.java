@@ -90,7 +90,15 @@ public class SugiyamaGraph
 
 	@Override
 	public void swapVertices(SugiyamaVertex first, SugiyamaVertex second) {
-		//first.g;
+		assert(this.getLayer(first)==this.getLayer(second)); //both vertices have to be on the same layer!
+		int layerNum = this.getLayer(first);
+		List<SugiyamaVertex> layer = this.getLayer(layerNum);
+		int pos1 = layer.indexOf(first);
+		int pos2 = layer.indexOf(second);
+		layer.remove(first);
+		layer.remove(second);
+		//TODO: add both vertices in the correct (switched) order in this list, maybe there is need of a LinkedList or something because 
+		//		List des not support inserting at a special index in the list, just "add(obj)"
 	}
 
 	@Override
@@ -137,7 +145,7 @@ public class SugiyamaGraph
 
 	@Override
 	public void setX(SugiyamaVertex vertex, int x) {
-		//vertex.
+		vertex.setX(x);
 
 	}
 
@@ -149,19 +157,20 @@ public class SugiyamaGraph
 
 	@Override
 	public Set<SugiyamaEdge> edgesOf(SugiyamaVertex vertex) {
-		// TODO Auto-generated method stub
+		//return graph.edgesOf(vertex);
+		//TODO: check problems with not being "edgesof(SugiyamaVertex)" in interface Graph
 		return null;
 	}
 
 	@Override
 	public FastGraphAccessor getFastGraphAccessor() {
-		return null;
+		return this.fga;
 	}
 
 
 	@Override
 	public Integer outdegreeOf(SugiyamaVertex vertex) {
-		// TODO Auto-generated method stub
+		//TODO: 
 		return null;
 	}
 
@@ -191,8 +200,7 @@ public class SugiyamaGraph
 
 	@Override
 	public void addToFastGraphAccessor(FastGraphAccessor fga) {
-		// TODO Auto-generated method stub
-
+		this.addToFastGraphAccessor(fga);
 	}
 
 	@Override
@@ -344,56 +352,50 @@ public class SugiyamaGraph
 
         @Override
         public String getName() {
-            // TODO Auto-generated method stub
-            return null;
+        	return this.vertex.getName();
         }
 
         @Override
         public Integer getID() {
-            // TODO Auto-generated method stub
-            return null;
+            return this.vertex.getID();
         }
 
         @Override
         public String getLabel() {
-            // TODO Auto-generated method stub
-            return null;
+            return this.vertex.getLabel();
         }
 
         @Override
         public int getX() {
-            // TODO Auto-generated method stub
-            return 0;
+            return this.vertex.getX();
         }
 
         @Override
         public int getY() {
-            // TODO Auto-generated method stub
-            return 0;
+            return this.vertex.getY();
         }
 
         @Override
         public void setX(int x) {
-            // TODO Auto-generated method stub
+            this.vertex.setX(x);
             
         }
 
         @Override
         public void setY(int y) {
-            // TODO Auto-generated method stub
+            this.vertex.setY(y);
             
         }
 
         @Override
         public void addToFastGraphAccessor(FastGraphAccessor fga) {
-            // TODO Auto-generated method stub
+            this.vertex.addToFastGraphAccessor(fga);
             
         }
 
         @Override
         public SerializedVertex serialize() {
-            // TODO Auto-generated method stub
-            return null;
+            return this.vertex.serialize();
         }
 	}
 
