@@ -4,7 +4,17 @@ package edu.kit.student.graphml;
 import edu.kit.student.graphmodel.builder.IGraphModelBuilder;
 import edu.kit.student.plugin.Importer;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import org.xml.sax.SAXException;
+
 import java.io.FileInputStream;
+import java.io.IOException;
+
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 
 /**
  * GraphMLImporter writes the data from a GraphML stream to a graph.
@@ -19,7 +29,24 @@ public class GraphmlImporter implements Importer {
      * @param graphmlInputStream the input stream defining the graphml graph
      */
     public void importGraph(IGraphModelBuilder builder, FileInputStream graphmlInputStream) {
-        // TODO Auto-generated method
+        //Build Document from FileInputStream
+        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+        DocumentBuilder docBuilder;
+        Document document = null;
+        //TODO: catch exceptions and handle it or forward?
+        try {
+            docBuilder = factory.newDocumentBuilder();
+            document = docBuilder.parse(graphmlInputStream);
+        } catch (ParserConfigurationException | SAXException | IOException e) {
+            // TODO Write catch
+            e.printStackTrace();
+        }
+         
+        //Normalize the document
+        document.getDocumentElement().normalize();
+         
+        //get root node
+        Element root = document.getDocumentElement();
     }
 
     @Override
