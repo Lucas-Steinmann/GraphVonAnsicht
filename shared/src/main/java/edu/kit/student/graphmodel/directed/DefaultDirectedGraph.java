@@ -44,6 +44,22 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
 		this.id = new GAnsProperty<Integer>("graphID", id);
 		this.fga = new FastGraphAccessor();
 	}
+	
+	/**
+	 * Constructor
+	 * 
+	 * @param name of the new graph
+	 * @param id of the new graph
+	 * @param vertices of the new graph
+	 * @param edges of the new graph
+	 */
+    public DefaultDirectedGraph(String name, Integer id, Set<V> vertices, Set<E> edges) {
+        this.vertexSet = vertices;
+        this.edgeSet = edges;
+        this.name = new GAnsProperty<String>("graphName", name);
+        this.id = new GAnsProperty<Integer>("graphID", id);
+        this.fga = new FastGraphAccessor();
+    }
 
 	@Override
 	public String getName() {

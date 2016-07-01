@@ -34,6 +34,29 @@ public class DirectedEdge<V extends Vertex> implements Edge<V> {
         this.id = new GAnsProperty<Integer>("graphID", id);
     }
     
+    /**
+     * Constructor to set source and target
+     * 
+     * @param name
+     * @param label
+     * @param id
+     * @param source
+     * @param target
+     */
+    public DirectedEdge(String name, String label, Integer id, V source, V target) {    
+        this.name = new GAnsProperty<String>("graphName", name);
+        this.label = new GAnsProperty<String>("label", label);
+        this.id = new GAnsProperty<Integer>("graphID", id);
+        this.source = source;
+        this.target = target;
+    }
+    
+    /**
+     * Set source and target vertex of this directed edge
+     * 
+     * @param source vertex
+     * @param target vertex
+     */
     public void setVertices(V source, V target) {
         //set source to first index and target to second
         this.source = source;
