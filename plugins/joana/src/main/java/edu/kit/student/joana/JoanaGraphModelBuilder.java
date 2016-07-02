@@ -3,14 +3,16 @@ package edu.kit.student.joana;
 import edu.kit.student.graphmodel.GraphModel;
 import edu.kit.student.graphmodel.builder.IGraphBuilder;
 import edu.kit.student.graphmodel.builder.IGraphModelBuilder;
+import edu.kit.student.joana.callgraph.CallGraphBuilder;
+import edu.kit.student.joana.methodgraph.MethodGraphBuilder;
 
 /**
  * The JoanaGraphModelBuilder implements the {@link IGraphModelBuilder} and
  * creates a {@link JoanaGraphModel}.
  */
 public class JoanaGraphModelBuilder implements IGraphModelBuilder {
-	
-	private JoanaWorkspace workspace;
+
+    private JoanaWorkspace workspace;
 	
 	public JoanaGraphModelBuilder(JoanaWorkspace workspace) {
 		this.workspace = workspace;
@@ -18,8 +20,12 @@ public class JoanaGraphModelBuilder implements IGraphModelBuilder {
 
 	@Override
 	public IGraphBuilder getGraphBuilder(String graphID) {
-		// TODO Auto-generated method stub
-		return null;
+	    //check if callgraphbuilder
+	    if(graphID == "callgraph") {
+	        return new CallGraphBuilder();
+	    }
+	    //else return methodgraphbuilder
+		return new MethodGraphBuilder();
 	}
 
 	@Override

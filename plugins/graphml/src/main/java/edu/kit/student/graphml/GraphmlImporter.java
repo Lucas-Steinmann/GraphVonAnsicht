@@ -1,12 +1,14 @@
 package edu.kit.student.graphml;
 
 
+import edu.kit.student.graphmodel.builder.IGraphBuilder;
 import edu.kit.student.graphmodel.builder.IGraphModelBuilder;
 import edu.kit.student.plugin.Importer;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-
+import org.w3c.dom.Node;
+import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
 import java.io.FileInputStream;
@@ -47,8 +49,63 @@ public class GraphmlImporter implements Importer {
          
         //get root node
         Element root = document.getDocumentElement();
+        
+        //get all childnodes of root
+        NodeList childs = root.getChildNodes();
+        
+        //iterate through childnodes
+        for (int j = 0; j < childs.getLength(); j++) {
+            
+            Node node = childs.item(j); 
+            
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
+                Element element = (Element) node; 
+                //check if node is a key
+                if (element.getNodeName() == "key") {
+                    //TODO:process keys
+                } else if (node.getNodeName() == "graph") {
+                    //get GraphBuilder and parse graph
+                    String graphId = element.getAttribute("id");
+                    IGraphBuilder graphBuilder = builder.getGraphBuilder(graphId);
+                    parseGraph(graphBuilder, element);                
+                } else {
+                    //TODO: catch error
+                }
+            }
+        }
+        
     }
 
+    /**
+     * Private method to parse a Graph Element.
+     * 
+     * @param graphBuilder
+     * @param graphElement
+     * @return
+     */
+    private void parseGraph(IGraphBuilder builder, Element graphElement) {
+        
+        NodeList childs = graphElement.getChildNodes();
+        
+        //iterate through childnodes
+        for (int j = 0; j < childs.getLength(); j++) {
+            
+            Node node = childs.item(j); 
+            
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
+                Element element = (Element) node; 
+                //check if node is a key
+                if (element.getNodeName() == "node") {
+                    //TODO:process nodes
+                } else if (node.getNodeName() == "edge") {
+                    //TODO:process edge
+                }  else {
+                    //TODO: catch error
+                }
+            }
+        }
+    }
+    
     @Override
     public String getSupportedFileEndings() {
         // TODO Auto-generated method stub
