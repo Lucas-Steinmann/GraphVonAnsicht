@@ -22,12 +22,6 @@ public class JoanaVertexBuilder implements IVertexBuilder {
 	}
 
 	@Override
-	public IGraphBuilder getGraphBuilder(String graphID) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public void setID(String id) {
 		// TODO Auto-generated method stub
 		

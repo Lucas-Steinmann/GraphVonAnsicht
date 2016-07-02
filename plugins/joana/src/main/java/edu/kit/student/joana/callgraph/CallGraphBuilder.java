@@ -23,9 +23,16 @@ public class CallGraphBuilder implements IGraphBuilder{
 		return null;
 	}
 
+    @Override
+    public IGraphBuilder getGraphBuilder(String graphID) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+	
 	@Override
 	public Graph build() {
 		// TODO Auto-generated method stub
 		return null;
 	}
+
 }

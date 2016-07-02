@@ -32,16 +32,4 @@ public interface IVertexBuilder {
 	 */
 	public Vertex build();
 
-	/**
-	 * This method returns an specific GraphBuilder. This method is used to
-	 * implement nested Graphs.
-	 * 
-	 * @param graphID
-	 * 			The id of the graph which associated {@link IGraphBuilder}
-	 *          will be returned.
-	 * @return The IGraphBuilder of the graph which is referenced over the
-	 *         graphID.
-	 */
-	public IGraphBuilder getGraphBuilder(String graphID);
-
 }
