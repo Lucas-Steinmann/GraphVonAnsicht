@@ -1,6 +1,9 @@
 package edu.kit.student.graphmodel;
 
+import java.util.List;
 import java.util.Set;
+
+import edu.kit.student.plugin.LayoutOption;
 
 
 /**
@@ -63,4 +66,22 @@ public interface Graph<V extends Vertex, E extends Edge<V>> {
 	 * @return The {@link SerializedGraph} representation of the graph.
 	 */
 	public SerializedGraph serialize();
+	
+	/**
+	 * Returns a list of layouts which have been registered at the corresponding
+	 * LayoutRegister for this graph type. The graph implementing this interface
+	 * will be set as target of the LayoutOption.
+	 * 
+	 * @return A list of layouts which have been registered at the corresponding
+	 *         LayoutRegister for this graph type.
+	 */
+	public List<LayoutOption> getRegisteredLayouts();
+
+	/**
+	 * Returns the default layout for this graph.
+	 * This can be called when to quickly get a suiting layout without
+	 * having to decide between multiple options.
+	 * @return the default layout for this graph
+	 */
+	public LayoutOption getDefaultLayout();
 }

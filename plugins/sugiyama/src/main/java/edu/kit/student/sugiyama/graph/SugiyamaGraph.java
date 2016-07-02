@@ -3,6 +3,7 @@ package edu.kit.student.sugiyama.graph;
 import edu.kit.student.graphmodel.*;
 import edu.kit.student.graphmodel.directed.DirectedEdge;
 import edu.kit.student.graphmodel.directed.DirectedGraph;
+import edu.kit.student.plugin.LayoutOption;
 import edu.kit.student.util.Point;
 
 import java.util.*;
@@ -485,6 +486,19 @@ public class SugiyamaGraph
 
 	@Override
 	public SerializedGraph serialize() {
+		// TODO muss weg
+		return null;
+	}
+
+	@Override
+	public List<LayoutOption> getRegisteredLayouts() {
+		// TODO muss weg
+		return null;
+	}
+
+	@Override
+	public LayoutOption getDefaultLayout() {
+		// TODO muss weg
 		return null;
 	}
 }
