@@ -1,6 +1,7 @@
 package edu.kit.student.gui;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.util.ArrayList;
@@ -160,25 +161,36 @@ public class GAnsApplication extends Application {
 	private void importClicked() {
 		List<Importer> importerList = PluginManager.getPluginManager().getImporter();
 		List<String> supportedFileExtensions = new ArrayList<String>();
+		supportedFileExtensions.toArray();
 		importerList.forEach((importer) -> supportedFileExtensions.add(importer.getSupportedFileEndings()));
-		//FileNameExtensionFilter filter = new ExtensionFilter("Supported file extensions", supportedFileExtensions);
+		//FileNameExtensionFilter filter = new FileNameExtensionFilter("Supported file extensions", supportedFileExtensions.toArray(new String[supportedFileExtensions.size()]));
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Select a graph file");
 		//fileChooser.setSelectedExtensionFilter(filter);
 		currentFile = fileChooser.showOpenDialog(primaryStage);
 		if(currentFile == null) return;
 		if(!openWorkspaceDialog()) return;
-		buildGraphModel(workspace.getGraphModelBuilder());
-		this.model = workspace.getGraphModel();
-		showGraph(this.model.getGraphs().get(0));
-		this.structureView.showGraphModel(this.model);
+		FileInputStream inputStream;
+		try {
+			inputStream = new FileInputStream(currentFile);
+			String fileName = currentFile.getName();
+			String fileExtension = fileName.substring(fileName.lastIndexOf('.') + 1);
+			Importer importer = importerList.get(supportedFileExtensions.indexOf(fileExtension));
+			importer.importGraph(workspace.getGraphModelBuilder(), inputStream);
+			this.model = workspace.getGraphModel(); //TODO: wie wird das model im workspace gesetzt?
+			showGraph(this.model.getGraphs().get(0));
+			this.structureView.showGraphModel(this.model);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 
 	private void exportClicked() {
 		List<Exporter> exporterList = PluginManager.getPluginManager().getExporter();
 		List<String> supportedFileExtensions = new ArrayList<String>();
 		exporterList.forEach((exporter) -> supportedFileExtensions.add(exporter.getSupportedFileEnding()));
-		//FileNameExtensionFilter filter = new ExtensionFilter("Supported file extensions", supportedFileExtensions);
+		//FileNameExtensionFilter filter = new FileNameExtensionFilter("Supported file extensions", supportedFileExtensions.toArray(new String[supportedFileExtensions.size()]));
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Select an export location");
 		//fileChooser.setSelectedExtensionFilter(filter);
@@ -317,45 +329,4 @@ public class GAnsApplication extends Application {
 		stage.setScene(new Scene(root, 450, 450));
 		stage.show();
 	}
-	
-	private void buildGraphModel(IGraphModelBuilder builder) {
-		
-	}
-
-//	private void openTestDialog() {
-//		Dialog<TestContainer> dialog = new Dialog<TestContainer>();
-//		dialog.getDialogPane().getButtonTypes().add(ButtonType.OK);
-//		HBox layout = new HBox();
-//		TextField xCoordinate = new TextField();
-//		TextField yCoordinate = new TextField();
-//		TextField textField = new TextField();
-//		layout.getChildren().addAll(xCoordinate, yCoordinate, textField);
-//		dialog.getDialogPane().setContent(layout);
-//		// dialog.setResultConverter(dialogButton -> {
-//		// if (dialogButton == ButtonType.OK) {
-//		// return new TestContainer(xCoordinate.getText(),
-//		// yCoordinate.getText(), textField.getText());}
-//		// return null;
-//		// });
-//
-//		Optional<TestContainer> result = dialog.showAndWait();
-//
-//		// boese boese :D
-//		Pane pane = ((Pane) graphViewTabPane.getSelectionModel().getSelectedItem().getContent());
-//		Group group = ((Group) pane.getChildren().get(pane.getChildren().size() - 1));
-//		((GraphView) group.getChildren().get(group.getChildren().size() - 1))
-//				.addVertex(Double.parseDouble(result.get().x), Double.parseDouble(result.get().y), result.get().text);
-//	}
-//
-//	private class TestContainer {
-//		public TestContainer(String x, String y, String text) {
-//			this.x = x;
-//			this.y = y;
-//			this.text = text;
-//		}
-//
-//		public String x;
-//		public String y;
-//		public String text;
-//	}
 }
