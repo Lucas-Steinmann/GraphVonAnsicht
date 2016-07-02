@@ -1,14 +1,25 @@
 package edu.kit.student.gui;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
+
+import javax.swing.filechooser.FileNameExtensionFilter;
 
 import edu.kit.student.graphmodel.Graph;
 import edu.kit.student.graphmodel.GraphModel;
+import edu.kit.student.graphmodel.builder.IGraphModelBuilder;
 import edu.kit.student.parameter.Settings;
+import edu.kit.student.plugin.Exporter;
+import edu.kit.student.plugin.Importer;
 import edu.kit.student.plugin.LayoutOption;
 import edu.kit.student.plugin.PluginManager;
 import edu.kit.student.plugin.Workspace;
+import edu.kit.student.plugin.WorkspaceOption;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
@@ -19,6 +30,7 @@ import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
 import javafx.scene.Group;
 import javafx.scene.Scene;
+import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -48,7 +60,6 @@ public class GAnsApplication extends Application {
 	private Stage primaryStage;
 	private MenuBar menuBar;
 	
-	private PluginManager pluginManager;
 	private Workspace workspace;
 	private GraphModel model;
 	private LayoutOption layoutOption;
@@ -134,7 +145,6 @@ public class GAnsApplication extends Application {
 				currentGraphView = ((GraphView) group.getChildren().get(group.getChildren().size() - 1));
 			}
 		});
-		addTab("Test");
 
 		mainViewLayout.getItems().addAll(graphViewTabPane, treeInfoLayout);
 		rootLayout.getChildren().addAll(menuBar, mainViewLayout);
@@ -148,22 +158,41 @@ public class GAnsApplication extends Application {
 	}
 
 	private void importClicked() {
+		List<Importer> importerList = PluginManager.getPluginManager().getImporter();
+		List<String> supportedFileExtensions = new ArrayList<String>();
+		importerList.forEach((importer) -> supportedFileExtensions.add(importer.getSupportedFileEndings()));
+		//FileNameExtensionFilter filter = new ExtensionFilter("Supported file extensions", supportedFileExtensions);
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Select a graph file");
+		//fileChooser.setSelectedExtensionFilter(filter);
 		currentFile = fileChooser.showOpenDialog(primaryStage);
-		addTab(currentFile.getName());
-		openWorkspaceDialog();
-		// TODO: Workspacedialog oeffnen, Einlesen der Datei triggern, addTab
-		// mit
-		// neuem graphen oeffnen
+		if(currentFile == null) return;
+		if(!openWorkspaceDialog()) return;
+		buildGraphModel(workspace.getGraphModelBuilder());
+		this.model = workspace.getGraphModel();
+		showGraph(this.model.getGraphs().get(0));
+		this.structureView.showGraphModel(this.model);
 	}
 
 	private void exportClicked() {
+		List<Exporter> exporterList = PluginManager.getPluginManager().getExporter();
+		List<String> supportedFileExtensions = new ArrayList<String>();
+		exporterList.forEach((exporter) -> supportedFileExtensions.add(exporter.getSupportedFileEnding()));
+		//FileNameExtensionFilter filter = new ExtensionFilter("Supported file extensions", supportedFileExtensions);
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Select an export location");
+		//fileChooser.setSelectedExtensionFilter(filter);
 		File saveFile = fileChooser.showSaveDialog(primaryStage);
-		// TODO: Daten aus Model/ViewController ziehen und Exportieren der Datei
-		// triggern.
+		try {
+			FileOutputStream outputStream = new FileOutputStream(saveFile);
+			String fileName = saveFile.getName();
+			String fileExtension = fileName.substring(fileName.lastIndexOf('.') + 1);
+			Exporter exporter = exporterList.get(supportedFileExtensions.indexOf(fileExtension));
+			exporter.exportGraph(currentGraphView.getFactory().getGraph().serialize(), outputStream);
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 	}
 	
 	private void showGraph(Graph graph) {
@@ -184,39 +213,13 @@ public class GAnsApplication extends Application {
 
 		graphView.setSelectionModel(graphViewSelectionModel);
 
-		Tab tab = new Tab(""/*hier name des graphen*/);
+		Tab tab = new Tab(graph.getName());
 		tab.setContent(pane);
 		graphViewTabPane.getTabs().add(tab);
 		graphViewTabPane.getSelectionModel().select(tab);
 
 		graphView.addGrid();
 		graphView.setGraph(graph);
-	}
-
-	private void addTab(String name) {
-		Group group = new Group();
-		GraphView graphView = new GraphView();
-
-		group.getChildren().add(graphView);
-		// Die Oberflaeche die gezogen und gezoomed werden kann.
-		Pane pane = new Pane(group);
-
-		GraphViewEventHandler eventHandler = new GraphViewEventHandler(graphView);
-		pane.addEventFilter(MouseEvent.MOUSE_PRESSED, eventHandler.getOnMousePressedEventHandler());
-		pane.addEventFilter(MouseEvent.MOUSE_DRAGGED, eventHandler.getOnMouseDraggedEventHandler());
-		pane.addEventFilter(ScrollEvent.ANY, eventHandler.getOnScrollEventHandler());
-
-		// TODO: kann vermutlich weg
-		graphViewEventHandler.add(eventHandler);
-
-		graphView.setSelectionModel(graphViewSelectionModel);
-
-		Tab tab = new Tab(name);
-		tab.setContent(pane);
-		graphViewTabPane.getTabs().add(tab);
-		graphViewTabPane.getSelectionModel().select(tab);
-
-		graphView.addGrid();
 	}
 
 	private void setupMenuBar() {
@@ -276,8 +279,20 @@ public class GAnsApplication extends Application {
 		menuBar.getMenus().addAll(menuFile, menuEdit, menuView);
 	}
 
-	private void openWorkspaceDialog() {
-
+	private boolean openWorkspaceDialog() {
+		List<String> workspaceNames = new ArrayList<String>();
+		PluginManager.getPluginManager().getWorkspaceOptions().forEach((option) -> workspaceNames.add(option.getName()));
+		ChoiceDialog<String> dialog = new ChoiceDialog<String>(workspaceNames.get(0), workspaceNames);
+		dialog.setTitle("Workspaces");
+		dialog.setContentText("Choose a workspace:");
+		Optional<String> result = dialog.showAndWait();
+		if (result.isPresent()){
+		    WorkspaceOption chosenOption = PluginManager.getPluginManager().getWorkspaceOptions().get(workspaceNames.indexOf(result.get()));
+		    openParameterDialog(chosenOption.getSettings());
+		    workspace = chosenOption.getInstance();
+		    return true;
+		}
+		return false;
 	}
 	
 	private void openLayoutSelectionDialog() {
@@ -301,6 +316,10 @@ public class GAnsApplication extends Application {
 		stage.setTitle("Settings");
 		stage.setScene(new Scene(root, 450, 450));
 		stage.show();
+	}
+	
+	private void buildGraphModel(IGraphModelBuilder builder) {
+		
 	}
 
 //	private void openTestDialog() {

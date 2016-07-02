@@ -1,11 +1,9 @@
 package edu.kit.student.graphmodel;
 
-import edu.kit.student.objectproperty.GAnsProperty;
 import edu.kit.student.plugin.Exporter;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * A serialized version of a {@link Graph}.
@@ -14,19 +12,12 @@ import java.util.Set;
  * purposes. Attributes in the {@link List} are not synchronized with attributes outside the {@link List}, and Attributes of
  * SerializedGraph are not synchronized with the origin {@link Graph} attributes.
  */
-public class SerializedGraph<V extends SerializedVertex, E extends SerializedEdge<V>>
-		implements Graph<V, E> {
+public class SerializedGraph<V extends SerializedVertex, E extends SerializedEdge<V>> {
 
 	private final List<String[]> attributes;
-	private GAnsProperty<String> name;
-	private GAnsProperty<Integer> id;
-	private FastGraphAccessor fga;
 
-	public SerializedGraph(List<String[]> attributes, GAnsProperty<String> name, GAnsProperty<Integer> id, FastGraphAccessor fga) {
+	public SerializedGraph(List<String[]> attributes) {
 		this.attributes = attributes;
-		this.name = name;
-		this.id = id;
-		this.fga = fga;
 	}
 
 	/**
@@ -40,44 +31,5 @@ public class SerializedGraph<V extends SerializedVertex, E extends SerializedEdg
      */
 	public List<String[]> getAttributes() {
 		return this.attributes;
-	}
-
-	@Override
-	public Set<V> getVertexSet() { 
-		// TODO Auto-generated method
-		return null;
-	 }
-
-	@Override
-	public Set<E> getEdgeSet() { 
-		// TODO Auto-generated method
-		return null;
-	 }
-
-	@Override
-	public Set<E> edgesOf(V vertex) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public FastGraphAccessor getFastGraphAccessor() {
-		return this.fga;
-	}
-
-	@Override
-	public void addToFastGraphAccessor(FastGraphAccessor fga) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public String getName() {
-		return name.getValue();
-	}
-
-	@Override
-	public Integer getID() {
-		return id.getValue();
 	}
 }

@@ -16,7 +16,7 @@ public interface Importer {
     /**
      * Gets the file type which this importer can parse.
      * 
-     * @return the supported file ending.
+     * @return the supported file ending without a dot at the beginning.
      */
     public String getSupportedFileEndings();
 

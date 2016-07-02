@@ -3,6 +3,7 @@ package edu.kit.student.gui;
 import java.util.HashMap;
 
 import edu.kit.student.graphmodel.Graph;
+import edu.kit.student.graphmodel.GraphModel;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 
@@ -31,7 +32,7 @@ public class StructureView extends TreeView<String> {
 	 * @param graph
 	 *            The graph which should be represented.
 	 */
-	public void showTree(Graph graph) {
+	public void showGraphModel(GraphModel graphModel) {
 		// Erstellen der TreeItems anhand des uebergebenen Graphen in der
 		// internen Representation
 		TreeItem<String> root = new TreeItem<String>(/* Text des RootGraphen */);

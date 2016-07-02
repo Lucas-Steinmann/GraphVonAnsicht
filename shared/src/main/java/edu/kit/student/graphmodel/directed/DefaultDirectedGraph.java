@@ -188,7 +188,7 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
 	@Override
 	public SerializedGraph serialize() {
 		List<String[]> attributes = new LinkedList<>();
-		SerializedGraph graph = new SerializedGraph(attributes, this.name, this.id, this.fga);
+		SerializedGraph graph = new SerializedGraph(attributes);
 
 		for (Vertex v : this.vertexSet) {
 			SerializedVertex vertex = v.serialize();

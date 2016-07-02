@@ -482,4 +482,9 @@ public class SugiyamaGraph
 		// TODO Auto-generated method stub
 		return 0;
 	}
+
+	@Override
+	public SerializedGraph serialize() {
+		return null;
+	}
 }

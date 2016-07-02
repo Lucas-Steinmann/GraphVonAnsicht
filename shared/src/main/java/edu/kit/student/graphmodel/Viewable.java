@@ -58,10 +58,4 @@ public interface Viewable<V extends Vertex, E extends Edge<V>> {
 	 */
 	public LayoutOption getDefaultLayout();
 	
-	/**
-	 * Returns a {@link SerializedGraph} representation of the graph.
-	 * @return The {@link SerializedGraph} representation of the graph.
-	 */
-	public SerializedGraph serialize();
-	
 }
