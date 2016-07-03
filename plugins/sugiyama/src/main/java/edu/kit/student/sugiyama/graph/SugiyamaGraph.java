@@ -54,14 +54,21 @@ public class SugiyamaGraph
 		layers = new LinkedList<>();
 		List<SugiyamaVertex> startingLayer = new LinkedList<>();
 
-		for (Vertex v: graph.getVertexSet()) {
-			SugiyamaVertex w = new SugiyamaVertex(v,0);
-			startingLayer.add(w);	//fills first layer with all vertices and default layer number
-			vertexSet.add(w);	//fills vertexset with all wrapped vertices
+		Map<Integer, SugiyamaVertex> tmpVertexMap = new HashMap<>();
+
+		for (Vertex vertex: graph.getVertexSet()) {
+			SugiyamaVertex sugiyamaVertex = new SugiyamaVertex(vertex,0);
+			startingLayer.add(sugiyamaVertex);	//fills first layer with all vertices and default layer number
+			vertexSet.add(sugiyamaVertex);	//fills vertexset with all wrapped vertices
+			tmpVertexMap.put(vertex.getID(), sugiyamaVertex);
 		}
-		for(DirectedEdge e: graph.getEdgeSet()){
-			SugiyamaEdge f = new SugiyamaEdge(e);
-			edgeSet.add(f);	//fills edgeset witt all wrapped edges
+		for(DirectedEdge edge: graph.getEdgeSet()){
+			SugiyamaEdge sugiyamaEdge = new SugiyamaEdge(edge);
+			sugiyamaEdge.setVertices(
+					tmpVertexMap.get(edge.getSource().getID()),
+					tmpVertexMap.get(edge.getTarget().getID())
+			);
+			edgeSet.add(sugiyamaEdge);	//fills edgeset with all wrapped edges
 		}
 
 		layers.add(startingLayer);
@@ -428,6 +435,8 @@ public class SugiyamaGraph
 		List<Vector<Integer>> corners;
 		private boolean reversed;
 		private DirectedEdge<Vertex> wrappedEdge;
+		private SugiyamaVertex source;
+		private SugiyamaVertex target;
 
 		private SugiyamaEdge(DirectedEdge<Vertex> edge) {
 			super(edge.getName(), edge.getLabel(), edge.getID());
@@ -475,7 +484,9 @@ public class SugiyamaGraph
 
 		@Override
 		public void setVertices(SugiyamaVertex source, SugiyamaVertex target) {
-			wrappedEdge.setVertices(source, target);
+			this.source = source;
+			this.target = target;
+			wrappedEdge.setVertices(source.getVertex(), target.getVertex());
 		}
 
 
@@ -497,6 +508,24 @@ public class SugiyamaGraph
 		@Override
 		public void addToFastGraphAccessor(FastGraphAccessor fga) {
 			wrappedEdge.addToFastGraphAccessor(fga);
+		}
+
+		@Override
+		public SugiyamaVertex getSource() {
+			return this.source;
+		}
+
+		@Override
+		public SugiyamaVertex getTarget() {
+			return this.target;
+		}
+
+		@Override
+		public List<SugiyamaVertex> getVertices() {
+			List<SugiyamaVertex> vertices = new LinkedList<SugiyamaVertex>();
+			vertices.add(source);
+			vertices.add(target);
+			return vertices;
 		}
 
 		@Override
