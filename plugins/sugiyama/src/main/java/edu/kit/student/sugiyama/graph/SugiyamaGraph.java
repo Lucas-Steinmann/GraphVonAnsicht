@@ -280,7 +280,6 @@ public class SugiyamaGraph
 
 	@Override
 	public List<LayeredGraph<SugiyamaVertex, SugiyamaEdge>> getSubgraphs() {
-		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -428,15 +427,12 @@ public class SugiyamaGraph
 	{
 		List<Vector<Integer>> corners;
 		private boolean reversed;
+		private DirectedEdge<Vertex> wrappedEdge;
 
-
-		private SugiyamaEdge(String name, String label, Integer id) {
-			super(name, label, id);
-			reversed = false;
-		}
-		
-		public SugiyamaEdge(DirectedEdge<SugiyamaVertex> edge){
-			this(edge.getName(),edge.getLabel(),edge.getID());
+		private SugiyamaEdge(DirectedEdge<Vertex> edge) {
+			super(edge.getName(), edge.getLabel(), edge.getID());
+			this.wrappedEdge = edge;
+			this.reversed = false;
 		}
 
 		//private E getEdge() { return null; }
@@ -475,6 +471,37 @@ public class SugiyamaGraph
 //			SupplementPath supplement = new SupplementPath();//TODO implement
 //			return supplement;
 		    return null;
+		}
+
+		@Override
+		public void setVertices(SugiyamaVertex source, SugiyamaVertex target) {
+			wrappedEdge.setVertices(source, target);
+		}
+
+
+		@Override
+		public String getName() {
+			return wrappedEdge.getName();
+		}
+
+		@Override
+		public Integer getID() {
+			return wrappedEdge.getID();
+		}
+
+		@Override
+		public String getLabel() {
+			return wrappedEdge.getLabel();
+		}
+
+		@Override
+		public void addToFastGraphAccessor(FastGraphAccessor fga) {
+			wrappedEdge.addToFastGraphAccessor(fga);
+		}
+
+		@Override
+		public OrthogonalEdgePath getPath() {
+			return wrappedEdge.getPath();
 		}
 	}
 
