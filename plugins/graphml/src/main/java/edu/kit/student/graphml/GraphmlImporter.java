@@ -1,12 +1,15 @@
 package edu.kit.student.graphml;
 
 
+import edu.kit.student.graphmodel.builder.IEdgeBuilder;
 import edu.kit.student.graphmodel.builder.IGraphBuilder;
 import edu.kit.student.graphmodel.builder.IGraphModelBuilder;
+import edu.kit.student.graphmodel.builder.IVertexBuilder;
 import edu.kit.student.plugin.Importer;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -63,6 +66,18 @@ public class GraphmlImporter implements Importer {
                 //check if node is a key
                 if (element.getNodeName() == "key") {
                     //TODO:process keys
+                    /*
+                  //Check all attributes
+                    if (node.hasAttributes()) {
+                       // get attributes names and values
+                       NamedNodeMap nodeMap = node.getAttributes();
+                       for (int i = 0; i < nodeMap.getLength(); i++)
+                       {
+                           Node tempNode = nodeMap.item(i);
+                           System.out.println("Attr name : " + tempNode.getNodeName()+ "; Value = " + tempNode.getNodeValue());
+                       }
+                   }
+                   */
                 } else if (node.getNodeName() == "graph") {
                     //get GraphBuilder and parse graph
                     String graphId = element.getAttribute("id");
@@ -93,17 +108,120 @@ public class GraphmlImporter implements Importer {
             Node node = childs.item(j); 
             
             if (node.getNodeType() == Node.ELEMENT_NODE) {
-                Element element = (Element) node; 
+                Element child = (Element) node; 
                 //check if node is a key
-                if (element.getNodeName() == "node") {
-                    //TODO:process nodes
-                } else if (node.getNodeName() == "edge") {
-                    //TODO:process edge
+                if (child.getNodeName() == "node") {
+
+                    //Check if this node contains a graph
+                    Element childGraph = getGraphVertex(child);
+                    if (childGraph != null) {
+                        //TODO: build node with link
+                        String graphId = childGraph.getAttribute("id");
+                        IGraphBuilder graphBuilder = builder.getGraphBuilder(graphId);
+                        this.parseGraph(graphBuilder, childGraph);
+                    } else {
+                        //is a normal vertex so parse Node
+                        String vertexId = child.getAttribute("id");
+                        IVertexBuilder vertexBuilder = builder.getVertexBuilder(vertexId);
+                        this.parseVertex(vertexBuilder, child);
+                    }
+                } else if (child.getNodeName() == "edge") {
+                    IEdgeBuilder edgeBuilder = builder.getEdgeBuilder();
+                    this.parseEdge(edgeBuilder, child);
                 }  else {
                     //TODO: catch error
                 }
             }
         }
+    }
+    
+    /**
+     * Private method to parse a vertex.
+     * 
+     * @param builder
+     * @param nodeElement
+     */
+    private void parseVertex(IVertexBuilder builder, Element vertexElement) {
+        NodeList childs = vertexElement.getChildNodes();
+        
+        //iterate through childnodes
+        for (int j = 0; j < childs.getLength(); j++) {
+            
+            Node node = childs.item(j);
+            
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
+                Element child = (Element) node; 
+                //check if node is a data
+                if (child.getNodeName() == "data") {
+                    //get key and value
+                    String key = child.getAttribute("key");
+                    String value = child.getTextContent();
+                    builder.addData(key, value);
+                } else {
+                    //TODO: catch error
+                }
+            } else {
+                //TODO: catch error
+            }
+        }
+    }
+    
+    /**
+     * Private method to parse an edge.
+     * 
+     * @param builder
+     * @param nodeElement
+     */
+    private void parseEdge(IEdgeBuilder builder, Element edgeElement) {
+        //get source and target
+        String source = edgeElement.getAttribute("source");
+        String target = edgeElement.getAttribute("target");        
+        builder.newEdge(source, target);
+        
+      //iterate through childnodes
+        NodeList childs = edgeElement.getChildNodes();     
+        for (int j = 0; j < childs.getLength(); j++) {
+            
+            Node node = childs.item(j);
+            
+            if (node.getNodeType() == Node.ELEMENT_NODE) {
+                Element child = (Element) node; 
+                //check for data
+                if (child.getNodeName() == "data") {
+                    //get key and value
+                    String key = child.getAttribute("key");
+                    String value = child.getTextContent();
+                    builder.addData(key, value);
+                } else {
+                    //TODO: catch error
+                }
+            } else {
+                //TODO: catch error
+            }
+        }
+    }
+    
+    /**
+     * Checks if this vertex contains a graph.
+     * 
+     * @param element
+     * @return
+     */
+    private static Element getGraphVertex(Element element) {
+    
+        NodeList childs = element.getChildNodes();
+        
+        //iterate through childnodes
+        for (int j = 0; j < childs.getLength(); j++) {
+            
+            Node node = childs.item(j);
+            
+            //check if contains a element as graph
+            if (node.getNodeName() == "graph" && node.getNodeType() == Node.ELEMENT_NODE) {
+                return (Element) node;
+            }
+        }        
+        return null;
     }
     
     @Override
