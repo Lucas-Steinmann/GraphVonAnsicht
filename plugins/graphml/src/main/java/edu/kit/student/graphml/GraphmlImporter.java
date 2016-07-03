@@ -9,7 +9,6 @@ import edu.kit.student.plugin.Importer;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
@@ -66,18 +65,6 @@ public class GraphmlImporter implements Importer {
                 //check if node is a key
                 if (element.getNodeName() == "key") {
                     //TODO:process keys
-                    /*
-                  //Check all attributes
-                    if (node.hasAttributes()) {
-                       // get attributes names and values
-                       NamedNodeMap nodeMap = node.getAttributes();
-                       for (int i = 0; i < nodeMap.getLength(); i++)
-                       {
-                           Node tempNode = nodeMap.item(i);
-                           System.out.println("Attr name : " + tempNode.getNodeName()+ "; Value = " + tempNode.getNodeValue());
-                       }
-                   }
-                   */
                 } else if (node.getNodeName() == "graph") {
                     //get GraphBuilder and parse graph
                     String graphId = element.getAttribute("id");
@@ -88,6 +75,8 @@ public class GraphmlImporter implements Importer {
                 }
             }
         }
+        
+        builder.build();
         
     }
 
@@ -133,6 +122,8 @@ public class GraphmlImporter implements Importer {
                 }
             }
         }
+        
+        builder.build();
     }
     
     /**
@@ -164,6 +155,8 @@ public class GraphmlImporter implements Importer {
                 //TODO: catch error
             }
         }
+        
+        builder.build();
     }
     
     /**
@@ -199,6 +192,8 @@ public class GraphmlImporter implements Importer {
                 //TODO: catch error
             }
         }
+        
+        builder.build();
     }
     
     /**

@@ -2,6 +2,8 @@ package edu.kit.student.joana;
 
 import edu.kit.student.graphmodel.Edge;
 import edu.kit.student.graphmodel.builder.IEdgeBuilder;
+import edu.kit.student.joana.callgraph.CallGraphBuilder;
+import edu.kit.student.joana.methodgraph.MethodGraphBuilder;
 
 /**
  * The JoanaEdgeBuilder is a {@link IEdgeBuilder}, specifically for building
@@ -9,6 +11,20 @@ import edu.kit.student.graphmodel.builder.IEdgeBuilder;
  */
 public class JoanaEdgeBuilder implements IEdgeBuilder {
 
+    boolean edgeForCallGraph;
+    CallGraphBuilder callGraph = null;
+    MethodGraphBuilder methodGraph = null;
+    
+    public JoanaEdgeBuilder(CallGraphBuilder graphBuilder) {
+        this.callGraph = graphBuilder;
+        edgeForCallGraph = true;
+    }
+    
+    public JoanaEdgeBuilder(MethodGraphBuilder graphBuilder) {
+        this.methodGraph = graphBuilder;
+        edgeForCallGraph = false;
+    }
+    
 	@Override
 	public void setID(String id) {
 		// TODO Auto-generated method stub

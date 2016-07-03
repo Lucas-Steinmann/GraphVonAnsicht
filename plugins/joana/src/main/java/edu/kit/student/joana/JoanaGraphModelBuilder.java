@@ -19,13 +19,13 @@ public class JoanaGraphModelBuilder implements IGraphModelBuilder {
 	}
 
 	@Override
-	public IGraphBuilder getGraphBuilder(String graphID) {
+	public IGraphBuilder getGraphBuilder(String graphId) {
 	    //check if callgraphbuilder
-	    if(graphID == "callgraph") {
-	        return new CallGraphBuilder();
+	    if(graphId == "callgraph") {
+	        return new CallGraphBuilder(this, graphId);
 	    }
 	    //else return methodgraphbuilder
-		return new MethodGraphBuilder();
+		return new MethodGraphBuilder(this, graphId);
 	}
 
 	@Override

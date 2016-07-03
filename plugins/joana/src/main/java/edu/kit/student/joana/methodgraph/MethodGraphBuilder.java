@@ -4,6 +4,7 @@ import edu.kit.student.graphmodel.Graph;
 import edu.kit.student.graphmodel.builder.IEdgeBuilder;
 import edu.kit.student.graphmodel.builder.IGraphBuilder;
 import edu.kit.student.graphmodel.builder.IVertexBuilder;
+import edu.kit.student.joana.JoanaGraphModelBuilder;
 
 /**
  * The MethodGraphBuilder is a {@link IGraphBuilder}, specifically for building
@@ -11,6 +12,14 @@ import edu.kit.student.graphmodel.builder.IVertexBuilder;
  */
 public class MethodGraphBuilder implements IGraphBuilder {
 
+    JoanaGraphModelBuilder modelBuilder;
+    String name;
+    
+    public MethodGraphBuilder(JoanaGraphModelBuilder modelBuilder, String name) {
+        this.modelBuilder = modelBuilder;
+        this.name = name;
+    }
+    
 	@Override
 	public IEdgeBuilder getEdgeBuilder() {
 		// TODO Auto-generated method stub
