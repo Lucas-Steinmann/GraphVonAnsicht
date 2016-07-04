@@ -114,7 +114,15 @@ public class SugiyamaGraph
 		int pos2 = layer.indexOf(second);
 		layer.remove(first);
 		layer.remove(second);
-		//TODO: add both vertices in the correct (switched) order in this list, maybe there is need of a LinkedList or something because 
+
+		if (pos1 < pos2) {
+			layer.add(pos1, second);
+			layer.add(pos2, first);
+		} else {
+			layer.add(pos2, first);
+			layer.add(pos1, second);
+		}
+
 		//		List des not support inserting at a special index in the list, just "add(obj)"
 	}
 
@@ -168,9 +176,15 @@ public class SugiyamaGraph
 
 	@Override
 	public void assignToLayer(SugiyamaVertex vertex, int layerNum) {
+		int layer = Math.max(vertex.getLayer(), 0);
+		this.layers.get(layer).remove(vertex);
+
+		for (int i = layers.size() - 1; i < layerNum; i++) {
+			this.layers.add(new LinkedList<>());
+		}
+
+		this.layers.get(layerNum).add(vertex);
 		vertex.setLayer(layerNum);
-		//TODO add the specified vertex to the specified layer (in the list) 
-		//in case the layer was empty before or doesn't exist, create a new one and add it to layers
 	}
 
 	@Override
