@@ -21,8 +21,8 @@ import edu.kit.student.sugiyama.steps.IVertexPositioner;
  * @param <V> the type of the vertices the graph contains
  * @param <E> the type of the edges the graph contains
  */
-public class SugiyamaLayoutAlgorithm<G extends DirectedGraph<V, E>, V extends Vertex, E extends DirectedEdge<V>> 
-	implements LayeredLayoutAlgorithm<G, V, E> {
+public class SugiyamaLayoutAlgorithm 
+	implements LayeredLayoutAlgorithm<DirectedGraph<Vertex, DirectedEdge<Vertex>>, Vertex, DirectedEdge<Vertex>> {
 	
 	
 	/**
@@ -73,16 +73,15 @@ public class SugiyamaLayoutAlgorithm<G extends DirectedGraph<V, E>, V extends Ve
 		return null;
 	}
 
-	@Override
-	public void layout(G graph) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void layout(DirectedGraph<Vertex, DirectedEdge<Vertex>> graph) {
+        // TODO Auto-generated method stub
+        
+    }
 
-	@Override
-	public void layoutLayeredGraph(LayeredGraph<V, E> graph) {
-		// TODO Auto-generated method stub
-		
-	}
-
+    @Override
+    public void layoutLayeredGraph(LayeredGraph<Vertex, DirectedEdge<Vertex>> graph) {
+        // TODO Auto-generated method stub
+        
+    }
 }
