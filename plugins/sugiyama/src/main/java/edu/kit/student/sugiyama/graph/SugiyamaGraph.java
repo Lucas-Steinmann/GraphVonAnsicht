@@ -459,15 +459,18 @@ public class SugiyamaGraph
 	public static class SugiyamaEdge extends DirectedEdge<SugiyamaVertex>
 	{
 		List<Vector<Integer>> corners;
-		private boolean reversed;
+		private boolean isReversed;
+		private boolean isSupplement;
 		private DirectedEdge<Vertex> wrappedEdge;
 		private SugiyamaVertex source;
 		private SugiyamaVertex target;
+		private SupplementPath supplementpath;
 
 		private SugiyamaEdge(DirectedEdge<Vertex> edge) {
 			super(edge.getName(), edge.getLabel());
 			this.wrappedEdge = edge;
-			this.reversed = false;
+			this.isReversed = false;
+			this.isSupplement=false;
 		}
 
 		//private E getEdge() { return null; }
@@ -477,7 +480,7 @@ public class SugiyamaGraph
 		 * 		true if this edge is reversed, false otherwise
 		 */
 		private boolean isReversed() {
-			return this.reversed;
+			return this.isReversed();
 		}
 
 		/**
@@ -486,7 +489,7 @@ public class SugiyamaGraph
 		 * 		sets, if this edge is reversed or not
 		 */
 		private void setReversed(boolean reversed) {
-			this.reversed = reversed;
+			this.isReversed = reversed;
 		}
 
 		/**
@@ -503,9 +506,21 @@ public class SugiyamaGraph
 		 * @return
 		 */
 		private SupplementPath getSupplementPath() {
+			if(this.isSupplement){
+				return this.supplementpath;
+			}
 //			SupplementPath supplement = new SupplementPath();//TODO implement
 //			return supplement;
 		    return null;
+		}
+		
+		private boolean isSupplementPath(){
+			return this.isSupplement;
+		}
+		
+		private void setSupplementPath(int length){
+			//this.supplementpath=new SupplementPath(this,length);	//TODO check if it would be wiser to add a constructor to SupplementPath to
+			//SupplementPath(String, String, SugiyamaEdge edge, int length)
 		}
 
 		@Override
