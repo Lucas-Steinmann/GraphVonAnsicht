@@ -86,11 +86,11 @@ public class MethodGraphBuilder implements IGraphBuilder {
 	        //TODO: set methodgraph to callgraph as compoundvertex
 	    }
 	    
-	    //set methodgraph to model
-	    this.modelBuilder.addMethodGraph(methodGraph);
+	    //TODO set methodgraph to model
+	    //this.modelBuilder.addMethodGraph(methodGraph);
 	    
 	    
-		return methodGraph;
+		//return methodGraph;
 	}
 
 }
