@@ -9,12 +9,10 @@ import java.util.List;
 public abstract class GraphModel {
 
 	/**
-	 * Returns all {@link Graph} contained in the GraphModel.
+	 * Returns all {@link Graph} at the rootlevel contained in the GraphModel.
 	 * 
-	 * @return A list of all the {@link Graph} contained in the GraphModel.
+	 * @return A list of all the root{@link Graph} contained in the GraphModel.
 	 */
-	public abstract List<Graph> getGraphs();
-	
-	public abstract List<Graph> getRootGraphs();
+	public abstract List<Graph<? extends Vertex, ? extends Edge<? extends Vertex>>> getRootGraphs();
 
 }

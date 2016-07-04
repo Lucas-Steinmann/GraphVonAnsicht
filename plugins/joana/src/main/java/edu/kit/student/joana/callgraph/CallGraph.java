@@ -21,7 +21,7 @@ public class CallGraph extends JoanaGraph<JoanaCompoundVertex,JoanaEdge<JoanaCom
 
     @Override
     public List<LayeredGraph<JoanaCompoundVertex, JoanaEdge<JoanaCompoundVertex>>> getSubgraphs() {
-        return new LinkedList<>();
+        return new LinkedList<LayeredGraph<JoanaCompoundVertex, JoanaEdge<JoanaCompoundVertex>>>();
     }
     
     public List<MethodGraph> getMethodgraphs() {
