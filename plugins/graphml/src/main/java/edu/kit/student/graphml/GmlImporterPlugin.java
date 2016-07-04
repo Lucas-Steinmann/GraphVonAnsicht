@@ -1,14 +1,7 @@
 package edu.kit.student.graphml;
 
-
-import edu.kit.student.graphmodel.Edge;
-import edu.kit.student.graphmodel.Vertex;
-import edu.kit.student.plugin.EdgeFilter;
-import edu.kit.student.plugin.Exporter;
+import edu.kit.student.plugin.AbstractPluginBase;
 import edu.kit.student.plugin.Importer;
-import edu.kit.student.plugin.Plugin;
-import edu.kit.student.plugin.VertexFilter;
-import edu.kit.student.plugin.WorkspaceOption;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -18,7 +11,7 @@ import java.util.List;
  * It provides the Importer to the plugin manager
  * 
  */
-public class GmlImporterPlugin implements Plugin {
+public class GmlImporterPlugin extends AbstractPluginBase {
 
     private static final String pluginName = "GraphML";
 
@@ -29,29 +22,6 @@ public class GmlImporterPlugin implements Plugin {
     @Override
     public String getName() {
         return pluginName;
-    }
-
-    @Override
-    public void load() { }
-
-    @Override
-    public List<WorkspaceOption> getWorkspaceOptions() {
-        return new LinkedList<>();
-    }
-
-    @Override
-    public List<VertexFilter<? extends Vertex>> getVertexFilter() {
-        return new LinkedList<>();
-    }
-
-    @Override
-    public List<EdgeFilter<? extends Edge<? extends Vertex>, ? extends Vertex>> getEdgeFilter() {
-        return new LinkedList<>();
-    }
-
-    @Override
-    public List<Exporter> getExporter() {
-        return new LinkedList<>();
     }
 
     @Override
