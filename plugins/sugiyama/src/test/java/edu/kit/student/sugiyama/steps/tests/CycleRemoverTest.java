@@ -41,7 +41,39 @@ public class CycleRemoverTest {
 		
 		CycleRemover cr = new CycleRemover();
 		Set<SugiyamaEdge> set = cr.removeCycles(SGraph);
-		set.forEach(edge->System.out.println(edge.getName()));
 		assertTrue(set.size()==1);
+	}
+	
+	@Test
+	public void testDoubleCycle(){
+		DefaultDirectedGraph<DefaultVertex, DirectedEdge<DefaultVertex>> DDGraph = new DefaultDirectedGraph<DefaultVertex, DirectedEdge<DefaultVertex>>("",0);
+		DefaultVertex v1 = new DefaultVertex("v1", "", 1);
+		DefaultVertex v2 = new DefaultVertex("v2", "", 2);
+		DefaultVertex v3 = new DefaultVertex("v3", "", 3);
+		DefaultVertex v4 = new DefaultVertex("v4", "", 4);
+		DirectedEdge e1 = new DirectedEdge("e1","",5);
+		DirectedEdge e2 = new DirectedEdge("e2","",6);
+		DirectedEdge e3 = new DirectedEdge("e3","",7);
+		DirectedEdge e4 = new DirectedEdge("e4","",8);
+		DirectedEdge e5 = new DirectedEdge("e5","",9);
+		e1.setVertices(v1, v2);
+		e2.setVertices(v2, v3);
+		e3.setVertices(v3, v4);
+		e4.setVertices(v4, v1);
+		e5.setVertices(v2, v4);
+		DDGraph.addVertex(v1);
+		DDGraph.addVertex(v2);
+		DDGraph.addVertex(v3);
+		DDGraph.addVertex(v4);
+		DDGraph.addEdge(e1);
+		DDGraph.addEdge(e2);
+		DDGraph.addEdge(e3);
+		DDGraph.addEdge(e4);
+		DDGraph.addEdge(e5);
+		SugiyamaGraph SGraph = new SugiyamaGraph(DDGraph);
+		
+		CycleRemover cr = new CycleRemover();
+		Set<SugiyamaEdge> set = cr.removeCycles(SGraph);
+		set.forEach(edge->System.out.println(edge.getName()));
 	}
 }
