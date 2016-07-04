@@ -84,6 +84,6 @@ public class CycleRemoverTest {
 				reversedCount++;
 			}
 		}
-		assertTrue(reversedCount==1);
+		assertTrue(reversedCount==1||reversedCount==2);
 	}
 }
