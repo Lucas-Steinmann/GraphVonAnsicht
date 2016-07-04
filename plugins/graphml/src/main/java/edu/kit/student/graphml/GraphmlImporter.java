@@ -221,8 +221,7 @@ public class GraphmlImporter implements Importer {
     
     @Override
     public String getSupportedFileEndings() {
-        // TODO Auto-generated method stub
-        return null;
+        return "graphml";
     }
 
     @Override

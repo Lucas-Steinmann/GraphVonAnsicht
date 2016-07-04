@@ -15,14 +15,6 @@ public interface IEdgeBuilder {
 	 */
 	public abstract void setID(String id);
 
-	/**
-	 * Sets the direction of the edge build by this.
-	 * 
-	 * @param direction
-	 *            String representation of the direction. Can be one of
-	 * @TODO
-	 */
-	public abstract void setDirection(String direction);
 
 	/**
 	 * Sets source and target vertices of the edge build by this.

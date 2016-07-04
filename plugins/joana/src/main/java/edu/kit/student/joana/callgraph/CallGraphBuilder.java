@@ -6,6 +6,7 @@ import edu.kit.student.graphmodel.builder.IGraphBuilder;
 import edu.kit.student.graphmodel.builder.IVertexBuilder;
 import edu.kit.student.joana.JoanaEdgeBuilder;
 import edu.kit.student.joana.JoanaGraphModelBuilder;
+import edu.kit.student.joana.methodgraph.MethodGraphBuilder;
 
 /**
  * The CallGraphBuilder implements an {@link IGraphBuilder} and builds 
@@ -34,8 +35,7 @@ public class CallGraphBuilder implements IGraphBuilder{
 
     @Override
     public IGraphBuilder getGraphBuilder(String graphID) {
-        // TODO Auto-generated method stub
-        return null;
+        return new MethodGraphBuilder(this.modelBuilder, this, graphID);
     }
 	
 	@Override

@@ -14,6 +14,9 @@ public class JoanaEdgeBuilder implements IEdgeBuilder {
     boolean edgeForCallGraph;
     CallGraphBuilder callGraph = null;
     MethodGraphBuilder methodGraph = null;
+    JoanaVertex source = null;
+    JoanaVertex target = null;
+    String edgeKind = "";
     
     public JoanaEdgeBuilder(CallGraphBuilder graphBuilder) {
         this.callGraph = graphBuilder;
@@ -30,24 +33,22 @@ public class JoanaEdgeBuilder implements IEdgeBuilder {
 		// TODO Auto-generated method stub
 	}
 
-	@Override
-	public void setDirection(String direction) {
-		// TODO Auto-generated method stub
-	}
 
 	@Override
 	public void newEdge(String source, String target) {
-		// TODO Auto-generated method stub
+		// TODO: search in methodgraphbuilder or callgraphbuilder the source and target node
 	}
 
 	@Override
 	public void addData(String keyname, String value) {
-		// TODO Auto-generated method stub
+		if (keyname == "edgeKind") {
+		    this.edgeKind = value;
+		}
 	}
 
 	@Override
 	public Edge build() {
-		// TODO Auto-generated method stub
+		// TODO build edge and set to graphbuilder
 		return null;
 	}
 }
