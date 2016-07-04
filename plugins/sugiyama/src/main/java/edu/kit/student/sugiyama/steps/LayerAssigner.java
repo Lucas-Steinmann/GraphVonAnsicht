@@ -2,7 +2,6 @@ package edu.kit.student.sugiyama.steps;
 
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
 import edu.kit.student.sugiyama.RelativeLayerConstraint;
-import edu.kit.student.sugiyama.graph.ICycleRemoverGraph;
 import edu.kit.student.sugiyama.graph.ILayerAssignerGraph;
 import edu.kit.student.sugiyama.graph.SugiyamaGraph;
 import edu.kit.student.sugiyama.graph.SugiyamaGraph.SugiyamaEdge;
@@ -48,7 +47,7 @@ public class LayerAssigner implements ILayerAssigner {
 			Set<SugiyamaGraph.SugiyamaVertex> currentSources = getSources(graph, DDEdges, DDVertices);
 
 			for (SugiyamaGraph.SugiyamaVertex vertex : currentSources) {
-				vertex.setLayer(layer);
+				graph.assignToLayer(vertex, layer);
 				DDVertices.remove(vertex);
 				DDEdges.removeAll(graph.outgoingEdgesOf(vertex));
 			}
