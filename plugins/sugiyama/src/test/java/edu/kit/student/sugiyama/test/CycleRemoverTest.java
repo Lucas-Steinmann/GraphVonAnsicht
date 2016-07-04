@@ -30,7 +30,6 @@ public class CycleRemoverTest {
 		e1.setVertices(v1, v2);
 		e2.setVertices(v2, v3);
 		e3.setVertices(v3, v1);
-		System.out.println(e1.getSource());
 		DDGraph.addVertex(v1);
 		DDGraph.addVertex(v2);
 		DDGraph.addVertex(v3);
