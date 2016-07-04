@@ -15,6 +15,7 @@ import org.xml.sax.SAXException;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.text.ParseException;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -31,8 +32,9 @@ public class GraphmlImporter implements Importer {
      * 
      * @param builder the builder to build the graph
      * @param graphmlInputStream the input stream defining the graphml graph
+     * @throws ParseException 
      */
-    public void importGraph(IGraphModelBuilder builder, FileInputStream graphmlInputStream) {
+    public void importGraph(IGraphModelBuilder builder, FileInputStream graphmlInputStream) throws ParseException {
         //Build Document from FileInputStream
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder;
@@ -48,16 +50,13 @@ public class GraphmlImporter implements Importer {
          
         //Normalize the document
         document.getDocumentElement().normalize();
-         
         //get root node
         Element root = document.getDocumentElement();
-        
         //get all childnodes of root
         NodeList childs = root.getChildNodes();
         
         //iterate through childnodes
         for (int j = 0; j < childs.getLength(); j++) {
-            
             Node node = childs.item(j); 
             
             if (node.getNodeType() == Node.ELEMENT_NODE) {
@@ -71,13 +70,12 @@ public class GraphmlImporter implements Importer {
                     IGraphBuilder graphBuilder = builder.getGraphBuilder(graphId);
                     parseGraph(graphBuilder, element);                
                 } else {
-                    //TODO: catch error
+                	throw new ParseException("Selected file has wrong syntax!", 0);
                 }
             }
         }
         
         builder.build();
-        
     }
 
     /**
@@ -86,14 +84,13 @@ public class GraphmlImporter implements Importer {
      * @param graphBuilder
      * @param graphElement
      * @return
+     * @throws ParseException 
      */
-    private void parseGraph(IGraphBuilder builder, Element graphElement) {
-        
+    private void parseGraph(IGraphBuilder builder, Element graphElement) throws ParseException {
         NodeList childs = graphElement.getChildNodes();
         
         //iterate through childnodes
         for (int j = 0; j < childs.getLength(); j++) {
-            
             Node node = childs.item(j); 
             
             if (node.getNodeType() == Node.ELEMENT_NODE) {
@@ -104,7 +101,6 @@ public class GraphmlImporter implements Importer {
                     //Check if this node contains a graph
                     Element childGraph = getGraphVertex(child);
                     if (childGraph != null) {
-                        //TODO: build node with link
                         String graphId = childGraph.getAttribute("id");
                         IGraphBuilder graphBuilder = builder.getGraphBuilder(graphId);
                         this.parseGraph(graphBuilder, childGraph);
@@ -118,12 +114,10 @@ public class GraphmlImporter implements Importer {
                     IEdgeBuilder edgeBuilder = builder.getEdgeBuilder();
                     this.parseEdge(edgeBuilder, child);
                 }  else {
-                    //TODO: catch error
+                    throw new ParseException("Selected file has wrong syntax!", 0);
                 }
             }
         }
-        
-        builder.build();
     }
     
     /**
@@ -131,13 +125,13 @@ public class GraphmlImporter implements Importer {
      * 
      * @param builder
      * @param nodeElement
+     * @throws ParseException 
      */
-    private void parseVertex(IVertexBuilder builder, Element vertexElement) {
+    private void parseVertex(IVertexBuilder builder, Element vertexElement) throws ParseException {
         NodeList childs = vertexElement.getChildNodes();
         
         //iterate through childnodes
         for (int j = 0; j < childs.getLength(); j++) {
-            
             Node node = childs.item(j);
             
             if (node.getNodeType() == Node.ELEMENT_NODE) {
@@ -149,14 +143,12 @@ public class GraphmlImporter implements Importer {
                     String value = child.getTextContent();
                     builder.addData(key, value);
                 } else {
-                    //TODO: catch error
+                	throw new ParseException("Selected file has wrong syntax!", 0);
                 }
             } else {
-                //TODO: catch error
+            	throw new ParseException("Selected file has wrong syntax!", 0);
             }
         }
-        
-        builder.build();
     }
     
     /**
@@ -164,8 +156,9 @@ public class GraphmlImporter implements Importer {
      * 
      * @param builder
      * @param nodeElement
+     * @throws ParseException 
      */
-    private void parseEdge(IEdgeBuilder builder, Element edgeElement) {
+    private void parseEdge(IEdgeBuilder builder, Element edgeElement) throws ParseException {
         //get source and target
         String source = edgeElement.getAttribute("source");
         String target = edgeElement.getAttribute("target");        
@@ -174,7 +167,6 @@ public class GraphmlImporter implements Importer {
       //iterate through childnodes
         NodeList childs = edgeElement.getChildNodes();     
         for (int j = 0; j < childs.getLength(); j++) {
-            
             Node node = childs.item(j);
             
             if (node.getNodeType() == Node.ELEMENT_NODE) {
@@ -186,14 +178,12 @@ public class GraphmlImporter implements Importer {
                     String value = child.getTextContent();
                     builder.addData(key, value);
                 } else {
-                    //TODO: catch error
+                	throw new ParseException("Selected file has wrong syntax!", 0);
                 }
             } else {
-                //TODO: catch error
+            	throw new ParseException("Selected file has wrong syntax!", 0);
             }
         }
-        
-        builder.build();
     }
     
     /**
@@ -203,32 +193,23 @@ public class GraphmlImporter implements Importer {
      * @return
      */
     private static Element getGraphVertex(Element element) {
-    
         NodeList childs = element.getChildNodes();
         
         //iterate through childnodes
         for (int j = 0; j < childs.getLength(); j++) {
-            
             Node node = childs.item(j);
             
             //check if contains a element as graph
             if (node.getNodeName() == "graph" && node.getNodeType() == Node.ELEMENT_NODE) {
                 return (Element) node;
             }
-        }        
+        }    
+        
         return null;
     }
     
     @Override
     public String getSupportedFileEndings() {
-        return "graphml";
+        return "*.graphml";
     }
-
-    @Override
-    public String getName() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-
 }

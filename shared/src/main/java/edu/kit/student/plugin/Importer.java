@@ -3,6 +3,7 @@ package edu.kit.student.plugin;
 import edu.kit.student.graphmodel.builder.IGraphModelBuilder;
 
 import java.io.FileInputStream;
+import java.text.ParseException;
 
 /**
  * The importer interface is implemented when writing a class that can import files.
@@ -21,19 +22,13 @@ public interface Importer {
     public String getSupportedFileEndings();
 
     /**
-     * Gets the name of this importer.
-     * 
-     * @return name of this importer
-     */
-    public String getName();
-
-    /**
      * This method parses an FileInputStream into an {@link IGraphModelBuilder}.
      * It has to ensure that all information is transfered to a correct graphmodel builder.
      * 
      * @param builder that the values are parsed into
      * @param filestream from which the values are parsed
+     * @throws ParseException 
      */
-    public void importGraph(IGraphModelBuilder builder, FileInputStream filestream); 
+    public void importGraph(IGraphModelBuilder builder, FileInputStream filestream) throws ParseException; 
 
 }
