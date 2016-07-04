@@ -14,10 +14,6 @@ import java.util.*;
  * attributes and constructs needed during the computation of the hierarchical layout of a directed graph.
  * All vertices are assigned to a layer.
  * The positions of the vertices can be viewed as a grid (with varying widths per layer).
- *
- * @param <G> the directed graph which is used as underlying representation
- * @param <V> the vertex class used in the graph
- * @param <E> the edge class used in the graph
  */
 public class SugiyamaGraph
 		implements ICycleRemoverGraph,
@@ -57,11 +53,12 @@ public class SugiyamaGraph
 		Map<Integer, SugiyamaVertex> tmpVertexMap = new HashMap<>();
 
 		for (Vertex vertex: graph.getVertexSet()) {
-			SugiyamaVertex sugiyamaVertex = new SugiyamaVertex(vertex,0);
+			SugiyamaVertex sugiyamaVertex = new SugiyamaVertex(vertex, -1);
 			startingLayer.add(sugiyamaVertex);	//fills first layer with all vertices and default layer number
 			vertexSet.add(sugiyamaVertex);	//fills vertexset with all wrapped vertices
 			tmpVertexMap.put(vertex.getID(), sugiyamaVertex);
 		}
+
 		for(DirectedEdge edge: graph.getEdgeSet()){
 			SugiyamaEdge sugiyamaEdge = new SugiyamaEdge(edge);
 			sugiyamaEdge.setVertices(
@@ -176,21 +173,14 @@ public class SugiyamaGraph
 	}
 
 	@Override
-	public Set<SugiyamaEdge> edgesOf(SugiyamaVertex vertex) {
-		//return graph.edgesOf(vertex);
-		//TODO: check problems with not being "edgesof(SugiyamaVertex)" in interface Graph
-		return null;
-	}
-
-	@Override
 	public FastGraphAccessor getFastGraphAccessor() {
 		return this.fga;
 	}
 
-
 	@Override
 	public Integer outdegreeOf(SugiyamaVertex vertex) {
 		Integer outdegree = 0;
+
 		for (SugiyamaEdge edge : this.edgeSet) {
 			if (edge.getSource().getID() == vertex.getID())
 				outdegree++;
@@ -199,9 +189,11 @@ public class SugiyamaGraph
 		return outdegree;
 	}
 
+
 	@Override
 	public Integer indegreeOf(SugiyamaVertex vertex) {
 		Integer indegree = 0;
+
 		for (SugiyamaEdge edge : this.edgeSet) {
 			if (edge.getTarget().getID() == vertex.getID())
 				indegree++;
@@ -212,8 +204,33 @@ public class SugiyamaGraph
 
 	@Override
 	public Set<SugiyamaEdge> incomingEdgesOf(SugiyamaVertex vertex) {
-		// TODO Auto-generated method stub
-		return null;
+		Set<SugiyamaEdge> incoming = new HashSet<SugiyamaEdge>();
+
+		for (SugiyamaEdge edge : edgeSet) {
+			if (edge.getTarget() == vertex)
+				incoming.add(edge);
+		}
+
+		return incoming;
+	}
+
+	@Override
+	public Set<SugiyamaEdge> outgoingEdgesOf(SugiyamaVertex vertex) {
+		Set<SugiyamaEdge> outgoing = new HashSet<SugiyamaEdge>();
+
+		for (SugiyamaEdge edge : edgeSet) {
+			if (edge.getSource() == vertex)
+				outgoing.add(edge);
+		}
+
+		return outgoing;
+	}
+
+	@Override
+	public Set<SugiyamaEdge> edgesOf(SugiyamaVertex vertex) {
+		Set<SugiyamaEdge> result = this.incomingEdgesOf(vertex);
+		result.addAll(this.outgoingEdgesOf(vertex));
+		return result;
 	}
 
 	@Override
@@ -247,12 +264,6 @@ public class SugiyamaGraph
 	public Integer getID() {
 		// Is not needed in this graph.
 		return graph.getID();
-	}
-
-	@Override
-	public Set<SugiyamaEdge> outgoingEdgesOf(SugiyamaVertex vertex) {
-		// TODO Auto-generated method stub
-		return null;
 	}
 
 	@Override
