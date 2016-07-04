@@ -7,7 +7,7 @@ import edu.kit.student.objectproperty.GAnsProperty;
  * A Joana specific {@link Edge}. It contains parameters which are only
  * used/usefull in {@link JoanaGraph}.
  */
-public class JoanaEdge extends DirectedEdge<JoanaVertex> {
+public class JoanaEdge<V extends JoanaVertex> extends DirectedEdge<V> {
 	
 	private GAnsProperty<String> edgeKind;
 

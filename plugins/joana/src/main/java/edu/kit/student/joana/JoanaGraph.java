@@ -9,17 +9,17 @@ import java.util.List;
 /**
  * An abstract superclass for all JOANA specific graphs.
  */
-public abstract class JoanaGraph 
-    extends DefaultDirectedGraph<JoanaVertex, JoanaEdge> 
-    implements LayeredGraph<JoanaVertex, JoanaEdge> {
+public abstract class JoanaGraph<V extends JoanaVertex, E extends JoanaEdge<V>>
+    extends DefaultDirectedGraph<V, E>
+    implements LayeredGraph<V, E> {
 
     // TODO: Ist eine statische maximalbreite hier richtig?
     private static int maxWidth = 600;
-    private List<List<JoanaVertex>> layers;
+    private List<List<V>> layers;
     
     public JoanaGraph(String name, Integer id) {
         super(name, id);
-        layers = new ArrayList<List<JoanaVertex>>();
+        layers = new ArrayList<List<V>>();
     }
 
     @Override
@@ -41,12 +41,12 @@ public abstract class JoanaGraph
     }
 
     @Override
-    public List<JoanaVertex> getLayer(int layerNum) {
+    public List<V> getLayer(int layerNum) {
         return layers.get(layerNum);
     }
 
     @Override
-    public List<List<JoanaVertex>> getLayers() {
+    public List<List<V>> getLayers() {
         return layers;
     }
 

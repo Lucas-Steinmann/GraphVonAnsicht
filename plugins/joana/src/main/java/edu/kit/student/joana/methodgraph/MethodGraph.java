@@ -16,7 +16,7 @@ import java.util.Set;
 /**
  * This is a specific graph representation for a MethodGraph in JOANA .
  */
-public class MethodGraph extends JoanaGraph {
+public class MethodGraph extends JoanaGraph<JoanaVertex, JoanaEdge<JoanaVertex>> {
 
     private static final String ENTRY_NAME = "Entry";
     private static LayoutRegister<MethodGraphLayoutOption> register;
@@ -87,8 +87,8 @@ public class MethodGraph extends JoanaGraph {
     }
 
     @Override
-    public List<LayeredGraph<JoanaVertex, JoanaEdge>> getSubgraphs() {
-        List<LayeredGraph<JoanaVertex, JoanaEdge>> faGraphs = new LinkedList<>();
+    public List<LayeredGraph<JoanaVertex, JoanaEdge<JoanaVertex>>> getSubgraphs() {
+        List<LayeredGraph<JoanaVertex, JoanaEdge<JoanaVertex>>> faGraphs = new LinkedList<>();
         this.getFieldAccesses().forEach((fa) -> faGraphs.add(fa.getGraph()));
         return faGraphs;
     }

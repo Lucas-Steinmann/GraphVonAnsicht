@@ -19,7 +19,7 @@ import edu.kit.student.sugiyama.LayeredLayoutAlgorithm;
  * Implements hierarchical layout with layers for {@link MethodGraph}.
  * This graph contains field access subgraphs.
  */
-public class MethodGraphLayout implements LayeredLayoutAlgorithm<MethodGraph, JoanaVertex, JoanaEdge> {
+public class MethodGraphLayout implements LayeredLayoutAlgorithm<MethodGraph, JoanaVertex, JoanaEdge<JoanaVertex>> {
 
 	@Override
 	public Settings getSettings() {
@@ -48,7 +48,7 @@ public class MethodGraphLayout implements LayeredLayoutAlgorithm<MethodGraph, Jo
 	public void layout(MethodGraph graph) { }
 
 	@Override
-	public void layoutLayeredGraph(LayeredGraph<JoanaVertex, JoanaEdge> graph) {
+	public void layoutLayeredGraph(LayeredGraph<JoanaVertex, JoanaEdge<JoanaVertex>> graph) {
 		// TODO Auto-generated method stub
 		
 	}

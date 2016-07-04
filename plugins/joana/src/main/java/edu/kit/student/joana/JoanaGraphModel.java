@@ -1,5 +1,6 @@
 package edu.kit.student.joana;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import edu.kit.student.graphmodel.Graph;
@@ -52,5 +53,12 @@ public class JoanaGraphModel extends GraphModel {
 	public List<Graph> getGraphs() {
 		// TODO Auto-generated method
 		return null;
+	}
+
+	@Override
+	public List<Graph> getRootGraphs() {
+		List<Graph> root = new ArrayList<Graph>();
+		root.add(this.callgraph);
+		return root;
 	}
 }

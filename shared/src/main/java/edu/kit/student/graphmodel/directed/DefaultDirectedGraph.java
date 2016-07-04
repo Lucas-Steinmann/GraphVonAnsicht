@@ -3,6 +3,7 @@ package edu.kit.student.graphmodel.directed;
 import edu.kit.student.graphmodel.CollapsedVertex;
 import edu.kit.student.graphmodel.Edge;
 import edu.kit.student.graphmodel.FastGraphAccessor;
+import edu.kit.student.graphmodel.Graph;
 import edu.kit.student.graphmodel.SerializedEdge;
 import edu.kit.student.graphmodel.SerializedGraph;
 import edu.kit.student.graphmodel.SerializedVertex;
@@ -27,6 +28,9 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
 	private Set<V> vertexSet;
 	private Set<E> edgeSet;
 	private Set<CollapsedVertex<V, E>> collapsedVertices;
+	
+	private Graph parent;
+	private List<Graph> children;
 
 	/**
 	 * Constructor
@@ -43,6 +47,7 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
 		this.name = new GAnsProperty<String>("graphName", name);
 		this.id = new GAnsProperty<Integer>("graphID", id);
 		this.fga = new FastGraphAccessor();
+		this.children = new ArrayList<Graph>();
 	}
 	
 	/**
@@ -268,5 +273,25 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
 	@Override
 	public LayoutOption getDefaultLayout() {
 		return null;
+	}
+
+	@Override
+	public Graph getParentGraph() {
+		return this.parent;
+	}
+	
+	@Override
+	public void setParentGraph(Graph parent) {
+		this.parent = parent;
+	}
+
+	@Override
+	public List<Graph> getChildGraphs() {
+		return this.children;
+	}
+	
+	@Override
+	public void addChildGraph(Graph child) {
+		this.children.add(child);
 	}
 }

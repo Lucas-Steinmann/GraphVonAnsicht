@@ -308,11 +308,11 @@ public class GAnsApplication extends Application {
 	}
 	
 	private void openLayoutSelectionDialog() {
-		
+		//TODO: Implementieren und nutzen
 	}
 	
 	private void openLayoutSettingsDialog() {
-		
+		//TODO: Implementieren und nutzen
 	}
 
 	private void openParameterDialog(Settings settings) {

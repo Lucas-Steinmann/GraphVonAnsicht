@@ -14,5 +14,7 @@ public abstract class GraphModel {
 	 * @return A list of all the {@link Graph} contained in the GraphModel.
 	 */
 	public abstract List<Graph> getGraphs();
+	
+	public abstract List<Graph> getRootGraphs();
 
 }
