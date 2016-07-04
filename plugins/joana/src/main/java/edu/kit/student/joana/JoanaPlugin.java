@@ -23,12 +23,22 @@ public class JoanaPlugin extends AbstractPluginBase {
 
     private static final String pluginName = "JOANA";
 
-    private List<WorkspaceOption> wsOptions;
-
     /**
      * Constructor. The constructor is called by the ServiceLoader.
      */
     public JoanaPlugin() {
+    }
+
+    @Override
+    public String getName() {
+        return pluginName;
+    }
+
+    @Override
+    public void load() { }
+
+    @Override
+    public List<WorkspaceOption> getWorkspaceOptions() {
         WorkspaceOption joanaws = new WorkspaceOption() {
 
             {
@@ -50,20 +60,8 @@ public class JoanaPlugin extends AbstractPluginBase {
                 return this.ws.getSettings();
             }
         };
-        wsOptions = new LinkedList<WorkspaceOption>();
+        LinkedList<WorkspaceOption> wsOptions = new LinkedList<WorkspaceOption>();
         wsOptions.add(joanaws);
-    }
-
-    @Override
-    public String getName() {
-        return pluginName;
-    }
-
-    @Override
-    public void load() { }
-
-    @Override
-    public List<WorkspaceOption> getWorkspaceOptions() {
         return wsOptions;
     }
 
@@ -76,27 +74,33 @@ public class JoanaPlugin extends AbstractPluginBase {
     }
 
     public static class CallGraphLayoutRegister implements LayoutRegister<CallGraphLayoutOption> {
+        
+        List<LayoutOption> options = new LinkedList<>();
+        
         @Override
         public void addLayoutOption(CallGraphLayoutOption option) {
+            options.add(option);
         }
 
         @Override
         public List<LayoutOption> getLayoutOptions() {
-            return null;
+            return new LinkedList<>(options);
         }
     }
 
     public static class MethodGraphLayoutRegister 
         implements LayoutRegister<MethodGraphLayoutOption> {
+
+        List<LayoutOption> options = new LinkedList<>();
+
         @Override
         public void addLayoutOption(MethodGraphLayoutOption option) {
-            // TODO Auto-generated method stub
+            options.add(option);
         }
 
         @Override
         public List<LayoutOption> getLayoutOptions() {
-            // TODO Auto-generated method stub
-            return null;
+            return new LinkedList<>(options);
         }
     }
 
