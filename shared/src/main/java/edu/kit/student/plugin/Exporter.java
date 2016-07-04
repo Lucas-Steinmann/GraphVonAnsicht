@@ -22,13 +22,6 @@ public interface Exporter {
     public String getSupportedFileEnding();
 
     /**
-     * Gets the name of this importer.
-     * 
-     * @return name of this exporter
-     */
-    public String getName();
-
-    /**
      * This method writes an {@link SerializedGraph} into an FileOutputStream.
      * The {@link SerializedGraph} enables us to read all attributes as Strings.
      * To write the contained Information into the file stream is the task of this method
