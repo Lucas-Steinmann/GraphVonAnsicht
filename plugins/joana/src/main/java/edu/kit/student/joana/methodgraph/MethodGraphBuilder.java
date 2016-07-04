@@ -1,20 +1,16 @@
 package edu.kit.student.joana.methodgraph;
 
-import java.util.Set;
-import java.util.TreeSet;
-
-import edu.kit.student.graphmodel.Edge;
 import edu.kit.student.graphmodel.Graph;
-import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.builder.IEdgeBuilder;
 import edu.kit.student.graphmodel.builder.IGraphBuilder;
 import edu.kit.student.graphmodel.builder.IVertexBuilder;
-import edu.kit.student.joana.FieldAccess;
-import edu.kit.student.joana.JoanaEdge;
 import edu.kit.student.joana.JoanaGraphModelBuilder;
 import edu.kit.student.joana.JoanaVertex;
 import edu.kit.student.joana.JoanaVertexBuilder;
 import edu.kit.student.joana.callgraph.CallGraphBuilder;
+
+import java.util.Set;
+import java.util.TreeSet;
 
 /**
  * The MethodGraphBuilder is a {@link IGraphBuilder}, specifically for building
@@ -91,6 +87,7 @@ public class MethodGraphBuilder implements IGraphBuilder {
 	    
 	    
 		//return methodGraph;
+        return null;
 	}
 
 }
