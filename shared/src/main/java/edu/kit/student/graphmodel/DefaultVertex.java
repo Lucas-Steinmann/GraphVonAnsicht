@@ -1,6 +1,7 @@
 package edu.kit.student.graphmodel;
 
 import edu.kit.student.objectproperty.GAnsProperty;
+import edu.kit.student.util.IdGenerator;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -13,7 +14,7 @@ import java.util.List;
 public class DefaultVertex implements Vertex {
 
 	private GAnsProperty<String> name;
-	private GAnsProperty<Integer> id;
+	private Integer id;
 	private GAnsProperty<String> label;
 	private int x;
 	private int y;
@@ -25,10 +26,10 @@ public class DefaultVertex implements Vertex {
 	 * @param label of the new vertex
 	 * @param id of the new vertex
 	 */
-	public DefaultVertex(String name, String label, Integer id) {
+	public DefaultVertex(String name, String label) {
         this.name = new GAnsProperty<String>("graphName", name);
         this.label = new GAnsProperty<String>("label", label);
-        this.id = new GAnsProperty<Integer>("graphID", id);
+        this.id = IdGenerator.getInstance().createId();
 	}
 	
 	@Override
@@ -38,7 +39,7 @@ public class DefaultVertex implements Vertex {
 
 	@Override
 	public Integer getID() {
-		return id.getValue();
+		return id;
 	}
 
 	@Override
@@ -49,7 +50,7 @@ public class DefaultVertex implements Vertex {
 	@Override
 	public void addToFastGraphAccessor(FastGraphAccessor fga) {
 		fga.addVertexForAttribute(this, "name", this.name.toString());
-		fga.addVertexForAttribute(this, "id", this.id.getValue());
+		fga.addVertexForAttribute(this, "id", this.id);
 		fga.addVertexForAttribute(this, "label", this.label.toString());
 		fga.addVertexForAttribute(this, "x", x);
 		fga.addVertexForAttribute(this, "y", y);
@@ -65,7 +66,7 @@ public class DefaultVertex implements Vertex {
 		attributes.add(new String[] {"y", Integer.toString(this.y)});
 		//TODO: add Vertices
 
-		return new SerializedVertex(attributes, this.name.toString(), this.id.getValue(), this.label.toString());
+		return new SerializedVertex(attributes, this.name.toString(), this.id, this.label.toString());
 	}
 
 	@Override

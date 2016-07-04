@@ -210,7 +210,7 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
 	@Override
 	public CollapsedVertex<V, E> collapse(Set<V> subset) {
 		DefaultDirectedGraph<V, E> collapsedGraph = new DefaultDirectedGraph<V, E>("");
-		CollapsedVertex<V, E> collapsed = new CollapsedVertex<V, E>("", "", 0);
+		CollapsedVertex<V, E> collapsed = new CollapsedVertex<V, E>("", "");
 		subset.forEach((v) -> collapsedGraph.addVertex(v));
 		for (E edge : edgeSet) {
 			boolean containsSource = subset.contains(edge.getSource());

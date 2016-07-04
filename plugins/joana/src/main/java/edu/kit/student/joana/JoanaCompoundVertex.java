@@ -9,8 +9,8 @@ public class JoanaCompoundVertex extends JoanaVertex implements CompoundVertex<J
 	
 	private MethodGraph graph;
 
-	public JoanaCompoundVertex(String name, String label, Integer id) {
-		super(name, label, id);
+	public JoanaCompoundVertex(String name, String label) {
+		super(name, label);
 	}
 	
 	public void setMethodGraph(MethodGraph graph) {

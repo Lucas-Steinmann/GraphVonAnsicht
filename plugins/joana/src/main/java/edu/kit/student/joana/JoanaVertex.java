@@ -20,8 +20,8 @@ public class JoanaVertex extends DefaultVertex {
 	private GAnsProperty<Integer> nodeEr;
 	private GAnsProperty<Integer> nodeEc;
 	
-	public JoanaVertex(String name, String label, Integer id) {
-		super(name, label, id);
+	public JoanaVertex(String name, String label) {
+		super(name, label);
 		
 		nodeKind = new GAnsProperty<String>("nodeKind", "");
 		nodeSource = new GAnsProperty<String>("nodeSource", "");

@@ -349,8 +349,8 @@ public class SugiyamaGraph
 	 * A supplement vertex which is part of a {@link SupplementPath}.
 	 */
 	public static class DummyVertex extends DefaultVertex {
-		public DummyVertex(String name, String label, Integer id) {
-			super(name, label, id);
+		public DummyVertex(String name, String label) {
+			super(name, label);
 			// TODO Auto-generated constructor stub
 		}
 

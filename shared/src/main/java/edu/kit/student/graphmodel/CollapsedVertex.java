@@ -8,8 +8,8 @@ public class CollapsedVertex<V extends Vertex, E extends Edge<V>> extends Defaul
 	private Graph<V, E> graph;
 	private Map<E,V> modifiedEdgeMap;
 
-	public CollapsedVertex(String name, String label, Integer id) {
-		super(name, label, id);
+	public CollapsedVertex(String name, String label) {
+		super(name, label);
 		modifiedEdgeMap = new HashMap<E,V>();
 	}
 	
