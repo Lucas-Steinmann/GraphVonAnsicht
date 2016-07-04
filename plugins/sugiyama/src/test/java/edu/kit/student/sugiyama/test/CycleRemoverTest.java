@@ -1,4 +1,4 @@
-package edu.kit.student.joana.tests;
+package edu.kit.student.sugiyama.test;
 
 import edu.kit.student.graphmodel.DefaultVertex;
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
