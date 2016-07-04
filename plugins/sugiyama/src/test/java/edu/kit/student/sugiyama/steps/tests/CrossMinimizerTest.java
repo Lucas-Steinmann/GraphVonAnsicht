@@ -1,9 +1,11 @@
-package edu.kit.student.sugiyama.steps;
+package edu.kit.student.sugiyama.steps.tests;
 
 import edu.kit.student.graphmodel.DefaultVertex;
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
 import edu.kit.student.graphmodel.directed.DirectedEdge;
 import edu.kit.student.sugiyama.graph.SugiyamaGraph;
+import edu.kit.student.sugiyama.steps.CrossMinimizer;
+
 import org.junit.Before;
 import org.junit.Test;
 
