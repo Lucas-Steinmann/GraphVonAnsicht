@@ -183,6 +183,7 @@ public class CycleRemover implements ICycleRemover {
 	/**
 	 * helper method for printing the DDGraph with all its vertices and edges
 	 */
+	@SuppressWarnings("unused")
 	private void print(){
 		String out="";
 		out+="Vertices: ";
