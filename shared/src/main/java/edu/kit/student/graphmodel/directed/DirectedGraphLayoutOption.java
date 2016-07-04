@@ -8,7 +8,7 @@ import edu.kit.student.plugin.LayoutOption;
  */
 public abstract class DirectedGraphLayoutOption extends LayoutOption {
 	
-	DirectedGraph<? extends Vertex, ? extends DirectedEdge<? extends Vertex>> graph;
+	protected DirectedGraph<? extends Vertex, ? extends DirectedEdge<? extends Vertex>> graph;
 
 	/**
 	 * Sets the graph that will be the target of the DirectedGraphLayoutOption.

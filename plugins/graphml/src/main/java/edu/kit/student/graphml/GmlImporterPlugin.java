@@ -10,6 +10,7 @@ import edu.kit.student.plugin.Plugin;
 import edu.kit.student.plugin.VertexFilter;
 import edu.kit.student.plugin.WorkspaceOption;
 
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -18,7 +19,8 @@ import java.util.List;
  * 
  */
 public class GmlImporterPlugin implements Plugin {
-    private String name;
+
+    private static final String pluginName = "GraphML";
 
     /**
      * Getter of the name.
@@ -26,41 +28,36 @@ public class GmlImporterPlugin implements Plugin {
      */
     @Override
     public String getName() {
-        return this.name;
+        return pluginName;
     }
 
     @Override
-    public void load() {
-        
-    }
+    public void load() { }
 
     @Override
     public List<WorkspaceOption> getWorkspaceOptions() {
-        // TODO Auto-generated method stub
-        return null;
+        return new LinkedList<>();
     }
 
     @Override
     public List<VertexFilter<? extends Vertex>> getVertexFilter() {
-        // TODO Auto-generated method stub
-        return null;
+        return new LinkedList<>();
     }
 
     @Override
     public List<EdgeFilter<? extends Edge<? extends Vertex>, ? extends Vertex>> getEdgeFilter() {
-        // TODO Auto-generated method stub
-        return null;
+        return new LinkedList<>();
     }
 
     @Override
     public List<Exporter> getExporter() {
-        // TODO Auto-generated method stub
-        return null;
+        return new LinkedList<>();
     }
 
     @Override
     public List<Importer> getImporter() {
-        // TODO Auto-generated method stub
-        return null;
+        LinkedList<Importer> result = new LinkedList<>();
+        result.add(new GraphmlImporter());
+        return result;
     }
 }

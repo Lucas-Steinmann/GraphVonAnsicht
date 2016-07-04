@@ -22,7 +22,7 @@ import java.util.*;
 public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
 		implements DirectedGraph<V, E>, ViewableGraph<V, E> {
 
-	private DirectedGraphLayoutRegister register;
+	private static DirectedGraphLayoutRegister register;
 	private GAnsProperty<String> name;
 	private Integer id;
 	private FastGraphAccessor fga;
@@ -221,18 +221,18 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
 				edgeSet.remove(edge);
 			} else if (containsSource && !containsTarget) {
 				V removedVertex = edge.getSource();
-				edge.setVertices((V) collapsed, edge.getTarget()); // TODO: Könnte Probleme machen, CollapsedVertex ist nicht vom generic-Typ ist.
+				edge.setVertices((V) collapsed, edge.getTarget()); // TODO: Kï¿½nnte Probleme machen, CollapsedVertex ist nicht vom generic-Typ ist.
 				collapsed.addModifiedEdge(edge, removedVertex);
 			} else if (!containsSource && containsTarget) {
 				V removedVertex = edge.getTarget();
-				edge.setVertices(edge.getSource(), (V) collapsed); // TODO: Könnte Probleme machen, CollapsedVertex ist nicht vom generic-Typ ist.
+				edge.setVertices(edge.getSource(), (V) collapsed); // TODO: Kï¿½nnte Probleme machen, CollapsedVertex ist nicht vom generic-Typ ist.
 				collapsed.addModifiedEdge(edge, removedVertex);
 			}
 		}
 
 		collapsed.setGraph(collapsedGraph);
 		this.vertexSet.removeAll(subset);
-		this.vertexSet.add((V) collapsed); // TODO: Könnte Probleme machen, CollapsedVertex ist nicht vom generic-Typ ist.
+		this.vertexSet.add((V) collapsed); // TODO: Kï¿½nnte Probleme machen, CollapsedVertex ist nicht vom generic-Typ ist.
 		this.collapsedVertices.add(collapsed);
 		
 		return collapsed;
@@ -291,5 +291,13 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
 	@Override
 	public void addChildGraph(Graph child) {
 		this.children.add(child);
+	}
+	
+	public static DirectedGraphLayoutRegister getDirectedGraphLayoutRegister()
+	{
+	    if (register == null) {
+	        register = new DirectedGraphLayoutRegister();
+	    }
+	    return register;
 	}
 }
