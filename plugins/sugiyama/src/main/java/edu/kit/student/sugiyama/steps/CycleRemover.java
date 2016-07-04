@@ -17,28 +17,10 @@ public class CycleRemover implements ICycleRemover {
 	private Set<SugiyamaVertex> graphVertices;
 	private Set<SugiyamaEdge> graphEdges;
 	
-	/**
-	 * Initializes the DDGraph and its vertices and edges. 
-	 * Also initializes the vertex-set and edge-set that contain the vertices and edges of the original graph.
-	 * 
-	 * @param graph original graph to build a DefaultDirectedGraph from
-	 */
-	private void initialize(ICycleRemoverGraph graph){
-		this.graphVertices = graph.getVertexSet();
-		this.graphEdges = graph.getEdgeSet();
-		
-		for(SugiyamaVertex vertex : this.graphVertices){
-			DDGraph.addVertex(vertex);
-		}
-
-		for(SugiyamaEdge edge: this.graphEdges){
-			DDGraph.addEdge(edge);
-		}
-		
-	}
+	
 	
 	@Override
-	public Set<SugiyamaEdge> removeCycles(ICycleRemoverGraph graph) {
+	public void removeCycles(ICycleRemoverGraph graph) {
 		initialize(graph);
 
 		Set<SugiyamaEdge> DAGEdges = new HashSet<SugiyamaEdge>();
@@ -90,7 +72,19 @@ public class CycleRemover implements ICycleRemover {
 			}
 		}
 
-		return getRemainingEdges(DAGEdges);
+		
+		
+		reverseEdges(getEdgesToTurn(DAGEdges),graph);
+	}
+	
+	/**
+	 * Reverses every edge from the parameter set in the original graph.
+	 * @param edges edges to turn their direction in the original graph
+	 */
+	private void reverseEdges(Set<SugiyamaEdge> edges, ICycleRemoverGraph originalGraph){
+		for(SugiyamaEdge edge:edges){
+			originalGraph.reverseEdge(edge);
+		}
 	}
 	
 	private SugiyamaVertex getCurrentSink(Set<SugiyamaVertex> vertices){
@@ -151,7 +145,12 @@ public class CycleRemover implements ICycleRemover {
 		return incomingEdges;
 	}
 	
-	private Set<SugiyamaEdge> getRemainingEdges(Set<SugiyamaEdge> DAGEdges){
+	/**
+	 * Returns the edges that are contained in the original graph and are missing in the DAGEdges that describe a maximum acyclic graph.
+	 * @param DAGEdges edges in the maximum acyclic graph
+	 * @return the edges that have to be turned in order to remove the cycles in the original graph
+	 */
+	private Set<SugiyamaEdge> getEdgesToTurn(Set<SugiyamaEdge> DAGEdges){
 		Set<SugiyamaEdge> result = new HashSet<SugiyamaEdge>();
 		for(SugiyamaEdge edge:this.graphEdges){
 			if(!DAGEdges.contains(edge)){
@@ -161,6 +160,29 @@ public class CycleRemover implements ICycleRemover {
 		return result;
 	}
 	
+	/**
+	 * Initializes the DDGraph and its vertices and edges. 
+	 * Also initializes the vertex-set and edge-set that contain the vertices and edges of the original graph.
+	 * 
+	 * @param graph original graph to build a DefaultDirectedGraph from
+	 */
+	private void initialize(ICycleRemoverGraph graph){
+		this.graphVertices = graph.getVertexSet();
+		this.graphEdges = graph.getEdgeSet();
+		
+		for(SugiyamaVertex vertex : this.graphVertices){
+			DDGraph.addVertex(vertex);
+		}
+
+		for(SugiyamaEdge edge: this.graphEdges){
+			DDGraph.addEdge(edge);
+		}
+		
+	}
+	
+	/**
+	 * helper method for printing the DDGraph with all its vertices and edges
+	 */
 	private void print(){
 		String out="";
 		out+="Vertices: ";

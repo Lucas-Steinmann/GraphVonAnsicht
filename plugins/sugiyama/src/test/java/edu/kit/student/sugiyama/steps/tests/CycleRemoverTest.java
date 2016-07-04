@@ -40,22 +40,28 @@ public class CycleRemoverTest {
 		SugiyamaGraph SGraph = new SugiyamaGraph(DDGraph);
 		
 		CycleRemover cr = new CycleRemover();
-		Set<SugiyamaEdge> set = cr.removeCycles(SGraph);
-		assertTrue(set.size()==1);
+		cr.removeCycles(SGraph);
+		int reversedCount = 0;
+		for(SugiyamaEdge edge : SGraph.getEdgeSet()){
+			if(SGraph.isReversed(edge)){
+				reversedCount++;
+			}
+		}
+		assertTrue(reversedCount==1);
 	}
 	
-	@Test
+	
 	public void testDoubleCycle(){
-		DefaultDirectedGraph<DefaultVertex, DirectedEdge<DefaultVertex>> DDGraph = new DefaultDirectedGraph<DefaultVertex, DirectedEdge<DefaultVertex>>("",0);
-		DefaultVertex v1 = new DefaultVertex("v1", "", 1);
-		DefaultVertex v2 = new DefaultVertex("v2", "", 2);
-		DefaultVertex v3 = new DefaultVertex("v3", "", 3);
-		DefaultVertex v4 = new DefaultVertex("v4", "", 4);
-		DirectedEdge e1 = new DirectedEdge("e1","",5);
-		DirectedEdge e2 = new DirectedEdge("e2","",6);
-		DirectedEdge e3 = new DirectedEdge("e3","",7);
-		DirectedEdge e4 = new DirectedEdge("e4","",8);
-		DirectedEdge e5 = new DirectedEdge("e5","",9);
+		DefaultDirectedGraph<DefaultVertex, DirectedEdge<DefaultVertex>> DDGraph = new DefaultDirectedGraph<DefaultVertex, DirectedEdge<DefaultVertex>>("");
+		DefaultVertex v1 = new DefaultVertex("v1", "");
+		DefaultVertex v2 = new DefaultVertex("v2", "");
+		DefaultVertex v3 = new DefaultVertex("v3", "");
+		DefaultVertex v4 = new DefaultVertex("v4", "");
+		DirectedEdge e1 = new DirectedEdge("e1","");
+		DirectedEdge e2 = new DirectedEdge("e2","");
+		DirectedEdge e3 = new DirectedEdge("e3","");
+		DirectedEdge e4 = new DirectedEdge("e4","");
+		DirectedEdge e5 = new DirectedEdge("e5","");
 		e1.setVertices(v1, v2);
 		e2.setVertices(v2, v3);
 		e3.setVertices(v3, v4);
@@ -73,7 +79,13 @@ public class CycleRemoverTest {
 		SugiyamaGraph SGraph = new SugiyamaGraph(DDGraph);
 		
 		CycleRemover cr = new CycleRemover();
-		Set<SugiyamaEdge> set = cr.removeCycles(SGraph);
-		set.forEach(edge->System.out.println(edge.getName()));
+		cr.removeCycles(SGraph);
+		int reversedCount = 0;
+		for(SugiyamaEdge edge : SGraph.getEdgeSet()){
+			if(SGraph.isReversed(edge)){
+				reversedCount++;
+			}
+		}
+		assertTrue(reversedCount==1);
 	}
 }

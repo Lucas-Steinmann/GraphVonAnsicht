@@ -93,6 +93,12 @@ public class LayerAssigner implements ILayerAssigner {
 		return incomingEdges;
 	}
 	
+	/**
+	 * Initializes the DDGraph and its vertices and edges. 
+	 * Also initializes the vertex-set and edge-set that contain the vertices and edges of the original graph.
+	 * 
+	 * @param graph original graph to build a DefaultDirectedGraph from
+	 */
 	private void initialize(ILayerAssignerGraph graph){
 		this.graphVertices = graph.getVertexSet();
 		this.graphEdges = graph.getEdgeSet();

@@ -20,5 +20,5 @@ public interface ICycleRemover {
 	 * @param  graph the input graph to remove cycles from
 	 * @return       a set of edges whose direction has been reversed in order to remove cycles from the graph
 	 */
-	public Set<SugiyamaEdge> removeCycles(ICycleRemoverGraph graph);
+	public void removeCycles(ICycleRemoverGraph graph);
 }
