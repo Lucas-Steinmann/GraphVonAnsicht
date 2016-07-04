@@ -168,8 +168,7 @@ public class SugiyamaGraph
 
 	@Override
 	public void assignToLayer(SugiyamaVertex vertex, int layerNum) {
-		// TODO Auto-generated method stub
-
+		vertex.setLayer(layerNum);
 	}
 
 	@Override
