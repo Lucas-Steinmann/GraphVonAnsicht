@@ -14,7 +14,7 @@ import java.util.Set;
  * This class takes a directed graph and assigns every vertex in it a layer.
  */
 public class LayerAssigner implements ILayerAssigner {
-	private DefaultDirectedGraph<SugiyamaVertex, SugiyamaEdge> DDGraph = new DefaultDirectedGraph<SugiyamaVertex, SugiyamaEdge>("", 0);
+	private DefaultDirectedGraph<SugiyamaVertex, SugiyamaEdge> DDGraph = new DefaultDirectedGraph<SugiyamaVertex, SugiyamaEdge>("");
 	private Set<SugiyamaVertex> graphVertices;
 	private Set<SugiyamaEdge> graphEdges;
 

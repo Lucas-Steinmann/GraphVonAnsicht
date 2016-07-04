@@ -6,6 +6,7 @@ import edu.kit.student.graphmodel.OrthogonalEdgePath;
 import edu.kit.student.graphmodel.SerializedEdge;
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.objectproperty.GAnsProperty;
+import edu.kit.student.util.IdGenerator;
 
 import java.util.*;
 
@@ -18,7 +19,7 @@ public class DirectedEdge<V extends Vertex> implements Edge<V> {
 	private V target;
 	private V source;
 	private GAnsProperty<String> name;
-	private GAnsProperty<Integer> id;
+	private Integer id;
 	private GAnsProperty<String> label;
 
 	/**
@@ -28,10 +29,10 @@ public class DirectedEdge<V extends Vertex> implements Edge<V> {
 	 * @param label of the new edge
 	 * @param id of the new edge
 	 */
-    public DirectedEdge(String name, String label, Integer id) {       
+    public DirectedEdge(String name, String label) {       
         this.name = new GAnsProperty<String>("graphName", name);
         this.label = new GAnsProperty<String>("label", label);
-        this.id = new GAnsProperty<Integer>("graphID", id);
+        this.id = IdGenerator.getInstance().createId();
     }
     
     /**
@@ -43,10 +44,8 @@ public class DirectedEdge<V extends Vertex> implements Edge<V> {
      * @param source
      * @param target
      */
-    public DirectedEdge(String name, String label, Integer id, V source, V target) {    
-        this.name = new GAnsProperty<String>("graphName", name);
-        this.label = new GAnsProperty<String>("label", label);
-        this.id = new GAnsProperty<Integer>("graphID", id);
+    public DirectedEdge(String name, String label, V source, V target) {  
+    	this(name,label);
         this.source = source;
         this.target = target;
     }
@@ -96,7 +95,7 @@ public class DirectedEdge<V extends Vertex> implements Edge<V> {
 
 	@Override
 	public Integer getID() {
-		return id.getValue();
+		return id;
 	}
 
 	@Override
@@ -107,7 +106,7 @@ public class DirectedEdge<V extends Vertex> implements Edge<V> {
 	@Override
 	public void addToFastGraphAccessor(FastGraphAccessor fga) {
 	    fga.addEdgeForAttribute(this, "name", this.name.toString());
-	    fga.addEdgeForAttribute(this, "id", this.id.getValue());
+	    fga.addEdgeForAttribute(this, "id", this.id);
 	    fga.addEdgeForAttribute(this, "label", this.label.toString());
 
 	    fga.addEdgeForAttribute(this, "sourceVertex", this.source.getID());
@@ -122,7 +121,7 @@ public class DirectedEdge<V extends Vertex> implements Edge<V> {
 		attributes.add(new String[] {"label", this.label.toString()});
 		//TODO: add Vertices
 
-		return new SerializedEdge<>(attributes, this.name.toString(), this.id.getValue(), this.label.toString());
+		return new SerializedEdge<>(attributes, this.name.toString(), this.id, this.label.toString());
 	}
 
 	@Override

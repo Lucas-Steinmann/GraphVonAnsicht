@@ -15,8 +15,8 @@ import java.util.List;
  */
 public class CallGraph extends JoanaGraph<JoanaCompoundVertex,JoanaEdge<JoanaCompoundVertex>> {
 
-    public CallGraph(String name, Integer id) {
-        super(name, id);
+    public CallGraph(String name) {
+        super(name);
     }
 
     @Override

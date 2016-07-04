@@ -11,8 +11,8 @@ import java.util.List;
  */
 public class FieldAccessGraph extends JoanaGraph<JoanaVertex, JoanaEdge<JoanaVertex>> {
 
-    public FieldAccessGraph(String name, Integer id) {
-        super(name, id);
+    public FieldAccessGraph(String name) {
+        super(name);
     }
 
     @Override

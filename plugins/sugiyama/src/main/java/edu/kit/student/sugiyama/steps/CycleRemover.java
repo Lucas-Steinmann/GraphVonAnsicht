@@ -13,7 +13,7 @@ import java.util.Set;
  * so that the resulting Graph G' = (V, E\E_) is a DAG(Directed Acyclic Graph).
  */
 public class CycleRemover implements ICycleRemover {
-	private DefaultDirectedGraph<SugiyamaVertex, SugiyamaEdge> DDGraph = new DefaultDirectedGraph<SugiyamaVertex, SugiyamaEdge>("", 0);
+	private DefaultDirectedGraph<SugiyamaVertex, SugiyamaEdge> DDGraph = new DefaultDirectedGraph<SugiyamaVertex, SugiyamaEdge>("");
 	private Set<SugiyamaVertex> graphVertices;
 	private Set<SugiyamaEdge> graphEdges;
 	

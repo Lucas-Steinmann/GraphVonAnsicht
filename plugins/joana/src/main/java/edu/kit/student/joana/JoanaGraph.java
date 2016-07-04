@@ -17,8 +17,8 @@ public abstract class JoanaGraph<V extends JoanaVertex, E extends JoanaEdge<V>>
     private static int maxWidth = 600;
     private List<List<V>> layers;
     
-    public JoanaGraph(String name, Integer id) {
-        super(name, id);
+    public JoanaGraph(String name) {
+        super(name);
         layers = new ArrayList<List<V>>();
     }
 

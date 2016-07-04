@@ -308,8 +308,8 @@ public class SugiyamaGraph
 	 */
 	public static class SupplementPath extends DirectedEdge<DummyVertex>
 	{
-		public SupplementPath(String name, String label, Integer id) {
-			super(name, label, id);
+		public SupplementPath(String name, String label) {
+			super(name, label);
 		}
 
 		/**
@@ -340,8 +340,8 @@ public class SugiyamaGraph
 	 * A supplement edge which is part of a {@link SupplementPath}.
 	 */
 	public static class SupplementEdge extends DirectedEdge<DefaultVertex> {
-		public SupplementEdge(String name, String label, Integer id) {
-			super(name, label, id);
+		public SupplementEdge(String name, String label) {
+			super(name, label);
 		}
 	}
 
@@ -451,7 +451,7 @@ public class SugiyamaGraph
 		private SugiyamaVertex target;
 
 		private SugiyamaEdge(DirectedEdge<Vertex> edge) {
-			super(edge.getName(), edge.getLabel(), edge.getID());
+			super(edge.getName(), edge.getLabel());
 			this.wrappedEdge = edge;
 			this.reversed = false;
 		}

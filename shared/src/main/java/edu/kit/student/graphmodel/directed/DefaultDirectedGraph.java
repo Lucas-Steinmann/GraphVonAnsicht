@@ -11,6 +11,7 @@ import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.ViewableGraph;
 import edu.kit.student.objectproperty.GAnsProperty;
 import edu.kit.student.plugin.LayoutOption;
+import edu.kit.student.util.IdGenerator;
 
 import java.util.*;
 
@@ -23,7 +24,7 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
 
 	private DirectedGraphLayoutRegister register;
 	private GAnsProperty<String> name;
-	private GAnsProperty<Integer> id;
+	private Integer id;
 	private FastGraphAccessor fga;
 	private Set<V> vertexSet;
 	private Set<E> edgeSet;
@@ -40,14 +41,14 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
 	 * @param id
 	 *            The id of the new graph
 	 */
-	public DefaultDirectedGraph(String name, Integer id) {
+	public DefaultDirectedGraph(String name) {
 		// create Sets
-		this.vertexSet = new HashSet<V>();
-		this.edgeSet = new HashSet<E>();
 		this.name = new GAnsProperty<String>("graphName", name);
-		this.id = new GAnsProperty<Integer>("graphID", id);
+		this.id = IdGenerator.getInstance().createId();
 		this.fga = new FastGraphAccessor();
 		this.children = new ArrayList<Graph>();
+		this.vertexSet = new HashSet<V>();
+		this.edgeSet = new HashSet<E>();
 	}
 	
 	/**
@@ -58,12 +59,10 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
 	 * @param vertices of the new graph
 	 * @param edges of the new graph
 	 */
-    public DefaultDirectedGraph(String name, Integer id, Set<V> vertices, Set<E> edges) {
+    public DefaultDirectedGraph(String name, Set<V> vertices, Set<E> edges) {
+    	this(name);
         this.vertexSet = vertices;
         this.edgeSet = edges;
-        this.name = new GAnsProperty<String>("graphName", name);
-        this.id = new GAnsProperty<Integer>("graphID", id);
-        this.fga = new FastGraphAccessor();
     }
 
 	@Override
@@ -73,7 +72,7 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
 
 	@Override
 	public Integer getID() {
-		return id.getValue();
+		return id;
 	}
 
 	/**
@@ -210,8 +209,7 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
 
 	@Override
 	public CollapsedVertex<V, E> collapse(Set<V> subset) {
-		// TODO: Id übergeben
-		DefaultDirectedGraph<V, E> collapsedGraph = new DefaultDirectedGraph<V, E>("", 0);
+		DefaultDirectedGraph<V, E> collapsedGraph = new DefaultDirectedGraph<V, E>("");
 		CollapsedVertex<V, E> collapsed = new CollapsedVertex<V, E>("", "", 0);
 		subset.forEach((v) -> collapsedGraph.addVertex(v));
 		for (E edge : edgeSet) {

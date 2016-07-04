@@ -23,9 +23,9 @@ public class MethodGraph extends JoanaGraph<JoanaVertex, JoanaEdge<JoanaVertex>>
     private JoanaVertex entry;
     private HashSet<FieldAccess> fieldAccesses;
 
-    public MethodGraph(Set<JoanaVertex> vertices, Set<JoanaEdge> edges, 
-            Set<FieldAccess> fieldAccesses, String methodName, Integer id) {
-        super(methodName, id);
+    public MethodGraph(Set<JoanaVertex> vertices, Set<JoanaEdge<JoanaVertex>> edges, 
+            Set<FieldAccess> fieldAccesses, String methodName) {
+        super(methodName);
         this.fieldAccesses = new HashSet<>(fieldAccesses);
     }
     
