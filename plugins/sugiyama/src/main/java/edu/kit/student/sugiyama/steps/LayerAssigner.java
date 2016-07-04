@@ -37,7 +37,6 @@ public class LayerAssigner implements ILayerAssigner {
 		int layer = 0;
 
 		while (!vertices.isEmpty()) {
-			System.out.println(vertices.size());
 			Set<SugiyamaGraph.SugiyamaVertex> currentSources = getSources(graph, edges, vertices);
 
 			for (SugiyamaGraph.SugiyamaVertex vertex : currentSources) {

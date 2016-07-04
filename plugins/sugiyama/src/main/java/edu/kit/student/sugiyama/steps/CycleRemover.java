@@ -59,8 +59,6 @@ public class CycleRemover implements ICycleRemover {
 				vertex = getCurrentSource(DDVertices);
 			}
 
-			System.out.println(DDVertices.toString());
-
 			if (!DDVertices.isEmpty()) {
 				int outInDiff = 0;
 				SugiyamaVertex w = DDVertices.iterator().next();
