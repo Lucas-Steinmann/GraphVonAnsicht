@@ -265,8 +265,13 @@ public class SugiyamaGraph
 
 	@Override
 	public Set<SugiyamaEdge> getReversedEdges() {
-		// TODO Auto-generated method stub
-		return null;
+		Set<SugiyamaEdge> result = new HashSet<SugiyamaEdge>();
+		for(SugiyamaEdge edge : this.edgeSet){
+			if(isReversed(edge)){
+				result.add(edge);
+			}
+		}
+		return result;
 	}
 
 	@Override
