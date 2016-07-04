@@ -40,6 +40,6 @@ public class CycleRemoverTest {
 		
 		CycleRemover cr = new CycleRemover();
 		Set<SugiyamaEdge> set = cr.removeCycles(SGraph);
-		assertTrue(true);
+		assertTrue(set.size()==1);
 	}
 }
