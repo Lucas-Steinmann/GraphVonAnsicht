@@ -485,7 +485,7 @@ public class SugiyamaGraph
 		 * 		true if this edge is reversed, false otherwise
 		 */
 		private boolean isReversed() {
-			return this.isReversed();
+			return this.isReversed;
 		}
 
 		/**
