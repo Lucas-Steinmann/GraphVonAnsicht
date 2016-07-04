@@ -17,9 +17,8 @@ public class OptimalCycleRemover implements ICycleRemover {
 	 * @see sugiyama.ICycleRemover#removeCycles(sugiyama.ICycleRemoverGraph)
 	 */
 	@Override
-	public Set<SugiyamaEdge> removeCycles(ICycleRemoverGraph graph) {
+	public void removeCycles(ICycleRemoverGraph graph) {
 		// TODO Auto-generated method stub
-		return null;
 	}
 
 }
