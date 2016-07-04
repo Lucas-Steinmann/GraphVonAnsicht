@@ -8,8 +8,6 @@ import edu.kit.student.sugiyama.graph.SugiyamaGraph.SugiyamaEdge;
 import edu.kit.student.sugiyama.steps.CycleRemover;
 import org.junit.Test;
 
-import java.util.Set;
-
 import static org.junit.Assert.assertTrue;
 
 
@@ -25,9 +23,9 @@ public class CycleRemoverTest {
 		DefaultVertex v1 = new DefaultVertex("v1", "");
 		DefaultVertex v2 = new DefaultVertex("v2", "");
 		DefaultVertex v3 = new DefaultVertex("v3", "");
-		DirectedEdge e1 = new DirectedEdge("e1","");
-		DirectedEdge e2 = new DirectedEdge("e2","");
-		DirectedEdge e3 = new DirectedEdge("e3","");
+		DirectedEdge<DefaultVertex> e1 = new DirectedEdge<DefaultVertex>("e1","");
+		DirectedEdge<DefaultVertex> e2 = new DirectedEdge<DefaultVertex>("e2","");
+		DirectedEdge<DefaultVertex> e3 = new DirectedEdge<DefaultVertex>("e3","");
 		e1.setVertices(v1, v2);
 		e2.setVertices(v2, v3);
 		e3.setVertices(v3, v1);
@@ -50,18 +48,18 @@ public class CycleRemoverTest {
 		assertTrue(reversedCount==1);
 	}
 	
-	
+	@Test
 	public void testDoubleCycle(){
 		DefaultDirectedGraph<DefaultVertex, DirectedEdge<DefaultVertex>> DDGraph = new DefaultDirectedGraph<DefaultVertex, DirectedEdge<DefaultVertex>>("");
 		DefaultVertex v1 = new DefaultVertex("v1", "");
 		DefaultVertex v2 = new DefaultVertex("v2", "");
 		DefaultVertex v3 = new DefaultVertex("v3", "");
 		DefaultVertex v4 = new DefaultVertex("v4", "");
-		DirectedEdge e1 = new DirectedEdge("e1","");
-		DirectedEdge e2 = new DirectedEdge("e2","");
-		DirectedEdge e3 = new DirectedEdge("e3","");
-		DirectedEdge e4 = new DirectedEdge("e4","");
-		DirectedEdge e5 = new DirectedEdge("e5","");
+		DirectedEdge<DefaultVertex> e1 = new DirectedEdge<DefaultVertex>("e1","");
+		DirectedEdge<DefaultVertex> e2 = new DirectedEdge<DefaultVertex>("e2","");
+		DirectedEdge<DefaultVertex> e3 = new DirectedEdge<DefaultVertex>("e3","");
+		DirectedEdge<DefaultVertex> e4 = new DirectedEdge<DefaultVertex>("e4","");
+		DirectedEdge<DefaultVertex> e5 = new DirectedEdge<DefaultVertex>("e5","");
 		e1.setVertices(v1, v2);
 		e2.setVertices(v2, v3);
 		e3.setVertices(v3, v4);
@@ -86,6 +84,6 @@ public class CycleRemoverTest {
 				reversedCount++;
 			}
 		}
-		assertTrue(reversedCount==1);
+		assertTrue(reversedCount==1||reversedCount==2);
 	}
 }
