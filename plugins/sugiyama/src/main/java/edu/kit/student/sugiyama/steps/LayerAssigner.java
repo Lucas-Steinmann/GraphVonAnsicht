@@ -1,8 +1,12 @@
 package edu.kit.student.sugiyama.steps;
 
+import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
 import edu.kit.student.sugiyama.RelativeLayerConstraint;
+import edu.kit.student.sugiyama.graph.ICycleRemoverGraph;
 import edu.kit.student.sugiyama.graph.ILayerAssignerGraph;
 import edu.kit.student.sugiyama.graph.SugiyamaGraph;
+import edu.kit.student.sugiyama.graph.SugiyamaGraph.SugiyamaEdge;
+import edu.kit.student.sugiyama.graph.SugiyamaGraph.SugiyamaVertex;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -11,6 +15,9 @@ import java.util.Set;
  * This class takes a directed graph and assigns every vertex in it a layer.
  */
 public class LayerAssigner implements ILayerAssigner {
+	private DefaultDirectedGraph<SugiyamaVertex, SugiyamaEdge> DDGraph = new DefaultDirectedGraph<SugiyamaVertex, SugiyamaEdge>("", 0);
+	private Set<SugiyamaVertex> graphVertices;
+	private Set<SugiyamaEdge> graphEdges;
 
 	@Override
 	public void addConstraints(Set<RelativeLayerConstraint> constraints) {
@@ -32,17 +39,18 @@ public class LayerAssigner implements ILayerAssigner {
 
 	@Override
 	public void assignLayers(ILayerAssignerGraph graph) {
-		Set<SugiyamaGraph.SugiyamaVertex> vertices = graph.getVertexSet();
-		Set<SugiyamaGraph.SugiyamaEdge> edges = graph.getEdgeSet();
+		initialize(graph);
+		Set<SugiyamaVertex> DDVertices = DDGraph.getVertexSet();
+		Set<SugiyamaEdge> DDEdges = DDGraph.getEdgeSet();
 		int layer = 0;
 
-		while (!vertices.isEmpty()) {
-			Set<SugiyamaGraph.SugiyamaVertex> currentSources = getSources(graph, edges, vertices);
+		while (!DDVertices.isEmpty()) {
+			Set<SugiyamaGraph.SugiyamaVertex> currentSources = getSources(graph, DDEdges, DDVertices);
 
 			for (SugiyamaGraph.SugiyamaVertex vertex : currentSources) {
 				vertex.setLayer(layer);
-				vertices.remove(vertex);
-				edges.removeAll(graph.outgoingEdgesOf(vertex));
+				DDVertices.remove(vertex);
+				DDEdges.removeAll(graph.outgoingEdgesOf(vertex));
 			}
 
 			layer++;
@@ -73,14 +81,31 @@ public class LayerAssigner implements ILayerAssigner {
 			SugiyamaGraph.SugiyamaVertex vertex
 	) {
 		Set<SugiyamaGraph.SugiyamaEdge> incomingEdges = graph.incomingEdgesOf(vertex);
+		Set<SugiyamaEdge> tempEdges = new HashSet<SugiyamaEdge>(); //necessary in order don't to get a
+		tempEdges.addAll(incomingEdges);							//concurrentModificationException 
+		
 
-		for (SugiyamaGraph.SugiyamaEdge edge : incomingEdges) {
+		for (SugiyamaGraph.SugiyamaEdge edge : tempEdges) {
 			if (!edges.contains(edge)) {
 				incomingEdges.remove(edge);
 			}
 		}
 
 		return incomingEdges;
+	}
+	
+	private void initialize(ILayerAssignerGraph graph){
+		this.graphVertices = graph.getVertexSet();
+		this.graphEdges = graph.getEdgeSet();
+		
+		for(SugiyamaVertex vertex : this.graphVertices){
+			DDGraph.addVertex(vertex);
+		}
+
+		for(SugiyamaEdge edge: this.graphEdges){
+			DDGraph.addEdge(edge);
+		}
+		
 	}
 	
 

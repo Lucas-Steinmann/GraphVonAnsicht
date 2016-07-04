@@ -169,6 +169,8 @@ public class SugiyamaGraph
 	@Override
 	public void assignToLayer(SugiyamaVertex vertex, int layerNum) {
 		vertex.setLayer(layerNum);
+		//TODO add the specified vertex to the specified layer (in the list) 
+		//in case the layer was empty before or doesn't exist, create a new one and add it to layers
 	}
 
 	@Override

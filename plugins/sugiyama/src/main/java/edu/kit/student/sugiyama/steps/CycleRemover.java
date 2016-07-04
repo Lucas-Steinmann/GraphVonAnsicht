@@ -17,18 +17,29 @@ public class CycleRemover implements ICycleRemover {
 	private Set<SugiyamaVertex> graphVertices;
 	private Set<SugiyamaEdge> graphEdges;
 	
-	@Override
-	public Set<SugiyamaEdge> removeCycles(ICycleRemoverGraph graph) {
-		graphVertices = graph.getVertexSet();
-		graphEdges = graph.getEdgeSet();
-
-		for(SugiyamaVertex vertex : graphVertices){
+	/**
+	 * Initializes the DDGraph and its vertices and edges. 
+	 * Also initializes the vertex-set and edge-set that contain the vertices and edges of the original graph.
+	 * 
+	 * @param graph original graph to build a DefaultDirectedGraph from
+	 */
+	private void initialize(ICycleRemoverGraph graph){
+		this.graphVertices = graph.getVertexSet();
+		this.graphEdges = graph.getEdgeSet();
+		
+		for(SugiyamaVertex vertex : this.graphVertices){
 			DDGraph.addVertex(vertex);
 		}
 
-		for(SugiyamaEdge edge: graphEdges){
+		for(SugiyamaEdge edge: this.graphEdges){
 			DDGraph.addEdge(edge);
 		}
+		
+	}
+	
+	@Override
+	public Set<SugiyamaEdge> removeCycles(ICycleRemoverGraph graph) {
+		initialize(graph);
 
 		Set<SugiyamaEdge> DAGEdges = new HashSet<SugiyamaEdge>();
 		Set<SugiyamaVertex> DDVertices = DDGraph.getVertexSet();
@@ -78,7 +89,7 @@ public class CycleRemover implements ICycleRemover {
 			}
 		}
 
-		return DAGEdges;
+		return getRemainingEdges(DAGEdges);
 	}
 	
 	private SugiyamaVertex getCurrentSink(Set<SugiyamaVertex> vertices){
@@ -137,5 +148,15 @@ public class CycleRemover implements ICycleRemover {
 		}
 
 		return incomingEdges;
+	}
+	
+	private Set<SugiyamaEdge> getRemainingEdges(Set<SugiyamaEdge> DAGEdges){
+		Set<SugiyamaEdge> result = new HashSet<SugiyamaEdge>();
+		for(SugiyamaEdge edge:this.graphEdges){
+			if(!DAGEdges.contains(edge)){
+				result.add(edge);
+			}
+		}
+		return result;
 	}
 }

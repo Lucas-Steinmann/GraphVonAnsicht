@@ -1,4 +1,4 @@
-package edu.kit.student.sugiyama.steps;
+package edu.kit.student.sugiyama.steps.tests;
 
 import edu.kit.student.graphmodel.DefaultVertex;
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
@@ -41,6 +41,7 @@ public class CycleRemoverTest {
 		
 		CycleRemover cr = new CycleRemover();
 		Set<SugiyamaEdge> set = cr.removeCycles(SGraph);
+		set.forEach(edge->System.out.println(edge.getName()));
 		assertTrue(set.size()==1);
 	}
 }
