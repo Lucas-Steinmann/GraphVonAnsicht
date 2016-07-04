@@ -5,6 +5,7 @@ import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
 import edu.kit.student.graphmodel.directed.DirectedEdge;
 import edu.kit.student.sugiyama.graph.SugiyamaGraph;
 import edu.kit.student.sugiyama.graph.SugiyamaGraph.SugiyamaEdge;
+import edu.kit.student.sugiyama.steps.CycleRemover;
 import org.junit.Test;
 
 import java.util.Set;
