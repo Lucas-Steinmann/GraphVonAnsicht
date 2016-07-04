@@ -50,7 +50,7 @@ public class CycleRemoverTest {
 		assertTrue(reversedCount==1);
 	}
 	
-	
+	@Test
 	public void testDoubleCycle(){
 		DefaultDirectedGraph<DefaultVertex, DirectedEdge<DefaultVertex>> DDGraph = new DefaultDirectedGraph<DefaultVertex, DirectedEdge<DefaultVertex>>("");
 		DefaultVertex v1 = new DefaultVertex("v1", "");
