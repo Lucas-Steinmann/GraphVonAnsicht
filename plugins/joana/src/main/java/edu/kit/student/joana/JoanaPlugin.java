@@ -66,37 +66,31 @@ public class JoanaPlugin implements Plugin {
 	}
 
 	@Override
-	public void load() {
-	}
+	public void load() { }
 
 	@Override
 	public List<WorkspaceOption> getWorkspaceOptions() {
-		// TODO Auto-generated method stub
-		return null;
+		return new LinkedList<>();
 	}
 
 	@Override
 	public List<VertexFilter<? extends Vertex>> getVertexFilter() {
-		// TODO Auto-generated method stub
-		return null;
+		return new LinkedList<>();
 	}
 
     @Override
     public List<EdgeFilter<? extends Edge<? extends Vertex>, ? extends Vertex>> getEdgeFilter() {
-        // TODO Auto-generated method stub
-        return null;
+		return new LinkedList<>();
     }
 
 	@Override
 	public List<Exporter> getExporter() {
-		// TODO Auto-generated method stub
-		return null;
+		return new LinkedList<>();
 	}
 
 	@Override
 	public List<Importer> getImporter() {
-		// TODO Auto-generated method stub
-		return null;
+		return new LinkedList<>();
 	}
 
 	public static CallGraphLayoutRegister getCallGraphLayoutRegister() {
