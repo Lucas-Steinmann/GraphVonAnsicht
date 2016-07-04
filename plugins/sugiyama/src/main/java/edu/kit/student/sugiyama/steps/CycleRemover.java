@@ -47,6 +47,7 @@ public class CycleRemover implements ICycleRemover {
 
 		while(!DDVertices.isEmpty()) {
 			SugiyamaVertex vertex = getCurrentSink(DDVertices);
+			
 
 			while (vertex != null) {    //add sink vertices to the edge set in the final directed acyclic graph
 				DAGEdges.addAll(DDGraph.incomingEdgesOf(vertex));
@@ -71,8 +72,8 @@ public class CycleRemover implements ICycleRemover {
 			}
 
 			if (!DDVertices.isEmpty()) {
-				int outInDiff = 0;
-				SugiyamaVertex w = DDVertices.iterator().next();
+				int outInDiff = -1;
+				SugiyamaVertex w = null;
 
 				for (SugiyamaVertex tmpVertex : DDVertices) {
 					int vertexDiff = Math.abs(getCorrectedOutcomingEdges(tmpVertex).size() - getCorrectedIncomingEdges(tmpVertex).size());
@@ -158,5 +159,18 @@ public class CycleRemover implements ICycleRemover {
 			}
 		}
 		return result;
+	}
+	
+	private void print(){
+		String out="";
+		out+="Vertices: ";
+		for(SugiyamaVertex v:(Set<SugiyamaVertex>)DDGraph.getVertexSet()){
+			out+=v.getName()+",";
+		}
+		out+="| Edges: ";
+		for(SugiyamaEdge e: (Set<SugiyamaEdge>)DDGraph.getEdgeSet()){
+			out+=e.getName()+",";
+		}
+		System.out.println(out);
 	}
 }
