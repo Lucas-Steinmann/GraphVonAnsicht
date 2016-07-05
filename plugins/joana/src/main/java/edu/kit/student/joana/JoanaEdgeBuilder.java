@@ -17,6 +17,7 @@ public class JoanaEdgeBuilder implements IEdgeBuilder {
     JoanaVertex source = null;
     JoanaVertex target = null;
     String edgeKind = "";
+    String name = "";
     
     public JoanaEdgeBuilder(CallGraphBuilder graphBuilder) {
         this.callGraph = graphBuilder;
@@ -30,7 +31,7 @@ public class JoanaEdgeBuilder implements IEdgeBuilder {
     
 	@Override
 	public void setID(String id) {
-		// TODO Auto-generated method stub
+	    this.name = id;
 	}
 
 
@@ -46,8 +47,7 @@ public class JoanaEdgeBuilder implements IEdgeBuilder {
 		}
 	}
 
-	@Override
-	public Edge build() {
+	public JoanaEdge build() {
 		// TODO build edge and set to graphbuilder
 		return null;
 	}

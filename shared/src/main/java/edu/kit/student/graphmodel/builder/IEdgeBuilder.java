@@ -36,12 +36,4 @@ public interface IEdgeBuilder {
 	 * 				Value of the attribute
 	 */
 	public abstract void addData(String keyname, String value);
-	
-	/**.
-	 * Builds an Edge with the given Data and returns it.
-	 * 
-	 * @return The Edge that is being build by the IEdgeBuilder
-	 */
-	public Edge build();
-
 }

@@ -18,31 +18,13 @@ import java.util.TreeSet;
  */
 public class MethodGraphBuilder implements IGraphBuilder {
 
-    JoanaGraphModelBuilder modelBuilder;
-    CallGraphBuilder callGraphBuilder = null;
     String name;
     Set<JoanaVertex> vertices = new TreeSet<JoanaVertex>();
     
     /**
-     * Constructor for methodgraphBuilder which is not created by a callgraphBuilder.
-     * 
-     * @param modelBuilder
-     * @param name
-     */
-    public MethodGraphBuilder(JoanaGraphModelBuilder modelBuilder, String name) {
-        this.modelBuilder = modelBuilder;
-        this.name = name;
-    }
-    
-    /**
      * Constructor for methodgraphBuilder which is created by a callgraphBuilder.
-     * 
-     * @param modelBuilder
-     * @param name
      */
-    public MethodGraphBuilder(JoanaGraphModelBuilder modelBuilder, CallGraphBuilder callGraphBuilder, String name) {
-        this.modelBuilder = modelBuilder;
-        this.callGraphBuilder = callGraphBuilder;
+    public MethodGraphBuilder(String name) {
         this.name = name;
     }
     
@@ -54,7 +36,7 @@ public class MethodGraphBuilder implements IGraphBuilder {
 
 	@Override
 	public IVertexBuilder getVertexBuilder(String vertexId) {
-		return new JoanaVertexBuilder(this, vertexId);
+		return new JoanaVertexBuilder(vertexId);
 	}
 	
     @Override
@@ -73,15 +55,10 @@ public class MethodGraphBuilder implements IGraphBuilder {
         this.vertices.add(vertex);
     }
 
-	@Override
-	public Graph build() {
+	public MethodGraph build() {
 	    //TODO: Get fieldaccess
 	    
 	    //check if methodgraph belongs to a callgraph
-	    if (this.callGraphBuilder != null) {
-	        //TODO: set methodgraph to callgraph as compoundvertex
-	    }
-	    
 	    //TODO set methodgraph to model
 	    //this.modelBuilder.addMethodGraph(methodGraph);
 	    
@@ -89,5 +66,4 @@ public class MethodGraphBuilder implements IGraphBuilder {
 		//return methodGraph;
         return null;
 	}
-
 }

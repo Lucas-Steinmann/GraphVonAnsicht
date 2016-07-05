@@ -24,12 +24,4 @@ public interface IVertexBuilder {
 	 * 			Value of the attribute
 	 */
 	public abstract void addData(String keyname, String value);
-
-	/**.
-	 * Builds a Vertex with the given Data and returns it.
-	 * 
-	 * @return The Vertex that is being build by the IVertexBuilder
-	 */
-	public Vertex build();
-
 }

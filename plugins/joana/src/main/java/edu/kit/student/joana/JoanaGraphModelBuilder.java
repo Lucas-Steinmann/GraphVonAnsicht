@@ -1,8 +1,5 @@
 package edu.kit.student.joana;
 
-import java.util.LinkedList;
-import java.util.List;
-
 import edu.kit.student.graphmodel.GraphModel;
 import edu.kit.student.graphmodel.builder.IGraphBuilder;
 import edu.kit.student.graphmodel.builder.IGraphModelBuilder;
@@ -10,6 +7,9 @@ import edu.kit.student.joana.callgraph.CallGraph;
 import edu.kit.student.joana.callgraph.CallGraphBuilder;
 import edu.kit.student.joana.methodgraph.MethodGraph;
 import edu.kit.student.joana.methodgraph.MethodGraphBuilder;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * The JoanaGraphModelBuilder implements the {@link IGraphModelBuilder} and
@@ -29,16 +29,19 @@ public class JoanaGraphModelBuilder implements IGraphModelBuilder {
 	public IGraphBuilder getGraphBuilder(String graphId) {
 	    //check if callgraphbuilder
 	    if(graphId == "callgraph") {
-	        return new CallGraphBuilder(this, graphId);
+	        return new CallGraphBuilder(graphId);
 	    }
 	    //else return methodgraphbuilder
-		return new MethodGraphBuilder(this, graphId);
+		return new MethodGraphBuilder(graphId);
 	}
 
 	@Override
 	public GraphModel build() {
-		//TODO: vor dem Return die spezielle JoanaGraphModel-Instanz im workspace.setGraphModel(JoanaGraphModel model) setzen.
-		return null;
+	    JoanaGraphModel model = new JoanaGraphModel();
+	    model.setCallGraph(callgraph);
+	    model.setMethodGraphs(methodgraphs);
+	    workspace.setGraphModel(model);
+		return model;
 	}
 	
 	/**

@@ -1,10 +1,6 @@
 package edu.kit.student.joana;
 
-import edu.kit.student.graphmodel.builder.IGraphBuilder;
 import edu.kit.student.graphmodel.builder.IVertexBuilder;
-import edu.kit.student.graphmodel.Vertex;
-import edu.kit.student.joana.callgraph.CallGraphBuilder;
-import edu.kit.student.joana.methodgraph.MethodGraphBuilder;
 
 /**
  * The JoanaVertexBuilder implements an {@link IVertexBuilder} and
@@ -12,39 +8,85 @@ import edu.kit.student.joana.methodgraph.MethodGraphBuilder;
  */
 public class JoanaVertexBuilder implements IVertexBuilder {
     
-    boolean vertexForCallGraph;
-    CallGraphBuilder callGraph = null;
-    MethodGraphBuilder methodGraph = null;
-    String id;
+    String id = "";
+    String label = "";
+    JoanaVertex.KIND kind;
+    private String source = "";
+    private int proc;
+    private String operation = "";
+    private String bcName = "";
+    private int bcIndex;
+    private int sr;
+    private int sc;
+    private int er;
+    private int ec;
     
-    public JoanaVertexBuilder(CallGraphBuilder graphBuilder, String id) {
-        this.callGraph = graphBuilder;
-        vertexForCallGraph = true;
+    public JoanaVertexBuilder(String id) {
         this.id = id;
     }
     
-    public JoanaVertexBuilder(MethodGraphBuilder graphBuilder, String id) {
-        this.methodGraph = graphBuilder;
-        vertexForCallGraph = false;
-        this.id = id;
+    
+    @Override
+    public void addData(String value, String keyname) {
+        switch (keyname) {
+          case "nodeKind":
+              kind = JoanaVertex.KIND.valueOf(keyname);
+              break;
+          case "nodeSource": 
+              this.source = value;
+              break;
+          case "nodeOperaton":
+              operation = value;
+              break;
+          case "nodeLabel":
+              label = value;
+              break;
+          case "nodeBcName":
+              bcName = value;
+              break;
+          case "nodeBCIndex":
+              bcIndex = parseNum(value);
+              break;
+          case "nodeSr":
+              sr = parseNum(value);
+              break;
+          case "nodeSc":
+              sc = parseNum(value);
+              break;
+          case "nodeEr":
+              er = parseNum(value);
+              break;
+          case "nodeEc":
+              ec = parseNum(value);
+              break;
+          default:
+              break;
+        }
     }
     
-	@Override
-	public void addData(String value, String keyname) {
-		// TODO Auto-generated method stub
-	    //TODO parse data and set
-	}
+    private Integer parseNum(String value) {
+        try {
+            return Integer.parseInt(value);
+        } catch (NumberFormatException exception) {
+            return 0;
+        }
+    }
 
-	@Override
-	public Vertex build() {
-		//TODO build vertex
-		return null;
-	}
+    /**
+     * Builds JoanaVertex from the given data.
+     * @return the built vertex
+     */
+    public JoanaVertex build() {
+        // The ID in the persistent data is the name of the vertex.
+        JoanaVertex vertex = new JoanaVertex(id, label);
+        vertex.setProperties(kind, source, proc, operation, bcName, bcIndex, sr, sc, er, ec);
+        //TODO Check relations nodeKind-nodeOperation and maybe others
+        return vertex;
+    }
 
-	@Override
-	public void setID(String id) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void setID(String id) {
+        this.id = id;
+    }
 
 }

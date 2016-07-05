@@ -35,11 +35,4 @@ public interface IGraphBuilder {
      *         graphID.
      */
     public IGraphBuilder getGraphBuilder(String graphID);
-
-	/**
-	 * Builds a graph from the given settings and returns it.
-	 * 
-	 * @return The graph that is being build by the IGraphBuilder.
-	 */
-	public Graph build();
 }
