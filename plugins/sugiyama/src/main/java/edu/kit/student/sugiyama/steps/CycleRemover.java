@@ -55,20 +55,29 @@ public class CycleRemover implements ICycleRemover {
 
 			if (!DDVertices.isEmpty()) {
 				int outInDiff = -1;
-				SugiyamaVertex w = null;
+				int outSize = 0;
+				int inSize = 0;
+				SugiyamaVertex highestOutInDiffVertex = null;
 
 				for (SugiyamaVertex tmpVertex : DDVertices) {
-					int vertexDiff = Math.abs(getCorrectedOutcomingEdges(tmpVertex).size() - getCorrectedIncomingEdges(tmpVertex).size());
+					outSize = getCorrectedOutcomingEdges(tmpVertex).size();
+					inSize = getCorrectedIncomingEdges(tmpVertex).size();
+					int vertexDiff = Math.abs(outSize - inSize);
 					if (vertexDiff > outInDiff) {
-						w = tmpVertex;
+						highestOutInDiffVertex = tmpVertex;
 						outInDiff = vertexDiff;
 					}
 				}
 
-				DAGEdges.addAll(DDGraph.outgoingEdgesOf(w));
-				DDVertices.remove(w);
-				DDEdges.removeAll(DDGraph.outgoingEdgesOf(w));
-				DDEdges.removeAll(DDGraph.incomingEdgesOf(w));
+				if (outSize < inSize) {
+					DAGEdges.addAll(DDGraph.outgoingEdgesOf(highestOutInDiffVertex));
+				} else {
+					DAGEdges.addAll(DDGraph.incomingEdgesOf(highestOutInDiffVertex));
+				}
+
+				DDVertices.remove(highestOutInDiffVertex);
+				DDEdges.removeAll(DDGraph.outgoingEdgesOf(highestOutInDiffVertex));
+				DDEdges.removeAll(DDGraph.incomingEdgesOf(highestOutInDiffVertex));
 			}
 		}
 
