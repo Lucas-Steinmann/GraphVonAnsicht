@@ -5,10 +5,13 @@ import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
 import edu.kit.student.graphmodel.directed.DirectedEdge;
 import edu.kit.student.sugiyama.graph.SugiyamaGraph;
 import edu.kit.student.sugiyama.graph.SugiyamaGraph.SugiyamaEdge;
+import edu.kit.student.sugiyama.graph.SugiyamaGraph.SugiyamaVertex;
 import edu.kit.student.sugiyama.steps.CycleRemover;
 import org.junit.Test;
 
 import static org.junit.Assert.assertTrue;
+
+import java.util.Set;
 
 
 /**
@@ -39,13 +42,8 @@ public class CycleRemoverTest {
 		
 		CycleRemover cr = new CycleRemover();
 		cr.removeCycles(SGraph);
-		int reversedCount = 0;
-		for(SugiyamaEdge edge : SGraph.getEdgeSet()){
-			if(SGraph.isReversed(edge)){
-				reversedCount++;
-			}
-		}
-		assertTrue(reversedCount==1);
+
+		assertTrue(testDAG(SGraph).isEmpty());
 	}
 	
 	@Test
@@ -78,12 +76,41 @@ public class CycleRemoverTest {
 		
 		CycleRemover cr = new CycleRemover();
 		cr.removeCycles(SGraph);
-		int reversedCount = 0;
-		for(SugiyamaEdge edge : SGraph.getEdgeSet()){
-			if(SGraph.isReversed(edge)){
-				reversedCount++;
+
+		assertTrue(testDAG(SGraph).isEmpty());
+	}
+	
+	/**
+	 * Helper method for calculating whether the inserted graph contains a cycle or not.
+	 * 
+	 * @param sGraph input graph
+	 * @return the set of vertices after finishing the algorithm. If it is empty, the input graph contained no cycle(s)
+	 */
+	private Set<SugiyamaVertex> testDAG(SugiyamaGraph sGraph){
+		SugiyamaVertex temp = getSink(sGraph);
+		
+		while(temp!=null){
+			System.out.println(temp.getName());
+			sGraph.getVertexSet().remove(temp);
+			sGraph.getEdgeSet().removeAll(sGraph.incomingEdgesOf(temp));
+			temp = getSink(sGraph);
+		}
+		return sGraph.getVertexSet();
+	}
+	
+	/**
+	 * returns a vertex that has no outgoing vertices, null otherwise.
+	 * 
+	 * @param sGraph input graph
+	 * @return a sugiyama vertex with out degree 0, null otherwise
+	 */
+	private SugiyamaVertex getSink(SugiyamaGraph sGraph){
+		for(SugiyamaVertex v : sGraph.getVertexSet()){
+//			System.out.println(v.getName()+","+sGraph.outdegreeOf(v));
+			if(sGraph.outdegreeOf(v)==0){
+				return v;
 			}
 		}
-		assertTrue(reversedCount==1||reversedCount==2);
+		return null;
 	}
 }
