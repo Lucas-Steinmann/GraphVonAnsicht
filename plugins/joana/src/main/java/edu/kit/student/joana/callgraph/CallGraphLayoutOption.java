@@ -3,6 +3,7 @@ package edu.kit.student.joana.callgraph;
 import edu.kit.student.joana.JoanaCompoundVertex;
 import edu.kit.student.joana.JoanaEdge;
 import edu.kit.student.joana.JoanaVertex;
+import edu.kit.student.parameter.Settings;
 import edu.kit.student.plugin.LayoutAlgorithm;
 import edu.kit.student.plugin.LayoutOption;
 
@@ -23,6 +24,7 @@ public abstract class CallGraphLayoutOption extends LayoutOption {
 	 *            CallGraphLayoutOption.
 	 */
 	public void setGraph(CallGraph graph) {
+	    this.graph = graph;
 	}
 
 	/**
@@ -37,9 +39,17 @@ public abstract class CallGraphLayoutOption extends LayoutOption {
 
 	@Override
 	public void applyLayout() {
+	    if (layout == null) {
+	        return;
+	    }
 		layout.layout(graph);
 	}
-	
-	@Override
-	public void chooseLayout() {};
+
+    @Override
+    public Settings getSettings() {
+        if (layout == null) {
+            this.chooseLayout();
+        }
+        return layout.getSettings();
+    }
 }

@@ -79,7 +79,7 @@ public class MethodGraph extends JoanaGraph<JoanaVertex, JoanaEdge<JoanaVertex>>
      * {@link LayoutOption} for all method graphs statically.
      * @param register The {@link LayoutRegister} that will be set.
      */
-    protected static void setRegister(LayoutRegister<MethodGraphLayoutOption> register) {
+    public static void setRegister(LayoutRegister<MethodGraphLayoutOption> register) {
         MethodGraph.register = register;
     }
 

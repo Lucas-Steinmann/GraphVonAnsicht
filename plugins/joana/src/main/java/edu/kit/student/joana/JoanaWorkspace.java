@@ -5,6 +5,7 @@ import java.util.Map;
 
 import edu.kit.student.graphmodel.GraphModel;
 import edu.kit.student.graphmodel.builder.IGraphModelBuilder;
+import edu.kit.student.joana.methodgraph.MethodGraph;
 import edu.kit.student.parameter.Parameter;
 import edu.kit.student.parameter.Settings;
 import edu.kit.student.plugin.Workspace;
@@ -22,7 +23,7 @@ public class JoanaWorkspace implements Workspace {
 
 	public JoanaWorkspace() {
 		Map<String, Parameter<?,?>> parameters = new HashMap<String, Parameter<?,?>>();
-		//TODO: Welche Parameter werden in den Settings benötigt?
+		//TODO: Welche Parameter werden in den Settings benï¿½tigt?
 		
 		settings = new Settings(parameters);
 		
@@ -31,7 +32,7 @@ public class JoanaWorkspace implements Workspace {
 	
 	@Override
 	public void initialize() {
-		//TODO: Setzen der werte aus den Parametern(falls benötigt)
+		//TODO: Setzen der werte aus den Parametern(falls benï¿½tigt)
 	}
 
 	@Override
