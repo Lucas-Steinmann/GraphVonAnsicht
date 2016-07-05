@@ -3,10 +3,10 @@
  */
 package edu.kit.student.sugiyama;
 
-import java.util.Set;
-
 import edu.kit.student.plugin.Constraint;
 import edu.kit.student.sugiyama.graph.SugiyamaGraph.SugiyamaVertex;
+
+import java.util.Set;
 
 /**
  * A absolute constraint, regarding layer assignment, for one set of vertices.
@@ -23,6 +23,7 @@ public class AbsoluteLayerConstraint implements Constraint {
 	private Set<SugiyamaVertex> vertices;
 	private int minLayer;
 	private int maxLayer;
+	private String name = "AbsoluteLayerConstraint";
 
 	/**
 	 * Constructs an AbsoluteLayerConstraint.
@@ -40,8 +41,7 @@ public class AbsoluteLayerConstraint implements Constraint {
 	 */
 	@Override
 	public String getName() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.name;
 	}
 
 	/**
