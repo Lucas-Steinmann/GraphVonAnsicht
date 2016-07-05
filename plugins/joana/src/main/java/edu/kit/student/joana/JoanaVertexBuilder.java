@@ -8,7 +8,7 @@ import edu.kit.student.graphmodel.builder.IVertexBuilder;
  */
 public class JoanaVertexBuilder implements IVertexBuilder {
     
-    String id = "";
+    String name = "";
     String label = "";
     JoanaVertex.Kind kind;
     private String source = "";
@@ -22,7 +22,8 @@ public class JoanaVertexBuilder implements IVertexBuilder {
     private int ec;
     
     public JoanaVertexBuilder(String id) {
-        this.id = id;
+        // The id in the persistent data is the name of the joana vertex.
+        this.name = id;
     }
     
     
@@ -77,8 +78,7 @@ public class JoanaVertexBuilder implements IVertexBuilder {
      * @return the built vertex
      */
     public JoanaVertex build() {
-        // The ID in the persistent data is the name of the vertex.
-        JoanaVertex vertex = new JoanaVertex(id, label, kind);
+        JoanaVertex vertex = new JoanaVertex(name, label, kind);
         vertex.setProperties(kind, source, proc, operation, bcName, bcIndex, sr, sc, er, ec);
         //TODO Check relations nodeKind-nodeOperation and maybe others
         return vertex;
@@ -86,7 +86,7 @@ public class JoanaVertexBuilder implements IVertexBuilder {
 
     @Override
     public void setID(String id) {
-        this.id = id;
+        this.name = id;
     }
 
 }

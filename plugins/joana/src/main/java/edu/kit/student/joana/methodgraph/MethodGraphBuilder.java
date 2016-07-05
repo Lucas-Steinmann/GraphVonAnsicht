@@ -1,14 +1,15 @@
 package edu.kit.student.joana.methodgraph;
 
-import edu.kit.student.graphmodel.Graph;
 import edu.kit.student.graphmodel.builder.IEdgeBuilder;
 import edu.kit.student.graphmodel.builder.IGraphBuilder;
 import edu.kit.student.graphmodel.builder.IVertexBuilder;
-import edu.kit.student.joana.JoanaGraphModelBuilder;
+import edu.kit.student.joana.JoanaEdge;
+import edu.kit.student.joana.JoanaEdgeBuilder;
 import edu.kit.student.joana.JoanaVertex;
+import edu.kit.student.joana.JoanaVertex.Kind;
 import edu.kit.student.joana.JoanaVertexBuilder;
-import edu.kit.student.joana.callgraph.CallGraphBuilder;
 
+import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -20,6 +21,9 @@ public class MethodGraphBuilder implements IGraphBuilder {
 
     String name;
     Set<JoanaVertex> vertices = new TreeSet<JoanaVertex>();
+    Set<JoanaEdge<JoanaVertex>> edges = new HashSet<>();
+    Set<JoanaVertexBuilder> vertexBuilders;
+    Set<JoanaEdgeBuilder> edgeBuilders;
     
     /**
      * Constructor for methodgraphBuilder which is created by a callgraphBuilder.
@@ -28,42 +32,56 @@ public class MethodGraphBuilder implements IGraphBuilder {
         this.name = name;
     }
     
-	@Override
-	public IEdgeBuilder getEdgeBuilder() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public IVertexBuilder getVertexBuilder(String vertexId) {
-		return new JoanaVertexBuilder(vertexId);
-	}
-	
     @Override
-    public IGraphBuilder getGraphBuilder(String graphID) {
+    public IEdgeBuilder getEdgeBuilder() {
+        JoanaEdgeBuilder builder = new JoanaEdgeBuilder();
+        edgeBuilders.add(builder);
+        return builder;
+    }
+
+    @Override
+    public IVertexBuilder getVertexBuilder(String vertexId) {
+        JoanaVertexBuilder builder = new JoanaVertexBuilder(vertexId);
+        vertexBuilders.add(builder);
+        return builder;
+    }
+
+    @Override
+    public IGraphBuilder getGraphBuilder(String graphId) {
         //is not allowed to happen
         //TODO: throw exception?
         return null;
     }
-    
-    /**
-     * Adds an vertex to MethodGraphBuilder
-     * 
-     * @param vertex
-     */
-    public void addVertex(JoanaVertex vertex) {
-        this.vertices.add(vertex);
-    }
 
-	public MethodGraph build() {
-	    //TODO: Get fieldaccess
-	    
-	    //check if methodgraph belongs to a callgraph
-	    //TODO set methodgraph to model
-	    //this.modelBuilder.addMethodGraph(methodGraph);
-	    
-	    
-		//return methodGraph;
-        return null;
-	}
+    /**
+     * Builds the method graph, which has been described before this method is called.
+     * @return the built methodgraph
+     */
+    public MethodGraph build() {
+        for (JoanaVertexBuilder builder : vertexBuilders) {
+            vertices.add(builder.build());
+        }
+        
+        for (JoanaEdgeBuilder builder : edgeBuilders) {
+            edges.add(builder.build(vertices));
+        }
+        //TODO: Get fieldaccess
+
+        String name = "";
+        for (JoanaVertex v : vertices) {
+            if (v.getNodeKind() == Kind.ENTR)
+            {
+                //TODO: maybe some editing to transform the raw classnames 
+                // into something more readable
+                name = v.getNodeBcName();
+            }
+        }
+        if (name.equals("")) {
+            //TODO: throw exception
+        }
+        
+        MethodGraph methodGraph = new MethodGraph(vertices, edges, new HashSet<>(), name);
+        
+        return methodGraph;
+    }
 }

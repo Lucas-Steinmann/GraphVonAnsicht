@@ -21,7 +21,7 @@ public class CallGraphBuilder implements IGraphBuilder {
     
 	@Override
 	public IEdgeBuilder getEdgeBuilder() {
-		return new JoanaEdgeBuilder(this);
+		return new JoanaEdgeBuilder();
 	}
 
 	@Override
