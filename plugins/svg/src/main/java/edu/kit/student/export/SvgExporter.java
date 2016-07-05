@@ -10,14 +10,7 @@ public class SvgExporter implements Exporter {
 
     @Override
     public String getSupportedFileEnding() {
-        // TODO Auto-generated method stub
-        return null;
-    }
-
-    @Override
-    public String getName() {
-        // TODO Auto-generated method stub
-        return null;
+        return "*.svg";
     }
 
     @Override
