@@ -98,6 +98,7 @@ public class SugiyamaGraph
 	@Override
 	public void reverseEdge(SugiyamaEdge edge) {
 		edge.setReversed(true);
+		edge.setVertices(edge.getTarget(), edge.getSource());
 	}
 
 	@Override
