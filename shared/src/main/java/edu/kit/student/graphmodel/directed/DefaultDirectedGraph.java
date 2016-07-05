@@ -308,4 +308,23 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
 	    }
 	    return register;
 	}
+	
+	@Override
+	public String toString(){
+		String out = "Vertices: {";
+		for(V v : this.vertexSet){
+			out+= v.getName() + ", ";
+		}
+		out = out.substring(0, out.length()-2);
+		out+= "}";
+		out+= '\n';
+		out+= "Edges:{";
+		out+= '\n';
+		for(E e : this.edgeSet){
+			out+= e.getName() + "[" +e.getSource().getName() +"->"+ e.getTarget().getName()+"],";
+			out+= '\n';
+		}
+		out=out.substring(0, out.length()-2);
+		return out+="}";
+	}
 }

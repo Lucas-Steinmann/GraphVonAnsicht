@@ -78,7 +78,7 @@ public class CycleRemoverTest {
 		
 		CycleRemover cr = new CycleRemover();
 		cr.removeCycles(SGraph);
-
+		
 		assertTrue(isAcyclic(SGraph));
 	}
 
@@ -90,9 +90,20 @@ public class CycleRemoverTest {
 
 			CycleRemover cr = new CycleRemover();
 			cr.removeCycles(testGraph);
-
 			assertTrue(isAcyclic(testGraph));
 		}
+	}
+	
+	@Test
+	public void SingleRandomTest(){
+		DefaultDirectedGraph<DefaultVertex, DirectedEdge<DefaultVertex>> diGraph = generateTestGraph(5, 0.7f);
+		SugiyamaGraph testGraph = new SugiyamaGraph(diGraph);
+
+		CycleRemover cr = new CycleRemover();
+//		System.out.println(testGraph.toString());
+		cr.removeCycles(testGraph);
+//		System.out.println(testGraph.toString());
+		assertTrue(isAcyclic(testGraph));
 	}
 	
 	/**
@@ -138,7 +149,7 @@ public class CycleRemoverTest {
 		List<DirectedEdge> edges = new LinkedList<>();
 		Random random = new Random();
 
-		for (int i = 0; i <= vertexCount; i++) {
+		for (int i = 0; i < vertexCount; i++) {
 			DefaultVertex vertex = new DefaultVertex("v" + Integer.toString(i), "");
 			vertices.add(vertex);
 			graph.addVertex(vertex);

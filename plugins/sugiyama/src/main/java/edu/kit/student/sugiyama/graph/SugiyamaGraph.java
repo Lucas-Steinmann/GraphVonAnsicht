@@ -372,6 +372,29 @@ public class SugiyamaGraph
 		
 	}
 	
+	@Override
+	public String toString(){
+		String out = "Vertices: {";
+		for(SugiyamaVertex v : this.vertexSet){
+			out+= v.getName() + ", ";
+		}
+		out = out.substring(0, out.length()-2);
+		out+= "}";
+		out+= '\n';
+		out+= "Edges:{";
+		out+= '\n';
+		for(SugiyamaEdge e : this.edgeSet){
+			out+= e.getName() + "[" + e.getSource().getName() +"->"+ e.getTarget().getName()+"] ";
+			if(this.isReversed(e)){
+				out+="reversed";
+			}
+			out+=",";
+			out+= '\n';
+		}
+		out=out.substring(0, out.length()-2);
+		return out+="}";
+	}
+	
 	/**
 	 * A supplement path for connecting vertices, which are more than one layer apart.
 	 * They are stored in the SugiyamaEdge along with the substituted edge.
