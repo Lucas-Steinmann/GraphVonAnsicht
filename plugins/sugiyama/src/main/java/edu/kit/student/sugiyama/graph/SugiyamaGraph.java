@@ -375,8 +375,7 @@ public class SugiyamaGraph
 	 * A supplement path for connecting vertices, which are more than one layer apart.
 	 * They are stored in the SugiyamaEdge along with the substituted edge.
 	 */
-	public static class SupplementPath extends DirectedEdge<DummyVertex>
-	{
+	public static class SupplementPath extends DirectedEdge<DummyVertex> {
 		public SupplementPath(String name, String label) {
 			super(name, label);
 		}
@@ -432,8 +431,7 @@ public class SugiyamaGraph
 	 * A wrapper class for vertices used in the sugiyama framework.
 	 * A SugiyamaVertex can be a {@link DefaultVertex} or a {@link DummyVertex}
 	 */
-	public static class SugiyamaVertex implements Vertex
-	{
+	public static class SugiyamaVertex implements Vertex {
 		private final Vertex vertex;
 		private int layer;
 
@@ -511,8 +509,7 @@ public class SugiyamaGraph
 	 * A wrapper class for directed edges to implement additional functionality
 	 * to apply the sugiyama layout to the SugiyamaGraph containing them.
 	 */
-	public static class SugiyamaEdge extends DirectedEdge<SugiyamaVertex>
-	{
+	public static class SugiyamaEdge extends DirectedEdge<SugiyamaVertex> {
 		List<Vector<Integer>> corners;
 		private boolean isReversed;
 		private boolean isSupplement;
