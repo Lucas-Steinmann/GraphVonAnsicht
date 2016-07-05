@@ -21,7 +21,7 @@ public class CycleRemoverTest {
 
 	@Test
 	public void testSimpleCycle(){
-//		MethodGraph MGraph = new MethodGraph("",0);	also works with a method graph if necessary
+//		MethodGraph MGraph = new MethodGraph("",0);
 		DefaultDirectedGraph<DefaultVertex, DirectedEdge<DefaultVertex>> DDGraph = new DefaultDirectedGraph<DefaultVertex, DirectedEdge<DefaultVertex>>("");
 		DefaultVertex v1 = new DefaultVertex("v1", "");
 		DefaultVertex v2 = new DefaultVertex("v2", "");
@@ -90,7 +90,6 @@ public class CycleRemoverTest {
 		SugiyamaVertex temp = getSink(sGraph);
 		
 		while(temp!=null){
-			System.out.println(temp.getName());
 			sGraph.getVertexSet().remove(temp);
 			sGraph.getEdgeSet().removeAll(sGraph.incomingEdgesOf(temp));
 			temp = getSink(sGraph);
@@ -106,7 +105,6 @@ public class CycleRemoverTest {
 	 */
 	private SugiyamaVertex getSink(SugiyamaGraph sGraph){
 		for(SugiyamaVertex v : sGraph.getVertexSet()){
-//			System.out.println(v.getName()+","+sGraph.outdegreeOf(v));
 			if(sGraph.outdegreeOf(v)==0){
 				return v;
 			}
