@@ -7,7 +7,6 @@ import edu.kit.student.joana.JoanaCompoundVertex;
 import edu.kit.student.joana.JoanaEdge;
 import edu.kit.student.joana.JoanaEdgeBuilder;
 import edu.kit.student.joana.JoanaVertex;
-import edu.kit.student.joana.JoanaVertexBuilder;
 import edu.kit.student.joana.methodgraph.MethodGraph;
 import edu.kit.student.joana.methodgraph.MethodGraphBuilder;
 
@@ -36,12 +35,15 @@ public class CallGraphBuilder implements IGraphBuilder {
 
     @Override
     public IVertexBuilder getVertexBuilder(String vertexId) {
-        return new JoanaVertexBuilder(vertexId);
+        //TODO: throw exception
+        return null;
     }
 
     @Override
     public IGraphBuilder getGraphBuilder(String graphId) {
-        return new MethodGraphBuilder(graphId);
+        MethodGraphBuilder builder = new MethodGraphBuilder(graphId);
+        methodGraphBuilders.add(builder);
+        return builder;
     }
     
     /**
@@ -89,6 +91,12 @@ public class CallGraphBuilder implements IGraphBuilder {
         }
         CallGraph graph = new CallGraph(this.name, 
                 new HashSet<JoanaCompoundVertex>(vertices.values()), merged);
+        
+        for(MethodGraph methodGraph : methodGraphs) {
+        	graph.addChildGraph(methodGraph);
+        	methodGraph.setParentGraph(graph);
+        }
+
         return graph;
     }
 

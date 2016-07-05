@@ -146,7 +146,7 @@ public class GraphmlImporter implements Importer {
                 	throw new ParseException("Selected file has wrong syntax!", 0);
                 }
             } else {
-            	throw new ParseException("Selected file has wrong syntax!", 0);
+            	//throw new ParseException("Selected file has wrong syntax!", 0);
             }
         }
     }
@@ -181,7 +181,7 @@ public class GraphmlImporter implements Importer {
                 	throw new ParseException("Selected file has wrong syntax!", 0);
                 }
             } else {
-            	throw new ParseException("Selected file has wrong syntax!", 0);
+            	//throw new ParseException("Selected file has wrong syntax!", 0);
             }
         }
     }

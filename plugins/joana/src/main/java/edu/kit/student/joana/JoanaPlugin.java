@@ -1,6 +1,10 @@
 package edu.kit.student.joana;
 
+import edu.kit.student.joana.callgraph.CallGraph;
+import edu.kit.student.joana.callgraph.CallGraphLayout;
 import edu.kit.student.joana.callgraph.CallGraphLayoutOption;
+import edu.kit.student.joana.methodgraph.MethodGraph;
+import edu.kit.student.joana.methodgraph.MethodGraphLayout;
 import edu.kit.student.joana.methodgraph.MethodGraphLayoutOption;
 import edu.kit.student.parameter.Settings;
 import edu.kit.student.plugin.AbstractPluginBase;
@@ -18,8 +22,8 @@ import java.util.List;
  */
 public class JoanaPlugin extends AbstractPluginBase {
 
-    private static CallGraphLayoutRegister cRegister;
-    private static MethodGraphLayoutRegister mRegister;
+    private static CallGraphLayoutRegister cRegister = new CallGraphLayoutRegister();
+    private static MethodGraphLayoutRegister mRegister = new MethodGraphLayoutRegister();
 
     private static final String pluginName = "JOANA";
 
@@ -35,7 +39,24 @@ public class JoanaPlugin extends AbstractPluginBase {
     }
 
     @Override
-    public void load() { }
+    public void load() { 
+        MethodGraph.setRegister(mRegister);
+        CallGraph.setRegister(cRegister);
+        cRegister.addLayoutOption(new CallGraphLayoutOption() {
+            
+            @Override
+            public void chooseLayout() {
+                this.setLayout(new CallGraphLayout());
+            }
+        });
+        mRegister.addLayoutOption(new MethodGraphLayoutOption() {
+            
+            @Override
+            public void chooseLayout() {
+                this.setLayout(new MethodGraphLayout());
+            }
+        });
+    }
 
     @Override
     public List<WorkspaceOption> getWorkspaceOptions() {

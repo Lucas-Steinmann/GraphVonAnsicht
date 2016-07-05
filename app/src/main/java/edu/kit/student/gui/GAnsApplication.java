@@ -184,7 +184,7 @@ public class GAnsApplication extends Application {
 			String fileExtension = "*" + fileName.substring(fileName.lastIndexOf('.'));
 			Importer importer = importerList.get(supportedFileExtensions.indexOf(fileExtension));
 			importer.importGraph(workspace.getGraphModelBuilder(), inputStream);
-			this.model = workspace.getGraphModel(); //TODO: wie wird das model im workspace gesetzt?
+			this.model = workspace.getGraphModel();
 			Graph currentGraph = this.model.getRootGraphs().get(0);
 			openLayoutSelectionDialog(currentGraph);
 			showGraph(currentGraph);
@@ -193,6 +193,7 @@ public class GAnsApplication extends Application {
 			Alert alert = new Alert(AlertType.ERROR);
 			alert.setHeaderText(null);
 			alert.setContentText(e.getMessage());
+			alert.show();
 			return;
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block

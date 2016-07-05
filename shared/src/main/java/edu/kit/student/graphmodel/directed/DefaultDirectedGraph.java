@@ -22,7 +22,7 @@ import java.util.*;
 public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
 		implements DirectedGraph<V, E>, ViewableGraph<V, E> {
 
-	private static DirectedGraphLayoutRegister register;
+	private static DirectedGraphLayoutRegister register = new DirectedGraphLayoutRegister();
 	private GAnsProperty<String> name;
 	private Integer id;
 	private FastGraphAccessor fga;
@@ -30,8 +30,8 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
 	private Set<E> edgeSet;
 	private Set<CollapsedVertex<V, E>> collapsedVertices;
 	
-	private Graph parent;
-	private List<Graph> children;
+	private Graph parent = null;
+	private List<Graph> children = new ArrayList<>();
 
 	/**
 	 * Constructor

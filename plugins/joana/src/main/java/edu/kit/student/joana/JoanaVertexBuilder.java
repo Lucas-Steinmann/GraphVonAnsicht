@@ -28,10 +28,10 @@ public class JoanaVertexBuilder implements IVertexBuilder {
     
     
     @Override
-    public void addData(String value, String keyname) {
+    public void addData(String keyname, String value) {
         switch (keyname) {
           case "nodeKind":
-              kind = JoanaVertex.Kind.valueOf(keyname);
+              kind = JoanaVertex.Kind.valueOf(value);
               break;
           case "nodeSource": 
               this.source = value;

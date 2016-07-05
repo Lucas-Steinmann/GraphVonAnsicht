@@ -163,6 +163,22 @@ public class JoanaVertex extends DefaultVertex {
     
     public enum Kind {
         NORM, CALL, EXIT, ENTR,
-        ACTI, ACTO, FRMO, FRMI, EXPR
+        ACTI, ACTO, FRMO, FRMI, EXPR;
+        
+        @Override
+        public String toString() {
+        	switch(this) {
+        	case NORM: return "NORM";
+        	case CALL: return "CALL";
+        	case EXIT: return "EXIT";
+        	case ENTR: return "ENTR";
+        	case ACTI: return "ACTI";
+        	case ACTO: return "ACTO";
+        	case FRMO: return "FRMO";
+        	case FRMI: return "FRMI";
+        	case EXPR: return "EXPR";
+        	default: return "";
+        	}
+        }
     }
 }
