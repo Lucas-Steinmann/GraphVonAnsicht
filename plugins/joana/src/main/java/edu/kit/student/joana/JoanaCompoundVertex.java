@@ -36,7 +36,7 @@ public class JoanaCompoundVertex extends JoanaVertex implements CompoundVertex<J
 	}
 	
 	@Override
-	public void setProperties(String nodeKind, String nodeSource, Integer nodeProc, String nodeOperation,
+	public void setProperties(KIND nodeKind, String nodeSource, Integer nodeProc, String nodeOperation,
 			String nodeBcName, Integer nodeBCIndex, Integer nodeSr, Integer nodeSc, Integer nodeEr, Integer nodeEc) {
 		graph.getEntryVertex().setProperties(nodeKind, nodeSource, nodeProc, nodeOperation, nodeBcName, nodeBCIndex, nodeSr, nodeSc, nodeEr, nodeEc);
 	}

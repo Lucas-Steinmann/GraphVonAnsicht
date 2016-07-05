@@ -9,7 +9,7 @@ import edu.kit.student.objectproperty.GAnsProperty;
  */
 public class JoanaVertex extends DefaultVertex {
 
-	private GAnsProperty<String> nodeKind;
+	private GAnsProperty<KIND> nodeKind;
 	private GAnsProperty<String> nodeSource;
 	private GAnsProperty<Integer> nodeProc;
 	private GAnsProperty<String> nodeOperation;
@@ -23,7 +23,7 @@ public class JoanaVertex extends DefaultVertex {
 	public JoanaVertex(String name, String label) {
 		super(name, label);
 		
-		nodeKind = new GAnsProperty<String>("nodeKind", "");
+		nodeKind = new GAnsProperty<KIND>("nodeKind", KIND.ENTR);
 		nodeSource = new GAnsProperty<String>("nodeSource", "");
 		nodeProc = new GAnsProperty<Integer>("nodeProc", 0);
 		nodeOperation = new GAnsProperty<String>("nodeOperation", "");
@@ -35,7 +35,7 @@ public class JoanaVertex extends DefaultVertex {
 		nodeEc = new GAnsProperty<Integer>("nodeEc", 0);
 	}
 
-	public void setProperties(String nodeKind, String nodeSource, Integer nodeProc, String nodeOperation,
+	public void setProperties(KIND nodeKind, String nodeSource, Integer nodeProc, String nodeOperation,
 			String nodeBcName, Integer nodeBCIndex, Integer nodeSr, Integer nodeSc, Integer nodeEr, Integer nodeEc) {
 		this.nodeKind.setValue(nodeKind);
 		this.nodeSource.setValue(nodeSource);
@@ -55,7 +55,7 @@ public class JoanaVertex extends DefaultVertex {
 	 * @return The nodeKind of the JoanaVertex.
 	 */
 	public String getNodeKind() {
-		return nodeKind.getValue();
+		return nodeKind.getValue().toString();
 	}
 
 	/**
@@ -138,4 +138,10 @@ public class JoanaVertex extends DefaultVertex {
 	public Integer getNodeEc() {
 		return nodeEc.getValue();
 	}
+	
+	public enum KIND 
+	{
+	    NORM, CALL, EXIT, ENTR,
+	    ACTI, ACTO, FRMO, FRMI, EXPR
+    }
 }
