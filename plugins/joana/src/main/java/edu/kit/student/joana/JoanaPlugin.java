@@ -105,7 +105,7 @@ public class JoanaPlugin extends AbstractPluginBase {
 
     public static class CallGraphLayoutRegister implements LayoutRegister<CallGraphLayoutOption> {
         
-        List<LayoutOption> options = new LinkedList<>();
+        List<CallGraphLayoutOption> options = new LinkedList<>();
         
         @Override
         public void addLayoutOption(CallGraphLayoutOption option) {
@@ -113,7 +113,7 @@ public class JoanaPlugin extends AbstractPluginBase {
         }
 
         @Override
-        public List<LayoutOption> getLayoutOptions() {
+        public List<CallGraphLayoutOption> getLayoutOptions() {
             return new LinkedList<>(options);
         }
     }
@@ -121,7 +121,7 @@ public class JoanaPlugin extends AbstractPluginBase {
     public static class MethodGraphLayoutRegister 
         implements LayoutRegister<MethodGraphLayoutOption> {
 
-        List<LayoutOption> options = new LinkedList<>();
+        List<MethodGraphLayoutOption> options = new LinkedList<>();
 
         @Override
         public void addLayoutOption(MethodGraphLayoutOption option) {
@@ -129,7 +129,7 @@ public class JoanaPlugin extends AbstractPluginBase {
         }
 
         @Override
-        public List<LayoutOption> getLayoutOptions() {
+        public List<MethodGraphLayoutOption> getLayoutOptions() {
             return new LinkedList<>(options);
         }
     }

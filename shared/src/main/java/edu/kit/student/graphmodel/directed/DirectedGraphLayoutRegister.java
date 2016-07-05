@@ -12,10 +12,10 @@ import edu.kit.student.plugin.LayoutRegister;
  */
 public class DirectedGraphLayoutRegister implements LayoutRegister<DirectedGraphLayoutOption> {
 
-	private List<LayoutOption> options = new ArrayList<LayoutOption>();
+	private List<DirectedGraphLayoutOption> options = new ArrayList<>();
 
 	@Override
-	public List<LayoutOption> getLayoutOptions() {
+	public List<DirectedGraphLayoutOption> getLayoutOptions() {
 		return options;
 	}
 

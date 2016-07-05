@@ -18,5 +18,5 @@ public interface LayoutRegister<E extends LayoutOption> {
      * Returns all available layouts for the graph associated with this register.
      * @return the available layouts
      */
-    public List<LayoutOption> getLayoutOptions();
+    public List<E> getLayoutOptions();
 }

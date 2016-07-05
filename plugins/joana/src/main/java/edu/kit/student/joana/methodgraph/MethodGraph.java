@@ -84,18 +84,23 @@ public class MethodGraph extends JoanaGraph<JoanaVertex, JoanaEdge<JoanaVertex>>
     }
 
     @Override
-    public List<LayoutOption> getRegisteredLayouts() {
-        List<LayoutOption> result = super.getRegisteredLayouts();
-        if (MethodGraph.register != null) {
-            result.addAll(MethodGraph.register.getLayoutOptions());
-        }
-        return result;
-    }
-
-    @Override
     public List<LayeredGraph<JoanaVertex, JoanaEdge<JoanaVertex>>> getSubgraphs() {
         List<LayeredGraph<JoanaVertex, JoanaEdge<JoanaVertex>>> faGraphs = new LinkedList<>();
         this.getFieldAccesses().forEach((fa) -> faGraphs.add(fa.getGraph()));
         return faGraphs;
+    }
+
+    @Override
+    public List<LayoutOption> getRegisteredLayouts() {
+        List<MethodGraphLayoutOption> methodGraphLayouts = new LinkedList<>();
+        if (MethodGraph.register != null) {
+            methodGraphLayouts.addAll(MethodGraph.register.getLayoutOptions());
+        }
+        for (MethodGraphLayoutOption option : methodGraphLayouts) {
+            option.setGraph(this);
+        }
+        List<LayoutOption> layoutOptions = new LinkedList<>(methodGraphLayouts);
+        layoutOptions.addAll(super.getRegisteredLayouts());
+        return layoutOptions;
     }
 }

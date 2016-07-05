@@ -120,7 +120,15 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
 
 	@Override
 	public List<LayoutOption> getRegisteredLayouts() {
-		return register.getLayoutOptions();
+        List<DirectedGraphLayoutOption> directedLayoutOptions = new LinkedList<>();
+        if (DefaultDirectedGraph.register != null) {
+            directedLayoutOptions.addAll(DefaultDirectedGraph.register.getLayoutOptions());
+        }
+        for (DirectedGraphLayoutOption option : directedLayoutOptions) {
+            option.setGraph(this);
+        }
+        List<LayoutOption> layoutOptions = new LinkedList<>(directedLayoutOptions);
+        return layoutOptions;
 	}
 
 	@Override
