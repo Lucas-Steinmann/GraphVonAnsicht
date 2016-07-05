@@ -33,7 +33,7 @@ public class JoanaEdgeBuilder implements IEdgeBuilder {
 
     @Override
     public void addData(String keyname, String value) {
-        if (keyname == "edgeKind") {
+        if (keyname.equals("edgeKind")) {
             this.edgeKind = Kind.valueOf(value);
         }
     }

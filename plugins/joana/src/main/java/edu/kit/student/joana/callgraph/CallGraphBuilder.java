@@ -7,7 +7,6 @@ import edu.kit.student.joana.JoanaCompoundVertex;
 import edu.kit.student.joana.JoanaEdge;
 import edu.kit.student.joana.JoanaEdgeBuilder;
 import edu.kit.student.joana.JoanaVertex;
-import edu.kit.student.joana.JoanaVertex.Kind;
 import edu.kit.student.joana.JoanaVertexBuilder;
 import edu.kit.student.joana.methodgraph.MethodGraph;
 import edu.kit.student.joana.methodgraph.MethodGraphBuilder;

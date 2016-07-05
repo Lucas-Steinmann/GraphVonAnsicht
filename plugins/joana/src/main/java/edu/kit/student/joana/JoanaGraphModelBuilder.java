@@ -20,40 +20,40 @@ public class JoanaGraphModelBuilder implements IGraphModelBuilder {
     private JoanaWorkspace workspace;
     private List<MethodGraph> methodgraphs = new LinkedList<MethodGraph>();
     private CallGraph callgraph;
-	
-	public JoanaGraphModelBuilder(JoanaWorkspace workspace) {
-		this.workspace = workspace;
-	}
+    
+    public JoanaGraphModelBuilder(JoanaWorkspace workspace) {
+        this.workspace = workspace;
+    }
 
-	@Override
-	public IGraphBuilder getGraphBuilder(String graphId) {
-	    //check if callgraphbuilder
-	    if(graphId == "callgraph") {
-	        return new CallGraphBuilder(graphId);
-	    }
-	    //else return methodgraphbuilder
-		return new MethodGraphBuilder(graphId);
-	}
+    @Override
+    public IGraphBuilder getGraphBuilder(String graphId) {
+        //check if callgraphbuilder
+        if (graphId.equals("callgraph")) {
+            return new CallGraphBuilder(graphId);
+        }
+        //else return methodgraphbuilder
+        return new MethodGraphBuilder(graphId);
+    }
 
-	@Override
-	public GraphModel build() {
-	    JoanaGraphModel model = new JoanaGraphModel();
-	    model.setCallGraph(callgraph);
-	    model.setMethodGraphs(methodgraphs);
-	    workspace.setGraphModel(model);
-		return model;
-	}
-	
-	/**
-	 * adds CallGraph to CallgraphBuilder.
-	 * 
-	 * @param callgraph
-	 */
-	public void setCallGraph(CallGraph callgraph) {
-	    this.callgraph = callgraph;
-	}
-	
-	/**
+    @Override
+    public GraphModel build() {
+        JoanaGraphModel model = new JoanaGraphModel();
+        model.setCallGraph(callgraph);
+        model.setMethodGraphs(methodgraphs);
+        workspace.setGraphModel(model);
+        return model;
+    }
+    
+    /**
+     * adds CallGraph to CallgraphBuilder.
+     * 
+     * @param callgraph
+     */
+    public void setCallGraph(CallGraph callgraph) {
+        this.callgraph = callgraph;
+    }
+    
+    /**
      * add a methodGraph.
      * 
      * @param callgraph

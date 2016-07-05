@@ -22,8 +22,8 @@ public class MethodGraphBuilder implements IGraphBuilder {
     String name;
     Set<JoanaVertex> vertices = new TreeSet<JoanaVertex>();
     Set<JoanaEdge<JoanaVertex>> edges = new HashSet<>();
-    Set<JoanaVertexBuilder> vertexBuilders;
-    Set<JoanaEdgeBuilder> edgeBuilders;
+    Set<JoanaVertexBuilder> vertexBuilders = new HashSet<>();
+    Set<JoanaEdgeBuilder> edgeBuilders = new HashSet<>();
     
     /**
      * Constructor for methodgraphBuilder which is created by a callgraphBuilder.
