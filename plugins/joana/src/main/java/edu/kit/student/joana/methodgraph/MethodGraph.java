@@ -5,6 +5,7 @@ import edu.kit.student.joana.FieldAccess;
 import edu.kit.student.joana.JoanaEdge;
 import edu.kit.student.joana.JoanaGraph;
 import edu.kit.student.joana.JoanaVertex;
+import edu.kit.student.joana.JoanaVertex.Kind;
 import edu.kit.student.plugin.LayoutOption;
 import edu.kit.student.plugin.LayoutRegister;
 
@@ -26,6 +27,9 @@ public class MethodGraph extends JoanaGraph<JoanaVertex, JoanaEdge<JoanaVertex>>
     public MethodGraph(Set<JoanaVertex> vertices, Set<JoanaEdge<JoanaVertex>> edges, 
             Set<FieldAccess> fieldAccesses, String methodName) {
         super(methodName);
+        for(JoanaVertex vertex : vertices) {
+        	if(vertex.getNodeKind() == Kind.ENTR) this.entry = vertex;
+        }
         this.fieldAccesses = new HashSet<>(fieldAccesses);
     }
     

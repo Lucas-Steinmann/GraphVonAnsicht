@@ -22,7 +22,7 @@ import java.util.*;
 public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
 		implements DirectedGraph<V, E>, ViewableGraph<V, E> {
 
-	private static DirectedGraphLayoutRegister register;
+	private static DirectedGraphLayoutRegister register = new DirectedGraphLayoutRegister();
 	private GAnsProperty<String> name;
 	private Integer id;
 	private FastGraphAccessor fga;

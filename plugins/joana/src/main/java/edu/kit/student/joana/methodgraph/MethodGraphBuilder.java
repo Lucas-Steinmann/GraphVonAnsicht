@@ -20,7 +20,7 @@ import java.util.TreeSet;
 public class MethodGraphBuilder implements IGraphBuilder {
 
     String name;
-    Set<JoanaVertex> vertices = new TreeSet<JoanaVertex>();
+    Set<JoanaVertex> vertices = new HashSet<JoanaVertex>();
     Set<JoanaEdge<JoanaVertex>> edges = new HashSet<>();
     Set<JoanaVertexBuilder> vertexBuilders = new HashSet<>();
     Set<JoanaEdgeBuilder> edgeBuilders = new HashSet<>();
@@ -58,7 +58,7 @@ public class MethodGraphBuilder implements IGraphBuilder {
      * @return the built methodgraph
      */
     public MethodGraph build() {
-        for (JoanaVertexBuilder builder : vertexBuilders) {
+        for (JoanaVertexBuilder builder : vertexBuilders) {	
             vertices.add(builder.build());
         }
         

@@ -41,8 +41,9 @@ public class CallGraphBuilder implements IGraphBuilder {
 
     @Override
     public IGraphBuilder getGraphBuilder(String graphId) {
-        //TODO: throw exception
-        return null;
+        MethodGraphBuilder builder = new MethodGraphBuilder(graphId);
+        methodGraphBuilders.add(builder);
+        return builder;
     }
     
     /**
