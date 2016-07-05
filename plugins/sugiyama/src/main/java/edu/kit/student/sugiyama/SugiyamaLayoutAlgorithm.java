@@ -37,6 +37,9 @@ public class SugiyamaLayoutAlgorithm
 		relativeLayerConstraints = new HashSet<>();
 		absoluteLayerConstraints = new HashSet<>();
 	}
+	//TODO check if it would be wise to set the first steps in the constructor in order to avoid nullpointer exceptions
+	//they can still be replaced in the setter
+	
 
 	/**
 	 * Sets the algorithm to remove all cycles for a graph to layout used when applying the layout
