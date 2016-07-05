@@ -14,7 +14,7 @@ import edu.kit.student.sugiyama.graph.SugiyamaGraph.SugiyamaVertex;
 public interface IEdgeDrawerGraph  extends LayeredGraph<SugiyamaVertex, SugiyamaEdge> {
 	
 	/**
-	 * Reverses the direction of an directed edge and returns it.
+	 * Reverses the direction of an directed edge.
 	 * 
 	 * @param edge the edge to return its direction
 	 */
