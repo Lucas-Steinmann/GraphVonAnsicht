@@ -9,11 +9,16 @@ import edu.kit.student.joana.methodgraph.MethodGraph;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * This is a specified graph representation for the Callgraph in Joana.
  */
 public class CallGraph extends JoanaGraph<JoanaCompoundVertex,JoanaEdge<JoanaCompoundVertex>> {
+
+    public CallGraph(String name, Set<JoanaCompoundVertex> vertices, Set<JoanaEdge<JoanaCompoundVertex>> edges) {
+        super(name);
+    }
 
     public CallGraph(String name) {
         super(name);
