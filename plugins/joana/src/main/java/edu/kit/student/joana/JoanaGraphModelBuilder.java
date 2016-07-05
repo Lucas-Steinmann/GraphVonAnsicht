@@ -18,8 +18,8 @@ import java.util.List;
 public class JoanaGraphModelBuilder implements IGraphModelBuilder {
 
     private JoanaWorkspace workspace;
-    private List<MethodGraph> methodgraphs = new LinkedList<MethodGraph>();
-    private CallGraph callgraph;
+    CallGraphBuilder callBuilder;
+    List<MethodGraphBuilder> methodBuilders = new LinkedList<MethodGraphBuilder>();
     
     public JoanaGraphModelBuilder(JoanaWorkspace workspace) {
         this.workspace = workspace;
@@ -29,37 +29,26 @@ public class JoanaGraphModelBuilder implements IGraphModelBuilder {
     public IGraphBuilder getGraphBuilder(String graphId) {
         //check if callgraphbuilder
         if (graphId.equals("callgraph")) {
-            return new CallGraphBuilder(graphId);
+            callBuilder = new CallGraphBuilder(graphId);
+            return callBuilder;
         }
         //else return methodgraphbuilder
-        return new MethodGraphBuilder(graphId);
+        MethodGraphBuilder builder = new MethodGraphBuilder(graphId);
+        methodBuilders.add(builder);
+        return builder;
     }
 
     @Override
     public GraphModel build() {
         JoanaGraphModel model = new JoanaGraphModel();
-        model.setCallGraph(callgraph);
-        model.setMethodGraphs(methodgraphs);
+        CallGraph callGraph = callBuilder.build();
+        List<MethodGraph> methodGraphs = new LinkedList<>();
+        for (MethodGraphBuilder b : methodBuilders) {
+            methodGraphs.add(b.build());
+        }
+        model.setCallGraph(callGraph);
+        model.setMethodGraphs(methodGraphs);
         workspace.setGraphModel(model);
         return model;
     }
-    
-    /**
-     * adds CallGraph to CallgraphBuilder.
-     * 
-     * @param callgraph
-     */
-    public void setCallGraph(CallGraph callgraph) {
-        this.callgraph = callgraph;
-    }
-    
-    /**
-     * add a methodGraph.
-     * 
-     * @param callgraph
-     */
-    public void addMethodGraph(MethodGraph methodgraph) {
-        this.methodgraphs.add(methodgraph);
-    }
-
 }
