@@ -20,10 +20,10 @@ public class JoanaVertex extends DefaultVertex {
 	private GAnsProperty<Integer> nodeEr;
 	private GAnsProperty<Integer> nodeEc;
 	
-	public JoanaVertex(String name, String label) {
+	public JoanaVertex(String name, String label, KIND kind) {
 		super(name, label);
 		
-		nodeKind = new GAnsProperty<KIND>("nodeKind", KIND.ENTR);
+		nodeKind = new GAnsProperty<KIND>("nodeKind", kind);
 		nodeSource = new GAnsProperty<String>("nodeSource", "");
 		nodeProc = new GAnsProperty<Integer>("nodeProc", 0);
 		nodeOperation = new GAnsProperty<String>("nodeOperation", "");
@@ -54,8 +54,8 @@ public class JoanaVertex extends DefaultVertex {
 	 * 
 	 * @return The nodeKind of the JoanaVertex.
 	 */
-	public String getNodeKind() {
-		return nodeKind.getValue().toString();
+	public KIND getNodeKind() {
+		return nodeKind.getValue();
 	}
 
 	/**

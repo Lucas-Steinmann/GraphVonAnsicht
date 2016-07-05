@@ -78,7 +78,7 @@ public class JoanaVertexBuilder implements IVertexBuilder {
      */
     public JoanaVertex build() {
         // The ID in the persistent data is the name of the vertex.
-        JoanaVertex vertex = new JoanaVertex(id, label);
+        JoanaVertex vertex = new JoanaVertex(id, label, kind);
         vertex.setProperties(kind, source, proc, operation, bcName, bcIndex, sr, sc, er, ec);
         //TODO Check relations nodeKind-nodeOperation and maybe others
         return vertex;

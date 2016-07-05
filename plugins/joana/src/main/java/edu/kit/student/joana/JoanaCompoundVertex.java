@@ -9,12 +9,8 @@ public class JoanaCompoundVertex extends JoanaVertex implements CompoundVertex<J
 	
 	private MethodGraph graph;
 
-	public JoanaCompoundVertex(String name, String label) {
-		super(name, label);
-	}
-	
-	public void setMethodGraph(MethodGraph graph) {
-		this.graph = graph;
+	public JoanaCompoundVertex(String name, String label, MethodGraph graph) {
+		super(name, label, graph.getEntryVertex().getNodeKind());
 	}
 
 	@Override
@@ -42,7 +38,7 @@ public class JoanaCompoundVertex extends JoanaVertex implements CompoundVertex<J
 	}
 	
 	@Override
-	public String getNodeKind() {
+	public KIND getNodeKind() {
 		return graph.getEntryVertex().getNodeKind();
 	}
 
