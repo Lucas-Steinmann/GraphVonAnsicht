@@ -9,14 +9,14 @@ import edu.kit.student.objectproperty.GAnsProperty;
  */
 public class JoanaEdge<V extends JoanaVertex> extends DirectedEdge<V> {
 	
-	private GAnsProperty<String> edgeKind;
+	private GAnsProperty<KIND> edgeKind;
 
-	public JoanaEdge(String name, String label) {
+	public JoanaEdge(String name, String label, KIND kind) {
         super(name, label);
-        edgeKind = new GAnsProperty<String>("edgeKind", "");
+        edgeKind = new GAnsProperty<KIND>("edgeKind", kind);
     }
 	
-	public void setProperties(String edgeKind) {
+	public void setProperties(KIND edgeKind) {
 		this.edgeKind.setValue(edgeKind);
 	}
 
@@ -25,7 +25,12 @@ public class JoanaEdge<V extends JoanaVertex> extends DirectedEdge<V> {
 	 * 
 	 * @return The edgeKind of the JoanaEdge.
 	 */
-	public String getEdgeKind() {
+	public KIND getEdgeKind() {
 		return edgeKind.getValue();
+	}
+	
+	// TODO: Add missing.
+	public enum KIND {
+	    CF, CE, CD, CL, DD, PS, PO, PI, HE, RF, SU
 	}
 }
