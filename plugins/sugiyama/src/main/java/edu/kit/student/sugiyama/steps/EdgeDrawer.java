@@ -1,6 +1,9 @@
 package edu.kit.student.sugiyama.steps;
 
+import java.util.Set;
+
 import edu.kit.student.sugiyama.graph.IEdgeDrawerGraph;
+import edu.kit.student.sugiyama.graph.SugiyamaGraph.SugiyamaEdge;
 
 /**
  * This class takes a directed graph, as a {@link SugiyamaClass}.
@@ -15,8 +18,18 @@ public class EdgeDrawer implements IEdgeDrawer {
 
 	@Override
 	public void drawEdges(IEdgeDrawerGraph graph) {
-		// TODO Auto-generated method stub
-		
+		restoreReversedEdges(graph);
 	}
-
+	
+	/**
+	 * Restores the reversed edges in the parameter graph.
+	 * 
+	 * @param graph the graph to reverse the reversed edges from
+	 */
+	private void restoreReversedEdges(IEdgeDrawerGraph graph){
+		Set<SugiyamaEdge> reversedEdges = graph.getReversedEdges();
+		for(SugiyamaEdge edge : reversedEdges){
+			graph.reverseEdge(edge);
+		}
+	}
 }
