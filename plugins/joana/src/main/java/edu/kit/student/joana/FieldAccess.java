@@ -19,23 +19,23 @@ public class FieldAccess extends JoanaVertex
     public FieldAccess(FieldAccessGraph graph, String name, String label) {
         //TODO: Rework hierarchy. FieldAccess can not inherit from JoanaVertex, 
         // because having a kind doesn't make sense.
-        super(name, label, KIND.EXPR);
+        super(name, label, Kind.EXPR);
     }
 
-	@Override
-	public void addToFastGraphAccessor(FastGraphAccessor fga) {
-		// TODO Auto-generated method stub
-	}
+    @Override
+    public void addToFastGraphAccessor(FastGraphAccessor fga) {
+        // TODO Auto-generated method stub
+    }
 
-	@Override
-	public FieldAccessGraph getGraph() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public FieldAccessGraph getGraph() {
+        // TODO Auto-generated method stub
+        return null;
+    }
 
-	@Override
-	public JoanaVertex getConnectedVertex(Edge<JoanaVertex> edge) {
-		// TODO Auto-generated method stub
-		return null;
-	}
+    @Override
+    public JoanaVertex getConnectedVertex(Edge<JoanaVertex> edge) {
+        // TODO Auto-generated method stub
+        return null;
+    }
 }

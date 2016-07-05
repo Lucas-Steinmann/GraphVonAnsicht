@@ -32,13 +32,13 @@ public class JoanaCompoundVertex extends JoanaVertex implements CompoundVertex<J
 	}
 	
 	@Override
-	public void setProperties(KIND nodeKind, String nodeSource, Integer nodeProc, String nodeOperation,
+	public void setProperties(Kind nodeKind, String nodeSource, Integer nodeProc, String nodeOperation,
 			String nodeBcName, Integer nodeBCIndex, Integer nodeSr, Integer nodeSc, Integer nodeEr, Integer nodeEc) {
 		graph.getEntryVertex().setProperties(nodeKind, nodeSource, nodeProc, nodeOperation, nodeBcName, nodeBCIndex, nodeSr, nodeSc, nodeEr, nodeEc);
 	}
 	
 	@Override
-	public KIND getNodeKind() {
+	public Kind getNodeKind() {
 		return graph.getEntryVertex().getNodeKind();
 	}
 
@@ -63,8 +63,8 @@ public class JoanaCompoundVertex extends JoanaVertex implements CompoundVertex<J
 	}
 
 	@Override
-	public Integer getNodeBCIndex() {
-		return graph.getEntryVertex().getNodeBCIndex();
+	public Integer getNodeBcIndex() {
+		return graph.getEntryVertex().getNodeBcIndex();
 	}
 
 	@Override
