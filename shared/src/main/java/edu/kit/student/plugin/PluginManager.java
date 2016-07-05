@@ -31,6 +31,9 @@ public class PluginManager {
         for ( Iterator<Plugin> it = loader.iterator(); it.hasNext(); ) {
             plugins.add(it.next());
         }
+        for (Plugin plugin : plugins) {
+            plugin.load();
+        }
     }
     
     /**

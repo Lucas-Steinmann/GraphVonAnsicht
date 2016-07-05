@@ -43,6 +43,10 @@ public class JoanaPlugin extends AbstractPluginBase {
         MethodGraph.setRegister(mRegister);
         CallGraph.setRegister(cRegister);
         cRegister.addLayoutOption(new CallGraphLayoutOption() {
+            {
+                this.setName("Call-Graph-Layout");
+                this.setId("CGL");
+            }
             
             @Override
             public void chooseLayout() {
@@ -50,6 +54,11 @@ public class JoanaPlugin extends AbstractPluginBase {
             }
         });
         mRegister.addLayoutOption(new MethodGraphLayoutOption() {
+
+            {
+                this.setName("Method-Graph-Layout");
+                this.setId("MGL");
+            }
             
             @Override
             public void chooseLayout() {

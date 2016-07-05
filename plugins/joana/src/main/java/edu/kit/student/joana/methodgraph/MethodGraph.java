@@ -86,7 +86,9 @@ public class MethodGraph extends JoanaGraph<JoanaVertex, JoanaEdge<JoanaVertex>>
     @Override
     public List<LayoutOption> getRegisteredLayouts() {
         List<LayoutOption> result = super.getRegisteredLayouts();
-        result.addAll(MethodGraph.register.getLayoutOptions());
+        if (MethodGraph.register != null) {
+            result.addAll(MethodGraph.register.getLayoutOptions());
+        }
         return result;
     }
 

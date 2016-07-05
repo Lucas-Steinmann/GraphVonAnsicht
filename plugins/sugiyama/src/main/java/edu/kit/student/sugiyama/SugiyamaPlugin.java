@@ -31,6 +31,11 @@ public class SugiyamaPlugin extends AbstractPluginBase {
             
             SugiyamaLayoutAlgorithm algo;
             
+            {
+                this.setName("Sugiyama");
+                this.setId("SUG");
+            }
+
             @Override
             public Settings getSettings() {
                 if (algo == null) {

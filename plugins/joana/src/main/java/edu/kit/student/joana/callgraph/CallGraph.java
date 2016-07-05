@@ -45,7 +45,9 @@ public class CallGraph extends JoanaGraph<JoanaCompoundVertex,JoanaEdge<JoanaCom
     @Override
     public List<LayoutOption> getRegisteredLayouts() {
         List<LayoutOption> result = super.getRegisteredLayouts();
-        result.addAll(CallGraph.register.getLayoutOptions());
+        if (CallGraph.register != null) {
+            result.addAll(CallGraph.register.getLayoutOptions());
+        }
         return result;
     }
 }
