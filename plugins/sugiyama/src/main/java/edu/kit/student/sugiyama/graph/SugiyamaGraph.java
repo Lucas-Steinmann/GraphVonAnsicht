@@ -321,6 +321,56 @@ public class SugiyamaGraph
 		return null;
 	}
 
+	
+
+	@Override
+	public int getLayerFromVertex(SugiyamaVertex vertex) {
+		// TODO Auto-generated method stub
+		return 0;
+	}
+
+	@Override
+	public SerializedGraph serialize() {
+		// TODO muss weg
+		return null;
+	}
+
+	@Override
+	public List<LayoutOption> getRegisteredLayouts() {
+		// TODO muss weg
+		return null;
+	}
+
+	@Override
+	public LayoutOption getDefaultLayout() {
+		// TODO muss weg
+		return null;
+	}
+
+	@Override
+	public Graph getParentGraph() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void setParentGraph(Graph parent) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public List<Graph> getChildGraphs() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public void addChildGraph(Graph child) {
+		// TODO Auto-generated method stub
+		
+	}
+	
 	/**
 	 * A supplement path for connecting vertices, which are more than one layer apart.
 	 * They are stored in the SugiyamaEdge along with the substituted edge.
@@ -578,53 +628,5 @@ public class SugiyamaGraph
 		public OrthogonalEdgePath getPath() {
 			return wrappedEdge.getPath();
 		}
-	}
-
-	@Override
-	public int getLayerFromVertex(SugiyamaVertex vertex) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
-	public SerializedGraph serialize() {
-		// TODO muss weg
-		return null;
-	}
-
-	@Override
-	public List<LayoutOption> getRegisteredLayouts() {
-		// TODO muss weg
-		return null;
-	}
-
-	@Override
-	public LayoutOption getDefaultLayout() {
-		// TODO muss weg
-		return null;
-	}
-
-	@Override
-	public Graph getParentGraph() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void setParentGraph(Graph parent) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public List<Graph> getChildGraphs() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void addChildGraph(Graph child) {
-		// TODO Auto-generated method stub
-		
 	}
 }
