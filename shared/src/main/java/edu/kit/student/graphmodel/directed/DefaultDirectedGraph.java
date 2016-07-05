@@ -30,8 +30,8 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
 	private Set<E> edgeSet;
 	private Set<CollapsedVertex<V, E>> collapsedVertices;
 	
-	private Graph parent;
-	private List<Graph> children;
+	private Graph parent = null;
+	private List<Graph> children = new ArrayList<>();
 
 	/**
 	 * Constructor

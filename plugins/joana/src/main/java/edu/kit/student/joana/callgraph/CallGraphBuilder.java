@@ -91,6 +91,12 @@ public class CallGraphBuilder implements IGraphBuilder {
         }
         CallGraph graph = new CallGraph(this.name, 
                 new HashSet<JoanaCompoundVertex>(vertices.values()), merged);
+        
+        for(MethodGraph methodGraph : methodGraphs) {
+        	graph.addChildGraph(methodGraph);
+        	methodGraph.setParentGraph(graph);
+        }
+
         return graph;
     }
 
