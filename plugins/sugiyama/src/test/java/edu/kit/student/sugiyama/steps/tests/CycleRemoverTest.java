@@ -1,17 +1,19 @@
 package edu.kit.student.sugiyama.steps.tests;
 
 import edu.kit.student.graphmodel.DefaultVertex;
+import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
 import edu.kit.student.graphmodel.directed.DirectedEdge;
+import edu.kit.student.graphmodel.directed.DirectedGraph;
 import edu.kit.student.sugiyama.graph.SugiyamaGraph;
-import edu.kit.student.sugiyama.graph.SugiyamaGraph.SugiyamaEdge;
-import edu.kit.student.sugiyama.graph.SugiyamaGraph.SugiyamaVertex;
 import edu.kit.student.sugiyama.steps.CycleRemover;
 import org.junit.Test;
 
-import static org.junit.Assert.assertTrue;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Random;
 
-import java.util.Set;
+import static org.junit.Assert.assertTrue;
 
 
 /**
@@ -43,7 +45,7 @@ public class CycleRemoverTest {
 		CycleRemover cr = new CycleRemover();
 		cr.removeCycles(SGraph);
 
-		assertTrue(testDAG(SGraph).isEmpty());
+		assertTrue(isAcyclic(SGraph));
 	}
 	
 	@Test
@@ -77,38 +79,92 @@ public class CycleRemoverTest {
 		CycleRemover cr = new CycleRemover();
 		cr.removeCycles(SGraph);
 
-		assertTrue(testDAG(SGraph).isEmpty());
+		assertTrue(isAcyclic(SGraph));
+	}
+
+	@Test
+	public void RandomGraphsTest() {
+		for (int i = 0; i < 20; i++) {
+			DefaultDirectedGraph<DefaultVertex, DirectedEdge<DefaultVertex>> diGraph = generateTestGraph(i*2, 0.7f);
+			SugiyamaGraph testGraph = new SugiyamaGraph(diGraph);
+
+			CycleRemover cr = new CycleRemover();
+			cr.removeCycles(testGraph);
+
+			assertTrue(isAcyclic(testGraph));
+		}
 	}
 	
 	/**
 	 * Helper method for calculating whether the inserted graph contains a cycle or not.
 	 * 
-	 * @param sGraph input graph
+	 * @param graph input graph
 	 * @return the set of vertices after finishing the algorithm. If it is empty, the input graph contained no cycle(s)
 	 */
-	private Set<SugiyamaVertex> testDAG(SugiyamaGraph sGraph){
-		SugiyamaVertex temp = getSink(sGraph);
+	private boolean isAcyclic(DirectedGraph graph){
+		Vertex temp = getSink(graph);
 		
 		while(temp!=null){
-			sGraph.getVertexSet().remove(temp);
-			sGraph.getEdgeSet().removeAll(sGraph.incomingEdgesOf(temp));
-			temp = getSink(sGraph);
+			graph.getVertexSet().remove(temp);
+			graph.getEdgeSet().removeAll(graph.incomingEdgesOf(temp));
+			temp = getSink(graph);
 		}
-		return sGraph.getVertexSet();
+
+		return graph.getVertexSet().isEmpty();
 	}
 	
 	/**
 	 * returns a vertex that has no outgoing vertices, null otherwise.
 	 * 
-	 * @param sGraph input graph
+	 * @param graph input graph
 	 * @return a sugiyama vertex with out degree 0, null otherwise
 	 */
-	private SugiyamaVertex getSink(SugiyamaGraph sGraph){
-		for(SugiyamaVertex v : sGraph.getVertexSet()){
-			if(sGraph.outdegreeOf(v)==0){
-				return v;
+	private Vertex getSink(DirectedGraph graph){
+		for(Object v : graph.getVertexSet()){
+			Vertex vertex = (Vertex) v;
+
+			if(graph.outdegreeOf(vertex)==0){
+				return vertex;
 			}
 		}
 		return null;
+	}
+
+	private DefaultDirectedGraph<DefaultVertex, DirectedEdge<DefaultVertex>> generateTestGraph(int vertexCount, float density) {
+		DefaultDirectedGraph graph = new DefaultDirectedGraph("randomGraph");
+		density = Math.min(Math.max(density, 0f), 1f);
+		int edgeCount = (int) (density/2 * vertexCount * (vertexCount - 1));
+		List<Vertex> vertices = new LinkedList<>();
+		List<DirectedEdge> edges = new LinkedList<>();
+		Random random = new Random();
+
+		for (int i = 0; i <= vertexCount; i++) {
+			DefaultVertex vertex = new DefaultVertex("v" + Integer.toString(i), "");
+			vertices.add(vertex);
+			graph.addVertex(vertex);
+
+			for (int j = 0; j < i; j++) {
+				DirectedEdge edge = new DirectedEdge("e(v" + Integer.toString(i) + ", v" + Integer.toString(j) + ")", "");
+
+				if (random.nextBoolean()) {
+					edge.setVertices(vertex, vertices.get(j));
+				} else {
+					edge.setVertices(vertices.get(j), vertex);
+				}
+
+				edges.add(edge);
+			}
+		}
+
+		while (edgeCount < edges.size()) {
+			int removeNumber = random.nextInt(edges.size());
+			edges.remove(removeNumber);
+		}
+
+		for (DirectedEdge edge : edges) {
+			graph.addEdge(edge);
+		}
+
+		return graph;
 	}
 }
