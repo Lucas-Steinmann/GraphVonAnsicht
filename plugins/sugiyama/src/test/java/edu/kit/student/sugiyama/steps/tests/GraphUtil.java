@@ -93,11 +93,7 @@ public class GraphUtil {
                 graph.addVertex(vertex);
 
                 for (int j = lastLayerStart; j < currentLayerStart; j++) {
-<<<<<<< HEAD
-                    DirectedEdge edge = new DefaultDirectedEdge("e(v" + Integer.toString(i) + ", v" + Integer.toString(j) + ")", Integer.toString(currentLayer));
 
-=======
->>>>>>> origin/master
                     if (isCyclic) {
                         DirectedEdge edge = new DefaultDirectedEdge("e(v" + Integer.toString(i) + ", v" + Integer.toString(j) + ")", "");
                         edge.setVertices(vertex, vertices.get(j));
