@@ -2,6 +2,7 @@ package edu.kit.student.sugiyama.steps.tests;
 
 import edu.kit.student.graphmodel.DefaultVertex;
 import edu.kit.student.graphmodel.Vertex;
+import edu.kit.student.graphmodel.directed.DefaultDirectedEdge;
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
 import edu.kit.student.graphmodel.directed.DirectedEdge;
 import edu.kit.student.sugiyama.graph.SugiyamaGraph;
@@ -34,14 +35,14 @@ public class GraphUtil {
 
             for (int j = 0; j < i; j++) {
                 if (isCyclic) {
-                    DirectedEdge edge = new DirectedEdge("e(v" + Integer.toString(i) + ", v" + Integer.toString(j) + ")", "");
+                    DirectedEdge edge = new DefaultDirectedEdge("e(v" + Integer.toString(i) + ", v" + Integer.toString(j) + ")", "");
                     edge.setVertices(vertex, vertices.get(j));
                     edges.add(edge);
-                    edge = new DirectedEdge("e(v" + Integer.toString(j) + ", v" + Integer.toString(i) + ")", "");
+                    edge = new DefaultDirectedEdge("e(v" + Integer.toString(j) + ", v" + Integer.toString(i) + ")", "");
                     edge.setVertices(vertices.get(j), vertex);
                     edges.add(edge);
                 } else {
-                    DirectedEdge edge = new DirectedEdge("e(v" + Integer.toString(j) + ", v" + Integer.toString(i) + ")", "");
+                    DirectedEdge edge = new DefaultDirectedEdge("e(v" + Integer.toString(j) + ", v" + Integer.toString(i) + ")", "");
                     edge.setVertices(vertices.get(j), vertex);
                     edges.add(edge);
                 }
@@ -92,18 +93,18 @@ public class GraphUtil {
                 graph.addVertex(vertex);
 
                 for (int j = lastLayerStart; j < currentLayerStart; j++) {
-                    DirectedEdge edge = new DirectedEdge("e(v" + Integer.toString(i) + ", v" + Integer.toString(j) + ")", Integer.toString(currentLayer));
-
                     if (isCyclic) {
+                        DirectedEdge edge = new DefaultDirectedEdge("e(v" + Integer.toString(i) + ", v" + Integer.toString(j) + ")", "");
                         edge.setVertices(vertex, vertices.get(j));
+                        edges.add(edge);
+                        edge = new DefaultDirectedEdge("e(v" + Integer.toString(j) + ", v" + Integer.toString(i) + ")", "");
                         edge.setVertices(vertices.get(j), vertex);
-                        maxEdgeCount += 2;
+                        edges.add(edge);
                     } else {
+                        DirectedEdge edge = new DefaultDirectedEdge("e(v" + Integer.toString(j) + ", v" + Integer.toString(i) + ")", "");
                         edge.setVertices(vertices.get(j), vertex);
-                        maxEdgeCount += 1;
+                        edges.add(edge);
                     }
-
-                    edges.add(edge);
                 }
             }
 
