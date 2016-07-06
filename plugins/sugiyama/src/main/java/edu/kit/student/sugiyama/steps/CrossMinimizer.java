@@ -1,6 +1,7 @@
 package edu.kit.student.sugiyama.steps;
 
 import edu.kit.student.sugiyama.graph.ICrossMinimizerGraph;
+import edu.kit.student.sugiyama.graph.ISugiyamaVertex;
 import edu.kit.student.sugiyama.graph.SugiyamaGraph;
 
 import java.util.*;
@@ -12,6 +13,8 @@ import java.util.stream.Stream;
  * the amount of edge crossings.
  */ 
 public class CrossMinimizer implements ICrossMinimizer {
+	
+	private Set<ISugiyamaVertex> Ivertices = new HashSet<ISugiyamaVertex>();
 
 	@Override
 	public void minimizeCrossings(ICrossMinimizerGraph graph) {

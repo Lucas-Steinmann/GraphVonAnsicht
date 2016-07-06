@@ -2,6 +2,7 @@ package edu.kit.student.sugiyama.steps.tests;
 
 import edu.kit.student.graphmodel.DefaultVertex;
 import edu.kit.student.graphmodel.Vertex;
+import edu.kit.student.graphmodel.directed.DefaultDirectedEdge;
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
 import edu.kit.student.graphmodel.directed.DirectedEdge;
 import edu.kit.student.graphmodel.directed.DirectedGraph;
@@ -24,9 +25,9 @@ public class CycleRemoverTest {
 		DefaultVertex v1 = new DefaultVertex("v1", "");
 		DefaultVertex v2 = new DefaultVertex("v2", "");
 		DefaultVertex v3 = new DefaultVertex("v3", "");
-		DirectedEdge<DefaultVertex> e1 = new DirectedEdge<DefaultVertex>("e1","");
-		DirectedEdge<DefaultVertex> e2 = new DirectedEdge<DefaultVertex>("e2","");
-		DirectedEdge<DefaultVertex> e3 = new DirectedEdge<DefaultVertex>("e3","");
+		DirectedEdge<DefaultVertex> e1 = new DefaultDirectedEdge<DefaultVertex>("e1","");
+		DirectedEdge<DefaultVertex> e2 = new DefaultDirectedEdge<DefaultVertex>("e2","");
+		DirectedEdge<DefaultVertex> e3 = new DefaultDirectedEdge<DefaultVertex>("e3","");
 		e1.setVertices(v1, v2);
 		e2.setVertices(v2, v3);
 		e3.setVertices(v3, v1);
@@ -37,7 +38,7 @@ public class CycleRemoverTest {
 		DDGraph.addEdge(e2);
 		DDGraph.addEdge(e3);
 		SugiyamaGraph SGraph = new SugiyamaGraph(DDGraph);
-		
+
 		CycleRemover cr = new CycleRemover();
 		cr.removeCycles(SGraph);
 
@@ -51,11 +52,11 @@ public class CycleRemoverTest {
 		DefaultVertex v2 = new DefaultVertex("v2", "");
 		DefaultVertex v3 = new DefaultVertex("v3", "");
 		DefaultVertex v4 = new DefaultVertex("v4", "");
-		DirectedEdge<DefaultVertex> e1 = new DirectedEdge<DefaultVertex>("e1","");
-		DirectedEdge<DefaultVertex> e2 = new DirectedEdge<DefaultVertex>("e2","");
-		DirectedEdge<DefaultVertex> e3 = new DirectedEdge<DefaultVertex>("e3","");
-		DirectedEdge<DefaultVertex> e4 = new DirectedEdge<DefaultVertex>("e4","");
-		DirectedEdge<DefaultVertex> e5 = new DirectedEdge<DefaultVertex>("e5","");
+		DirectedEdge<DefaultVertex> e1 = new DefaultDirectedEdge<DefaultVertex>("e1","");
+		DirectedEdge<DefaultVertex> e2 = new DefaultDirectedEdge<DefaultVertex>("e2","");
+		DirectedEdge<DefaultVertex> e3 = new DefaultDirectedEdge<DefaultVertex>("e3","");
+		DirectedEdge<DefaultVertex> e4 = new DefaultDirectedEdge<DefaultVertex>("e4","");
+		DirectedEdge<DefaultVertex> e5 = new DefaultDirectedEdge<DefaultVertex>("e5","");
 		e1.setVertices(v1, v2);
 		e2.setVertices(v2, v3);
 		e3.setVertices(v3, v4);
