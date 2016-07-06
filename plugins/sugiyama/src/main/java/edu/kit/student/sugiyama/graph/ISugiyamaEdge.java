@@ -8,7 +8,4 @@ public interface ISugiyamaEdge extends DirectedEdge<ISugiyamaVertex>{
 
 	boolean isReversed();
 
-
-
-
 }

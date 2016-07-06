@@ -432,10 +432,86 @@ public class SugiyamaGraph
 	/**
 	 * A supplement edge which is part of a {@link SupplementPath}.
 	 */
-	public static class SupplementEdge extends DefaultDirectedEdge<DefaultVertex> {
+	public static class SupplementEdge  implements ISugiyamaEdge{
+		
+		private String name;
+		private String label;
+		private ISugiyamaVertex source;
+		private ISugiyamaVertex target;
+		
 		public SupplementEdge(String name, String label) {
-			super(name, label);
+			this.name=name;
+			this.label=label;
 		}
+
+		@Override
+		public void setVertices(ISugiyamaVertex source, ISugiyamaVertex target) {
+			this.source=source;
+			this.target=target;
+		}
+
+		@Override
+		public ISugiyamaVertex getSource() {
+			return this.source;
+		}
+
+		@Override
+		public ISugiyamaVertex getTarget() {
+			return this.target;
+		}
+
+		@Override
+		public List<ISugiyamaVertex> getVertices() {
+			List<ISugiyamaVertex> list = new LinkedList<ISugiyamaVertex>();
+			list.add(this.source);
+			list.add(this.target);
+			return list;
+		}
+
+		@Override
+		public String getName() {
+			return this.name;
+		}
+
+		@Override
+		public Integer getID() {
+			return -1;
+			//TODO check if it is necessary to give a SupplementEdge an ID, maybe better return null instead of -1
+		}
+
+		@Override
+		public String getLabel() {
+			return this.label;
+		}
+
+		@Override
+		public void addToFastGraphAccessor(FastGraphAccessor fga) {
+			// TODO implement!!!
+			
+		}
+
+		@Override
+		public SerializedEdge<ISugiyamaVertex> serialize() {
+			// TODO implement!!!
+			return null;
+		}
+
+		@Override
+		public EdgePath getPath() {
+			// TODO implement? is necessary ?
+			return null;
+		}
+
+		@Override
+		public void setReversed(boolean b) {
+			//does not make sense to reverse a SupplementEdge
+		}
+
+		@Override
+		public boolean isReversed() {
+			return false;
+		}
+
 	}
 
 	/**

@@ -12,8 +12,6 @@ import java.util.stream.Stream;
  */ 
 public class CrossMinimizer implements ICrossMinimizer {
 	
-	private Set<ISugiyamaVertex> Ivertices = new HashSet<ISugiyamaVertex>();
-
 	@Override
 	public void minimizeCrossings(ICrossMinimizerGraph graph) {
 		System.out.println("graph before minimization");
@@ -23,6 +21,8 @@ public class CrossMinimizer implements ICrossMinimizer {
 		}
 		System.out.println(" ");
 
+		addDummyVertices();
+		
 		//add dummy knots
 		int changes = Integer.MAX_VALUE;
 		int counter = 0;
@@ -46,6 +46,11 @@ public class CrossMinimizer implements ICrossMinimizer {
 		for (int i = 0; i < layerCount; i++) {
 			System.out.println(graph.getLayer(i).stream().map(vertex -> vertex.getName()).collect(Collectors.joining(", ")));
 		}
+	}
+
+	private void addDummyVertices() {
+		// TODO Auto-generated method stub
+		
 	}
 
 	private int optimizeLayer(ICrossMinimizerGraph graph, int optimizingLayer, Direction dir) {
