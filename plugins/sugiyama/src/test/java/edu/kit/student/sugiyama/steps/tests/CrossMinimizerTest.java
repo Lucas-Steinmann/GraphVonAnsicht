@@ -4,6 +4,7 @@ import edu.kit.student.graphmodel.DefaultVertex;
 import edu.kit.student.graphmodel.directed.DefaultDirectedEdge;
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
 import edu.kit.student.graphmodel.directed.DirectedEdge;
+import edu.kit.student.sugiyama.graph.ISugiyamaVertex;
 import edu.kit.student.sugiyama.graph.SugiyamaGraph;
 import edu.kit.student.sugiyama.steps.CrossMinimizer;
 
@@ -69,7 +70,7 @@ public class CrossMinimizerTest {
 
         SugiyamaGraph SGraph = new SugiyamaGraph(DDGraph);
 
-        for (SugiyamaGraph.SugiyamaVertex vertex : SGraph.getVertexSet()) {
+        for (ISugiyamaVertex vertex : SGraph.getVertexSet()) {
             SGraph.assignToLayer(vertex, Integer.parseInt(vertex.getLabel()));
         }
         System.out.println("crossings before " + CrossMinimizer.crossings(SGraph));

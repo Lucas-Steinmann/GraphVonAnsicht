@@ -1,13 +1,11 @@
 package edu.kit.student.sugiyama.graph;
 
 import edu.kit.student.graphmodel.LayeredGraph;
-import edu.kit.student.sugiyama.graph.SugiyamaGraph.SugiyamaEdge;
-import edu.kit.student.sugiyama.graph.SugiyamaGraph.SugiyamaVertex;
 
 /**
  * A LayeredGraph which additionally defines functions to assign layers in the sugiyama-layout.
  */
-public interface ILayerAssignerGraph extends LayeredGraph<SugiyamaVertex, SugiyamaEdge> {
+public interface ILayerAssignerGraph extends LayeredGraph<ISugiyamaVertex, ISugiyamaEdge> {
 	
 	/**
 	 * Assigns a vertex to a certain layer represented by a number.
@@ -15,7 +13,7 @@ public interface ILayerAssignerGraph extends LayeredGraph<SugiyamaVertex, Sugiya
 	 * @param vertex   the vertex to assign to a layer
 	 * @param layerNum the layer number to assign a vertex to
 	 */
-	public void assignToLayer(SugiyamaVertex vertex, int layerNum);
+	public void assignToLayer(ISugiyamaVertex vertex, int layerNum);
 	
 	/**
 	 * Get the layer from the vertex
@@ -23,7 +21,7 @@ public interface ILayerAssignerGraph extends LayeredGraph<SugiyamaVertex, Sugiya
 	 * @param vertex the vertex to get its layer from
 	 * @return 		 the layer number from this vertex
 	 */
-	public int getLayer(SugiyamaVertex vertex);
+	public int getLayer(ISugiyamaVertex vertex);
 	
 	
 	/**

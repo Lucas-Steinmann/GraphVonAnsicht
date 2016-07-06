@@ -1,13 +1,11 @@
 package edu.kit.student.sugiyama.graph;
 
 import edu.kit.student.graphmodel.LayeredGraph;
-import edu.kit.student.sugiyama.graph.SugiyamaGraph.SugiyamaEdge;
-import edu.kit.student.sugiyama.graph.SugiyamaGraph.SugiyamaVertex;
 
 /**
  * A LayeredGraph which additionally defines functions to position vertices in the sugiyama-layout.
  */
-public interface IVertexPositionerGraph extends LayeredGraph<SugiyamaVertex, SugiyamaEdge> {
+public interface IVertexPositionerGraph extends LayeredGraph<ISugiyamaVertex, ISugiyamaEdge> {
 
 	/**
 	 * Sets the y-coordinate of all vertices on layer Y.
@@ -23,7 +21,7 @@ public interface IVertexPositionerGraph extends LayeredGraph<SugiyamaVertex, Sug
 	 * @param vertex the vertex to position
 	 * @param x 	 the x-coordinate
 	 */
-	public void setX(SugiyamaVertex vertex, int x);
+	public void setX(ISugiyamaVertex vertex, int x);
 
 	
 }

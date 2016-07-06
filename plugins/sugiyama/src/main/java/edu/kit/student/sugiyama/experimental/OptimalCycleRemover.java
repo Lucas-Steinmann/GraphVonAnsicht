@@ -3,7 +3,6 @@ package edu.kit.student.sugiyama.experimental;
 import java.util.Set;
 
 import edu.kit.student.sugiyama.graph.ICycleRemoverGraph;
-import edu.kit.student.sugiyama.graph.SugiyamaGraph.SugiyamaEdge;
 import edu.kit.student.sugiyama.steps.ICycleRemover;
 
 /**

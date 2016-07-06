@@ -1,11 +1,7 @@
 package edu.kit.student.sugiyama.steps;
 
-import java.util.Set;
-
 import edu.kit.student.graphmodel.directed.DirectedGraph;
 import edu.kit.student.sugiyama.graph.ICycleRemoverGraph;
-import edu.kit.student.sugiyama.graph.SugiyamaGraph;
-import edu.kit.student.sugiyama.graph.SugiyamaGraph.SugiyamaEdge;
 
 /**
  * This interfaces represents a class that generates a DAG(Directed Acyclic Graph) from a {@link DirectedGraph}.

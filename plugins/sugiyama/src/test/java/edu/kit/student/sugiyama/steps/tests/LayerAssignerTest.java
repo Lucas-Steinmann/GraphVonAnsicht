@@ -4,6 +4,7 @@ import edu.kit.student.graphmodel.DefaultVertex;
 import edu.kit.student.graphmodel.directed.DefaultDirectedEdge;
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
 import edu.kit.student.graphmodel.directed.DirectedEdge;
+import edu.kit.student.sugiyama.graph.ISugiyamaVertex;
 import edu.kit.student.sugiyama.graph.SugiyamaGraph;
 import edu.kit.student.sugiyama.steps.LayerAssigner;
 
@@ -58,9 +59,9 @@ public class LayerAssignerTest {
 
         assigner.assignLayers(sugiyamaGraph);
 
-        Set<SugiyamaGraph.SugiyamaVertex> vertices = sugiyamaGraph.getVertexSet();
+        Set<ISugiyamaVertex> vertices = sugiyamaGraph.getVertexSet();
 
-        for (SugiyamaGraph.SugiyamaVertex vertex : vertices) {
+        for (ISugiyamaVertex vertex : vertices) {
             Integer layer = vertex.getLayer();
             assertTrue(layer.toString().equals(vertex.getLabel()));
         }
@@ -119,9 +120,9 @@ public class LayerAssignerTest {
 
         assigner.assignLayers(sugiyamaGraph);
 
-        Set<SugiyamaGraph.SugiyamaVertex> vertices = sugiyamaGraph.getVertexSet();
+        Set<ISugiyamaVertex> vertices = sugiyamaGraph.getVertexSet();
 
-        for (SugiyamaGraph.SugiyamaVertex vertex : vertices) {
+        for (ISugiyamaVertex vertex : vertices) {
             Integer layer = vertex.getLayer();
             System.out.println(vertex.getID()+","+layer);
             assertTrue(layer.toString().equals(vertex.getLabel()));

@@ -1,6 +1,7 @@
 package edu.kit.student.sugiyama.steps;
 
 import edu.kit.student.sugiyama.graph.ICrossMinimizerGraph;
+import edu.kit.student.sugiyama.graph.ISugiyamaEdge;
 import edu.kit.student.sugiyama.graph.ISugiyamaVertex;
 import edu.kit.student.sugiyama.graph.SugiyamaGraph;
 
@@ -13,8 +14,6 @@ import java.util.stream.Stream;
  * the amount of edge crossings.
  */ 
 public class CrossMinimizer implements ICrossMinimizer {
-	
-	private Set<ISugiyamaVertex> Ivertices = new HashSet<ISugiyamaVertex>();
 
 	@Override
 	public void minimizeCrossings(ICrossMinimizerGraph graph) {
@@ -24,6 +23,8 @@ public class CrossMinimizer implements ICrossMinimizer {
 			System.out.println(graph.getLayer(i).stream().map(vertex -> vertex.getName()).collect(Collectors.joining(", ")));
 		}
 		System.out.println(" ");
+
+		addDummyVertices();
 
 		//add dummy knots
 		int changes = Integer.MAX_VALUE;
@@ -50,15 +51,20 @@ public class CrossMinimizer implements ICrossMinimizer {
 		}
 	}
 
+	private void addDummyVertices() {
+		// TODO Auto-generated method stub
+
+	}
+
 	private int optimizeLayer(ICrossMinimizerGraph graph, int optimizingLayer, Direction dir) {
 		int changes = 0;
-		List<SugiyamaGraph.SugiyamaVertex> layer = graph.getLayer(optimizingLayer);
-		List<SugiyamaGraph.SugiyamaVertex> oldLayer = new LinkedList<>(layer);
+		List<ISugiyamaVertex> layer = graph.getLayer(optimizingLayer);
+		List<ISugiyamaVertex> oldLayer = new LinkedList<>(layer);
 		List<Integer> currentPositions = new LinkedList<>();
 		List<Integer> newPositions = new LinkedList<>();
 		Map<Integer, Float> barycenterMap = new HashMap<>();
 
-		for (SugiyamaGraph.SugiyamaVertex vertex : layer) {
+		for (ISugiyamaVertex vertex : layer) {
 			int index = layer.indexOf(vertex);
 			currentPositions.add(index);
 			barycenterMap.put(index, getBarycenter(graph, vertex, dir));
@@ -71,11 +77,11 @@ public class CrossMinimizer implements ICrossMinimizer {
 		for (int i = 0; i < newPositions.size(); i++) {
 			int currentPosition = currentPositions.get(i);
 			int newPosition = newPositions.get(i);
-			List<SugiyamaGraph.SugiyamaVertex> layer1 = graph.getLayer(optimizingLayer);
+			List<ISugiyamaVertex> layer1 = graph.getLayer(optimizingLayer);
 
 			if (newPosition != currentPosition) {
-				SugiyamaGraph.SugiyamaVertex currentVertex = layer1.get(currentPosition);
-				SugiyamaGraph.SugiyamaVertex newVertex = layer1.get(newPosition);
+				ISugiyamaVertex currentVertex = layer1.get(currentPosition);
+				ISugiyamaVertex newVertex = layer1.get(newPosition);
 				currentPositions.set(newPosition, currentPosition);
 				currentPositions.set(currentPosition, newPosition);
 				graph.swapVertices(currentVertex, newVertex);
@@ -85,13 +91,13 @@ public class CrossMinimizer implements ICrossMinimizer {
 			}
 		}
 
-		List<SugiyamaGraph.SugiyamaVertex> higherLayer;
+		List<ISugiyamaVertex> higherLayer;
 		try {
 			higherLayer = graph.getLayer(optimizingLayer + 1);
 		} catch (Exception e) {
 			higherLayer = null;
 		}
-		List<SugiyamaGraph.SugiyamaVertex> lowerLayer;
+		List<ISugiyamaVertex> lowerLayer;
 		try {
 			lowerLayer = graph.getLayer(optimizingLayer - 1);
 		} catch (Exception e) {
@@ -113,22 +119,22 @@ public class CrossMinimizer implements ICrossMinimizer {
 		return changes;
 	}
 	
-	private float getBarycenter (ICrossMinimizerGraph graph, SugiyamaGraph.SugiyamaVertex vertex, Direction dir) {
-		Set<SugiyamaGraph.SugiyamaVertex> relevantNeighbors;
+	private float getBarycenter (ICrossMinimizerGraph graph, ISugiyamaVertex vertex, Direction dir) {
+		Set<ISugiyamaVertex> relevantNeighbors;
 		int optimizingLayerNum = vertex.getLayer();
 		int fixedLayerNum;
 
 		if (dir == Direction.DOWN) {
-			relevantNeighbors = graph.outgoingEdgesOf(vertex).stream().map((sugiyamaEdge -> sugiyamaEdge.getTarget())).collect(Collectors.toSet());
+			relevantNeighbors = graph.outgoingEdgesOf(vertex).stream().map((ISugiyamaEdge -> ISugiyamaEdge.getTarget())).collect(Collectors.toSet());
 			fixedLayerNum = optimizingLayerNum + 1;
 		} else if (dir == Direction.UP) {
 			fixedLayerNum = optimizingLayerNum - 1;
-			relevantNeighbors = graph.incomingEdgesOf(vertex).stream().map((sugiyamaEdge -> sugiyamaEdge.getSource())).collect(Collectors.toSet());
+			relevantNeighbors = graph.incomingEdgesOf(vertex).stream().map((ISugiyamaEdge -> ISugiyamaEdge.getSource())).collect(Collectors.toSet());
 		} else {
 			throw new NullPointerException();
 		}
 
-		List<SugiyamaGraph.SugiyamaVertex> fixedLayer = graph.getLayer(fixedLayerNum);
+		List<ISugiyamaVertex> fixedLayer = graph.getLayer(fixedLayerNum);
 		//System.out.println(vertex.getName() + ": " + relevantNeighbors.stream().map(vertex1 -> Integer.toString(fixedLayer.indexOf(vertex1))).collect(Collectors.joining(", ")));
 		OptionalDouble optionalAvarage = relevantNeighbors.stream().mapToDouble((vertex1 -> fixedLayer.indexOf(vertex1))).average();
 
@@ -151,7 +157,7 @@ public class CrossMinimizer implements ICrossMinimizer {
 	private enum Direction {
 		UP, DOWN;
 	}
-	
+
 	public static int crossings(SugiyamaGraph graph) {
 		int result = 0;
 
@@ -162,7 +168,7 @@ public class CrossMinimizer implements ICrossMinimizer {
 		return result;
 	}
 
-	public static int crossingsOfLayers(SugiyamaGraph graph, List<SugiyamaGraph.SugiyamaVertex> layer1, List<SugiyamaGraph.SugiyamaVertex> layer2) {
+	public static int crossingsOfLayers(SugiyamaGraph graph, List<ISugiyamaVertex> layer1, List<ISugiyamaVertex> layer2) {
 		if (layer1 == null || layer2 == null) {
 			return 0;
 		}
@@ -172,11 +178,11 @@ public class CrossMinimizer implements ICrossMinimizer {
 		}
 
 		int result = 0;
-		SugiyamaGraph.SugiyamaVertex firstVertex = layer1.get(0);
-		SugiyamaGraph.SugiyamaVertex previousVertex = firstVertex;
+		ISugiyamaVertex firstVertex = layer1.get(0);
+		ISugiyamaVertex previousVertex = firstVertex;
 		layer1.remove(0);
 
-		for (SugiyamaGraph.SugiyamaVertex currentVertex: layer1) {
+		for (ISugiyamaVertex currentVertex: layer1) {
 			result += crossingsOfVertices(graph, currentVertex, previousVertex, layer2);
 			previousVertex = currentVertex;
 		}
@@ -185,28 +191,28 @@ public class CrossMinimizer implements ICrossMinimizer {
 		return result;
 	}
 
-	private static int crossingsOfVertices(SugiyamaGraph graph, SugiyamaGraph.SugiyamaVertex vertex1, SugiyamaGraph.SugiyamaVertex vertex2, List<SugiyamaGraph.SugiyamaVertex> layer2) {
-		Set<SugiyamaGraph.SugiyamaEdge> vertex1Edges = graph.edgesOf(vertex1);
+	private static int crossingsOfVertices(SugiyamaGraph graph, ISugiyamaVertex vertex1, ISugiyamaVertex vertex2, List<ISugiyamaVertex> layer2) {
+		Set<ISugiyamaEdge> vertex1Edges = graph.edgesOf(vertex1);
 
-		for (Iterator<SugiyamaGraph.SugiyamaEdge> iterator = vertex1Edges.iterator(); iterator.hasNext();) {
-			SugiyamaGraph.SugiyamaEdge edge = iterator.next();
+		for (Iterator<ISugiyamaEdge> iterator = vertex1Edges.iterator(); iterator.hasNext();) {
+			ISugiyamaEdge edge = iterator.next();
 			if (!layer2.contains(edge.getSource()) && !layer2.contains(edge.getTarget())) {
 				iterator.remove();
 			}
 		}
 
-		List<SugiyamaGraph.SugiyamaVertex> sources = vertex1Edges.stream().map(sugiyamaEdge -> sugiyamaEdge.getSource()).collect(Collectors.toList());
-		List<SugiyamaGraph.SugiyamaVertex> targets = vertex1Edges.stream().map(sugiyamaEdge -> sugiyamaEdge.getTarget()).collect(Collectors.toList());
+		List<ISugiyamaVertex> sources = vertex1Edges.stream().map(sugiyamaEdge -> sugiyamaEdge.getSource()).collect(Collectors.toList());
+		List<ISugiyamaVertex> targets = vertex1Edges.stream().map(sugiyamaEdge -> sugiyamaEdge.getTarget()).collect(Collectors.toList());
 		sources.removeIf(vertex -> vertex.getID() == vertex1.getID());
 		targets.removeIf(vertex -> vertex.getID() == vertex1.getID());
 
-		List<SugiyamaGraph.SugiyamaVertex> neighbors1 = new LinkedList<>(sources);
+		List<ISugiyamaVertex> neighbors1 = new LinkedList<>(sources);
 		neighbors1.addAll(targets);
 
-		Set<SugiyamaGraph.SugiyamaEdge> vertex2Edges = graph.edgesOf(vertex2);
+		Set<ISugiyamaEdge> vertex2Edges = graph.edgesOf(vertex2);
 
-		for (Iterator<SugiyamaGraph.SugiyamaEdge> iterator = vertex2Edges.iterator(); iterator.hasNext();) {
-			SugiyamaGraph.SugiyamaEdge edge = iterator.next();
+		for (Iterator<ISugiyamaEdge> iterator = vertex2Edges.iterator(); iterator.hasNext();) {
+			ISugiyamaEdge edge = iterator.next();
 			if (!layer2.contains(edge.getSource()) && !layer2.contains(edge.getTarget())) {
 				iterator.remove();
 			}
@@ -217,13 +223,13 @@ public class CrossMinimizer implements ICrossMinimizer {
 		sources.removeIf(vertex -> vertex.getID() == vertex1.getID());
 		targets.removeIf(vertex -> vertex.getID() == vertex1.getID());
 
-		List<SugiyamaGraph.SugiyamaVertex> neighbors2 = new LinkedList<>(sources);
+		List<ISugiyamaVertex> neighbors2 = new LinkedList<>(sources);
 		neighbors2.addAll(targets);
 
 		int result = 0;
 
-		for (SugiyamaGraph.SugiyamaVertex x1 : neighbors1) {
-			for (SugiyamaGraph.SugiyamaVertex x2 : neighbors2) {
+		for (ISugiyamaVertex x1 : neighbors1) {
+			for (ISugiyamaVertex x2 : neighbors2) {
 				if (layer2.indexOf(x1) > layer2.indexOf(x2)) {
 					result++;
 				}

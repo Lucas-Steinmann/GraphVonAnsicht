@@ -5,6 +5,7 @@ import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.directed.DefaultDirectedEdge;
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
 import edu.kit.student.graphmodel.directed.DirectedEdge;
+import edu.kit.student.sugiyama.graph.ISugiyamaVertex;
 import edu.kit.student.sugiyama.graph.SugiyamaGraph;
 
 import java.util.LinkedList;
@@ -97,6 +98,7 @@ public class GraphUtil {
                 graph.addVertex(vertex);
 
                 for (int j = lastLayerStart; j < currentLayerStart; j++) {
+
                     if (isCyclic) {
                         DirectedEdge edge = new DefaultDirectedEdge("e(v" + Integer.toString(i) + ", v" + Integer.toString(j) + ")", "");
                         edge.setVertices(vertex, vertices.get(j));
@@ -132,7 +134,7 @@ public class GraphUtil {
 
         SugiyamaGraph sugiyamaGraph = new SugiyamaGraph(graph);
 
-        for (SugiyamaGraph.SugiyamaVertex vertex :sugiyamaGraph.getVertexSet()) {
+        for (ISugiyamaVertex vertex :sugiyamaGraph.getVertexSet()) {
             sugiyamaGraph.assignToLayer(vertex, Integer.parseInt(vertex.getLabel()));
         }
 
