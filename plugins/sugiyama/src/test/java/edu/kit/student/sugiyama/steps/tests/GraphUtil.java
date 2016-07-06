@@ -88,23 +88,28 @@ public class GraphUtil {
 
         for (Integer layersize : layerSizes) {
             for (int i = currentLayerStart; i < currentLayerStart + layersize; i++) {
-                DefaultVertex vertex = new DefaultVertex("v" + Integer.toString(i), "");
+                DefaultVertex vertex = new DefaultVertex("v" + Integer.toString(i), Integer.toString(currentLayer));
                 vertices.add(vertex);
                 graph.addVertex(vertex);
 
                 for (int j = lastLayerStart; j < currentLayerStart; j++) {
+<<<<<<< HEAD
                     DirectedEdge edge = new DefaultDirectedEdge("e(v" + Integer.toString(i) + ", v" + Integer.toString(j) + ")", Integer.toString(currentLayer));
 
+=======
+>>>>>>> origin/master
                     if (isCyclic) {
+                        DirectedEdge edge = new DefaultDirectedEdge("e(v" + Integer.toString(i) + ", v" + Integer.toString(j) + ")", "");
                         edge.setVertices(vertex, vertices.get(j));
+                        edges.add(edge);
+                        edge = new DefaultDirectedEdge("e(v" + Integer.toString(j) + ", v" + Integer.toString(i) + ")", "");
                         edge.setVertices(vertices.get(j), vertex);
-                        maxEdgeCount += 2;
+                        edges.add(edge);
                     } else {
+                        DirectedEdge edge = new DefaultDirectedEdge("e(v" + Integer.toString(j) + ", v" + Integer.toString(i) + ")", "");
                         edge.setVertices(vertices.get(j), vertex);
-                        maxEdgeCount += 1;
+                        edges.add(edge);
                     }
-
-                    edges.add(edge);
                 }
             }
 
