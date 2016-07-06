@@ -16,7 +16,8 @@ public class CrossMinimizer implements ICrossMinimizer {
 	@Override
 	public void minimizeCrossings(ICrossMinimizerGraph graph) {
 		System.out.println("graph before minimization");
-		for (int i = 0; i < graph.getLayerCount(); i++) {
+		int layerCount = graph.getLayerCount();
+		for (int i = 0; i < layerCount; i++) {
 			System.out.println(graph.getLayer(i).stream().map(vertex -> vertex.getName()).collect(Collectors.joining(", ")));
 		}
 		System.out.println(" ");
@@ -27,11 +28,11 @@ public class CrossMinimizer implements ICrossMinimizer {
 		while (changes > 0 && counter < 10) {
 			changes = 0;
 			System.out.println("optimize up");
-			for (int i = 0; i < graph.getLayerCount() - 1; i++) {
+			for (int i = 1; i < layerCount; i++) {
 				changes += optimizeLayer(graph, i, Direction.UP);
 			}
 			System.out.println("optimize down");
-			for (int i = graph.getLayerCount() - 1; i > 0; i--) {
+			for (int i = layerCount - 2; i >= 0; i--) {
 				changes += optimizeLayer(graph, i, Direction.DOWN);
 			}
 
@@ -41,7 +42,7 @@ public class CrossMinimizer implements ICrossMinimizer {
 		System.out.println("runs = " + counter);
 		System.out.println(" ");
 		System.out.println("graph after minimization");
-		for (int i = 0; i < graph.getLayerCount(); i++) {
+		for (int i = 0; i < layerCount; i++) {
 			System.out.println(graph.getLayer(i).stream().map(vertex -> vertex.getName()).collect(Collectors.joining(", ")));
 		}
 	}
@@ -88,10 +89,10 @@ public class CrossMinimizer implements ICrossMinimizer {
 		int optimizingLayerNum = vertex.getLayer();
 		int fixedLayerNum;
 
-		if (dir == Direction.UP) {
+		if (dir == Direction.DOWN) {
 			relevantNeighbors = graph.outgoingEdgesOf(vertex).stream().map((sugiyamaEdge -> sugiyamaEdge.getTarget())).collect(Collectors.toSet());
 			fixedLayerNum = optimizingLayerNum + 1;
-		} else if (dir == Direction.DOWN) {
+		} else if (dir == Direction.UP) {
 			fixedLayerNum = optimizingLayerNum - 1;
 			relevantNeighbors = graph.incomingEdgesOf(vertex).stream().map((sugiyamaEdge -> sugiyamaEdge.getSource())).collect(Collectors.toSet());
 		} else {
