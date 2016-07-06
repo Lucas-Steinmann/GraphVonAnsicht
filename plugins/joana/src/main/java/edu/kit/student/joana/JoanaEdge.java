@@ -1,13 +1,13 @@
 package edu.kit.student.joana;
 
-import edu.kit.student.graphmodel.directed.DirectedEdge;
+import edu.kit.student.graphmodel.directed.DefaultDirectedEdge;
 import edu.kit.student.objectproperty.GAnsProperty;
 
 /**
  * A Joana specific {@link Edge}. It contains parameters which are only
  * used/usefull in {@link JoanaGraph}.
  */
-public class JoanaEdge<V extends JoanaVertex> extends DirectedEdge<V> {
+public class JoanaEdge<V extends JoanaVertex> extends DefaultDirectedEdge<V> {
     
     private GAnsProperty<Kind> edgeKind;
 

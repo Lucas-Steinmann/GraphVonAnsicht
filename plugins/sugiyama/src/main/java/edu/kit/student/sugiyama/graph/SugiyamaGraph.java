@@ -1,6 +1,7 @@
 package edu.kit.student.sugiyama.graph;
 
 import edu.kit.student.graphmodel.*;
+import edu.kit.student.graphmodel.directed.DefaultDirectedEdge;
 import edu.kit.student.graphmodel.directed.DirectedEdge;
 import edu.kit.student.graphmodel.directed.DirectedGraph;
 import edu.kit.student.plugin.LayoutOption;
@@ -375,7 +376,7 @@ public class SugiyamaGraph
 	@Override
 	public String toString(){
 		String out = "Vertices: {";
-		for(SugiyamaVertex v : this.vertexSet){
+		for(ISugiyamaVertex v : this.vertexSet){
 			out+= v.getName() + ", ";
 		}
 		out = out.substring(0, out.length()-2);
@@ -399,7 +400,7 @@ public class SugiyamaGraph
 	 * A supplement path for connecting vertices, which are more than one layer apart.
 	 * They are stored in the SugiyamaEdge along with the substituted edge.
 	 */
-	public static class SupplementPath extends DirectedEdge<DummyVertex> {
+	public static class SupplementPath extends DefaultDirectedEdge<DummyVertex> {
 		public SupplementPath(String name, String label) {
 			super(name, label);
 		}
@@ -431,7 +432,7 @@ public class SugiyamaGraph
 	/**
 	 * A supplement edge which is part of a {@link SupplementPath}.
 	 */
-	public static class SupplementEdge extends DirectedEdge<DefaultVertex> {
+	public static class SupplementEdge extends DefaultDirectedEdge<DefaultVertex> {
 		public SupplementEdge(String name, String label) {
 			super(name, label);
 		}
@@ -440,14 +441,22 @@ public class SugiyamaGraph
 	/**
 	 * A supplement vertex which is part of a {@link SupplementPath}.
 	 */
-	public static class DummyVertex extends DefaultVertex {
-		public DummyVertex(String name, String label) {
+	public static class DummyVertex extends DefaultVertex implements ISugiyamaVertex {
+		
+		int layer;
+		
+		public DummyVertex(String name, String label, int layer) {
 			super(name, label);
-			// TODO Auto-generated constructor stub
+			this.layer = layer;
 		}
 
 		public boolean isDummyVertex() {
 			return true;
+		}
+
+		@Override
+		public int getLayer() {
+			return this.layer;
 		}
 	}
 
@@ -455,7 +464,7 @@ public class SugiyamaGraph
 	 * A wrapper class for vertices used in the sugiyama framework.
 	 * A SugiyamaVertex can be a {@link DefaultVertex} or a {@link DummyVertex}
 	 */
-	public static class SugiyamaVertex implements Vertex {
+	public static class SugiyamaVertex implements Vertex, ISugiyamaVertex {
 		private final Vertex vertex;
 		private int layer;
 
@@ -533,7 +542,7 @@ public class SugiyamaGraph
 	 * A wrapper class for directed edges to implement additional functionality
 	 * to apply the sugiyama layout to the SugiyamaGraph containing them.
 	 */
-	public static class SugiyamaEdge extends DirectedEdge<SugiyamaVertex> {
+	public static class SugiyamaEdge implements DirectedEdge<SugiyamaVertex> {
 		List<Vector<Integer>> corners;
 		private boolean isReversed;
 		private boolean isSupplement;
@@ -542,8 +551,7 @@ public class SugiyamaGraph
 		private SugiyamaVertex target;
 		private SupplementPath supplementpath;
 
-		private SugiyamaEdge(DirectedEdge<Vertex> edge) {
-			super(edge.getName(), edge.getLabel());
+		private SugiyamaEdge(DirectedEdge edge) {
 			this.wrappedEdge = edge;
 			this.isReversed = false;
 			this.isSupplement=false;
@@ -603,7 +611,6 @@ public class SugiyamaGraph
 		public void setVertices(SugiyamaVertex source, SugiyamaVertex target) {
 			this.source = source;
 			this.target = target;
-			wrappedEdge.setVertices(source.getVertex(), target.getVertex());
 		}
 
 
@@ -647,7 +654,15 @@ public class SugiyamaGraph
 
 		@Override
 		public OrthogonalEdgePath getPath() {
-			return wrappedEdge.getPath();
+			return (OrthogonalEdgePath) wrappedEdge.getPath();
+			//TODO: not good !!!!!!!!!!!!!!!!!!!
+			//TODO: really not good !!!!!
+		}
+
+		@Override
+		public SerializedEdge<SugiyamaVertex> serialize() {
+			// TODO implement
+			return null;
 		}
 	}
 }

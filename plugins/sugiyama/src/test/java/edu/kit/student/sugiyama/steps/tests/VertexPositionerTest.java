@@ -1,6 +1,7 @@
 package edu.kit.student.sugiyama.steps.tests;
 
 import edu.kit.student.graphmodel.DefaultVertex;
+import edu.kit.student.graphmodel.directed.DefaultDirectedEdge;
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
 import edu.kit.student.graphmodel.directed.DirectedEdge;
 import edu.kit.student.sugiyama.graph.SugiyamaGraph;
@@ -24,8 +25,8 @@ public class VertexPositionerTest {
         DefaultVertex v1 = new DefaultVertex("v1", "0");
         DefaultVertex v2 = new DefaultVertex("v2", "0");
         DefaultVertex v3 = new DefaultVertex("v3", "1");
-        DirectedEdge<DefaultVertex> e1 = new DirectedEdge<DefaultVertex>("e1","");
-        DirectedEdge<DefaultVertex> e2 = new DirectedEdge<DefaultVertex>("e2","");
+        DirectedEdge<DefaultVertex> e1 = new DefaultDirectedEdge<DefaultVertex>("e1","");
+        DirectedEdge<DefaultVertex> e2 = new DefaultDirectedEdge<DefaultVertex>("e2","");
         e1.setVertices(v1, v2);
         e2.setVertices(v1, v3);
         DDGraph.addVertex(v1);
