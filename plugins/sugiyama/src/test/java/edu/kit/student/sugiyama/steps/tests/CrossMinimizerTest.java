@@ -72,8 +72,18 @@ public class CrossMinimizerTest {
         for (SugiyamaGraph.SugiyamaVertex vertex : SGraph.getVertexSet()) {
             SGraph.assignToLayer(vertex, Integer.parseInt(vertex.getLabel()));
         }
-
+        System.out.println("crossings before " + CrossMinimizer.crossings(SGraph));
         minimizer.minimizeCrossings(SGraph);
+        System.out.println("crossings after " + CrossMinimizer.crossings(SGraph));
     }
 
+    @Test
+    public void randomTests() {
+        for (int i = 20; i < 21; i++) {
+            SugiyamaGraph sugiyamaGraph = GraphUtil.generateSugiyamaGraph(400, 0.02f, false, true, 1000);
+            System.out.println("crossings before " + CrossMinimizer.crossings(sugiyamaGraph));
+            minimizer.minimizeCrossings(sugiyamaGraph);
+            System.out.println("crossings after " + CrossMinimizer.crossings(sugiyamaGraph));
+        }
+    }
 }

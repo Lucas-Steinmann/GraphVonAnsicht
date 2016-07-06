@@ -62,6 +62,10 @@ public class GraphUtil {
     }
 
     public static SugiyamaGraph generateSugiyamaGraph(int vertexCount, float density, boolean isCyclic, boolean isLayered) {
+        return generateSugiyamaGraph(vertexCount, density, isCyclic, isLayered, (new Random()).nextLong());
+    }
+
+    public static SugiyamaGraph generateSugiyamaGraph(int vertexCount, float density, boolean isCyclic, boolean isLayered, long seed) {
         if (!isLayered) {
             return new SugiyamaGraph(generateGraph(vertexCount, density, isCyclic));
         }
@@ -75,10 +79,10 @@ public class GraphUtil {
         int lastLayerStart = 0;
         List<Vertex> vertices = new LinkedList<>();
         List<DirectedEdge> edges = new LinkedList<>();
-        Random random = new Random();
+        Random random = new Random(seed);
 
         while (currentLayerStart < vertexCount) {
-            int layerSize = Math.min(random.nextInt(vertexCount / 2), vertexCount - currentLayerStart);
+            int layerSize = Math.min(random.nextInt(vertexCount / 3) + 1, vertexCount - currentLayerStart);
             layerSizes.add(layerSize);
             currentLayerStart += layerSize;
         }
@@ -100,10 +104,12 @@ public class GraphUtil {
                         edge = new DefaultDirectedEdge("e(v" + Integer.toString(j) + ", v" + Integer.toString(i) + ")", "");
                         edge.setVertices(vertices.get(j), vertex);
                         edges.add(edge);
+                        maxEdgeCount += 2;
                     } else {
                         DirectedEdge edge = new DefaultDirectedEdge("e(v" + Integer.toString(j) + ", v" + Integer.toString(i) + ")", "");
                         edge.setVertices(vertices.get(j), vertex);
                         edges.add(edge);
+                        maxEdgeCount += 1;
                     }
                 }
             }
@@ -113,7 +119,6 @@ public class GraphUtil {
             currentLayer += 1;
         }
 
-        currentLayerStart = 0;
         edgeCount = (int) (density * maxEdgeCount);
 
         while (edgeCount < edges.size()) {
