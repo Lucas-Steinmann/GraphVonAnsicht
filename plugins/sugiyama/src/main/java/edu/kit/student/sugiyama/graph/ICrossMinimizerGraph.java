@@ -3,13 +3,11 @@ package edu.kit.student.sugiyama.graph;
 import java.util.List;
 
 import edu.kit.student.graphmodel.LayeredGraph;
-import edu.kit.student.sugiyama.graph.SugiyamaGraph.SugiyamaEdge;
-import edu.kit.student.sugiyama.graph.SugiyamaGraph.SugiyamaVertex;
 
 /**
  * A LayeredGraph which additionally defines functions that can be used to minimize the crossings in the sugiyama-layout.
  */
-public interface ICrossMinimizerGraph extends LayeredGraph<SugiyamaVertex, SugiyamaEdge> {
+public interface ICrossMinimizerGraph extends LayeredGraph<ISugiyamaVertex, ISugiyamaEdge> {
 
 	/**
 	 * Get the amount of layers.
@@ -23,7 +21,7 @@ public interface ICrossMinimizerGraph extends LayeredGraph<SugiyamaVertex, Sugiy
 	 * @param first	 first vertex to change position with
 	 * @param second second vertex to change position with
 	 */
-	public void swapVertices(SugiyamaVertex first, SugiyamaVertex second);
+	public void swapVertices(ISugiyamaVertex first, ISugiyamaVertex second);
 	
 	/**
 	 * Get the number of vertices which are on a  certain layer
@@ -39,7 +37,7 @@ public interface ICrossMinimizerGraph extends LayeredGraph<SugiyamaVertex, Sugiy
 	 * @param vertex the vertex to get its layer from
 	 * @return       the layer number from this vertex
 	 */
-	public int getLayer(SugiyamaVertex vertex);
+	public int getLayer(ISugiyamaVertex vertex);
 	
 	/**
 	 * Get all vertices from a certain layer.
@@ -47,12 +45,12 @@ public interface ICrossMinimizerGraph extends LayeredGraph<SugiyamaVertex, Sugiy
 	 * @param layerNum the layer number to get all vertices from
 	 * @return		   a list of all vertices which are on this layer
 	 */
-	public List<SugiyamaVertex> getLayer(int layerNum);
+	public List<ISugiyamaVertex> getLayer(int layerNum);
 	
 	/**
 	 * Get all layers that contain vertices.
 	 * 
 	 * @return a list of lists of vertices which are on this layer
 	 */
-	public List<List<SugiyamaVertex>> getLayers();
+	public List<List<ISugiyamaVertex>> getLayers();
 }

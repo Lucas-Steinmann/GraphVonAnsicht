@@ -5,20 +5,18 @@ import java.util.Set;
 
 import edu.kit.student.graphmodel.LayeredGraph;
 import edu.kit.student.util.Point;
-import edu.kit.student.sugiyama.graph.SugiyamaGraph.SugiyamaEdge;
-import edu.kit.student.sugiyama.graph.SugiyamaGraph.SugiyamaVertex;
 
 /**
  * A LayeredGraph which additionally defines functions draw the edges in the sugiyama-layout.
  */
-public interface IEdgeDrawerGraph  extends LayeredGraph<SugiyamaVertex, SugiyamaEdge> {
+public interface IEdgeDrawerGraph  extends LayeredGraph<ISugiyamaVertex, ISugiyamaEdge> {
 	
 	/**
 	 * Reverses the direction of an directed edge.
 	 * 
 	 * @param edge the edge to return its direction
 	 */
-	public void reverseEdge(SugiyamaEdge edge);
+	public void reverseEdge(ISugiyamaEdge edge);
 	
 	/**
 	 * Deletes the supplement edges, which have been created when an edge was reversed.
@@ -26,21 +24,21 @@ public interface IEdgeDrawerGraph  extends LayeredGraph<SugiyamaVertex, Sugiyama
 	 * 
 	 * @return the set of edges, which have been restored.
 	 */
-	public Set<SugiyamaEdge> restoreAllEdges();
+	public Set<ISugiyamaEdge> restoreAllEdges();
 
 	/**
 	 * Returns the set of all with {@code reverseEdge(E edge)} reversed edges.
 	 * 
 	 * @return the set of all reversed edges.
 	 */
-	public Set<SugiyamaEdge> getReversedEdges();
+	public Set<ISugiyamaEdge> getReversedEdges();
 
 	/**
 	 * Returns the set of replaced edges.
 	 * 
 	 * @return the set of replaced edges
 	 */
-	public Set<SugiyamaEdge> getReplacedEdges();
+	public Set<ISugiyamaEdge> getReplacedEdges();
 	
 	/**
 	 * Deletes all dummy vertices and edges connecting dummy vertices.
@@ -48,7 +46,7 @@ public interface IEdgeDrawerGraph  extends LayeredGraph<SugiyamaVertex, Sugiyama
 	 * 
 	 * @return the set of edges, which has been restored
 	 */
-	public Set<SugiyamaEdge> restoreReplacedEdges();
+	public Set<ISugiyamaEdge> restoreReplacedEdges();
 	
 	
 	/**
@@ -63,19 +61,19 @@ public interface IEdgeDrawerGraph  extends LayeredGraph<SugiyamaVertex, Sugiyama
 	 * @param y 	the y coordinate of the corner
 	 * @param index the index on the edge of the corner
 	 */
-	public void addEdgeCorner(SugiyamaEdge edge, int x, int y, int index);
+	public void addEdgeCorner(ISugiyamaEdge edge, int x, int y, int index);
 	
 	/**
 	 * Removes the corner on the specified edge at the index
 	 * @param edge  the edge to remove the corner
 	 * @param index the index of the corner to remove
 	 */
-	public void removeEdgeCorner(SugiyamaEdge edge, int index);
+	public void removeEdgeCorner(ISugiyamaEdge edge, int index);
 	
 	/**
 	 * Returns a list of points, which describe the coordinates of the edges
 	 * @param edge the edge
 	 * @return	   the list of points of the corners on the edge
 	 */
-	public List<Point> getEdgeCorners(SugiyamaEdge edge);
+	public List<Point> getEdgeCorners(ISugiyamaEdge edge);
 }

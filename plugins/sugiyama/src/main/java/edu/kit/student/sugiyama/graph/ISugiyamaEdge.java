@@ -1,8 +1,14 @@
 package edu.kit.student.sugiyama.graph;
 
-import edu.kit.student.graphmodel.DefaultVertex;
-import edu.kit.student.graphmodel.Edge;
+import edu.kit.student.graphmodel.directed.DirectedEdge;
 
-public interface ISugiyamaEdge extends Edge<DefaultVertex>{
+public interface ISugiyamaEdge extends DirectedEdge<ISugiyamaVertex>{
+
+	void setReversed(boolean b);
+
+	boolean isReversed();
+
+
+
 
 }

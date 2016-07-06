@@ -1,13 +1,11 @@
 package edu.kit.student.sugiyama.graph;
 
 import edu.kit.student.graphmodel.directed.DirectedGraph;
-import edu.kit.student.sugiyama.graph.SugiyamaGraph.SugiyamaEdge;
-import edu.kit.student.sugiyama.graph.SugiyamaGraph.SugiyamaVertex;
 
 /**
  * A DirectedGraph which additionally defines functions to remove cycles in the graph.
  */
-public interface ICycleRemoverGraph extends DirectedGraph<SugiyamaVertex, SugiyamaEdge> {
+public interface ICycleRemoverGraph extends DirectedGraph<ISugiyamaVertex, ISugiyamaEdge> {
 	/**
 	 * Reverses the direction of a sugiyama edge.
 	 * The underlying edge won't be reversed to avoid
@@ -17,12 +15,12 @@ public interface ICycleRemoverGraph extends DirectedGraph<SugiyamaVertex, Sugiya
 	 * 
 	 * @param edge the edge to reverse its direction
 	 */
-	public void reverseEdge(SugiyamaEdge edge);
+	public void reverseEdge(ISugiyamaEdge edge);
 	
 	/**
 	 * Returns true if the specified edge is reversed, false otherwise
 	 * @param edge the edge
 	 * @return true if the edge is reversed, false otherwise
 	 */
-	public boolean isReversed(SugiyamaEdge edge);
+	public boolean isReversed(ISugiyamaEdge edge);
 }

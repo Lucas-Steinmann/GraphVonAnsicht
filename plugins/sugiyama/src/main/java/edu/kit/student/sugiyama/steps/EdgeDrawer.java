@@ -3,7 +3,7 @@ package edu.kit.student.sugiyama.steps;
 import java.util.Set;
 
 import edu.kit.student.sugiyama.graph.IEdgeDrawerGraph;
-import edu.kit.student.sugiyama.graph.SugiyamaGraph.SugiyamaEdge;
+import edu.kit.student.sugiyama.graph.ISugiyamaEdge;
 
 /**
  * This class takes a directed graph, as a {@link SugiyamaClass}.
@@ -27,8 +27,8 @@ public class EdgeDrawer implements IEdgeDrawer {
 	 * @param graph the graph to reverse the reversed edges from
 	 */
 	private void restoreReversedEdges(IEdgeDrawerGraph graph){
-		Set<SugiyamaEdge> reversedEdges = graph.getReversedEdges();
-		for(SugiyamaEdge edge : reversedEdges){
+		Set<ISugiyamaEdge> reversedEdges = graph.getReversedEdges();
+		for(ISugiyamaEdge edge : reversedEdges){
 			graph.reverseEdge(edge);
 		}
 	}
