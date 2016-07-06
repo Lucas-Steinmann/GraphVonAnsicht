@@ -88,7 +88,7 @@ public class GraphUtil {
 
         for (Integer layersize : layerSizes) {
             for (int i = currentLayerStart; i < currentLayerStart + layersize; i++) {
-                DefaultVertex vertex = new DefaultVertex("v" + Integer.toString(i), "");
+                DefaultVertex vertex = new DefaultVertex("v" + Integer.toString(i), Integer.toString(currentLayer));
                 vertices.add(vertex);
                 graph.addVertex(vertex);
 
