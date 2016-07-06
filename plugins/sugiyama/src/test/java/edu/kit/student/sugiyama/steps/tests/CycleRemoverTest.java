@@ -9,10 +9,6 @@ import edu.kit.student.sugiyama.graph.SugiyamaGraph;
 import edu.kit.student.sugiyama.steps.CycleRemover;
 import org.junit.Test;
 
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Random;
-
 import static org.junit.Assert.assertTrue;
 
 
@@ -85,8 +81,7 @@ public class CycleRemoverTest {
 	@Test
 	public void RandomGraphsTest() {
 		for (int i = 0; i < 20; i++) {
-			DefaultDirectedGraph<DefaultVertex, DirectedEdge<DefaultVertex>> diGraph = generateTestGraph(i*2, 0.7f);
-			SugiyamaGraph testGraph = new SugiyamaGraph(diGraph);
+			SugiyamaGraph testGraph = GraphUtil.generateSugiyamaGraph(i*2, (float) Math.pow(0.95, i), true, false);
 
 			CycleRemover cr = new CycleRemover();
 			cr.removeCycles(testGraph);
@@ -96,8 +91,7 @@ public class CycleRemoverTest {
 	
 	@Test
 	public void SingleRandomTest(){
-		DefaultDirectedGraph<DefaultVertex, DirectedEdge<DefaultVertex>> diGraph = generateTestGraph(5, 0.7f);
-		SugiyamaGraph testGraph = new SugiyamaGraph(diGraph);
+		SugiyamaGraph testGraph = GraphUtil.generateSugiyamaGraph(10, 0.2f, true, false);
 
 		CycleRemover cr = new CycleRemover();
 //		System.out.println(testGraph.toString());
@@ -139,43 +133,5 @@ public class CycleRemoverTest {
 			}
 		}
 		return null;
-	}
-
-	private DefaultDirectedGraph<DefaultVertex, DirectedEdge<DefaultVertex>> generateTestGraph(int vertexCount, float density) {
-		DefaultDirectedGraph graph = new DefaultDirectedGraph("randomGraph");
-		density = Math.min(Math.max(density, 0f), 1f);
-		int edgeCount = (int) (density/2 * vertexCount * (vertexCount - 1));
-		List<Vertex> vertices = new LinkedList<>();
-		List<DirectedEdge> edges = new LinkedList<>();
-		Random random = new Random();
-
-		for (int i = 0; i < vertexCount; i++) {
-			DefaultVertex vertex = new DefaultVertex("v" + Integer.toString(i), "");
-			vertices.add(vertex);
-			graph.addVertex(vertex);
-
-			for (int j = 0; j < i; j++) {
-				DirectedEdge edge = new DirectedEdge("e(v" + Integer.toString(i) + ", v" + Integer.toString(j) + ")", "");
-
-				if (random.nextBoolean()) {
-					edge.setVertices(vertex, vertices.get(j));
-				} else {
-					edge.setVertices(vertices.get(j), vertex);
-				}
-
-				edges.add(edge);
-			}
-		}
-
-		while (edgeCount < edges.size()) {
-			int removeNumber = random.nextInt(edges.size());
-			edges.remove(removeNumber);
-		}
-
-		for (DirectedEdge edge : edges) {
-			graph.addEdge(edge);
-		}
-
-		return graph;
 	}
 }

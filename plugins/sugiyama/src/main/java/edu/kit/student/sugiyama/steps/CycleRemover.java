@@ -26,6 +26,8 @@ public class CycleRemover implements ICycleRemover {
 		Set<SugiyamaEdge> DAGEdges = new HashSet<SugiyamaEdge>();
 		Set<SugiyamaVertex> DDVertices = DDGraph.getVertexSet();
 		Set<SugiyamaEdge> DDEdges = DDGraph.getEdgeSet();
+		System.out.println("vertices: " + DDVertices.size());
+		System.out.println("edges: " + DDEdges.size());
 
 		while(!DDVertices.isEmpty()) {
 			SugiyamaVertex vertex = getCurrentSink(DDVertices);
@@ -166,6 +168,9 @@ public class CycleRemover implements ICycleRemover {
 				result.add(edge);
 			}
 		}
+
+		System.out.println("reversed: " + result.size());
+		System.out.println("");
 		return result;
 	}
 	
