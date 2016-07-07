@@ -24,7 +24,7 @@ public class CrossMinimizer implements ICrossMinimizer {
 		}
 		System.out.println(" ");
 
-		addDummyVertices();
+		addDummyAndEdges(graph);
 
 		//add dummy knots
 		int newCrossings = 0;
@@ -60,9 +60,59 @@ public class CrossMinimizer implements ICrossMinimizer {
 		}
 	}
 
-	private void addDummyVertices() {
-		// TODO Auto-generated method stub
-
+	/**
+	 * This method adds dummy vertices between the two vertices of an edge, on every layer that this edge skips.
+	 * the dummy vertices are connected through supplement edges with each other and the source and target vertex of the edge.
+	 * 
+	 * @param graph input graph to add dummy vertices and supplement edges to
+	 */
+	private void addDummyAndEdges(ICrossMinimizerGraph graph) {
+		System.out.println("Vertices before: "+graph.getVertexSet().size()+", Edges before: "+graph.getEdgeSet().size());
+		Set<ISugiyamaVertex> vertices = graph.getVertexSet();
+		Set<ISugiyamaEdge> edges = graph.getEdgeSet();
+		Set<ISugiyamaEdge> newEdges = new HashSet<ISugiyamaEdge>();
+		Set<ISugiyamaEdge> replacedEdges = new HashSet<ISugiyamaEdge>();
+		for(ISugiyamaEdge e : edges){
+			ISugiyamaVertex source = e.getSource();
+			ISugiyamaVertex target = e.getTarget();
+			int lowerLayer = source.getLayer();
+			int upperLayer = target.getLayer();
+			int diff = upperLayer - lowerLayer;
+			assert(diff >= 1);	//diff must not be lower than zero
+			assert(graph.getLayer(lowerLayer).contains(e.getSource()));
+			assert(graph.getLayer(upperLayer).contains(e.getTarget()));
+			if(diff>1){	//need to add diff dummy vertices
+				replacedEdges.add(e);		// the  distance of both vertices of this edge is greater than 1 so it must be replaced
+				ISugiyamaVertex nv = null;	// through dummy vertices and supplement edges. add it here to remove it later from the original edge set.
+				ISugiyamaEdge ne = null;
+				for(int l = lowerLayer + 1; l <= upperLayer;l++){
+					int c = 1;
+					if(l==lowerLayer+1){
+						nv = graph.createDummy("d"+c+"("+source.getName()+"->"+target.getName()+")", "", lowerLayer + 1);	//first dummy vertex created
+						ne = graph.createSupplementEdge(e.getName()+"("+c+")", "");	//first dummy edge created
+						ne.setVertices(source, nv);	//set source and target of first dummy edge
+						vertices.add(nv);	//add new vertex to vertex set
+						newEdges.add(ne);	//add new edge to edge set
+						graph.getLayer(l).add(nv);	//add new edge to layer list
+					}else if(l==upperLayer){
+						ne = graph.createSupplementEdge(e.getName() + "(e" + c + ")", "");
+						newEdges.add(ne);
+						ne.setVertices(nv, target);	// ! important that nv is always the last created ISugiyamaVertex
+					}else{
+						ISugiyamaVertex temp = nv;	//temporary ISugiyamaVertex so that the new created vertex is always the one with the variable nv
+						nv = graph.createDummy("d"+c+"("+source.getName()+"->"+target.getName()+")", "", c);
+						ne = graph.createSupplementEdge(e.getName()+"("+c+")", "");
+						ne.setVertices(temp, nv);
+						vertices.add(nv);
+						newEdges.add(ne);
+						graph.getLayer(l).add(nv);
+					}
+				}
+			}
+		}
+		edges.addAll(newEdges);	//add all new generated supplement edges to the old edge list
+		edges.removeAll(replacedEdges);	//remove all replaced edges from the original edge set
+		System.out.println("Vertices after: "+graph.getVertexSet().size()+", Edges after: "+graph.getEdgeSet().size());
 	}
 
 	private int optimizeLayer(ICrossMinimizerGraph graph, int optimizingLayer, Direction dir) {

@@ -142,6 +142,16 @@ public class SugiyamaGraph
 	public List<List<ISugiyamaVertex>> getLayers() {
 		return this.layers; //TODO see getLayer()
 	}
+	
+	@Override
+	public DummyVertex createDummy(String name, String label, int layer) {
+		return new DummyVertex(name, label, layer);
+	}
+	
+	@Override
+	public SupplementEdge createSupplementEdge(String name, String label) {
+		return new SupplementEdge(name, label);
+	}
 
 	@Override
 	public void addEdgeCorner(ISugiyamaEdge edge, int x, int y, int index) {
@@ -289,10 +299,10 @@ public class SugiyamaGraph
 	}
 
 	@Override
-	public int getHeight() { return 0; }
+	public int getHeight() { return 0; }	//TODO ?
 
 	@Override
-	public int getMaxWidth() { return 0; }
+	public int getMaxWidth() { return 0; } //TODO ?
 
 	@Override
 	public Set<ISugiyamaEdge> restoreAllEdges() {
@@ -321,6 +331,7 @@ public class SugiyamaGraph
 	@Override
 	public List<LayeredGraph<ISugiyamaVertex, ISugiyamaEdge>> getSubgraphs() {
 		return null;
+		//TODO really null ?
 	}
 
 	
@@ -443,6 +454,12 @@ public class SugiyamaGraph
 			this.name=name;
 			this.label=label;
 		}
+		
+		public SupplementEdge(String name, String label, ISugiyamaVertex source, ISugiyamaVertex target){
+			this(name,label);
+			this.source=source;
+			this.target=target;
+		}
 
 		@Override
 		public void setVertices(ISugiyamaVertex source, ISugiyamaVertex target) {
@@ -537,8 +554,7 @@ public class SugiyamaGraph
 
 		@Override
 		public void setLayer(int layerNum) {
-			// TODO Auto-generated method stub
-			
+			this.layer=layerNum;
 		}
 	}
 
