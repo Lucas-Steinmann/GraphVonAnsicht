@@ -11,6 +11,8 @@ import edu.kit.student.sugiyama.steps.CrossMinimizer;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Random;
+
 /**
  * Created by Sven on 04.07.2016.
  */
@@ -80,8 +82,8 @@ public class CrossMinimizerTest {
 
     @Test
     public void randomTests() {
-        for (int i = 20; i < 21; i++) {
-            SugiyamaGraph sugiyamaGraph = GraphUtil.generateSugiyamaGraph(400, 0.02f, false, true, 1000);
+        for (int i = 5; i < 60; i++) {
+            SugiyamaGraph sugiyamaGraph = GraphUtil.generateSugiyamaGraph(i*2, 2, 8, (new Random()).nextLong());
             System.out.println("crossings before " + CrossMinimizer.crossings(sugiyamaGraph));
             minimizer.minimizeCrossings(sugiyamaGraph);
             System.out.println("crossings after " + CrossMinimizer.crossings(sugiyamaGraph));

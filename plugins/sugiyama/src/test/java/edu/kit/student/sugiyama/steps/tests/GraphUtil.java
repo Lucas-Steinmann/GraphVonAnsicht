@@ -66,6 +66,60 @@ public class GraphUtil {
         return generateSugiyamaGraph(vertexCount, density, isCyclic, isLayered, (new Random()).nextLong());
     }
 
+    public static SugiyamaGraph generateSugiyamaGraph(int vertexCount, int minEdges, int maxEdges, long seed) {
+        DefaultDirectedGraph graph = new DefaultDirectedGraph("randomGraph");
+        List<Integer> layerSizes = new LinkedList<>();
+        int currentLayerStart = 0;
+        int lastLayerStart = 0;
+        List<Vertex> vertices = new LinkedList<>();
+        Random random = new Random(seed);
+
+        while (currentLayerStart < vertexCount) {
+            int layerSize = Math.min(random.nextInt(vertexCount / 3) + 1, vertexCount - currentLayerStart);
+            layerSizes.add(layerSize);
+            currentLayerStart += layerSize;
+        }
+
+        currentLayerStart = 0;
+        int currentLayer = 0;
+
+        for (Integer layersize : layerSizes) {
+            for (int i = currentLayerStart; i < currentLayerStart + layersize; i++) {
+                DefaultVertex vertex = new DefaultVertex("v" + Integer.toString(i), Integer.toString(currentLayer));
+                vertices.add(vertex);
+                graph.addVertex(vertex);
+                int previousLayerSize;
+
+                try {
+                    previousLayerSize = layerSizes.get(currentLayer - 1);
+                } catch (Exception e) {
+                    previousLayerSize = 0;
+                }
+
+                int edgeNumber = Math.min(minEdges + random.nextInt(maxEdges - minEdges), previousLayerSize);
+
+                for (int j = 0; j < edgeNumber; j++) {
+                    int neighborNumber = lastLayerStart + random.nextInt(currentLayerStart - lastLayerStart);
+                    DirectedEdge edge = new DefaultDirectedEdge("e(v" + Integer.toString(neighborNumber) + ", v" + Integer.toString(i) + ")", "");
+                    edge.setVertices(vertices.get(neighborNumber), vertex);
+                    graph.addEdge(edge);
+                }
+            }
+
+            lastLayerStart = currentLayerStart;
+            currentLayerStart += layersize;
+            currentLayer += 1;
+        }
+
+        SugiyamaGraph sugiyamaGraph = new SugiyamaGraph(graph);
+
+        for (ISugiyamaVertex vertex :sugiyamaGraph.getVertexSet()) {
+            sugiyamaGraph.assignToLayer(vertex, Integer.parseInt(vertex.getLabel()));
+        }
+
+        return sugiyamaGraph;
+    }
+
     public static SugiyamaGraph generateSugiyamaGraph(int vertexCount, float density, boolean isCyclic, boolean isLayered, long seed) {
         if (!isLayered) {
             return new SugiyamaGraph(generateGraph(vertexCount, density, isCyclic));
