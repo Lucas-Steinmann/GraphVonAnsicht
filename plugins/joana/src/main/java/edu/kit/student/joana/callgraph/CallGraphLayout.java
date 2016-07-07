@@ -1,9 +1,13 @@
 package edu.kit.student.joana.callgraph;
 
+import java.util.HashMap;
+
 import edu.kit.student.graphmodel.LayeredGraph;
 import edu.kit.student.joana.JoanaCompoundVertex;
 import edu.kit.student.joana.JoanaEdge;
+import edu.kit.student.parameter.Parameter;
 import edu.kit.student.parameter.Settings;
+import edu.kit.student.parameter.StringParameter;
 import edu.kit.student.sugiyama.LayeredLayoutAlgorithm;
 
 /**
@@ -14,8 +18,7 @@ public class CallGraphLayout implements LayeredLayoutAlgorithm <CallGraph, Joana
 
 	@Override
 	public Settings getSettings() {
-		// TODO Auto-generated method stub
-		return null;
+		return new Settings(new HashMap<>());
 	}
 
 	@Override
