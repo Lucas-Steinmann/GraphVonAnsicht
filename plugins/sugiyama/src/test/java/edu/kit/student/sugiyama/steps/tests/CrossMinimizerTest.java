@@ -42,7 +42,16 @@ public class CrossMinimizerTest {
         DirectedEdge<DefaultVertex> e6 = new DefaultDirectedEdge<DefaultVertex>("e6","");
         DirectedEdge<DefaultVertex> e7 = new DefaultDirectedEdge<DefaultVertex>("e7","");
         DirectedEdge<DefaultVertex> e8 = new DefaultDirectedEdge<DefaultVertex>("e8","");
-        e1.setVertices(v1, v5);
+//        e1.setVertices(v1, v5);	old edges
+//        e2.setVertices(v1, v6);
+//        e3.setVertices(v2, v6);
+//        e4.setVertices(v3, v7);
+//        e5.setVertices(v4, v7);
+//        e6.setVertices(v6, v8);
+//        e7.setVertices(v6, v9);
+//        e8.setVertices(v7, v9);
+        
+        e1.setVertices(v1, v9);
         e2.setVertices(v1, v6);
         e3.setVertices(v2, v6);
         e4.setVertices(v3, v7);
@@ -50,6 +59,7 @@ public class CrossMinimizerTest {
         e6.setVertices(v6, v8);
         e7.setVertices(v6, v9);
         e8.setVertices(v7, v9);
+        
         DDGraph.addVertex(v9);
         DDGraph.addVertex(v2);
         DDGraph.addVertex(v7);
@@ -78,7 +88,7 @@ public class CrossMinimizerTest {
         System.out.println("crossings after " + CrossMinimizer.crossings(SGraph));
     }
 
-    @Test
+    
     public void randomTests() {
         for (int i = 20; i < 21; i++) {
             SugiyamaGraph sugiyamaGraph = GraphUtil.generateSugiyamaGraph(400, 0.02f, false, true, 1000);
