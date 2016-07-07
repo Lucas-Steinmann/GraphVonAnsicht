@@ -17,11 +17,7 @@ public class CrossMinimizer implements ICrossMinimizer {
 
 	@Override
 	public void minimizeCrossings(ICrossMinimizerGraph graph) {
-		System.out.println("graph before minimization");
 		int layerCount = graph.getLayerCount();
-		for (int i = 0; i < layerCount; i++) {
-			System.out.println(graph.getLayer(i).stream().map(vertex -> vertex.getName()).collect(Collectors.joining(", ")));
-		}
 		System.out.println(" ");
 
 		addDummyAndEdges(graph);
@@ -32,6 +28,8 @@ public class CrossMinimizer implements ICrossMinimizer {
 		int counter = 0;
 
 		while (counter < 20) {
+			List<List<ISugiyamaVertex>> undo = new LinkedList<>(graph.getLayers());
+
 			//System.out.println("optimize up");
 			for (int i = 1; i < layerCount; i++) {
 				optimizeLayer(graph, i, Direction.UP);
@@ -44,6 +42,12 @@ public class CrossMinimizer implements ICrossMinimizer {
 
 			newCrossings = crossings((SugiyamaGraph) graph);
 
+			if (oldCrossings - newCrossings < 0) {
+				graph.getLayers().clear();
+				graph.getLayers().addAll(undo);
+				break;
+			}
+
 			if (newCrossings == 0 || oldCrossings - newCrossings < 0.001f * oldCrossings) {
 				break;
 			}
@@ -54,10 +58,6 @@ public class CrossMinimizer implements ICrossMinimizer {
 		System.out.println(" ");
 		System.out.println("runs = " + counter);
 		System.out.println(" ");
-		System.out.println("graph after minimization");
-		for (int i = 0; i < layerCount; i++) {
-			System.out.println(graph.getLayer(i).stream().map(vertex -> vertex.getName()).collect(Collectors.joining(", ")));
-		}
 	}
 
 	/**

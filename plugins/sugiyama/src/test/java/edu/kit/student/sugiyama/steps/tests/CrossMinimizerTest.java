@@ -88,11 +88,13 @@ public class CrossMinimizerTest {
         System.out.println("crossings before " + CrossMinimizer.crossings(SGraph));
         minimizer.minimizeCrossings(SGraph);
         System.out.println("crossings after " + CrossMinimizer.crossings(SGraph));
+        System.out.println("");
+        System.out.println("");
     }
 
-    
+    @Test
     public void randomTests() {
-        for (int i = 5; i < 60; i++) {
+        for (int i = 10; i < 50; i++) {
             SugiyamaGraph sugiyamaGraph = GraphUtil.generateSugiyamaGraph(i*2, 2, 8, (new Random()).nextLong());
             System.out.println("crossings before " + CrossMinimizer.crossings(sugiyamaGraph));
             minimizer.minimizeCrossings(sugiyamaGraph);
