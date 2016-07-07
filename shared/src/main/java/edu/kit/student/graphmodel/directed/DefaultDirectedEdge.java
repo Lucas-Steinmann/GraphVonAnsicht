@@ -18,6 +18,7 @@ public class DefaultDirectedEdge<V extends Vertex> implements DirectedEdge<V>{
 	private GAnsProperty<String> name;
 	private Integer id;
 	private GAnsProperty<String> label;
+	private OrthogonalEdgePath path;
 
 	/**
 	 * Constructor
@@ -30,6 +31,7 @@ public class DefaultDirectedEdge<V extends Vertex> implements DirectedEdge<V>{
         this.name = new GAnsProperty<String>("graphName", name);
         this.label = new GAnsProperty<String>("label", label);
         this.id = IdGenerator.getInstance().createId();
+        this.path = new OrthogonalEdgePath();
     }
     
     /**
@@ -123,7 +125,6 @@ public class DefaultDirectedEdge<V extends Vertex> implements DirectedEdge<V>{
 
 	@Override
 	public OrthogonalEdgePath getPath() {
-		// TODO Auto-generated method stub
-		return null;
+	    return path;
 	}
 }

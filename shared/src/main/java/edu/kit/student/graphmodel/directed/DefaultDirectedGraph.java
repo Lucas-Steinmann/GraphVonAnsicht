@@ -283,8 +283,8 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
     }
 
     private void removeVertex(V vertex) {
-        // assert(this.outgoingEdges(vertex).size == 0)
-        // assert(this.incomingEdges(vertex).size == 0)
+        assert (this.outdegreeOf(vertex) == 0);
+        assert (this.indegreeOf(vertex) == 0);
         vertexToEdge.remove(vertex);
         revVertexToEdge.remove(vertex);
     }
