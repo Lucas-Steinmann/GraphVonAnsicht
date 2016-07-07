@@ -66,7 +66,7 @@ public class GraphUtil {
         return generateSugiyamaGraph(vertexCount, density, isCyclic, isLayered, (new Random()).nextLong());
     }
 
-    public static SugiyamaGraph generateSugiyamaGraph(int vertexCount, int minEdges, int maxEdges, long seed) {
+    public static SugiyamaGraph generateSugiyamaGraph(int vertexCount, int minEdges, int maxEdges, boolean skipsLayers, long seed) {
         DefaultDirectedGraph graph = new DefaultDirectedGraph("randomGraph");
         List<Integer> layerSizes = new LinkedList<>();
         int currentLayerStart = 0;
@@ -99,7 +99,14 @@ public class GraphUtil {
                 int edgeNumber = Math.min(minEdges + random.nextInt(maxEdges - minEdges), previousLayerSize);
 
                 for (int j = 0; j < edgeNumber; j++) {
-                    int neighborNumber = lastLayerStart + random.nextInt(currentLayerStart - lastLayerStart);
+                    int neighborNumber;
+
+                    if (!skipsLayers) {
+                        neighborNumber = lastLayerStart + random.nextInt(currentLayerStart - lastLayerStart);
+                    } else {
+                        neighborNumber = random.nextInt(currentLayerStart);
+                    }
+
                     DirectedEdge edge = new DefaultDirectedEdge("e(v" + Integer.toString(neighborNumber) + ", v" + Integer.toString(i) + ")", "");
                     edge.setVertices(vertices.get(neighborNumber), vertex);
                     graph.addEdge(edge);

@@ -22,6 +22,8 @@ public class CrossMinimizer implements ICrossMinimizer {
 
 		addDummyAndEdges(graph);
 
+		System.out.println("crossings before " + CrossMinimizer.crossings((SugiyamaGraph) graph));
+
 		//add dummy knots
 		int newCrossings = 0;
 		int oldCrossings = crossings((SugiyamaGraph) graph);
@@ -58,6 +60,9 @@ public class CrossMinimizer implements ICrossMinimizer {
 		System.out.println(" ");
 		System.out.println("runs = " + counter);
 		System.out.println(" ");
+		System.out.println("crossings after " + CrossMinimizer.crossings((SugiyamaGraph) graph));
+		System.out.println("");
+		System.out.println("");
 	}
 
 	/**
