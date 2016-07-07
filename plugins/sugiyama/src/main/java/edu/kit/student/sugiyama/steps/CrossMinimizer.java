@@ -17,12 +17,17 @@ public class CrossMinimizer implements ICrossMinimizer {
 
 	@Override
 	public void minimizeCrossings(ICrossMinimizerGraph graph) {
+		//prints the name of every vertex on every layer before minimizing
+		graph.getLayers().forEach(iSugiyamaVertices -> System.out.println(iSugiyamaVertices.stream().map(iSugiyamaVertex -> iSugiyamaVertex.getName()).collect(Collectors.joining(", "))));
+		System.out.println('\n');
 		int layerCount = graph.getLayerCount();
 		System.out.println(" ");
 
+		System.out.println("crossings before dummy insertion: " + CrossMinimizer.crossings((SugiyamaGraph) graph));
+		
 		addDummyAndEdges(graph);
 
-		System.out.println("crossings before " + CrossMinimizer.crossings((SugiyamaGraph) graph));
+		System.out.println("crossings before minimizing: " + CrossMinimizer.crossings((SugiyamaGraph) graph));
 
 		//add dummy knots
 		int newCrossings = 0;
@@ -60,9 +65,12 @@ public class CrossMinimizer implements ICrossMinimizer {
 		System.out.println(" ");
 		System.out.println("runs = " + counter);
 		System.out.println(" ");
-		System.out.println("crossings after " + CrossMinimizer.crossings((SugiyamaGraph) graph));
+		System.out.println("crossings after minimization: " + CrossMinimizer.crossings((SugiyamaGraph) graph));
 		System.out.println("");
 		System.out.println("");
+		//prints the name of every vertex on every layer after minimization
+		graph.getLayers().forEach(iSugiyamaVertices -> System.out.println(iSugiyamaVertices.stream().map(iSugiyamaVertex -> iSugiyamaVertex.getName()).collect(Collectors.joining(", "))));
+		System.out.println('\n');
 	}
 
 	/**
@@ -90,8 +98,9 @@ public class CrossMinimizer implements ICrossMinimizer {
 				replacedEdges.add(e);		// the  distance of both vertices of this edge is greater than 1 so it must be replaced
 				ISugiyamaVertex nv = null;	// through dummy vertices and supplement edges. add it here to remove it later from the original edge set.
 				ISugiyamaEdge ne = null;
+				int c = 0;
 				for(int l = lowerLayer + 1; l <= upperLayer;l++){
-					int c = 1;
+					c++;
 					if(l==lowerLayer+1){
 						nv = graph.createDummy("d"+c+"("+source.getName()+"->"+target.getName()+")", "", lowerLayer + 1);	//first dummy vertex created
 						ne = graph.createSupplementEdge(e.getName()+"("+c+")", "");	//first dummy edge created
