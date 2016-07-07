@@ -1,17 +1,14 @@
 package edu.kit.student.sugiyama;
 
-import edu.kit.student.graphmodel.directed.DefaultDirectedEdge;
-import edu.kit.student.graphmodel.directed.DirectedEdge;
-import edu.kit.student.graphmodel.directed.DirectedGraph;
+import edu.kit.student.graphmodel.DefaultVertex;
 import edu.kit.student.graphmodel.LayeredGraph;
 import edu.kit.student.graphmodel.Vertex;
+import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
+import edu.kit.student.graphmodel.directed.DirectedEdge;
+import edu.kit.student.graphmodel.directed.DirectedGraph;
 import edu.kit.student.parameter.Settings;
 import edu.kit.student.sugiyama.graph.SugiyamaGraph;
-import edu.kit.student.sugiyama.steps.ICrossMinimizer;
-import edu.kit.student.sugiyama.steps.ICycleRemover;
-import edu.kit.student.sugiyama.steps.IEdgeDrawer;
-import edu.kit.student.sugiyama.steps.ILayerAssigner;
-import edu.kit.student.sugiyama.steps.IVertexPositioner;
+import edu.kit.student.sugiyama.steps.*;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -127,4 +124,15 @@ public class SugiyamaLayoutAlgorithm
 		positioner.positionVertices(wrappedGraph);
 		drawer.drawEdges(wrappedGraph);
     }
+
+	public void layout(DefaultDirectedGraph<DefaultVertex, DirectedEdge<DefaultVertex>> graph) {
+		SugiyamaGraph wrappedGraph = new SugiyamaGraph(graph);
+		assigner.addConstraints(relativeLayerConstraints);
+
+		remover.removeCycles(wrappedGraph);
+		assigner.assignLayers(wrappedGraph);
+		minimizer.minimizeCrossings(wrappedGraph);
+		positioner.positionVertices(wrappedGraph);
+		drawer.drawEdges(wrappedGraph);
+	}
 }

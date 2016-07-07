@@ -90,7 +90,7 @@ public class CrossMinimizerTest {
 
     @Test
     public void randomTests() {
-        for (int i = 30; i < 50; i++) {
+        for (int i = 10; i < 20; i++) {
             SugiyamaGraph sugiyamaGraph = GraphUtil.generateSugiyamaGraph(i*2, 2, 8, true, (new Random()).nextLong());
             minimizer.minimizeCrossings(sugiyamaGraph);
         }

@@ -1,18 +1,13 @@
 package edu.kit.student.sugiyama.steps.tests;
 
-import org.junit.Before;
-import org.junit.Test;
-
 import edu.kit.student.graphmodel.DefaultVertex;
 import edu.kit.student.graphmodel.directed.DefaultDirectedEdge;
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
 import edu.kit.student.graphmodel.directed.DirectedEdge;
 import edu.kit.student.sugiyama.SugiyamaLayoutAlgorithm;
-import edu.kit.student.sugiyama.steps.CycleRemover;
-import edu.kit.student.sugiyama.steps.LayerAssigner;
-import edu.kit.student.sugiyama.steps.CrossMinimizer;
-import edu.kit.student.sugiyama.steps.VertexPositioner;
-import edu.kit.student.sugiyama.steps.EdgeDrawer;
+import edu.kit.student.sugiyama.steps.*;
+import org.junit.Before;
+import org.junit.Test;
 
 
 public class SugiyamaLayoutAlgorithmTest {
@@ -57,5 +52,11 @@ public class SugiyamaLayoutAlgorithmTest {
 		DDGraph.addEdge(e4);
 		DDGraph.addEdge(e5);
 //		this.alg.layout(DDGraph);  does not work with DefalltDirectedGraph, just with DirectedGraph
+	}
+
+	@Test
+	public void testRandomGraph() {
+		DefaultDirectedGraph<DefaultVertex, DirectedEdge<DefaultVertex>> DDGraph = GraphUtil.generateGraph(50, 0.05f, true);
+		this.alg.layout(DDGraph);
 	}
 }

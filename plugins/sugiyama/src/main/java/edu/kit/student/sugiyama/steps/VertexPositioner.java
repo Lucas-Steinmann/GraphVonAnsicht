@@ -10,14 +10,14 @@ public class VertexPositioner implements IVertexPositioner {
 
 	@Override
 	public void positionVertices(IVertexPositionerGraph graph) {
-		int maxwidth = graph.getLayers().stream().mapToInt(layer -> layer.size()).min().getAsInt() * 4;
-		ISugiyamaVertex[][] vertices = new ISugiyamaVertex[maxwidth][graph.getLayerCount()];
+		int maxwidth = graph.getLayers().stream().mapToInt(layer -> layer.size()).max().getAsInt() * 4;
+		ISugiyamaVertex[][] vertices = new ISugiyamaVertex[graph.getLayerCount()][maxwidth];
 
 		for (int i = 0; i < graph.getLayerCount(); i++) {
 			int j = 0;
 
 			for (ISugiyamaVertex vertex : graph.getLayer(i)) {
-				vertices[j][i] = vertex;
+				vertices[i][j] = vertex;
 
 				j++;
 			}
