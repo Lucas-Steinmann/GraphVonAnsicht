@@ -62,7 +62,6 @@ public class EdgeShape extends GAnsGraphElement {
 		vertexSize = GraphViewGraphFactory.getSizeOfVertex(vertex.getLabel());
 		this.endX = vertex.getX();
 		this.endY = vertex.getY();
-		System.out.println("line from (" + startX + ", " + startY + ") to (" + this.endX + ", " + this.endY + ")");
 		Line line = new Line(startX, startY, this.endX, this.endY);
 		relocate(Math.min(startX, this.endX), Math.min(startY, this.endY));
 		lines.add(line);
