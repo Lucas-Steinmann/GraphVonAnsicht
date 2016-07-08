@@ -26,7 +26,7 @@ public class MethodGraph extends JoanaGraph<JoanaVertex, JoanaEdge<JoanaVertex>>
 
     public MethodGraph(Set<JoanaVertex> vertices, Set<JoanaEdge<JoanaVertex>> edges, 
             Set<FieldAccess> fieldAccesses, String methodName) {
-        super(methodName);
+        super(methodName, vertices, edges);
         for(JoanaVertex vertex : vertices) {
         	if(vertex.getNodeKind() == Kind.ENTR) this.entry = vertex;
         }
@@ -103,4 +103,20 @@ public class MethodGraph extends JoanaGraph<JoanaVertex, JoanaEdge<JoanaVertex>>
         layoutOptions.addAll(super.getRegisteredLayouts());
         return layoutOptions;
     }
+    
+	@Override
+	public LayoutOption getDefaultLayout() {
+		return new MethodGraphLayoutOption() {
+			{
+                this.setName("Method-Graph-Layout");
+                this.setId("MGL");
+                this.setGraph(MethodGraph.this);
+            }
+			
+			@Override
+			public void chooseLayout() {
+				setLayout(new MethodGraphLayout());
+			}
+		};
+	}
 }
