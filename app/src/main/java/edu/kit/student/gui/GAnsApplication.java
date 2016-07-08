@@ -118,6 +118,7 @@ public class GAnsApplication extends Application {
 					int id = structureView.getIdOfSelectedItem();
 					Graph<? extends Vertex, ? extends Edge<? extends Vertex>> graph = getGraphFromId(model.getRootGraphs(), id);
 					if(graph != null) {
+						//TODO: layout anstoﬂen wenn nicht bereits angezeigt.
 						showGraph(graph);
 					}
 
@@ -358,7 +359,9 @@ public class GAnsApplication extends Application {
 		    LayoutOption chosenOption = options.get(layoutNames.indexOf(result.get()));
 		    chosenOption.chooseLayout();
 		    Settings settings = chosenOption.getSettings();
-		    if(openParameterDialog(settings)) chosenOption.applyLayout();
+		    if(openParameterDialog(settings)) {
+		    	chosenOption.applyLayout();
+		    }
 		    return true;
 		}
 		return false;
@@ -395,7 +398,7 @@ public class GAnsApplication extends Application {
 				return graph;
 			}
 			
-			Graph tmp = getGraphFromId(graph.getChildGraphs(), id);
+			Graph<? extends Vertex, ? extends Edge<? extends Vertex>> tmp = getGraphFromId(graph.getChildGraphs(), id);
 			if(tmp != null) {
 				return tmp;
 			}
