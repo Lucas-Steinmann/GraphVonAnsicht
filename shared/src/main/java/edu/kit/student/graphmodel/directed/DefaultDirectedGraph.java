@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import edu.kit.student.graphmodel.CollapsedVertex;
@@ -31,7 +32,7 @@ public class DefaultDirectedGraph
 	private GAnsProperty<String> name;
 	private Integer id;
 	private FastGraphAccessor fga;
-	private Set<CollapsedVertex> collapsedVertices;
+	private Set<DirectedCollapsedVertex> collapsedVertices;
 	private HashMap<Vertex, Set<DirectedEdge>> vertexToEdge;
 	private HashMap<Vertex, Set<DirectedEdge>> revVertexToEdge;
 	
@@ -130,12 +131,12 @@ public class DefaultDirectedGraph
 	}
 
 	@Override
-	public Set<Vertex> getVertexSet() {
+	public Set<? extends Vertex> getVertexSet() {
 		return new HashSet<>(vertexToEdge.keySet());
 	}
 
 	@Override
-	public Set<DirectedEdge> getEdgeSet() {
+	public Set<? extends DirectedEdge> getEdgeSet() {
 	    Set<DirectedEdge> edges = new  HashSet<>();
 	    for (Vertex vertex : this.getVertexSet()) {
 	        edges.addAll(this.outgoingEdgesOf(vertex));
@@ -232,28 +233,45 @@ public class DefaultDirectedGraph
 
 	@Override
 	public CollapsedVertex collapse(Set<Vertex> subset) {
-		DefaultDirectedGraph collapsedGraph = new DefaultDirectedGraph("");
-		CollapsedVertex<DirectedGraph> collapsed = new CollapsedVertex("", "");
-		subset.forEach((v) -> collapsedGraph.addVertex(v));
+
+		DefaultDirectedGraph collapsedGraph = new DefaultDirectedGraph("", subset, new HashSet<>());
+		Set<DirectedEdge> internalEdges = new HashSet<>();
+
+		// Map to save which edges existed before collapse
+		Map<Vertex, DirectedEdge> collapsedVertexToCutEdge = new HashMap<>();
+
+		// Incoming and Outgoing edges from subset
+		List<DirectedEdge> outGoing = new LinkedList<>();
+		List<DirectedEdge> inComing = new LinkedList<>();
+
 		for (DirectedEdge edge : getEdgeSet()) {
 			boolean containsSource = subset.contains(edge.getSource());
 			boolean containsTarget = subset.contains(edge.getTarget());
 
+            removeEdge(edge);
 			if (containsSource && containsTarget) {
-				collapsedGraph.addEdge(edge);
-				removeEdge(edge);
+				internalEdges.add(edge);
 			} else if (containsSource && !containsTarget) {
 				Vertex removedVertex = edge.getSource();
-				edge.setVertices((Vertex) collapsed, edge.getTarget()); // TODO: K�nnte Probleme machen, CollapsedVertex ist nicht vom generic-Typ ist.
-				collapsed.addModifiedEdge(edge, removedVertex);
+				outGoing.add(edge);
+				collapsedVertexToCutEdge.put(removedVertex, edge);
 			} else if (!containsSource && containsTarget) {
 				Vertex removedVertex = edge.getTarget();
-				edge.setVertices(edge.getSource(), (Vertex) collapsed); // TODO: K�nnte Probleme machen, CollapsedVertex ist nicht vom generic-Typ ist.
-				collapsed.addModifiedEdge(edge, removedVertex);
+				inComing.add(edge);
+				collapsedVertexToCutEdge.put(removedVertex, edge);
 			}
 		}
+		// Construct collapsed vertex
+		DirectedCollapsedVertex collapsed = new DirectedCollapsedVertex("", "", collapsedGraph, collapsedVertexToCutEdge);
 
-		collapsed.setGraph(collapsedGraph);
+		// Replace incoming and outgoing edges with new one pointing to the CollapseddVertex
+		for (DirectedEdge edge : outGoing) {
+            addEdge(new DefaultDirectedEdge(edge.getName(), edge.getLabel(), collapsed, edge.getTarget()));
+		}
+		for (DirectedEdge edge : inComing) {
+            addEdge(new DefaultDirectedEdge(edge.getName(), edge.getLabel(), edge.getSource(), collapsed));
+		}
+
 		removeAllVertices(subset);
 		addVertex((Vertex) collapsed); // TODO: Koennte Probleme machen, CollapsedVertex ist nicht vom generic-Typ ist. (wirft cast error)
 		this.collapsedVertices.add(collapsed);
@@ -263,24 +281,36 @@ public class DefaultDirectedGraph
 
 	@Override
     public Set<? extends Vertex> expand(CollapsedVertex vertex) {
-		Set<Vertex> collapsedVertices = vertex.getGraph().getVertexSet();
+	    if (!collapsedVertices.contains(vertex)) {
+	        throw new IllegalAccessError("Cannot expand vertex, not collapsed in this graph.");
+	    }
+	    return expand((DirectedCollapsedVertex) vertex);
+	}
+	
+	
+    private Set<? extends Vertex> expand(DirectedCollapsedVertex vertex) {
 
-		this.addAllEdges(vertex.getGraph().getEdgeSet());
-		//TODO; Bug Why is an vertex removed from the edge set?
-		//this.edgeSet.remove(vertex);
+		Set<Vertex> collapsedVertices = new HashSet<Vertex>(vertex.getGraph().getVertexSet());
+
 		this.addAllVertices(collapsedVertices);
+		this.addAllEdges(new HashSet<DirectedEdge>(vertex.getGraph().getEdgeSet()));
 		
-		for(DirectedEdge edge : outgoingEdgesOf((Vertex) vertex)) { // Sollte keine Probleme geben, da die CollapsedVertex ja aus dem Graphen genommen wird.
-			edge.setVertices(vertex.getVertexForEdge(edge), edge.getTarget());
+		for(DirectedEdge edge : edgesOf(vertex)) {
+		    removeEdge(edge);
 		}
-		for(DirectedEdge edge : incomingEdgesOf((Vertex) vertex)) {
-			edge.setVertices(edge.getSource(), vertex.getVertexForEdge(edge));
-		}
-		
-		this.collapsedVertices.remove(vertex);
+		removeVertex(vertex);
 		
 		return collapsedVertices;
-	}
+    }
+
+    public Set<? extends Vertex> expand(int id) {
+        for (DirectedCollapsedVertex vertex : collapsedVertices) {
+            if (vertex.getID() == id) {
+                return this.expand(vertex);
+            }
+        }
+        throw new IllegalAccessError("Cannot expand vertex, not collapsed in this graph.");
+    }
 
 	@Override
 	public boolean isCollapsed(Vertex vertex) {
@@ -307,6 +337,7 @@ public class DefaultDirectedGraph
         assert (this.indegreeOf(vertex) == 0);
         vertexToEdge.remove(vertex);
         revVertexToEdge.remove(vertex);
+        collapsedVertices.remove(vertex);
     }
 
     private void removeAllVertices(Set<Vertex> vertices) {

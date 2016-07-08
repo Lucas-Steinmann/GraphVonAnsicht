@@ -46,4 +46,10 @@ public interface DirectedGraph extends Graph {
 	 * @return The edges coming in the supplied vertex.
 	 */
 	public Set<? extends DirectedEdge> incomingEdgesOf(Vertex vertex);
+
+	@Override
+	public Set<? extends Vertex> getVertexSet();
+
+	@Override
+	public Set<? extends DirectedEdge> getEdgeSet();
 }

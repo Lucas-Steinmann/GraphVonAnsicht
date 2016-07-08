@@ -16,7 +16,7 @@ public interface Viewable {
 	 * @param subset the subset to collapse
 	 * @return		 the resulting collapsed vertex
 	 */
-	public CollapsedVertex<Graph> collapse(Set<Vertex> subset);
+	public CollapsedVertex collapse(Set<Vertex> subset);
 	
 	/**
 	 * Expands a collapsed vertex into its substituted set of vertices
@@ -27,7 +27,7 @@ public interface Viewable {
 	 * @param vertex the collapsed vertex to expand
 	 * @return 		 the set of vertices which was substituted by the collapsed vertex
 	 */
-	public Set<? extends Vertex> expand(CollapsedVertex<? extends Graph> vertex);
+	public Set<? extends Vertex> expand(CollapsedVertex vertex);
 	
 	/**
 	 * Returns true if the specified vertex is a compound vertex
