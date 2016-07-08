@@ -14,7 +14,6 @@ import edu.kit.student.graphmodel.Edge;
 import edu.kit.student.graphmodel.Graph;
 import edu.kit.student.graphmodel.GraphModel;
 import edu.kit.student.graphmodel.Vertex;
-import edu.kit.student.graphmodel.builder.IGraphModelBuilder;
 import edu.kit.student.parameter.Settings;
 import edu.kit.student.plugin.Exporter;
 import edu.kit.student.plugin.Importer;
@@ -32,12 +31,12 @@ import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
-import javafx.scene.control.Dialog;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -70,7 +69,6 @@ public class GAnsApplication extends Application {
 	
 	private Workspace workspace;
 	private GraphModel model;
-	private LayoutOption layoutOption;
 
 	private GraphView currentGraphView;
 	// Mapped TabId zum Controller.
@@ -118,10 +116,21 @@ public class GAnsApplication extends Application {
 					int id = structureView.getIdOfSelectedItem();
 					Graph<? extends Vertex, ? extends Edge<? extends Vertex>> graph = getGraphFromId(model.getRootGraphs(), id);
 					if(graph != null) {
-						//TODO: layout anstoﬂen wenn nicht bereits angezeigt.
-						showGraph(graph);
+						boolean found = false;
+						for(Tab tab : graphViewTabPane.getTabs()) {
+							if(tab.getId().compareTo(graph.getID().toString()) == 0) {
+								found = true;
+								graphViewTabPane.getSelectionModel().select(tab);
+								break;
+							}
+						}
+						if(!found) {
+							LayoutOption defaultOption = graph.getDefaultLayout();
+							defaultOption.chooseLayout();
+							defaultOption.applyLayout();
+							showGraph(graph);
+						}
 					}
-
 				}
 			}
 		});
@@ -248,6 +257,7 @@ public class GAnsApplication extends Application {
 		graphView.setSelectionModel(graphViewSelectionModel);
 
 		Tab tab = new Tab(graph.getName());
+		tab.setId(graph.getID().toString());
 		tab.setContent(pane);
 		graphViewTabPane.getTabs().add(tab);
 		graphViewTabPane.getSelectionModel().select(tab);

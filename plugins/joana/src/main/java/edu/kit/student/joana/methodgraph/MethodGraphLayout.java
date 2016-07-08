@@ -3,6 +3,7 @@ package edu.kit.student.joana.methodgraph;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 import edu.kit.student.graphmodel.LayeredGraph;
@@ -14,6 +15,17 @@ import edu.kit.student.parameter.Parameter;
 import edu.kit.student.parameter.Settings;
 import edu.kit.student.parameter.StringParameter;
 import edu.kit.student.sugiyama.LayeredLayoutAlgorithm;
+import edu.kit.student.sugiyama.RelativeLayerConstraint;
+import edu.kit.student.sugiyama.graph.SugiyamaGraph;
+import edu.kit.student.sugiyama.steps.CrossMinimizer;
+import edu.kit.student.sugiyama.steps.CycleRemover;
+import edu.kit.student.sugiyama.steps.EdgeDrawer;
+import edu.kit.student.sugiyama.steps.ICrossMinimizer;
+import edu.kit.student.sugiyama.steps.ICycleRemover;
+import edu.kit.student.sugiyama.steps.IEdgeDrawer;
+import edu.kit.student.sugiyama.steps.IVertexPositioner;
+import edu.kit.student.sugiyama.steps.LayerAssigner;
+import edu.kit.student.sugiyama.steps.VertexPositioner;
 
 /**
  * Implements hierarchical layout with layers for {@link MethodGraph}.
@@ -45,7 +57,23 @@ public class MethodGraphLayout implements LayeredLayoutAlgorithm<MethodGraph, Jo
 	 * 
 	 * @param graph The {@link MethodGraph} to layout.
 	 */
-	public void layout(MethodGraph graph) { }
+	public void layout(MethodGraph graph) {
+		//TODO: call SugiyamaLayoutAlgorithm layout(graph) after refactoring
+		SugiyamaGraph wrappedGraph = new SugiyamaGraph(graph);
+		
+		LayerAssigner assigner = new LayerAssigner();
+		assigner.addConstraints(new HashSet<RelativeLayerConstraint>());
+
+		ICycleRemover remover = new CycleRemover();
+		ICrossMinimizer minimizer = new CrossMinimizer();
+		IVertexPositioner positioner = new VertexPositioner();
+		IEdgeDrawer drawer = new EdgeDrawer();
+		remover.removeCycles(wrappedGraph);
+		assigner.assignLayers(wrappedGraph);
+		minimizer.minimizeCrossings(wrappedGraph);
+		positioner.positionVertices(wrappedGraph);
+		drawer.drawEdges(wrappedGraph);
+	}
 
 	@Override
 	public void layoutLayeredGraph(LayeredGraph<JoanaVertex, JoanaEdge<JoanaVertex>> graph) {

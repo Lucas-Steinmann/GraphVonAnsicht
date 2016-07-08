@@ -7,20 +7,17 @@
  * user guide available at https://docs.gradle.org/2.13/userguide/tutorial_java_projects.html
  */
 
-
 // In this section you declare the dependencies for your production and test code
-dependencies {
-}
 
 allprojects {
 	apply plugin: 'eclipse'
+	apply plugin: 'java'
     group = 'edu.kit.student.gans'
     version = '0.1.0'
-}
 
-subprojects {
-	apply plugin: 'java'
-
+	compileJava { 
+	  options.encoding = "UTF-8" 
+	}
     dependencies {
 		// The production code uses the SLF4J logging API at compile time
 		compile 'org.slf4j:slf4j-api:1.7.21'
@@ -31,11 +28,28 @@ subprojects {
 		// 'test.useTestNG()' to your build script.
 		testCompile 'junit:junit:4.12'
     }
-
 	// In this section you declare where to find the dependencies of your project
 	repositories {
 		// Use 'jcenter' for resolving your dependencies.
 		// You can declare any Maven/Ivy/file repository here.
 		jcenter()
 	}
+}
+dependencies {
+    compile project(":shared")
+	compile project(":app")
+    compile project(":plugins:sugiyama")
+    compile project(":plugins:joana")
+    compile project(":plugins:svg")
+    compile project(":plugins:graphml")
+
+	testCompile project(':shared').sourceSets.test.output    
+	testCompile project(':app').sourceSets.test.output    
+	testCompile project(':plugins:sugiyama').sourceSets.test.output    
+	testCompile project(':plugins:joana').sourceSets.test.output    
+	testCompile project(':plugins:svg').sourceSets.test.output    
+	testCompile project(':plugins:graphml').sourceSets.test.output    
+}
+
+subprojects {
 }

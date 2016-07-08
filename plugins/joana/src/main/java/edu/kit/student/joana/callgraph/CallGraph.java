@@ -10,6 +10,8 @@ import java.util.Set;
 import edu.kit.student.joana.JoanaEdge;
 import edu.kit.student.joana.JoanaGraph;
 import edu.kit.student.joana.methodgraph.MethodGraph;
+import edu.kit.student.joana.methodgraph.MethodGraphLayout;
+import edu.kit.student.joana.methodgraph.MethodGraphLayoutOption;
 import edu.kit.student.plugin.LayoutOption;
 import edu.kit.student.plugin.LayoutRegister;
 
@@ -55,4 +57,20 @@ public class CallGraph extends JoanaGraph<JoanaCompoundVertex,JoanaEdge<JoanaCom
         layoutOptions.addAll(super.getRegisteredLayouts());
         return layoutOptions;
     }
+    
+    @Override
+	public LayoutOption getDefaultLayout() {
+		return new CallGraphLayoutOption() {
+			{
+                this.setName("Call-Graph-Layout");
+                this.setId("CGL");
+                this.setGraph(CallGraph.this);
+            }
+            
+            @Override
+            public void chooseLayout() {
+                this.setLayout(new CallGraphLayout());
+            }
+		};
+	}
 }
