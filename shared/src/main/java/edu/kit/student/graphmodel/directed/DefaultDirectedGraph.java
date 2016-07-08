@@ -92,7 +92,7 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
 	 * @param edge
 	 */
 	public void addEdge(E edge) {
-	    if (this.getVertexSet().contains(edge.getSource()) && this.getVertexSet().contains(edge)) {
+	    if (this.getVertexSet().contains(edge.getSource()) && this.getVertexSet().contains(edge.getTarget())) {
 	        vertexToEdge.get(edge.getSource()).add(edge);
 	        revVertexToEdge.get(edge.getTarget()).add(edge);
 	    }
