@@ -47,7 +47,7 @@ public interface Plugin {
      * If none are provided returns {@code null} or an empty list.
      * @return the list of provided edge filter
      */
-    public List<EdgeFilter<? extends Edge<? extends Vertex>, ? extends Vertex>> getEdgeFilter();
+    public List<EdgeFilter<? extends Edge, ? extends Vertex>> getEdgeFilter();
     
     /**
      * Returns all by the plugin provided {@link Exporter}.

@@ -12,7 +12,7 @@ import java.util.Map;
  * purposes. Attributes in the {@link List} are not synchronized with attributes outside the {@link List}, and Attributes of
  * SerializedGraph are not synchronized with the origin {@link Graph} attributes.
  */
-public class SerializedGraph<V extends SerializedVertex, E extends SerializedEdge<V>> {
+public class SerializedGraph {
 
 	private final List<String[]> attributes;
 

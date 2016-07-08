@@ -1,6 +1,5 @@
 package edu.kit.student.graphmodel.directed;
 
-import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.plugin.LayoutOption;
 
 /**
@@ -8,7 +7,7 @@ import edu.kit.student.plugin.LayoutOption;
  */
 public abstract class DirectedGraphLayoutOption extends LayoutOption {
 	
-	protected DirectedGraph<? extends Vertex, ? extends DirectedEdge<? extends Vertex>> graph;
+	protected DirectedGraph graph;
 
 	/**
 	 * Sets the graph that will be the target of the DirectedGraphLayoutOption.
@@ -17,7 +16,7 @@ public abstract class DirectedGraphLayoutOption extends LayoutOption {
 	 *            The graph that will be the target of this
 	 *            DirectedGraphLayoutOption.
 	 */
-	public void setGraph(DirectedGraph<? extends Vertex, ? extends DirectedEdge<? extends Vertex>> graph) {
+	public void setGraph(DirectedGraph graph) {
 		this.graph = graph;
 	}
 }

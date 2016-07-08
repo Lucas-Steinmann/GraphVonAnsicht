@@ -11,7 +11,7 @@ import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.objectproperty.GAnsProperty;
 import edu.kit.student.util.IdGenerator;
 
-public class DefaultDirectedEdge implements DirectedEdge{
+public class DefaultDirectedEdge implements DirectedEdge {
 
 	private Vertex target;
 	private Vertex source;
@@ -113,14 +113,14 @@ public class DefaultDirectedEdge implements DirectedEdge{
 	}
 
 	@Override
-	public SerializedEdge<Vertex> serialize() {
+	public SerializedEdge serialize() {
 		List<String[]> attributes = new LinkedList<>();
 		attributes.add(new String[] {"name", this.name.toString()});
 		attributes.add(new String[] {"id", this.id.toString()});
 		attributes.add(new String[] {"label", this.label.toString()});
 		//TODO: add Vertices
 
-		return new SerializedEdge<>(attributes, this.name.toString(), this.id, this.label.toString());
+		return new SerializedEdge(attributes, this.name.toString(), this.id, this.label.toString());
 	}
 
 	@Override

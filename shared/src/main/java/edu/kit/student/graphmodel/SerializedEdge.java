@@ -11,7 +11,7 @@ import java.util.Map.Entry;
  * purposes. Attributes in the {@link List} are not synchronized with attributes outside the {@link List}, and Attributes of
  * SerializedEdge are not synchronized with the origin {@link Edge} attributes.
  */
-public class SerializedEdge<V extends Vertex> implements Edge<V> {
+public class SerializedEdge implements Edge {
 	private final List<String[]> attributes;
 	private String name;
 	private int id;
@@ -64,7 +64,7 @@ public class SerializedEdge<V extends Vertex> implements Edge<V> {
 	}
 
 	@Override
-	public List<V> getVertices() {
+	public List<Vertex> getVertices() {
 		// TODO Auto-generated method stub
 		return null;
 	}
