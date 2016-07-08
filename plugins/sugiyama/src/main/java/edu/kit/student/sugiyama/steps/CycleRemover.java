@@ -32,7 +32,6 @@ public class CycleRemover implements ICycleRemover {
 			
 
 			while (vertex != null) {    //add sink vertices to the edge set in the final directed acyclic graph
-				System.out.println("sink: " + vertex.getName());
 				DAGEdges.addAll(getCorrectedIncomingEdges(vertex, DDEdges));
 				DDVertices.remove(vertex);
 				DDEdges.removeAll(DDGraph.incomingEdgesOf(vertex));
@@ -41,7 +40,6 @@ public class CycleRemover implements ICycleRemover {
 
 			for (ISugiyamaVertex tmpVertex : DDVertices) {    //remove all isolated vertices
 				if (isIsolated(tmpVertex, DDEdges)) {
-					System.out.println("isolated: " + vertex.getName());
 					DDVertices.remove(tmpVertex);
 				}
 			}
@@ -49,7 +47,6 @@ public class CycleRemover implements ICycleRemover {
 			vertex = getCurrentSource(DDVertices, DDEdges);
 
 			while (vertex != null) {    //add source vertices to the edge set in the final directed acyclic graph
-				System.out.println("source: " + vertex.getName());
 				DAGEdges.addAll(getCorrectedOutcomingEdges(vertex, DDEdges));
 				DDVertices.remove(vertex);
 				DDEdges.removeAll(DDGraph.outgoingEdgesOf(vertex));
@@ -73,11 +70,9 @@ public class CycleRemover implements ICycleRemover {
 				}
 
 				if (outSize < inSize) {
-					System.out.println("remove outs of: " + highestOutInDiffVertex.getName());
 					System.out.println(DDGraph.outgoingEdgesOf(highestOutInDiffVertex).stream().map(v -> v.getName()).collect(Collectors.joining(", ")));
 					DAGEdges.addAll(getCorrectedOutcomingEdges(highestOutInDiffVertex, DDEdges));
 				} else {
-					System.out.println("remove ins of: " + highestOutInDiffVertex.getName());
 					System.out.println(DDGraph.incomingEdgesOf(highestOutInDiffVertex).stream().map(v -> v.getName()).collect(Collectors.joining(", ")));
 					DAGEdges.addAll(getCorrectedIncomingEdges(highestOutInDiffVertex, DDEdges));
 				}
@@ -87,9 +82,7 @@ public class CycleRemover implements ICycleRemover {
 				DDEdges.removeAll(DDGraph.incomingEdgesOf(highestOutInDiffVertex));
 			}
 		}
-
-
-		System.out.println("reversed: " + DAGEdges.size());
+		
 		reverseEdges(getEdgesToTurn(DAGEdges, graph.getEdgeSet()),graph);
 	}
 	
