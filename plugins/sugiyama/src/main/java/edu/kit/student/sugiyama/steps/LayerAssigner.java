@@ -2,6 +2,7 @@ package edu.kit.student.sugiyama.steps;
 
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
 import edu.kit.student.sugiyama.RelativeLayerConstraint;
+import edu.kit.student.sugiyama.graph.ICycleRemoverGraph;
 import edu.kit.student.sugiyama.graph.ILayerAssignerGraph;
 import edu.kit.student.sugiyama.graph.ISugiyamaEdge;
 import edu.kit.student.sugiyama.graph.ISugiyamaVertex;
@@ -12,7 +13,7 @@ import java.util.Set;
  * This class takes a directed graph and assigns every vertex in it a layer.
  */
 public class LayerAssigner implements ILayerAssigner {
-	private DefaultDirectedGraph<ISugiyamaVertex, ISugiyamaEdge> DDGraph = new DefaultDirectedGraph<ISugiyamaVertex, ISugiyamaEdge>("");
+	private DefaultDirectedGraph<ISugiyamaVertex, ISugiyamaEdge> DDGraph;
 	private Set<ISugiyamaVertex> graphVertices;
 	private Set<ISugiyamaEdge> graphEdges;
 
@@ -101,14 +102,17 @@ public class LayerAssigner implements ILayerAssigner {
 		this.graphVertices = graph.getVertexSet();
 		this.graphEdges = graph.getEdgeSet();
 		
+		Set<ISugiyamaVertex> DDVertices = new HashSet<ISugiyamaVertex>();
+		Set<ISugiyamaEdge> DDEdges = new HashSet<ISugiyamaEdge>();
+		
 		for(ISugiyamaVertex vertex : this.graphVertices){
-			DDGraph.addVertex(vertex);
+			DDVertices.add(vertex);
 		}
 
 		for(ISugiyamaEdge edge: this.graphEdges){
-			DDGraph.addEdge(edge);
+			DDEdges.add(edge);
 		}
-		
+		this.DDGraph = new DefaultDirectedGraph("", DDVertices, DDEdges);
 	}
 	
 
