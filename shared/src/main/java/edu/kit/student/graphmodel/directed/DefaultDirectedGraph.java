@@ -36,7 +36,7 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
 	private HashMap<V, Set<E>> revVertexToEdge;
 	
 	private Graph parent = null;
-	private List<Graph> children = new ArrayList<>();
+	private List<Graph<? extends Vertex, ? extends Edge<? extends Vertex>>> children = new ArrayList<>();
 
 	/**
 	 * Constructor
@@ -67,7 +67,7 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
         this.name = new GAnsProperty<String>("graphName", name);
         this.id = IdGenerator.getInstance().createId();
         this.fga = new FastGraphAccessor();
-        this.children = new ArrayList<Graph>();
+        this.children = new ArrayList<Graph<? extends Vertex, ? extends Edge<? extends Vertex>>>();
 
         this.vertexToEdge = new HashMap<>();
         this.revVertexToEdge = new HashMap<>();
@@ -329,7 +329,7 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
 	}
 
 	@Override
-	public List<Graph> getChildGraphs() {
+	public List<Graph<? extends Vertex, ? extends Edge<? extends Vertex>>> getChildGraphs() {
 		return this.children;
 	}
 	

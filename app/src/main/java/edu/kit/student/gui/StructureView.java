@@ -1,9 +1,13 @@
 package edu.kit.student.gui;
 
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
+import edu.kit.student.graphmodel.Edge;
 import edu.kit.student.graphmodel.Graph;
 import edu.kit.student.graphmodel.GraphModel;
+import edu.kit.student.graphmodel.Vertex;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 
@@ -15,13 +19,14 @@ import javafx.scene.control.TreeView;
  */
 public class StructureView extends TreeView<String> {
 
-	private HashMap<TreeItem<String>, String> itemMap;
+	private HashMap<TreeItem<String>, Integer> itemMap;
 
 	/**
 	 * Constructor.
 	 */
 	public StructureView() {
-		itemMap = new HashMap<TreeItem<String>, String>();
+		itemMap = new HashMap<TreeItem<String>, Integer>();
+		setShowRoot(false);
 	}
 
 	/**
@@ -33,18 +38,27 @@ public class StructureView extends TreeView<String> {
 	 *            The graph which should be represented.
 	 */
 	public void showGraphModel(GraphModel graphModel) {
-		// Erstellen der TreeItems anhand des uebergebenen Graphen in der
-		// internen Representation
-		TreeItem<String> root = new TreeItem<String>(/* Text des RootGraphen */);
-		// Erstellen der Items anhand der Subgraphen von graph.
+		TreeItem<String> root = new TreeItem<String>();
+		addGraphsToItem(graphModel.getRootGraphs(), root);
 		setRoot(root);
+	}
+	
+	private void addGraphsToItem(List<Graph<? extends Vertex, ? extends Edge<? extends Vertex>>> graphs, TreeItem<String> item) {
+		List<TreeItem<String>> items = new LinkedList<TreeItem<String>>();
+		for(Graph<? extends Vertex, ? extends Edge<? extends Vertex>> graph : graphs) {
+			TreeItem<String> graphItem = new TreeItem<String>(graph.getName());
+			itemMap.put(graphItem, graph.getID());
+			items.add(graphItem);
+			addGraphsToItem(graph.getChildGraphs(), graphItem);
+		}
+		item.getChildren().addAll(items);
 	}
 	
 	/**
 	 * Returns the id of the selected graph.
 	 * @return The id of the selected graph.
 	 */
-	public String getIdOfSelectedItem() {
+	public Integer getIdOfSelectedItem() {
 		return itemMap.get(getSelectionModel().getSelectedItem());
 	}
 }
