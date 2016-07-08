@@ -68,11 +68,10 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
         this.revVertexToEdge = new HashMap<>();
         for (V vertex : vertices) {
             this.vertexToEdge.put(vertex, new HashSet<>());
-            this.vertexToEdge.put(vertex, new HashSet<>());
+            this.revVertexToEdge.put(vertex, new HashSet<>());
         }
         for (E edge : edges) {
-            this.vertexToEdge.get(edge.getSource()).add(edge);
-            this.revVertexToEdge.get(edge.getTarget()).add(edge);
+            this.addAllEdges(edges);
         }
     }
 
@@ -95,6 +94,8 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
 	    if (this.getVertexSet().contains(edge.getSource()) && this.getVertexSet().contains(edge.getTarget())) {
 	        vertexToEdge.get(edge.getSource()).add(edge);
 	        revVertexToEdge.get(edge.getTarget()).add(edge);
+	    } else {
+	        throw new IllegalArgumentException("Cannot add edge to a Graph without the Vertex being present");
 	    }
 	}
 
