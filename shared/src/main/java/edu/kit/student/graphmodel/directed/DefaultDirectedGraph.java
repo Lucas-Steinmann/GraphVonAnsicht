@@ -24,19 +24,19 @@ import edu.kit.student.util.IdGenerator;
  * A {@link DefaultDirectedGraph} is a specific Graph which only contains
  * {@link DirectedEdge} as edges.
  */
-public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
-		implements DirectedGraph<V, E>, ViewableGraph<V, E> {
+public class DefaultDirectedGraph
+		implements DirectedGraph, ViewableGraph {
 
 	private static DirectedGraphLayoutRegister register = new DirectedGraphLayoutRegister();
 	private GAnsProperty<String> name;
 	private Integer id;
 	private FastGraphAccessor fga;
-	private Set<CollapsedVertex<V, E>> collapsedVertices;
-	private HashMap<V, Set<E>> vertexToEdge;
-	private HashMap<V, Set<E>> revVertexToEdge;
+	private Set<CollapsedVertex> collapsedVertices;
+	private HashMap<Vertex, Set<DirectedEdge>> vertexToEdge;
+	private HashMap<Vertex, Set<DirectedEdge>> revVertexToEdge;
 	
 	private Graph parent = null;
-	private List<Graph<? extends Vertex, ? extends Edge<? extends Vertex>>> children = new ArrayList<>();
+	private List<Graph> children = new ArrayList<>();
 
 	/**
 	 * Constructor
@@ -63,19 +63,19 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
      * @param edges
      *            of the new graph
      */
-    public DefaultDirectedGraph(String name, Set<V> vertices, Set<E> edges) {
+    public DefaultDirectedGraph(String name, Set<Vertex> vertices, Set<DirectedEdge> edges) {
         this.name = new GAnsProperty<String>("graphName", name);
         this.id = IdGenerator.getInstance().createId();
         this.fga = new FastGraphAccessor();
-        this.children = new ArrayList<Graph<? extends Vertex, ? extends Edge<? extends Vertex>>>();
+        this.children = new ArrayList<Graph>();
 
         this.vertexToEdge = new HashMap<>();
         this.revVertexToEdge = new HashMap<>();
-        for (V vertex : vertices) {
+        for (Vertex vertex : vertices) {
             this.vertexToEdge.put(vertex, new HashSet<>());
             this.revVertexToEdge.put(vertex, new HashSet<>());
         }
-        for (E edge : edges) {
+        for (DirectedEdge edge : edges) {
             this.addAllEdges(edges);
         }
     }
@@ -95,7 +95,7 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
 	 * 
 	 * @param edge
 	 */
-	public void addEdge(E edge) {
+	public void addEdge(DirectedEdge edge) {
 	    if (this.getVertexSet().contains(edge.getSource()) && this.getVertexSet().contains(edge.getTarget())) {
 	        vertexToEdge.get(edge.getSource()).add(edge);
 	        revVertexToEdge.get(edge.getTarget()).add(edge);
@@ -109,7 +109,7 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
 	 * 
 	 * @param vertex
 	 */
-	public void addVertex(V vertex) {
+	public void addVertex(Vertex vertex) {
 		this.vertexToEdge.put(vertex, new HashSet<>());
 		this.revVertexToEdge.put(vertex, new HashSet<>());
 	}
@@ -121,7 +121,7 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
 	 *            A edge which is contained in the graph.
 	 * @return The vertex which the edge is coming from.
 	 */
-	public V getSource(E edge) {
+	public Vertex getSource(DirectedEdge edge) {
 		// TODO: is this method necessary? because caller already has the edge
 		if (this.getEdgeSet().contains(edge)) {
 			return edge.getSource();
@@ -130,14 +130,14 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
 	}
 
 	@Override
-	public Set<V> getVertexSet() {
+	public Set<Vertex> getVertexSet() {
 		return new HashSet<>(vertexToEdge.keySet());
 	}
 
 	@Override
-	public Set<E> getEdgeSet() {
-	    Set<E> edges = new  HashSet<>();
-	    for (V vertex : this.getVertexSet()) {
+	public Set<DirectedEdge> getEdgeSet() {
+	    Set<DirectedEdge> edges = new  HashSet<>();
+	    for (Vertex vertex : this.getVertexSet()) {
 	        edges.addAll(this.outgoingEdgesOf(vertex));
 	    }
 		return edges;
@@ -157,17 +157,17 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
 	}
 
 	@Override
-	public Integer outdegreeOf(V vertex) {
+	public Integer outdegreeOf(Vertex vertex) {
 		return vertexToEdge.get(vertex).size();
 	}
 
 	@Override
-	public Integer indegreeOf(V vertex) {
+	public Integer indegreeOf(Vertex vertex) {
 		return revVertexToEdge.get(vertex).size();
 	}
 
 	@Override
-	public Set<E> outgoingEdgesOf(V vertex) {
+	public Set<DirectedEdge> outgoingEdgesOf(Vertex vertex) {
 		Set<E> result = new HashSet<>();
 		Set<E> original = vertexToEdge.get(vertex);
 
@@ -179,7 +179,7 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
 	}
 
 	@Override
-	public Set<E> incomingEdgesOf(V vertex) {
+	public Set<DirectedEdge> incomingEdgesOf(Vertex vertex) {
 		Set<E> result = new HashSet<>();
 		Set<E> original = revVertexToEdge.get(vertex);
 
@@ -191,8 +191,8 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
 	}
 
 	@Override
-	public Set<E> edgesOf(V vertex) {
-		Set<E> result = this.incomingEdgesOf(vertex);
+	public Set<DirectedEdge> edgesOf(Vertex vertex) {
+		Set<DirectedEdge> result = this.incomingEdgesOf(vertex);
 		result.addAll(this.outgoingEdgesOf(vertex));
 		return result;
 	}
@@ -204,10 +204,10 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
 
 	@Override
 	public void addToFastGraphAccessor(FastGraphAccessor fga) {
-		for (V v : getVertexSet()) {
+		for (Vertex v : getVertexSet()) {
 			v.addToFastGraphAccessor(fga);
 		}
-		for (E e : getEdgeSet()) {
+		for (DirectedEdge e : getEdgeSet()) {
 			e.addToFastGraphAccessor(fga);
 		}
 	}
@@ -231,11 +231,11 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
 	}
 
 	@Override
-	public CollapsedVertex<V, E> collapse(Set<V> subset) {
-		DefaultDirectedGraph<V, E> collapsedGraph = new DefaultDirectedGraph<V, E>("");
-		CollapsedVertex<V, E> collapsed = new CollapsedVertex<V, E>("", "");
+	public CollapsedVertex collapse(Set<Vertex> subset) {
+		DefaultDirectedGraph collapsedGraph = new DefaultDirectedGraph("");
+		CollapsedVertex<DirectedGraph> collapsed = new CollapsedVertex("", "");
 		subset.forEach((v) -> collapsedGraph.addVertex(v));
-		for (E edge : getEdgeSet()) {
+		for (DirectedEdge edge : getEdgeSet()) {
 			boolean containsSource = subset.contains(edge.getSource());
 			boolean containsTarget = subset.contains(edge.getTarget());
 
@@ -243,37 +243,37 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
 				collapsedGraph.addEdge(edge);
 				removeEdge(edge);
 			} else if (containsSource && !containsTarget) {
-				V removedVertex = edge.getSource();
-				edge.setVertices((V) collapsed, edge.getTarget()); // TODO: K�nnte Probleme machen, CollapsedVertex ist nicht vom generic-Typ ist.
+				Vertex removedVertex = edge.getSource();
+				edge.setVertices((Vertex) collapsed, edge.getTarget()); // TODO: K�nnte Probleme machen, CollapsedVertex ist nicht vom generic-Typ ist.
 				collapsed.addModifiedEdge(edge, removedVertex);
 			} else if (!containsSource && containsTarget) {
-				V removedVertex = edge.getTarget();
-				edge.setVertices(edge.getSource(), (V) collapsed); // TODO: K�nnte Probleme machen, CollapsedVertex ist nicht vom generic-Typ ist.
+				Vertex removedVertex = edge.getTarget();
+				edge.setVertices(edge.getSource(), (Vertex) collapsed); // TODO: K�nnte Probleme machen, CollapsedVertex ist nicht vom generic-Typ ist.
 				collapsed.addModifiedEdge(edge, removedVertex);
 			}
 		}
 
 		collapsed.setGraph(collapsedGraph);
 		removeAllVertices(subset);
-		addVertex((V) collapsed); // TODO: Koennte Probleme machen, CollapsedVertex ist nicht vom generic-Typ ist. (wirft cast error)
+		addVertex((Vertex) collapsed); // TODO: Koennte Probleme machen, CollapsedVertex ist nicht vom generic-Typ ist. (wirft cast error)
 		this.collapsedVertices.add(collapsed);
 		
 		return collapsed;
 	}
 
 	@Override
-	public Set<V> expand(CollapsedVertex<V, E> vertex) {
-		Set<V> collapsedVertices = vertex.getGraph().getVertexSet();
+    public Set<? extends Vertex> expand(CollapsedVertex vertex) {
+		Set<Vertex> collapsedVertices = vertex.getGraph().getVertexSet();
 
 		this.addAllEdges(vertex.getGraph().getEdgeSet());
 		//TODO; Bug Why is an vertex removed from the edge set?
 		//this.edgeSet.remove(vertex);
 		this.addAllVertices(collapsedVertices);
 		
-		for(E edge : outgoingEdgesOf((V) vertex)) { // Sollte keine Probleme geben, da die CollapsedVertex ja aus dem Graphen genommen wird.
+		for(DirectedEdge edge : outgoingEdgesOf((Vertex) vertex)) { // Sollte keine Probleme geben, da die CollapsedVertex ja aus dem Graphen genommen wird.
 			edge.setVertices(vertex.getVertexForEdge(edge), edge.getTarget());
 		}
-		for(E edge : incomingEdgesOf((V) vertex)) {
+		for(DirectedEdge edge : incomingEdgesOf((Vertex) vertex)) {
 			edge.setVertices(edge.getSource(), vertex.getVertexForEdge(edge));
 		}
 		
@@ -283,8 +283,8 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
 	}
 
 	@Override
-	public boolean isCollapsed(V vertex) {
-		for (CollapsedVertex<V, E> collapsed : collapsedVertices) {
+	public boolean isCollapsed(Vertex vertex) {
+		for (CollapsedVertex collapsed : collapsedVertices) {
 			if (collapsed.getGraph().getVertexSet().contains(vertex))
 				return true;
 		}
@@ -292,37 +292,37 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
 		return false;
 	}
 	
-    protected void removeEdge(E edge) {
-        for (Set<E> outgoingEdges : vertexToEdge.values()) {
+    private void removeEdge(DirectedEdge edge) {
+        for (Set<DirectedEdge> outgoingEdges : vertexToEdge.values()) {
             outgoingEdges.remove(edge);
         }
-        for (Set<E> incomingEdges : revVertexToEdge.values()) {
+        for (Set<DirectedEdge> incomingEdges : revVertexToEdge.values()) {
             incomingEdges.remove(edge);
         }
 
     }
 
-    protected void removeVertex(V vertex) {
+    private void removeVertex(Vertex vertex) {
         assert (this.outdegreeOf(vertex) == 0);
         assert (this.indegreeOf(vertex) == 0);
         vertexToEdge.remove(vertex);
         revVertexToEdge.remove(vertex);
     }
 
-    private void removeAllVertices(Set<V> vertices) {
-        for (V vertex : vertices ) {
+    private void removeAllVertices(Set<Vertex> vertices) {
+        for (Vertex vertex : vertices ) {
             removeVertex(vertex);
         }
     }
 
-    private void addAllEdges(Set<E> edges) {
-        for (E edge : edges) {
+    private void addAllEdges(Set<DirectedEdge> edges) {
+        for (DirectedEdge edge : edges) {
             this.addEdge(edge);
         }
     }
 
-    private void addAllVertices(Set<V> vertices) {
-        for (V vertex : vertices) {
+    private void addAllVertices(Set<Vertex> vertices) {
+        for (Vertex vertex : vertices) {
             addVertex(vertex);
         }
     }
@@ -343,7 +343,7 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
 	}
 
 	@Override
-	public List<Graph<? extends Vertex, ? extends Edge<? extends Vertex>>> getChildGraphs() {
+	public List<Graph> getChildGraphs() {
 		return this.children;
 	}
 	
@@ -363,7 +363,7 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
 	@Override
 	public String toString(){
 		String out = "Vertices: {";
-		for(V v : getVertexSet()) {
+		for(Vertex v : getVertexSet()) {
 			out+= v.getName() + ", ";
 		}
 		out = out.substring(0, out.length()-2);
@@ -371,7 +371,7 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
 		out+= '\n';
 		out+= "Edges:{";
 		out+= '\n';
-		for(E e : this.getEdgeSet()){
+		for(DirectedEdge e : this.getEdgeSet()){
 			out+= e.getName() + "[" +e.getSource().getName() +"->"+ e.getTarget().getName()+"],";
 			out+= '\n';
 		}

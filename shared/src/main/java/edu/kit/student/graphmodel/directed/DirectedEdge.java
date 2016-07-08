@@ -7,7 +7,7 @@ import edu.kit.student.graphmodel.Vertex;
  * A {@link DirectedEdge} is an edge that has one source and one target vertex.
  * The direction of the edge is specified.
  */
-public interface DirectedEdge<V extends Vertex> extends Edge<V> {
+public interface DirectedEdge extends Edge {
 
 
     
@@ -17,21 +17,21 @@ public interface DirectedEdge<V extends Vertex> extends Edge<V> {
      * @param source vertex
      * @param target vertex
      */
-    public void setVertices(V source, V target);
+    public void setVertices(Vertex source, Vertex target);
 	
 	/**
 	 * Returns the source vertex of this directed edge.
 	 * 
 	 * @return The vertex the edge is coming from.
 	 */
-	public V getSource();
+	public Vertex getSource();
 
 	/**
 	 * Returns the target vertex of this edge.
 	 * 
 	 * @return The vertex the edge is pointing at/going to.
 	 */
-	public V getTarget();
+	public Vertex getTarget();
 
 
 

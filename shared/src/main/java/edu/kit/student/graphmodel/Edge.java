@@ -6,14 +6,14 @@ import java.util.List;
  * This edge interface specifies an edge. An edge contains two vertices, an ID,
  * a name and a label.
  */
-public interface Edge<V extends Vertex> {
+public interface Edge {
 
 	/**
 	 * Returns the vertices connected with this edge.
 	 * 
 	 * @return The vertices connected with the edge.
 	 */
-	public List<V> getVertices();
+	public List<Vertex> getVertices();
 
 	/**
 	 * Returns the name of the edge.
@@ -48,7 +48,7 @@ public interface Edge<V extends Vertex> {
 	 *
 	 * @return The {@link SerializedEdge} representation of the edge.
 	 */
-	public SerializedEdge<V> serialize();
+	public SerializedEdge serialize();
 	
 	
 	/**

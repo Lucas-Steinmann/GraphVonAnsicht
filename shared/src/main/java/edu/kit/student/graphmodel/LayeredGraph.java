@@ -2,7 +2,6 @@ package edu.kit.student.graphmodel;
 
 import java.util.List;
 
-import edu.kit.student.graphmodel.directed.DirectedEdge;
 import edu.kit.student.graphmodel.directed.DirectedGraph;
 
 /**
@@ -13,7 +12,7 @@ import edu.kit.student.graphmodel.directed.DirectedGraph;
  * @param <V> the vertex type contained in the graph
  * @param <E> the edge type contained in the graph
  */
-public interface LayeredGraph<V extends Vertex, E extends DirectedEdge<V>> extends DirectedGraph<V, E> {
+public interface LayeredGraph extends DirectedGraph {
 	
 	
 	/**
@@ -36,7 +35,7 @@ public interface LayeredGraph<V extends Vertex, E extends DirectedEdge<V>> exten
 	 * @param vertex the vertex to get its layer from
 	 * @return  	 the layer number from this vertex
 	 */
-	public int getLayerFromVertex(V vertex);
+	public int getLayerFromVertex(Vertex vertex);
 	
 	/**
 	 * Get all vertices from a certain layer.
@@ -44,14 +43,14 @@ public interface LayeredGraph<V extends Vertex, E extends DirectedEdge<V>> exten
 	 * @param layerNum the index of the layer
 	 * @return 		 a list of all vertices which are on this layer
 	 */
-	public List<V> getLayer(int layerNum);
+	public List<Vertex> getLayer(int layerNum);
 	
 	/**
 	 * Get all layers that contain vertices.
 	 * 
 	 * @return a list of lists of vertices which are on this layer
 	 */
-	public List<List<V>> getLayers();
+	public List<List<Vertex>> getLayers();
 	
 	/**
 	 * Returns the height, i.e. the number of layers.
@@ -77,6 +76,6 @@ public interface LayeredGraph<V extends Vertex, E extends DirectedEdge<V>> exten
 	 * All subgraphs of layered graphs have to be layered graphs with equal parameters themselves.
 	 * @return subgraphs in this layered graph
 	 */
-	public List<LayeredGraph<V, E>> getSubgraphs();
+	public List<LayeredGraph> getSubgraphs();
 	
 }
