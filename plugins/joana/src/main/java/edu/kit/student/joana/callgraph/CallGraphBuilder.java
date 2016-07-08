@@ -54,21 +54,21 @@ public class CallGraphBuilder implements IGraphBuilder {
         for (MethodGraphBuilder b : methodGraphBuilders) {
             methodGraphs.add(b.build());
         }
-        HashMap<String, JoanaCompoundVertex> vertices = new HashMap<>();
+        HashMap<Integer, JoanaCompoundVertex> vertices = new HashMap<>();
         HashMap<JoanaCompoundVertex, Set<JoanaEdge<JoanaCompoundVertex>>> edges = new HashMap<>();
 
         // Generate Callgraph
         // Generate method vertices.
-        for (MethodGraph b : methodGraphs) {
-            vertices.put(b.getName(), new JoanaCompoundVertex(b.getName(), b.getName(), b));
+        for (MethodGraph methodGraph : methodGraphs) {
+            vertices.put(methodGraph.getID(), new JoanaCompoundVertex(methodGraph.getName(), methodGraph.getName(), methodGraph));
         }
         // Add call edges between vertices.
-        for (MethodGraph b : methodGraphs) {
-            JoanaCompoundVertex source = vertices.get(b.getName());
+        for (MethodGraph methodGraph : methodGraphs) {
+            JoanaCompoundVertex source = vertices.get(methodGraph.getID());
             edges.put(source, new HashSet<JoanaEdge<JoanaCompoundVertex>>());
 
             // Search for method calls.
-            for (JoanaEdge<JoanaVertex> e : b.getEdgeSet()) {
+            for (JoanaEdge<JoanaVertex> e : methodGraph.getEdgeSet()) {
                 if (e.getEdgeKind() == edu.kit.student.joana.JoanaEdge.Kind.CL) {
                     if (vertices.containsKey(e.getName())) {
                         JoanaCompoundVertex target = vertices.get(e.getName());
