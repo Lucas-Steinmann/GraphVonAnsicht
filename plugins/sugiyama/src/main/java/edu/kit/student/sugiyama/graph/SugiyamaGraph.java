@@ -125,7 +125,7 @@ public class SugiyamaGraph
 			layer.add(pos1, second);
 		}
 
-		//		List des not support inserting at a special index in the list, just "add(obj)"
+		//		List does not support inserting at a special index in the list, just "add(obj)"
 	}
 
 	@Override
@@ -299,10 +299,28 @@ public class SugiyamaGraph
 	}
 
 	@Override
-	public int getHeight() { return 0; }	//TODO ?
+	public int getHeight() {
+		return this.layers.size();
+	}
 
 	@Override
-	public int getMaxWidth() { return 0; } //TODO ?
+	public int getMaxWidth() {
+		int max = 0;
+		for(List<ISugiyamaVertex> layer: this.layers){
+			if(layer.size()>max){
+				max = layer.size();
+			}
+		}
+		return max;
+	}
+	
+	@Override
+	public int getLayerWidth(int layerN) {
+		if(layerN > this.layers.size()){
+			return 0;
+		}
+		return this.layers.get(layerN).size();
+	}
 
 	@Override
 	public Set<ISugiyamaEdge> restoreAllEdges() {
@@ -323,12 +341,6 @@ public class SugiyamaGraph
 	}
 
 	@Override
-	public int getLayerWidth(int layerN) {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
-	@Override
 	public List<LayeredGraph<ISugiyamaVertex, ISugiyamaEdge>> getSubgraphs() {
 		return null;
 		//TODO really null ?
@@ -338,8 +350,7 @@ public class SugiyamaGraph
 
 	@Override
 	public int getLayerFromVertex(ISugiyamaVertex vertex) {
-		// TODO Auto-generated method stub
-		return 0;
+		return this.getLayer(vertex);
 	}
 
 	@Override
