@@ -24,7 +24,7 @@ public class CrossMinimizerTest {
         this.minimizer = new CrossMinimizer();
     }
 
-    @Test
+    
     public void minimizeCrossings() throws Exception {
         DefaultDirectedGraph<DefaultVertex, DirectedEdge<DefaultVertex>> DDGraph = new DefaultDirectedGraph<DefaultVertex, DirectedEdge<DefaultVertex>>("");
         DefaultVertex v1 = new DefaultVertex("v1", "0");
@@ -88,6 +88,11 @@ public class CrossMinimizerTest {
         minimizer.minimizeCrossings(SGraph);
     }
 
+    @Test
+    public void singleRandomTest(){
+    	SugiyamaGraph sugiyamaGraph = GraphUtil.generateSugiyamaGraph(5, 3, 4, true, (new Random()).nextLong());
+        minimizer.minimizeCrossings(sugiyamaGraph);
+    }
     @Test
     public void randomTests() {
         for (int i = 10; i < 20; i++) {
