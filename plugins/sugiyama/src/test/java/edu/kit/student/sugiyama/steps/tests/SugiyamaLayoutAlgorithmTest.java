@@ -56,7 +56,9 @@ public class SugiyamaLayoutAlgorithmTest {
 
 	@Test
 	public void testRandomGraph() {
-		DefaultDirectedGraph<DefaultVertex, DirectedEdge<DefaultVertex>> DDGraph = GraphUtil.generateGraph(50, 0.05f, true);
-		this.alg.layout(DDGraph);
+		for (int i = 0; i < 3; i++) {
+			DefaultDirectedGraph<DefaultVertex, DirectedEdge<DefaultVertex>> DDGraph = GraphUtil.generateGraph(30, 0.1f, true);
+			this.alg.layout(DDGraph);
+		}
 	}
 }

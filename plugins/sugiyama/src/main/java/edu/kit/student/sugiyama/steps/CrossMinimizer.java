@@ -17,6 +17,7 @@ public class CrossMinimizer implements ICrossMinimizer {
 
 	@Override
 	public void minimizeCrossings(ICrossMinimizerGraph graph) {
+		System.out.println(graph.getEdgeSet().size());
 		//prints the name of every vertex on every layer before minimizing
 		graph.getLayers().forEach(iSugiyamaVertices -> System.out.println(iSugiyamaVertices.stream().map(iSugiyamaVertex -> iSugiyamaVertex.getName()).collect(Collectors.joining(", "))));
 		System.out.println('\n');

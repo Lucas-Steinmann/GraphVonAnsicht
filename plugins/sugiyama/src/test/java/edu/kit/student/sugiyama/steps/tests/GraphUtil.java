@@ -106,7 +106,6 @@ public class GraphUtil {
                     } else {
                         neighborNumber = random.nextInt(currentLayerStart);
                     }
-
                     DirectedEdge edge = new DefaultDirectedEdge("e(v" + Integer.toString(neighborNumber) + ", v" + Integer.toString(i) + ")", "");
                     edge.setVertices(vertices.get(neighborNumber), vertex);
                     graph.addEdge(edge);
