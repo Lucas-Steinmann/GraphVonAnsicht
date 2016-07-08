@@ -1,16 +1,17 @@
 package edu.kit.student.gui;
 
-import java.util.Set;
-
 import edu.kit.student.graphmodel.Edge;
 import edu.kit.student.graphmodel.EdgePath;
-import edu.kit.student.util.Point;
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.directed.DirectedEdge;
+import edu.kit.student.util.Point;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
 import javafx.scene.text.Text;
 import javafx.util.Pair;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * A visual representation of an edge with a text.
@@ -33,7 +34,8 @@ public class EdgeShape extends GAnsGraphElement {
 	 */
 	public EdgeShape(Edge<?> edge) {
 		//TODO: Woher wei� man welche vertex die am n�hsten an dem ersten punkt des pfads ist?! (Damit auch von wo aus dem knoten die kante gehen soll!)
-		
+		this.lines = new HashSet<>();
+		this.text = new Text();
 		EdgePath path = edge.getPath();
 		
 		Vertex vertex = edge.getVertices().get(0);
