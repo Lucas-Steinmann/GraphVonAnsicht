@@ -90,13 +90,13 @@ public class CrossMinimizerTest {
 
     @Test
     public void singleRandomTest(){
-    	SugiyamaGraph sugiyamaGraph = GraphUtil.generateSugiyamaGraph(5, 3, 4, true, (new Random()).nextLong());
+    	SugiyamaGraph sugiyamaGraph = GraphUtil.generateSugiyamaGraph(20, 3, 4, true, (new Random()).nextLong());
         minimizer.minimizeCrossings(sugiyamaGraph);
     }
 
     @Test
     public void randomTests() {
-        for (int i = 20; i < 40; i++) {
+        for (int i = 10; i < 30; i++) {
             SugiyamaGraph sugiyamaGraph = GraphUtil.generateSugiyamaGraph(i, 2, 8, true, (new Random()).nextLong());
             long timeStart = (new Date()).getTime();
             minimizer.minimizeCrossings(sugiyamaGraph);

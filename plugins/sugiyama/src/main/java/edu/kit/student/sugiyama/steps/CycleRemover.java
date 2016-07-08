@@ -70,10 +70,8 @@ public class CycleRemover implements ICycleRemover {
 				}
 
 				if (outSize < inSize) {
-					System.out.println(DDGraph.outgoingEdgesOf(highestOutInDiffVertex).stream().map(v -> v.getName()).collect(Collectors.joining(", ")));
 					DAGEdges.addAll(getCorrectedOutcomingEdges(highestOutInDiffVertex, DDEdges));
 				} else {
-					System.out.println(DDGraph.incomingEdgesOf(highestOutInDiffVertex).stream().map(v -> v.getName()).collect(Collectors.joining(", ")));
 					DAGEdges.addAll(getCorrectedIncomingEdges(highestOutInDiffVertex, DDEdges));
 				}
 
@@ -82,7 +80,7 @@ public class CycleRemover implements ICycleRemover {
 				DDEdges.removeAll(DDGraph.incomingEdgesOf(highestOutInDiffVertex));
 			}
 		}
-		
+
 		reverseEdges(getEdgesToTurn(DAGEdges, graph.getEdgeSet()),graph);
 	}
 	
