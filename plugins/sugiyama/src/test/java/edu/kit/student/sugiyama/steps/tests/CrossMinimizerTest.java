@@ -94,9 +94,9 @@ public class CrossMinimizerTest {
         minimizer.minimizeCrossings(sugiyamaGraph);
     }
 
-
+    @Test
     public void randomTests() {
-        for (int i = 20; i < 100; i++) {
+        for (int i = 20; i < 40; i++) {
             SugiyamaGraph sugiyamaGraph = GraphUtil.generateSugiyamaGraph(i, 2, 8, true, (new Random()).nextLong());
             long timeStart = (new Date()).getTime();
             minimizer.minimizeCrossings(sugiyamaGraph);
@@ -105,7 +105,7 @@ public class CrossMinimizerTest {
         }
     }
 
-    @Test
+
     public void performanceTest() {
         for (int i = 0; i < 100; i++) {
             SugiyamaGraph sugiyamaGraph = GraphUtil.generateSugiyamaGraph(75, 2, 8, true, (new Random()).nextLong());
