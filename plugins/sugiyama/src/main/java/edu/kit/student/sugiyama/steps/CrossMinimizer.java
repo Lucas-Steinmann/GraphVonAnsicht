@@ -33,10 +33,10 @@ public class CrossMinimizer implements ICrossMinimizer {
 		int counter = 0;
 
 		while (counter < 10) {
-			List<List<ISugiyamaVertex>> undo = new LinkedList<>();
+			List<List<ISugiyamaVertex>> undo = new ArrayList<>();
 
 			for (List<ISugiyamaVertex> layer : graph.getLayers()) {
-				undo.add(new LinkedList<ISugiyamaVertex>(layer));
+				undo.add(new ArrayList<ISugiyamaVertex>(layer));
 			}
 
 			//System.out.println("optimize up");
@@ -146,6 +146,8 @@ public class CrossMinimizer implements ICrossMinimizer {
 			barycenterMap.put(vertex, getBarycenter(graph, vertex, dir));
 		}
 
+		//barycenterMap = layer.stream().parallel().collect(Collectors.toMap(vertex -> vertex, vertex -> getBarycenter(graph, vertex, dir)));
+
 		newLayer = toSortedKeyList(barycenterMap);
 		layer.clear();
 		layer.addAll(newLayer);
@@ -179,7 +181,7 @@ public class CrossMinimizer implements ICrossMinimizer {
 	}
 
 	public static <K, V extends Comparable<? super V>> List<K> toSortedKeyList( Map<K, V> map ) {
-		List<K> result = new LinkedList<>();
+		List<K> result = new ArrayList<>();
 		Stream<Map.Entry<K, V>> st = map.entrySet().stream();
 
 		st.sorted(Map.Entry.comparingByValue()).forEachOrdered(e -> result.add((K) e.getKey()));
@@ -213,8 +215,9 @@ public class CrossMinimizer implements ICrossMinimizer {
 		}
 
 		int result = 0;
-		for (int i = 0; i < layer1.size(); i++) {
-			for (int j = i + 1; j < layer1.size(); j++) {
+		for (int i = layer1.size() - 1; --i >= 0;) {
+			int k = i + 1;
+			for (int j = layer1.size() - 1; --j >= k;) {
 				result += crossingsOfVertices(graph, layer1.get(i), layer1.get(j), layer2);
 			}
 		}
@@ -231,19 +234,18 @@ public class CrossMinimizer implements ICrossMinimizer {
 
 		Set<ISugiyamaEdge> vertex1Edges = graph.edgesOf(vertex1);
 
-		//filter out all edges not in layer
 		vertex1Edges = vertex1Edges
 				.stream()
 				.parallel()
 				.filter(edge -> layer.contains(edge.getSource()) || layer.contains(edge.getTarget()))
 				.collect(Collectors.toSet());
 
-		List<ISugiyamaVertex> sources = vertex1Edges.stream().map(sugiyamaEdge -> sugiyamaEdge.getSource()).collect(Collectors.toList());
-		List<ISugiyamaVertex> targets = vertex1Edges.stream().map(sugiyamaEdge -> sugiyamaEdge.getTarget()).collect(Collectors.toList());
-		sources.removeIf(vertex -> vertex.getID() == vertex1.getID());
-		targets.removeIf(vertex -> vertex.getID() == vertex1.getID());
+		List<ISugiyamaVertex> sources = vertex1Edges.stream().parallel().map(sugiyamaEdge -> sugiyamaEdge.getSource()).filter(vertex -> vertex.getID() != vertex2.getID()).collect(Collectors.toList());
+		List<ISugiyamaVertex> targets = vertex1Edges.stream().parallel().map(sugiyamaEdge -> sugiyamaEdge.getTarget()).filter(vertex -> vertex.getID() != vertex2.getID()).collect(Collectors.toList());
+		//sources.removeIf(vertex -> vertex.getID() == vertex1.getID());
+		//targets.removeIf(vertex -> vertex.getID() == vertex1.getID());
 
-		List<ISugiyamaVertex> neighbors1 = new LinkedList<>(sources);
+		List<ISugiyamaVertex> neighbors1 = sources;
 		neighbors1.addAll(targets);
 
 		Set<ISugiyamaEdge> vertex2Edges = graph.edgesOf(vertex2);
@@ -254,12 +256,12 @@ public class CrossMinimizer implements ICrossMinimizer {
 				.filter(edge -> layer.contains(edge.getSource()) || layer.contains(edge.getTarget()))
 				.collect(Collectors.toSet());
 
-		sources = vertex2Edges.stream().map(sugiyamaEdge -> sugiyamaEdge.getSource()).collect(Collectors.toList());
-		targets = vertex2Edges.stream().map(sugiyamaEdge -> sugiyamaEdge.getTarget()).collect(Collectors.toList());
-		sources.removeIf(vertex -> vertex.getID() == vertex2.getID());
-		targets.removeIf(vertex -> vertex.getID() == vertex2.getID());
+		sources = vertex2Edges.stream().parallel().map(sugiyamaEdge -> sugiyamaEdge.getSource()).filter(vertex -> vertex.getID() != vertex2.getID()).collect(Collectors.toList());
+		targets = vertex2Edges.stream().parallel().map(sugiyamaEdge -> sugiyamaEdge.getTarget()).filter(vertex -> vertex.getID() != vertex2.getID()).collect(Collectors.toList());
+		//sources.removeIf(vertex -> vertex.getID() == vertex2.getID());
+		//targets.removeIf(vertex -> vertex.getID() == vertex2.getID());
 
-		List<ISugiyamaVertex> neighbors2 = new LinkedList<>(sources);
+		List<ISugiyamaVertex> neighbors2 = sources;
 		neighbors2.addAll(targets);
 
 		int result = 0;
@@ -273,6 +275,8 @@ public class CrossMinimizer implements ICrossMinimizer {
 				}
 			}
 		}
+
+		//result = neighbors1.stream().parallel().mapToInt(n1 -> neighbors2.stream().mapToInt(n2 -> layer.indexOf(n1) > layer.indexOf(n2) ? 1 : 0).sum()).sum();
 
 		return result;
 	}
