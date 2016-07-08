@@ -19,18 +19,23 @@ public class CrossMinimizer implements ICrossMinimizer {
 	public void minimizeCrossings(ICrossMinimizerGraph graph) {
 		int layerCount = graph.getLayerCount();
 		System.out.println(" ");
-
+		graph.getLayers().forEach(iSugiyamaVertices -> System.out.println(iSugiyamaVertices.stream().map(iSugiyamaVertex -> iSugiyamaVertex.getName()).collect(Collectors.joining(", "))));
 		addDummyAndEdges(graph);
 
-		System.out.println("crossings before " + CrossMinimizer.crossings((SugiyamaGraph) graph));
+
 
 		//add dummy knots
 		int newCrossings = 0;
 		int oldCrossings = crossings((SugiyamaGraph) graph);
+		System.out.println("crossings before " + oldCrossings);
 		int counter = 0;
 
-		while (counter < 20) {
-			List<List<ISugiyamaVertex>> undo = new LinkedList<>(graph.getLayers());
+		while (counter < 10) {
+			List<List<ISugiyamaVertex>> undo = new LinkedList<>();
+
+			for (List<ISugiyamaVertex> layer : graph.getLayers()) {
+				undo.add(new LinkedList<ISugiyamaVertex>(layer));
+			}
 
 			//System.out.println("optimize up");
 			for (int i = 1; i < layerCount; i++) {
@@ -44,7 +49,10 @@ public class CrossMinimizer implements ICrossMinimizer {
 
 			newCrossings = crossings((SugiyamaGraph) graph);
 
+			System.out.println("  crossings in " + counter + ". run: " + newCrossings);
+
 			if (oldCrossings - newCrossings < 0) {
+				System.out.println("revert");
 				graph.getLayers().clear();
 				graph.getLayers().addAll(undo);
 				break;
@@ -60,9 +68,10 @@ public class CrossMinimizer implements ICrossMinimizer {
 		System.out.println(" ");
 		System.out.println("runs = " + counter);
 		System.out.println(" ");
-		System.out.println("crossings after " + CrossMinimizer.crossings((SugiyamaGraph) graph));
+		System.out.println("crossings after " + crossings((SugiyamaGraph) graph));
 		System.out.println("");
 		System.out.println("");
+		graph.getLayers().forEach(iSugiyamaVertices -> System.out.println(iSugiyamaVertices.stream().map(iSugiyamaVertex -> iSugiyamaVertex.getName()).collect(Collectors.joining(", "))));
 	}
 
 	/**
@@ -98,7 +107,8 @@ public class CrossMinimizer implements ICrossMinimizer {
 						ne.setVertices(source, nv);	//set source and target of first dummy edge
 						vertices.add(nv);	//add new vertex to vertex set
 						newEdges.add(ne);	//add new edge to edge set
-						graph.getLayer(l).add(nv);	//add new edge to layer list
+						//graph.getLayer(l).add(nv);	//add new edge to layer list
+						((SugiyamaGraph) graph).assignToLayer(nv, l);
 					}else if(l==upperLayer){
 						ne = graph.createSupplementEdge(e.getName() + "(e" + c + ")", "");
 						newEdges.add(ne);
@@ -110,7 +120,8 @@ public class CrossMinimizer implements ICrossMinimizer {
 						ne.setVertices(temp, nv);
 						vertices.add(nv);
 						newEdges.add(ne);
-						graph.getLayer(l).add(nv);
+						//graph.getLayer(l).add(nv);
+						((SugiyamaGraph) graph).assignToLayer(nv, l);
 					}
 				}
 			}
@@ -123,9 +134,6 @@ public class CrossMinimizer implements ICrossMinimizer {
 	private int optimizeLayer(ICrossMinimizerGraph graph, int optimizingLayer, Direction dir) {
 		int changes = 1;
 		List<ISugiyamaVertex> layer = graph.getLayer(optimizingLayer);
-		List<ISugiyamaVertex> oldLayer = new LinkedList<>(layer);
-		List<Integer> currentPositions = new LinkedList<>();
-		List<Integer> newPositions = new LinkedList<>();
 		List<ISugiyamaVertex> newLayer;
 		Map<ISugiyamaVertex, Float> barycenterMap = new HashMap<>();
 
@@ -134,10 +142,9 @@ public class CrossMinimizer implements ICrossMinimizer {
 		}
 
 		newLayer = toSortedKeyList(barycenterMap);
-
 		layer.clear();
 		layer.addAll(newLayer);
-
+		System.out.println(barycenterMap.entrySet().stream().sorted(Map.Entry.comparingByValue()).map(entry -> entry.getKey().getName() + "<" + entry.getValue()).collect(Collectors.joining(", ")));
 		return changes;
 	}
 	
@@ -157,11 +164,11 @@ public class CrossMinimizer implements ICrossMinimizer {
 		}
 
 		List<ISugiyamaVertex> fixedLayer = graph.getLayer(fixedLayerNum);
-		//System.out.println(vertex.getName() + ": " + relevantNeighbors.stream().map(vertex1 -> Integer.toString(fixedLayer.indexOf(vertex1))).collect(Collectors.joining(", ")));
 		OptionalDouble optionalAvarage = relevantNeighbors.stream().mapToDouble((vertex1 -> fixedLayer.indexOf(vertex1))).average();
 
 		if (optionalAvarage.isPresent()) {
 			return (float) optionalAvarage.getAsDouble();
+
 		} else {
 			return (float) graph.getLayer(optimizingLayerNum).indexOf(vertex);
 		}
