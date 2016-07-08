@@ -7,6 +7,7 @@ import edu.kit.student.sugiyama.graph.ISugiyamaVertex;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * This class takes a directed Graph G = (V, E) and removes a set of edges E_ 
@@ -14,9 +15,6 @@ import java.util.Set;
  */
 public class CycleRemover implements ICycleRemover {
 	private DefaultDirectedGraph<ISugiyamaVertex, ISugiyamaEdge> DDGraph;
-	private Set<ISugiyamaVertex> graphVertices;
-	private Set<ISugiyamaEdge> graphEdges;
-	
 	
 	
 	@Override
@@ -30,29 +28,32 @@ public class CycleRemover implements ICycleRemover {
 		System.out.println("edges: " + DDEdges.size());
 
 		while(!DDVertices.isEmpty()) {
-			ISugiyamaVertex vertex = getCurrentSink(DDVertices);
+			ISugiyamaVertex vertex = getCurrentSink(DDVertices, DDEdges);
 			
 
 			while (vertex != null) {    //add sink vertices to the edge set in the final directed acyclic graph
-				DAGEdges.addAll(DDGraph.incomingEdgesOf(vertex));
+				System.out.println("sink: " + vertex.getName());
+				DAGEdges.addAll(getCorrectedIncomingEdges(vertex, DDEdges));
 				DDVertices.remove(vertex);
 				DDEdges.removeAll(DDGraph.incomingEdgesOf(vertex));
-				vertex = getCurrentSink(DDVertices);
+				vertex = getCurrentSink(DDVertices, DDEdges);
 			}
 
 			for (ISugiyamaVertex tmpVertex : DDVertices) {    //remove all isolated vertices
-				if (isIsolated(tmpVertex)) {
+				if (isIsolated(tmpVertex, DDEdges)) {
+					System.out.println("isolated: " + vertex.getName());
 					DDVertices.remove(tmpVertex);
 				}
 			}
 
-			vertex = getCurrentSource(DDVertices);
+			vertex = getCurrentSource(DDVertices, DDEdges);
 
 			while (vertex != null) {    //add source vertices to the edge set in the final directed acyclic graph
-				DAGEdges.addAll(getCorrectedIncomingEdges(vertex));
+				System.out.println("source: " + vertex.getName());
+				DAGEdges.addAll(getCorrectedOutcomingEdges(vertex, DDEdges));
 				DDVertices.remove(vertex);
 				DDEdges.removeAll(DDGraph.outgoingEdgesOf(vertex));
-				vertex = getCurrentSource(DDVertices);
+				vertex = getCurrentSource(DDVertices, DDEdges);
 			}
 
 			if (!DDVertices.isEmpty()) {
@@ -62,8 +63,8 @@ public class CycleRemover implements ICycleRemover {
 				ISugiyamaVertex highestOutInDiffVertex = null;
 
 				for (ISugiyamaVertex tmpVertex : DDVertices) {
-					outSize = getCorrectedOutcomingEdges(tmpVertex).size();
-					inSize = getCorrectedIncomingEdges(tmpVertex).size();
+					outSize = getCorrectedOutcomingEdges(tmpVertex, DDEdges).size();
+					inSize = getCorrectedIncomingEdges(tmpVertex, DDEdges).size();
 					int vertexDiff = Math.abs(outSize - inSize);
 					if (vertexDiff > outInDiff) {
 						highestOutInDiffVertex = tmpVertex;
@@ -72,9 +73,13 @@ public class CycleRemover implements ICycleRemover {
 				}
 
 				if (outSize < inSize) {
-					DAGEdges.addAll(DDGraph.outgoingEdgesOf(highestOutInDiffVertex));
+					System.out.println("remove outs of: " + highestOutInDiffVertex.getName());
+					System.out.println(DDGraph.outgoingEdgesOf(highestOutInDiffVertex).stream().map(v -> v.getName()).collect(Collectors.joining(", ")));
+					DAGEdges.addAll(getCorrectedOutcomingEdges(highestOutInDiffVertex, DDEdges));
 				} else {
-					DAGEdges.addAll(DDGraph.incomingEdgesOf(highestOutInDiffVertex));
+					System.out.println("remove ins of: " + highestOutInDiffVertex.getName());
+					System.out.println(DDGraph.incomingEdgesOf(highestOutInDiffVertex).stream().map(v -> v.getName()).collect(Collectors.joining(", ")));
+					DAGEdges.addAll(getCorrectedIncomingEdges(highestOutInDiffVertex, DDEdges));
 				}
 
 				DDVertices.remove(highestOutInDiffVertex);
@@ -83,9 +88,9 @@ public class CycleRemover implements ICycleRemover {
 			}
 		}
 
-		
-		
-		reverseEdges(getEdgesToTurn(DAGEdges),graph);
+
+		System.out.println("reversed: " + DAGEdges.size());
+		reverseEdges(getEdgesToTurn(DAGEdges, graph.getEdgeSet()),graph);
 	}
 	
 	/**
@@ -98,9 +103,9 @@ public class CycleRemover implements ICycleRemover {
 		}
 	}
 	
-	private ISugiyamaVertex getCurrentSink(Set<ISugiyamaVertex> dDVertices){
+	private ISugiyamaVertex getCurrentSink(Set<ISugiyamaVertex> dDVertices, Set<ISugiyamaEdge> graphEdges){
 		for(ISugiyamaVertex vertex : dDVertices){
-			Set<ISugiyamaEdge> outgoingEdges = getCorrectedOutcomingEdges(vertex);
+			Set<ISugiyamaEdge> outgoingEdges = getCorrectedOutcomingEdges(vertex, graphEdges);
 
 			if (outgoingEdges.size() == 0) {
 				return vertex;
@@ -110,9 +115,9 @@ public class CycleRemover implements ICycleRemover {
 		return null;
 	}
 	
-	private ISugiyamaVertex getCurrentSource(Set<ISugiyamaVertex> vertices){
+	private ISugiyamaVertex getCurrentSource(Set<ISugiyamaVertex> vertices, Set<ISugiyamaEdge> graphEdges){
 		for(ISugiyamaVertex vertex : vertices){
-			Set<ISugiyamaEdge> incomingEdges = getCorrectedIncomingEdges(vertex);
+			Set<ISugiyamaEdge> incomingEdges = getCorrectedIncomingEdges(vertex, graphEdges);
 
 			if (incomingEdges.size() == 0) {
 				return vertex;
@@ -121,9 +126,9 @@ public class CycleRemover implements ICycleRemover {
 		return null;
 	}
 
-	private boolean isIsolated(ISugiyamaVertex vertex) {
-		Set<ISugiyamaEdge> outgoingEdges = getCorrectedOutcomingEdges(vertex);
-		Set<ISugiyamaEdge> incomingEdges = getCorrectedIncomingEdges(vertex);
+	private boolean isIsolated(ISugiyamaVertex vertex, Set<ISugiyamaEdge> graphEdges) {
+		Set<ISugiyamaEdge> outgoingEdges = getCorrectedOutcomingEdges(vertex, graphEdges);
+		Set<ISugiyamaEdge> incomingEdges = getCorrectedIncomingEdges(vertex, graphEdges);
 
 		if (outgoingEdges.size() + incomingEdges.size() == 0) {
 			return true;
@@ -132,28 +137,12 @@ public class CycleRemover implements ICycleRemover {
 		return false;
 	}
 
-	private Set<ISugiyamaEdge> getCorrectedOutcomingEdges(ISugiyamaVertex vertex) {
-		Set<ISugiyamaEdge> outgoingEdges = DDGraph.outgoingEdgesOf(vertex);
-
-		for (ISugiyamaEdge edge : outgoingEdges) {
-			if (!graphEdges.contains(edge)) {
-				outgoingEdges.remove(edge);
-			}
-		}
-
-		return outgoingEdges;
+	private Set<ISugiyamaEdge> getCorrectedOutcomingEdges(ISugiyamaVertex vertex, Set<ISugiyamaEdge> graphEdges) {
+		return DDGraph.outgoingEdgesOf(vertex).stream().filter(edge -> graphEdges.contains(edge)).collect(Collectors.toSet());
 	}
 
-	private Set<ISugiyamaEdge> getCorrectedIncomingEdges(ISugiyamaVertex vertex) {
-		Set<ISugiyamaEdge> incomingEdges = DDGraph.incomingEdgesOf(vertex);
-
-		for (ISugiyamaEdge edge : incomingEdges) {
-			if (!graphEdges.contains(edge)) {
-				incomingEdges.remove(edge);
-			}
-		}
-
-		return incomingEdges;
+	private Set<ISugiyamaEdge> getCorrectedIncomingEdges(ISugiyamaVertex vertex, Set<ISugiyamaEdge> graphEdges) {
+		return DDGraph.incomingEdgesOf(vertex).stream().filter(edge -> graphEdges.contains(edge)).collect(Collectors.toSet());
 	}
 	
 	/**
@@ -161,9 +150,9 @@ public class CycleRemover implements ICycleRemover {
 	 * @param DAGEdges edges in the maximum acyclic graph
 	 * @return the edges that have to be turned in order to remove the cycles in the original graph
 	 */
-	private Set<ISugiyamaEdge> getEdgesToTurn(Set<ISugiyamaEdge> DAGEdges){
+	private Set<ISugiyamaEdge> getEdgesToTurn(Set<ISugiyamaEdge> DAGEdges, Set<ISugiyamaEdge> graphEdges){
 		Set<ISugiyamaEdge> result = new HashSet<ISugiyamaEdge>();
-		for(ISugiyamaEdge edge:this.graphEdges){
+		for(ISugiyamaEdge edge: graphEdges){
 			if(!DAGEdges.contains(edge)){
 				result.add(edge);
 			}
@@ -181,17 +170,19 @@ public class CycleRemover implements ICycleRemover {
 	 * @param graph original graph to build a DefaultDirectedGraph from
 	 */
 	private void initialize(ICycleRemoverGraph graph){
-		this.graphVertices = graph.getVertexSet();
-		this.graphEdges = graph.getEdgeSet();
+		Set<ISugiyamaVertex> graphVertices;
+		Set<ISugiyamaEdge> graphEdges;
+		graphVertices = graph.getVertexSet();
+		graphEdges = graph.getEdgeSet();
 		
 		Set<ISugiyamaVertex> DDVertices = new HashSet<ISugiyamaVertex>();
 		Set<ISugiyamaEdge> DDEdges = new HashSet<ISugiyamaEdge>();
 		
-		for(ISugiyamaVertex vertex : this.graphVertices){
+		for(ISugiyamaVertex vertex : graphVertices){
 			DDVertices.add(vertex);
 		}
 
-		for(ISugiyamaEdge edge: this.graphEdges){
+		for(ISugiyamaEdge edge: graphEdges){
 			DDEdges.add(edge);
 		}
 		this.DDGraph = new DefaultDirectedGraph("", DDVertices, DDEdges);
