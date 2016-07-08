@@ -26,8 +26,8 @@ public class VertexPositioner implements IVertexPositioner {
 		for (int i = 0; i < vertices.length; i++) {
 			for (int j = 0; j < vertices[0].length; j++) {
 				if (vertices[i][j] != null) {
-					vertices[i][j].setX(i*20);
-					vertices[i][j].setY(j*20);
+					vertices[i][j].setX(j*40);
+					vertices[i][j].setY(i*30);
 				}
 			}
 		}
