@@ -5,7 +5,6 @@ import edu.kit.student.graphmodel.builder.IGraphBuilder;
 import edu.kit.student.graphmodel.builder.IGraphModelBuilder;
 import edu.kit.student.joana.callgraph.CallGraph;
 import edu.kit.student.joana.callgraph.CallGraphBuilder;
-import edu.kit.student.joana.methodgraph.MethodGraph;
 import edu.kit.student.joana.methodgraph.MethodGraphBuilder;
 
 import java.util.LinkedList;
@@ -32,22 +31,15 @@ public class JoanaGraphModelBuilder implements IGraphModelBuilder {
             callBuilder = new CallGraphBuilder(graphId);
             return callBuilder;
         }
-        //else return methodgraphbuilder
-        MethodGraphBuilder builder = new MethodGraphBuilder(graphId);
-        methodBuilders.add(builder);
-        return builder;
+        return null;
     }
 
     @Override
     public GraphModel build() {
         JoanaGraphModel model = new JoanaGraphModel();
         CallGraph callGraph = callBuilder.build();
-        List<MethodGraph> methodGraphs = new LinkedList<>();
-        for (MethodGraphBuilder b : methodBuilders) {
-            methodGraphs.add(b.build());
-        }
         model.setCallGraph(callGraph);
-        model.setMethodGraphs(methodGraphs);
+        model.setMethodGraphs(callGraph.getMethodgraphs());
         workspace.setGraphModel(model);
         return model;
     }

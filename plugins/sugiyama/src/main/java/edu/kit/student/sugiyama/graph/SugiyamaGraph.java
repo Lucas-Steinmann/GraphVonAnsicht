@@ -384,7 +384,7 @@ public class SugiyamaGraph
 	}
 
 	@Override
-	public List<Graph> getChildGraphs() {
+	public List<Graph<? extends Vertex, ? extends Edge<? extends Vertex>>> getChildGraphs() {
 		// TODO Auto-generated method stub
 		return null;
 	}

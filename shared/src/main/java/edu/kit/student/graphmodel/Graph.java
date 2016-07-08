@@ -89,7 +89,7 @@ public interface Graph<V extends Vertex, E extends Edge<V>> {
 	
 	public void setParentGraph(Graph parent);
 	
-	public List<Graph> getChildGraphs();
+	public List<Graph<? extends Vertex, ? extends Edge<? extends Vertex>>> getChildGraphs();
 	
-	public void addChildGraph(Graph child);
+	public void addChildGraph(Graph<? extends Vertex, ? extends Edge<? extends Vertex>> child);
 }

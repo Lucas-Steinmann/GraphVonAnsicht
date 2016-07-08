@@ -1,5 +1,12 @@
 package edu.kit.student.graphmodel.directed;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
 import edu.kit.student.graphmodel.CollapsedVertex;
 import edu.kit.student.graphmodel.Edge;
 import edu.kit.student.graphmodel.FastGraphAccessor;
@@ -12,8 +19,6 @@ import edu.kit.student.graphmodel.ViewableGraph;
 import edu.kit.student.objectproperty.GAnsProperty;
 import edu.kit.student.plugin.LayoutOption;
 import edu.kit.student.util.IdGenerator;
-
-import java.util.*;
 
 /**
  * A {@link DefaultDirectedGraph} is a specific Graph which only contains
@@ -31,7 +36,7 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
 	private HashMap<V, Set<E>> revVertexToEdge;
 	
 	private Graph parent = null;
-	private List<Graph> children = new ArrayList<>();
+	private List<Graph<? extends Vertex, ? extends Edge<? extends Vertex>>> children = new ArrayList<>();
 
 	/**
 	 * Constructor
@@ -62,7 +67,7 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
         this.name = new GAnsProperty<String>("graphName", name);
         this.id = IdGenerator.getInstance().createId();
         this.fga = new FastGraphAccessor();
-        this.children = new ArrayList<Graph>();
+        this.children = new ArrayList<Graph<? extends Vertex, ? extends Edge<? extends Vertex>>>();
 
         this.vertexToEdge = new HashMap<>();
         this.revVertexToEdge = new HashMap<>();
@@ -75,7 +80,7 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
         }
     }
 
-	@Override
+    @Override
 	public String getName() {
 		return name.getValue();
 	}
@@ -324,7 +329,7 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
 	}
 
 	@Override
-	public List<Graph> getChildGraphs() {
+	public List<Graph<? extends Vertex, ? extends Edge<? extends Vertex>>> getChildGraphs() {
 		return this.children;
 	}
 	

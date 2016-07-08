@@ -10,8 +10,10 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
+import edu.kit.student.graphmodel.Edge;
 import edu.kit.student.graphmodel.Graph;
 import edu.kit.student.graphmodel.GraphModel;
+import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.builder.IGraphModelBuilder;
 import edu.kit.student.parameter.Settings;
 import edu.kit.student.plugin.Exporter;
@@ -113,9 +115,12 @@ public class GAnsApplication extends Application {
 			@Override
 			public void handle(MouseEvent mouseEvent) {
 				if (mouseEvent.getClickCount() == 2) {
-					structureView.getIdOfSelectedItem();
-					//Model hinzufuegen von dem Model und heraussuchen des graphs. showGraph -> und graph an neue View uebergeben.
-					//TODO: hier den passenden Sub/Methodengraphen finden und mit addTab oeffnen.
+					int id = structureView.getIdOfSelectedItem();
+					Graph<? extends Vertex, ? extends Edge<? extends Vertex>> graph = getGraphFromId(model.getRootGraphs(), id);
+					if(graph != null) {
+						showGraph(graph);
+					}
+
 				}
 			}
 		});
@@ -352,7 +357,8 @@ public class GAnsApplication extends Application {
 		if (result.isPresent()) {
 		    LayoutOption chosenOption = options.get(layoutNames.indexOf(result.get()));
 		    chosenOption.chooseLayout();
-		    if(openParameterDialog(chosenOption.getSettings())) chosenOption.applyLayout();
+		    Settings settings = chosenOption.getSettings();
+		    if(openParameterDialog(settings)) chosenOption.applyLayout();
 		    return true;
 		}
 		return false;
@@ -381,5 +387,20 @@ public class GAnsApplication extends Application {
 			return false;
 		}
 		return true;
+	}
+	
+	private Graph<? extends Vertex, ? extends Edge<? extends Vertex>> getGraphFromId(List<Graph<? extends Vertex, ? extends Edge<? extends Vertex>>> graphs, Integer id) {
+		for(Graph<? extends Vertex, ? extends Edge<? extends Vertex>> graph : graphs) {
+			if(graph.getID().compareTo(id) == 0) {
+				return graph;
+			}
+			
+			Graph tmp = getGraphFromId(graph.getChildGraphs(), id);
+			if(tmp != null) {
+				return tmp;
+			}
+		}
+		
+		return null;
 	}
 }
