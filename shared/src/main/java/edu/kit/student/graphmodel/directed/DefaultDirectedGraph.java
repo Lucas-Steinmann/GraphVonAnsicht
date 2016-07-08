@@ -1,5 +1,12 @@
 package edu.kit.student.graphmodel.directed;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+
 import edu.kit.student.graphmodel.CollapsedVertex;
 import edu.kit.student.graphmodel.Edge;
 import edu.kit.student.graphmodel.FastGraphAccessor;
@@ -12,8 +19,6 @@ import edu.kit.student.graphmodel.ViewableGraph;
 import edu.kit.student.objectproperty.GAnsProperty;
 import edu.kit.student.plugin.LayoutOption;
 import edu.kit.student.util.IdGenerator;
-
-import java.util.*;
 
 /**
  * A {@link DefaultDirectedGraph} is a specific Graph which only contains
@@ -75,7 +80,7 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
         }
     }
 
-	@Override
+    @Override
 	public String getName() {
 		return name.getValue();
 	}

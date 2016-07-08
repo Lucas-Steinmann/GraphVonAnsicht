@@ -4,7 +4,9 @@ import edu.kit.student.graphmodel.LayeredGraph;
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * An abstract superclass for all JOANA specific graphs.
@@ -18,7 +20,11 @@ public abstract class JoanaGraph<V extends JoanaVertex, E extends JoanaEdge<V>>
     private List<List<V>> layers;
     
     public JoanaGraph(String name) {
-        super(name);
+        this(name, new HashSet<>(), new HashSet<>());
+    }
+
+    public JoanaGraph(String name, Set<V> vertices, Set<E> edges) {
+        super(name, vertices, edges);
         layers = new ArrayList<List<V>>();
     }
 

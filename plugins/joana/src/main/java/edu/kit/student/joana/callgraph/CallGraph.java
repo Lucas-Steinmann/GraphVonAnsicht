@@ -21,7 +21,7 @@ public class CallGraph extends JoanaGraph<JoanaCompoundVertex,JoanaEdge<JoanaCom
     private static LayoutRegister<CallGraphLayoutOption> register;
 
     public CallGraph(String name, Set<JoanaCompoundVertex> vertices, Set<JoanaEdge<JoanaCompoundVertex>> edges) {
-        super(name);
+        super(name, vertices, edges);
     }
 
     public CallGraph(String name) {
