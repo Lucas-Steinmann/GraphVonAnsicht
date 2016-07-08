@@ -3,6 +3,7 @@ package edu.kit.student.joana;
 import edu.kit.student.graphmodel.builder.IEdgeBuilder;
 import edu.kit.student.joana.JoanaEdge.Kind;
 
+import java.util.Optional;
 import java.util.Set;
 
 /**
@@ -17,7 +18,10 @@ public class JoanaEdgeBuilder implements IEdgeBuilder {
     Kind edgeKind;
     String name = "";
     
-    public JoanaEdgeBuilder() { }
+    public JoanaEdgeBuilder() {
+        source = null;
+        target = null;
+    }
     
     @Override
     public void setID(String id) {
@@ -46,9 +50,14 @@ public class JoanaEdgeBuilder implements IEdgeBuilder {
         if (source == null || target == null) {
             return null;
         }
-        // Lookup source and target.
-        
-        return new JoanaEdge<>(name, name, edgeKind);
 
+        Optional<JoanaVertex> sourceVertex = vertexPool.stream().filter(joanaVertex -> joanaVertex.getName().equals(source)).findFirst();
+        Optional<JoanaVertex> targetVertex = vertexPool.stream().filter(joanaVertex -> joanaVertex.getName().equals(target)).findFirst();
+
+        if (sourceVertex.isPresent() && targetVertex.isPresent()) {
+            return new JoanaEdge(name, name, sourceVertex.get(), targetVertex.get(), edgeKind);
+        }
+
+        return null;
     }
 }
