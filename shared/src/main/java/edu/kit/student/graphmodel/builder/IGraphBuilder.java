@@ -1,7 +1,5 @@
 package edu.kit.student.graphmodel.builder;
 
-import edu.kit.student.graphmodel.Graph;
-
 /**
  * An abstract interface, which is used to build a graph.
  */
@@ -11,8 +9,10 @@ public interface IGraphBuilder {
 	 * Returns the EdgeBuilder which is specified for this graph.
 	 * 
 	 * @return The {@link IEdgeBuilder} which is specified for this graph.
+	 * @param sourceId
+	 * @param targetId
 	 */
-	public abstract IEdgeBuilder getEdgeBuilder();
+	public abstract IEdgeBuilder getEdgeBuilder(String sourceId, String targetId);
 
 	/**
 	 * Returns the VertexBuilder which is specified for this graph.

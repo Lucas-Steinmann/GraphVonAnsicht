@@ -29,7 +29,13 @@ public class CallGraphBuilder implements IGraphBuilder {
     }
     
     @Override
-    public IEdgeBuilder getEdgeBuilder() {
+    public IEdgeBuilder getEdgeBuilder(String sourceId, String targetId) {
+        for (MethodGraphBuilder builder : methodGraphBuilders) {
+            if (builder.containsVertexWithId(sourceId) && builder.containsVertexWithId(targetId)) {
+                return builder.getEdgeBuilder(sourceId, targetId);
+            }
+        }
+
         return new JoanaEdgeBuilder();
     }
 

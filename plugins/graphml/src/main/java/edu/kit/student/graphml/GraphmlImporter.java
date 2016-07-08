@@ -111,7 +111,7 @@ public class GraphmlImporter implements Importer {
                         this.parseVertex(vertexBuilder, child);
                     }
                 } else if (child.getNodeName() == "edge") {
-                    IEdgeBuilder edgeBuilder = builder.getEdgeBuilder();
+                    IEdgeBuilder edgeBuilder = builder.getEdgeBuilder(child.getAttribute("source"), child.getAttribute("target"));
                     this.parseEdge(edgeBuilder, child);
                 }  else {
                     throw new ParseException("Selected file has wrong syntax!", 0);

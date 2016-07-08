@@ -11,7 +11,6 @@ import edu.kit.student.joana.JoanaVertexBuilder;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.TreeSet;
 
 /**
  * The MethodGraphBuilder is a {@link IGraphBuilder}, specifically for building
@@ -21,6 +20,7 @@ public class MethodGraphBuilder implements IGraphBuilder {
 
     String name;
     Set<JoanaVertex> vertices = new HashSet<JoanaVertex>();
+    Set<String> vertexIds = new HashSet<>();
     Set<JoanaEdge<JoanaVertex>> edges = new HashSet<>();
     Set<JoanaVertexBuilder> vertexBuilders = new HashSet<>();
     Set<JoanaEdgeBuilder> edgeBuilders = new HashSet<>();
@@ -33,7 +33,7 @@ public class MethodGraphBuilder implements IGraphBuilder {
     }
     
     @Override
-    public IEdgeBuilder getEdgeBuilder() {
+    public IEdgeBuilder getEdgeBuilder(String sourceId, String targetId) {
         JoanaEdgeBuilder builder = new JoanaEdgeBuilder();
         edgeBuilders.add(builder);
         return builder;
@@ -42,6 +42,7 @@ public class MethodGraphBuilder implements IGraphBuilder {
     @Override
     public IVertexBuilder getVertexBuilder(String vertexId) {
         JoanaVertexBuilder builder = new JoanaVertexBuilder(vertexId);
+        vertexIds.add(vertexId);
         vertexBuilders.add(builder);
         return builder;
     }
@@ -51,6 +52,10 @@ public class MethodGraphBuilder implements IGraphBuilder {
         //is not allowed to happen
         //TODO: throw exception?
         return null;
+    }
+
+    public boolean containsVertexWithId(String vertexId) {
+        return vertexIds.contains(vertexId);
     }
 
     /**
