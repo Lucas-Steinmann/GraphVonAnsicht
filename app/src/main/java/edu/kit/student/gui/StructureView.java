@@ -47,6 +47,7 @@ public class StructureView extends TreeView<String> {
 		List<TreeItem<String>> items = new LinkedList<TreeItem<String>>();
 		for(Graph<? extends Vertex, ? extends Edge<? extends Vertex>> graph : graphs) {
 			TreeItem<String> graphItem = new TreeItem<String>(graph.getName());
+			graphItem.setExpanded(true);
 			itemMap.put(graphItem, graph.getID());
 			items.add(graphItem);
 			addGraphsToItem(graph.getChildGraphs(), graphItem);
