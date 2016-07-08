@@ -7,6 +7,7 @@ import edu.kit.student.sugiyama.graph.SugiyamaGraph;
 
 import java.util.*;
 import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 /**
@@ -20,9 +21,8 @@ public class CrossMinimizer implements ICrossMinimizer {
 		System.out.println(graph.getEdgeSet().size());
 		//prints the name of every vertex on every layer before minimizing
 		graph.getLayers().forEach(iSugiyamaVertices -> System.out.println(iSugiyamaVertices.stream().map(iSugiyamaVertex -> iSugiyamaVertex.getName()).collect(Collectors.joining(", "))));
-		System.out.println('\n');
+		System.out.println("");
 		int layerCount = graph.getLayerCount();
-		System.out.println(" ");
 
 		addDummyAndEdges(graph);
 
@@ -72,10 +72,10 @@ public class CrossMinimizer implements ICrossMinimizer {
 		System.out.println(" ");
 		System.out.println("crossings after " + crossings((SugiyamaGraph) graph));
 		System.out.println("");
-		System.out.println("");
 		//prints the name of every vertex on every layer after minimization
 		graph.getLayers().forEach(iSugiyamaVertices -> System.out.println(iSugiyamaVertices.stream().map(iSugiyamaVertex -> iSugiyamaVertex.getName()).collect(Collectors.joining(", "))));
-		System.out.println('\n');
+		System.out.println("");
+		System.out.println("");
 	}
 
 	/**
@@ -97,8 +97,8 @@ public class CrossMinimizer implements ICrossMinimizer {
 			int upperLayer = target.getLayer();
 			int diff = upperLayer - lowerLayer;
 			assert(diff >= 1);	//diff must not be lower than zero
-			assert(graph.getLayer(lowerLayer).contains(e.getSource()));
-			assert(graph.getLayer(upperLayer).contains(e.getTarget()));
+			assert(graph.getLayer(lowerLayer).contains(source));
+			assert(graph.getLayer(upperLayer).contains(target));
 			if(diff>1){	//need to add diff dummy vertices
 				replacedEdges.add(e);		// the  distance of both vertices of this edge is greater than 1 so it must be replaced
 				ISugiyamaVertex nv = null;	// through dummy vertices and supplement edges. add it here to remove it later from the original edge set.
@@ -194,9 +194,11 @@ public class CrossMinimizer implements ICrossMinimizer {
 	public static int crossings(SugiyamaGraph graph) {
 		int result = 0;
 
-		for (int i = 0; i < graph.getLayerCount() - 1; i++) {
-			result += crossingsOfLayers(graph, graph.getLayer(i), graph.getLayer(i + 1));
-		}
+		result = IntStream.range(0, graph.getLayerCount() - 1)
+				.parallel()
+				.map(i -> {
+					return crossingsOfLayers(graph, graph.getLayer(i), graph.getLayer(i + 1));
+				}).sum();
 
 		return result;
 	}
@@ -220,7 +222,7 @@ public class CrossMinimizer implements ICrossMinimizer {
 		return result;
 	}
 
-	private static int crossingsOfVertices(SugiyamaGraph graph, ISugiyamaVertex vertex1, ISugiyamaVertex vertex2, List<ISugiyamaVertex> layer2) {
+	private static int crossingsOfVertices(SugiyamaGraph graph, ISugiyamaVertex vertex1, ISugiyamaVertex vertex2, List<ISugiyamaVertex> layer) {
 		if (vertex1.getID() == vertex2.getID()) {
 			return 0;
 		}
@@ -229,12 +231,12 @@ public class CrossMinimizer implements ICrossMinimizer {
 
 		Set<ISugiyamaEdge> vertex1Edges = graph.edgesOf(vertex1);
 
-		for (Iterator<ISugiyamaEdge> iterator = vertex1Edges.iterator(); iterator.hasNext();) {
-			ISugiyamaEdge edge = iterator.next();
-			if (!layer2.contains(edge.getSource()) && !layer2.contains(edge.getTarget())) {
-				iterator.remove();
-			}
-		}
+		//filter out all edges not in layer
+		vertex1Edges = vertex1Edges
+				.stream()
+				.parallel()
+				.filter(edge -> layer.contains(edge.getSource()) || layer.contains(edge.getTarget()))
+				.collect(Collectors.toSet());
 
 		List<ISugiyamaVertex> sources = vertex1Edges.stream().map(sugiyamaEdge -> sugiyamaEdge.getSource()).collect(Collectors.toList());
 		List<ISugiyamaVertex> targets = vertex1Edges.stream().map(sugiyamaEdge -> sugiyamaEdge.getTarget()).collect(Collectors.toList());
@@ -246,12 +248,11 @@ public class CrossMinimizer implements ICrossMinimizer {
 
 		Set<ISugiyamaEdge> vertex2Edges = graph.edgesOf(vertex2);
 
-		for (Iterator<ISugiyamaEdge> iterator = vertex2Edges.iterator(); iterator.hasNext();) {
-			ISugiyamaEdge edge = iterator.next();
-			if (!layer2.contains(edge.getSource()) && !layer2.contains(edge.getTarget())) {
-				iterator.remove();
-			}
-		}
+		vertex2Edges = vertex2Edges
+				.stream()
+				.parallel()
+				.filter(edge -> layer.contains(edge.getSource()) || layer.contains(edge.getTarget()))
+				.collect(Collectors.toSet());
 
 		sources = vertex2Edges.stream().map(sugiyamaEdge -> sugiyamaEdge.getSource()).collect(Collectors.toList());
 		targets = vertex2Edges.stream().map(sugiyamaEdge -> sugiyamaEdge.getTarget()).collect(Collectors.toList());
@@ -266,7 +267,7 @@ public class CrossMinimizer implements ICrossMinimizer {
 		for (ISugiyamaVertex x1 : neighbors1) {
 			for (ISugiyamaVertex x2 : neighbors2) {
 				//System.out.println("   " + x1.getName() + " ? " + x2.getName());
-				if (layer2.indexOf(x1) > layer2.indexOf(x2)) {
+				if (layer.indexOf(x1) > layer.indexOf(x2)) {
 					//System.out.println("  hit");
 					result++;
 				}

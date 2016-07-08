@@ -7,10 +7,10 @@ import edu.kit.student.graphmodel.directed.DirectedEdge;
 import edu.kit.student.sugiyama.graph.ISugiyamaVertex;
 import edu.kit.student.sugiyama.graph.SugiyamaGraph;
 import edu.kit.student.sugiyama.steps.CrossMinimizer;
-
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Date;
 import java.util.Random;
 
 /**
@@ -95,9 +95,11 @@ public class CrossMinimizerTest {
     }
     @Test
     public void randomTests() {
-        for (int i = 10; i < 20; i++) {
-            SugiyamaGraph sugiyamaGraph = GraphUtil.generateSugiyamaGraph(i*2, 2, 8, true, (new Random()).nextLong());
+        for (int i = 20; i < 80; i++) {
+            SugiyamaGraph sugiyamaGraph = GraphUtil.generateSugiyamaGraph(i, 2, 8, true, (new Random()).nextLong());
+            long timeStart = (new Date()).getTime();
             minimizer.minimizeCrossings(sugiyamaGraph);
+            System.out.println("time for run with " + i + " random vertices: " + ((new Date()).getTime() - timeStart) + "ms");
         }
     }
 }
