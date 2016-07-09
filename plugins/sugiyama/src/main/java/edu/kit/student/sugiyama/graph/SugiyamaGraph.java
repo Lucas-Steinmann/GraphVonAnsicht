@@ -573,7 +573,7 @@ public class SugiyamaGraph
 			this.layer = layer;
 		}
 
-		public boolean isDummyVertex() {
+		public boolean isDummy() {
 			return true;
 		}
 
@@ -601,7 +601,7 @@ public class SugiyamaGraph
 			this.layer = layer;
 		}
 
-		public boolean isDummyVertex() {
+		public boolean isDummy() {
 			return false;
 		}
 
