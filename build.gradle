@@ -42,13 +42,6 @@ dependencies {
     compile project(":plugins:joana")
     compile project(":plugins:svg")
     compile project(":plugins:graphml")
-
-	testCompile project(':shared').sourceSets.test.output    
-	testCompile project(':app').sourceSets.test.output    
-	testCompile project(':plugins:sugiyama').sourceSets.test.output    
-	testCompile project(':plugins:joana').sourceSets.test.output    
-	testCompile project(':plugins:svg').sourceSets.test.output    
-	testCompile project(':plugins:graphml').sourceSets.test.output    
 }
 
 subprojects {
