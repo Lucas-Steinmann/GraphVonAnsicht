@@ -129,10 +129,15 @@ public class SugiyamaLayoutAlgorithm
 		SugiyamaGraph wrappedGraph = new SugiyamaGraph(graph);
 		assigner.addConstraints(relativeLayerConstraints);
 
+		System.out.println("removing edges");
 		remover.removeCycles(wrappedGraph);
+		System.out.println("assigning layers");
 		assigner.assignLayers(wrappedGraph);
+		System.out.println("minimizing crossings");
 		minimizer.minimizeCrossings(wrappedGraph);
+		System.out.println("positioning vertices");
 		positioner.positionVertices(wrappedGraph);
+		System.out.println("drawing edges");
 		drawer.drawEdges(wrappedGraph);
 	}
 }

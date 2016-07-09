@@ -105,9 +105,9 @@ public class CrossMinimizerTest {
         }
     }
 
-
+    @Test
     public void performanceTest() {
-        for (int i = 0; i < 100; i++) {
+        for (int i = 0; i < 20; i++) {
             SugiyamaGraph sugiyamaGraph = GraphUtil.generateSugiyamaGraph(75, 2, 8, true, (new Random()).nextLong());
             long timeStart = (new Date()).getTime();
             minimizer.minimizeCrossings(sugiyamaGraph);
@@ -117,9 +117,9 @@ public class CrossMinimizerTest {
     }
 
     public void hugeTest() {
-        SugiyamaGraph sugiyamaGraph = GraphUtil.generateSugiyamaGraph(250, 3, 9, true, (new Random()).nextLong());
+        SugiyamaGraph sugiyamaGraph = GraphUtil.generateSugiyamaGraph(250, 2, 6, true, (new Random()).nextLong());
         long timeStart = (new Date()).getTime();
         minimizer.minimizeCrossings(sugiyamaGraph);
-        System.out.println("time for run with " + 250 + " random vertices: " + ((new Date()).getTime() - timeStart) + "ms");
+        System.out.println("time for run with 1000 random vertices: " + ((new Date()).getTime() - timeStart) + "ms");
     }
 }

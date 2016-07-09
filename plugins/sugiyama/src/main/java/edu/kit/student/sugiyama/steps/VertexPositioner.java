@@ -37,8 +37,8 @@ public class VertexPositioner implements IVertexPositioner {
 					int counter = 0;
 
 					for (ISugiyamaVertex vertex: vertexMatrix.get(i).get(j) ) {
-						vertex.setY(i*40);
-						vertex.setX(j*60+counter*3);
+						vertex.setY(i*50);
+						vertex.setX(j*100+counter*3);
 						counter++;
 					}
 				}

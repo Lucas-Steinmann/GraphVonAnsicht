@@ -73,7 +73,9 @@ public interface ICrossMinimizerGraph extends LayeredGraph<ISugiyamaVertex, ISug
 	 * @param label label of the new supplement edge
 	 * @return a new supplement edge
 	 */
-	public SupplementEdge createSupplementEdge(String name, String label);
+	public SupplementEdge createSupplementEdge(String name, String label, ISugiyamaVertex source, ISugiyamaVertex target);
 
 	public Set<SugiyamaGraph.SupplementPath> getSupplementPaths();
+
+	public SugiyamaGraph.SupplementPath createSupplementPath(ISugiyamaEdge replacedEdge, List<ISugiyamaVertex> dummies);
 }

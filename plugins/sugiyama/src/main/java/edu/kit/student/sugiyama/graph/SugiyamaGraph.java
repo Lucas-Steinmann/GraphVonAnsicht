@@ -1,6 +1,7 @@
 package edu.kit.student.sugiyama.graph;
 
 import edu.kit.student.graphmodel.*;
+import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
 import edu.kit.student.graphmodel.directed.DirectedEdge;
 import edu.kit.student.graphmodel.directed.DirectedGraph;
 import edu.kit.student.plugin.LayoutOption;
@@ -15,7 +16,7 @@ import java.util.*;
  * All vertices are assigned to a layer.
  * The positions of the vertices can be viewed as a grid (with varying widths per layer).
  */
-public class SugiyamaGraph
+public class SugiyamaGraph extends DefaultDirectedGraph<ISugiyamaVertex, ISugiyamaEdge>
 		implements ICycleRemoverGraph,
 		ILayerAssignerGraph,
 		ICrossMinimizerGraph,
@@ -30,9 +31,6 @@ public class SugiyamaGraph
 	private Set<Edge<Vertex>> brokenCycleEdges;
 	private Set<Vertex> insertedVertices;
 	private Graph<? extends Vertex, ? extends Edge<? extends Vertex>> graph;
-	private FastGraphAccessor fga;
-	private Set<ISugiyamaVertex> vertexSet;
-	private Set<ISugiyamaEdge> edgeSet;
 	private Set<SupplementPath> supplementPaths;
 
 	/**
@@ -42,11 +40,9 @@ public class SugiyamaGraph
 	 *
 	 * @param graph the graph used as underlying representation.
 	 */
-	public SugiyamaGraph(DirectedGraph<? extends Vertex, ? extends DirectedEdge<? extends Vertex>> graph) {
-		this.vertexSet = new HashSet<ISugiyamaVertex>();
-		this.edgeSet = new HashSet<ISugiyamaEdge>();
+	public SugiyamaGraph(DirectedGraph<? extends Vertex, ? extends DirectedEdge<? extends Vertex>> graph)  {
+		super(graph.getName());
 		this.graph = graph;
-		this.fga = new FastGraphAccessor();
 		this.reversedEdges = new LinkedList<Edge<Vertex>>();
 		this.supplementPaths = new HashSet<>();
 		layers = new LinkedList<>();
@@ -57,7 +53,7 @@ public class SugiyamaGraph
 		for (Vertex vertex: graph.getVertexSet()) {
 			SugiyamaVertex SugiyamaVertex = new SugiyamaVertex(vertex, -1);
 			startingLayer.add(SugiyamaVertex);	//fills first layer with all vertices and default layer number
-			vertexSet.add(SugiyamaVertex);	//fills vertexset with all wrapped vertices
+			addVertex(SugiyamaVertex);	//fills vertexset with all wrapped vertices
 			tmpVertexMap.put(vertex.getID(), SugiyamaVertex);
 		}
 
@@ -67,12 +63,16 @@ public class SugiyamaGraph
 					tmpVertexMap.get(edge.getSource().getID()),
 					tmpVertexMap.get(edge.getTarget().getID())
 			);
-			edgeSet.add(SugiyamaEdge);	//fills edgeset with all wrapped edges
+			addEdge(SugiyamaEdge);	//fills edgeset with all wrapped edges
 		}
 
 		layers.add(startingLayer);
 		layerPositions = new LinkedList<>();
 		layerPositions.add(0);
+	}
+
+	public SugiyamaGraph(String name, Set vertices, Set edges) {
+		super(name, vertices, edges);
 	}
 
 	/**
@@ -103,7 +103,9 @@ public class SugiyamaGraph
 
 	@Override
 	public void reverseEdge(ISugiyamaEdge edge) {
+		removeEdge(edge);
 		edge.setReversed(!edge.isReversed());
+		addEdge(edge);
 	}
 
 	@Override
@@ -149,12 +151,23 @@ public class SugiyamaGraph
 	
 	@Override
 	public DummyVertex createDummy(String name, String label, int layer) {
-		return new DummyVertex(name, label, layer);
+		DummyVertex dummyVertex = new DummyVertex(name, label, layer);
+		this.addVertex(dummyVertex);
+		return dummyVertex;
 	}
 	
 	@Override
-	public SupplementEdge createSupplementEdge(String name, String label) {
-		return new SupplementEdge(name, label);
+	public SupplementEdge createSupplementEdge(String name, String label, ISugiyamaVertex source, ISugiyamaVertex target) {
+		SupplementEdge supplementEdge = new SupplementEdge(name, label, source, target);
+		this.addEdge(supplementEdge);
+		return supplementEdge;
+	}
+
+	public SupplementPath createSupplementPath(ISugiyamaEdge replacedEdge, List<ISugiyamaVertex> dummies) {
+		SupplementPath supplementPath = new SupplementPath(replacedEdge, dummies);
+		this.supplementPaths.add(supplementPath);
+		this.removeEdge(replacedEdge);
+		return supplementPath;
 	}
 
 	@Override
@@ -204,85 +217,9 @@ public class SugiyamaGraph
 	}
 
 	@Override
-	public FastGraphAccessor getFastGraphAccessor() {
-		return this.fga;
-	}
-
-	@Override
-	public Integer outdegreeOf(ISugiyamaVertex vertex) {
-		Integer outdegree = 0;
-
-		for (ISugiyamaEdge edge : this.edgeSet) {
-			if (edge.getSource().getID() == vertex.getID())
-				outdegree++;
-		}
-
-		return outdegree;
-	}
-
-
-	@Override
-	public Integer indegreeOf(ISugiyamaVertex vertex) {
-		Integer indegree = 0;
-
-		for (ISugiyamaEdge edge : this.edgeSet) {
-			if (edge.getTarget().getID() == vertex.getID())
-				indegree++;
-		}
-
-		return indegree;
-	}
-
-	@Override
-	public Set<ISugiyamaEdge> incomingEdgesOf(ISugiyamaVertex vertex) {
-		Set<ISugiyamaEdge> incoming = new HashSet<ISugiyamaEdge>();
-
-		for (ISugiyamaEdge edge : edgeSet) {
-			if (edge.getTarget() == vertex)
-				incoming.add(edge);
-		}
-
-		return incoming;
-	}
-
-	@Override
-	public Set<ISugiyamaEdge> outgoingEdgesOf(ISugiyamaVertex vertex) {
-		Set<ISugiyamaEdge> outgoing = new HashSet<ISugiyamaEdge>();
-
-		for (ISugiyamaEdge edge : edgeSet) {
-			if (edge.getSource() == vertex)
-				outgoing.add(edge);
-		}
-
-		return outgoing;
-	}
-
-	@Override
-	public Set<ISugiyamaEdge> edgesOf(ISugiyamaVertex vertex) {
-		Set<ISugiyamaEdge> result = this.incomingEdgesOf(vertex);
-		result.addAll(this.outgoingEdgesOf(vertex));
-		return result;
-	}
-
-	@Override
-	public Set<ISugiyamaVertex> getVertexSet() {
-		return this.vertexSet;
-	}
-
-	@Override
-	public Set<ISugiyamaEdge> getEdgeSet() {
-		return this.edgeSet;
-	}
-
-	@Override
-	public void addToFastGraphAccessor(FastGraphAccessor fga) {
-		this.addToFastGraphAccessor(fga);
-	}
-
-	@Override
 	public Set<ISugiyamaEdge> getReversedEdges() {
 		Set<ISugiyamaEdge> result = new HashSet<ISugiyamaEdge>();
-		for(ISugiyamaEdge edge : this.edgeSet){
+		for(ISugiyamaEdge edge : this.getEdgeSet()){
 			if(isReversed(edge)){
 				result.add(edge);
 			}
@@ -413,7 +350,7 @@ public class SugiyamaGraph
 	@Override
 	public String toString(){
 		String out = "Vertices: {";
-		for(ISugiyamaVertex v : this.vertexSet){
+		for(ISugiyamaVertex v : this.getVertexSet()){
 			out+= v.getName() + ", ";
 		}
 		out = out.substring(0, out.length()-2);
@@ -421,7 +358,7 @@ public class SugiyamaGraph
 		out+= '\n';
 		out+= "Edges:{";
 		out+= '\n';
-		for(ISugiyamaEdge e : this.edgeSet){
+		for(ISugiyamaEdge e : this.getEdgeSet()){
 			out+= e.getName() + "[" + e.getSource().getName() +"->"+ e.getTarget().getName()+"] ";
 			if(this.isReversed(e)){
 				out+="reversed";

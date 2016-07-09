@@ -10,6 +10,11 @@ import edu.kit.student.sugiyama.graph.SugiyamaGraph;
 import edu.kit.student.sugiyama.steps.CycleRemover;
 import org.junit.Test;
 
+import java.util.HashSet;
+import java.util.Random;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import static org.junit.Assert.assertTrue;
 
 
@@ -72,7 +77,7 @@ public class CycleRemoverTest {
 		DDGraph.addEdge(e4);
 		DDGraph.addEdge(e5);
 		SugiyamaGraph SGraph = new SugiyamaGraph(DDGraph);
-		
+
 		CycleRemover cr = new CycleRemover();
 		cr.removeCycles(SGraph);
 		
@@ -93,7 +98,6 @@ public class CycleRemoverTest {
 	@Test
 	public void SingleRandomTest(){
 		SugiyamaGraph testGraph = GraphUtil.generateSugiyamaGraph(10, 0.2f, true, false);
-
 		CycleRemover cr = new CycleRemover();
 //		System.out.println(testGraph.toString());
 		cr.removeCycles(testGraph);
@@ -108,31 +112,52 @@ public class CycleRemoverTest {
 	 * @return the set of vertices after finishing the algorithm. If it is empty, the input graph contained no cycle(s)
 	 */
 	private boolean isAcyclic(DirectedGraph graph){
-		Vertex temp = getSink(graph);
-		
-		while(temp!=null){
-			graph.getVertexSet().remove(temp);
-			graph.getEdgeSet().removeAll(graph.incomingEdgesOf(temp));
-			temp = getSink(graph);
+		if (graph.getVertexSet().size() <= 1) {
+			return true;
 		}
 
-		return graph.getVertexSet().isEmpty();
-	}
-	
-	/**
-	 * returns a vertex that has no outgoing vertices, null otherwise.
-	 * 
-	 * @param graph input graph
-	 * @return a sugiyama vertex with out degree 0, null otherwise
-	 */
-	private Vertex getSink(DirectedGraph graph){
-		for(Object v : graph.getVertexSet()){
-			Vertex vertex = (Vertex) v;
+		Set<DirectedEdge> edges = new HashSet<>();
+		Set<Vertex> vertices = (Set<Vertex>) graph.getVertexSet().stream().filter(vertex -> graph.incomingEdgesOf((Vertex) vertex).size() == 0).collect(Collectors.toSet());
 
-			if(graph.outdegreeOf(vertex)==0){
-				return vertex;
+		while (vertices.size() > 0) {
+			Vertex vertex = getRandom(vertices);
+			vertices.remove(vertex);
+
+			Set<DirectedEdge> newEdges = getCorrectedOutcomingEdges(vertex, edges, graph);
+
+			for (DirectedEdge edge : newEdges) {
+				edges.add(edge);
+
+				if (getCorrectedIncomingEdges(edge.getTarget(), edges, graph).size() == 0) {
+					vertices.add(edge.getTarget());
+				}
 			}
 		}
+
+		return graph.getEdgeSet().size() == edges.size();
+	}
+
+	private Set<DirectedEdge> getCorrectedOutcomingEdges(Vertex vertex, Set<DirectedEdge> graphEdges, DirectedGraph<Vertex, DirectedEdge<Vertex>> graph) {
+		return graph.outgoingEdgesOf(vertex).stream().filter(edge -> !graphEdges.contains(edge)).collect(Collectors.toSet());
+	}
+
+	private Set<DirectedEdge> getCorrectedIncomingEdges(Vertex vertex, Set<DirectedEdge> graphEdges, DirectedGraph<Vertex, DirectedEdge<Vertex>> graph) {
+		return graph.incomingEdgesOf(vertex).stream().filter(edge -> !graphEdges.contains(edge)).collect(Collectors.toSet());
+	}
+
+	private Vertex getRandom(Set<Vertex> vertices) {
+		int size = vertices.size();
+		int item = new Random().nextInt(size); // In real life, the Random object should be rather more shared than this
+		int i = 0;
+
+		for(Vertex obj : vertices)
+		{
+			if (i == item) {
+				return obj;
+			}
+			i = i + 1;
+		}
+
 		return null;
 	}
 }

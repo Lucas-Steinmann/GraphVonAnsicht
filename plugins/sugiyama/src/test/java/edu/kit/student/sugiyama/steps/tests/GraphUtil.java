@@ -75,7 +75,7 @@ public class GraphUtil {
         Random random = new Random(seed);
 
         while (currentLayerStart < vertexCount) {
-            int layerSize = Math.min(random.nextInt(vertexCount / 3) + 1, vertexCount - currentLayerStart);
+            int layerSize = Math.min(random.nextInt((int) Math.sqrt(vertexCount) + 1) + 1, vertexCount - currentLayerStart);
             layerSizes.add(layerSize);
             currentLayerStart += layerSize;
         }
@@ -143,7 +143,7 @@ public class GraphUtil {
         Random random = new Random(seed);
 
         while (currentLayerStart < vertexCount) {
-            int layerSize = Math.min(random.nextInt(vertexCount / 3) + 1, vertexCount - currentLayerStart);
+            int layerSize = Math.min(random.nextInt((int) Math.sqrt(vertexCount) + 1) + 1, vertexCount - currentLayerStart);
             layerSizes.add(layerSize);
             currentLayerStart += layerSize;
         }

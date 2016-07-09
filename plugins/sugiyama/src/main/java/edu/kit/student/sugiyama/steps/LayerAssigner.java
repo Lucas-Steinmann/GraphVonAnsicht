@@ -2,10 +2,10 @@ package edu.kit.student.sugiyama.steps;
 
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
 import edu.kit.student.sugiyama.RelativeLayerConstraint;
-import edu.kit.student.sugiyama.graph.ICycleRemoverGraph;
 import edu.kit.student.sugiyama.graph.ILayerAssignerGraph;
 import edu.kit.student.sugiyama.graph.ISugiyamaEdge;
 import edu.kit.student.sugiyama.graph.ISugiyamaVertex;
+
 import java.util.HashSet;
 import java.util.Set;
 
@@ -80,7 +80,7 @@ public class LayerAssigner implements ILayerAssigner {
 	) {
 		Set<ISugiyamaEdge> incomingEdges = graph.incomingEdgesOf(vertex);
 		Set<ISugiyamaEdge> tempEdges = new HashSet<ISugiyamaEdge>(); //necessary in order don't to get a
-		tempEdges.addAll(incomingEdges);							//concurrentModificationException 
+		tempEdges.addAll(incomingEdges);							//concurrentModificationException
 		
 
 		for (ISugiyamaEdge edge : tempEdges) {

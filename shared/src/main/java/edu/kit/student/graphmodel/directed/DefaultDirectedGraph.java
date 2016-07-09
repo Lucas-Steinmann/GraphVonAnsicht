@@ -80,7 +80,7 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
         }
     }
 
-    @Override
+	@Override
 	public String getName() {
 		return name.getValue();
 	}
@@ -168,12 +168,26 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
 
 	@Override
 	public Set<E> outgoingEdgesOf(V vertex) {
-		return vertexToEdge.get(vertex);
+		Set<E> result = new HashSet<>();
+		Set<E> original = vertexToEdge.get(vertex);
+
+		if (original != null) {
+			result.addAll(original);
+		}
+
+		return result;
 	}
 
 	@Override
 	public Set<E> incomingEdgesOf(V vertex) {
-		return revVertexToEdge.get(vertex);
+		Set<E> result = new HashSet<>();
+		Set<E> original = revVertexToEdge.get(vertex);
+
+		if (original != null) {
+			result.addAll(original);
+		}
+
+		return result;
 	}
 
 	@Override
@@ -278,7 +292,7 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
 		return false;
 	}
 	
-    private void removeEdge(E edge) {
+    protected void removeEdge(E edge) {
         for (Set<E> outgoingEdges : vertexToEdge.values()) {
             outgoingEdges.remove(edge);
         }
@@ -288,7 +302,7 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
 
     }
 
-    private void removeVertex(V vertex) {
+    protected void removeVertex(V vertex) {
         assert (this.outdegreeOf(vertex) == 0);
         assert (this.indegreeOf(vertex) == 0);
         vertexToEdge.remove(vertex);

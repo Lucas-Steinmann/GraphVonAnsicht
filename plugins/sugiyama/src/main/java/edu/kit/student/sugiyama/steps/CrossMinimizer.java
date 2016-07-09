@@ -115,23 +115,15 @@ public class CrossMinimizer implements ICrossMinimizer {
 					if(l==lowerLayer+1){
 						nv = graph.createDummy("d"+c+"("+source.getName()+"->"+target.getName()+")", "", lowerLayer + 1);	//first dummy vertex created
 						dummy = nv;
-						ne = graph.createSupplementEdge(edge.getName()+"("+c+")", "");	//first dummy edge created
-						ne.setVertices(source, nv);	//set source and target of first dummy edge
-						vertices.add(nv);	//add new vertex to vertex set
-						newEdges.add(ne);	//add new edge to edge set
+						ne = graph.createSupplementEdge(edge.getName()+"("+c+")", "", source, nv);	//first dummy edge created
 						((SugiyamaGraph) graph).assignToLayer(nv, l);
 					}else if(l==upperLayer){
-						ne = graph.createSupplementEdge(edge.getName() + "(e" + c + ")", "");
-						newEdges.add(ne);
-						ne.setVertices(nv, target);	// ! important that nv is always the last created ISugiyamaVertex
+						ne = graph.createSupplementEdge(edge.getName() + "(e" + c + ")", "", nv, target);
 					}else{
 						ISugiyamaVertex temp = nv;	//temporary ISugiyamaVertex so that the new created vertex is always the one with the variable nv
 						nv = graph.createDummy("d"+c+"("+source.getName()+"->"+target.getName()+")", "", c);
 						dummy = nv;
-						ne = graph.createSupplementEdge(edge.getName()+"("+c+")", "");
-						ne.setVertices(temp, nv);
-						vertices.add(nv);
-						newEdges.add(ne);
+						ne = graph.createSupplementEdge(edge.getName()+"("+c+")", "", temp, nv);
 						((SugiyamaGraph) graph).assignToLayer(nv, l);
 					}
 
@@ -140,11 +132,10 @@ public class CrossMinimizer implements ICrossMinimizer {
 					}
 				}
 
-				SugiyamaGraph.SupplementPath supplementPath = new SugiyamaGraph.SupplementPath(edge, dummies);
-				graph.getSupplementPaths().add(supplementPath);
+				graph.createSupplementPath(edge, dummies);
 			}
 		}
-		edges.addAll(newEdges);	//add all new generated supplement edges to the old edge list
+
 		edges.removeAll(replacedEdges);	//remove all replaced edges from the original edge set
 		System.out.println("Vertices after: "+graph.getVertexSet().size()+", Edges after: "+graph.getEdgeSet().size());
 	}
