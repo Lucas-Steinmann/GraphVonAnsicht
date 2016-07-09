@@ -64,7 +64,7 @@ public class DefaultDirectedGraph
      * @param edges
      *            of the new graph
      */
-    public DefaultDirectedGraph(String name, Set<Vertex> vertices, Set<DirectedEdge> edges) {
+    public DefaultDirectedGraph(String name, Set<? extends Vertex> vertices, Set<? extends DirectedEdge> edges) {
         this.name = new GAnsProperty<String>("graphName", name);
         this.id = IdGenerator.getInstance().createId();
         this.fga = new FastGraphAccessor();
@@ -77,7 +77,7 @@ public class DefaultDirectedGraph
             this.revVertexToEdge.put(vertex, new HashSet<>());
         }
         for (DirectedEdge edge : edges) {
-            this.addAllEdges(edges);
+            this.addEdge(edge);
         }
     }
 

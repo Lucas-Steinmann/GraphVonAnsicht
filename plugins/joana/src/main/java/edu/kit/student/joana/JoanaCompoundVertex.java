@@ -5,7 +5,7 @@ import edu.kit.student.graphmodel.Graph;
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.joana.methodgraph.MethodGraph;
 
-public class JoanaCompoundVertex extends JoanaVertex implements CompoundVertex<JoanaVertex, JoanaEdge<JoanaVertex>>{
+public class JoanaCompoundVertex extends JoanaVertex implements CompoundVertex {
 	
 	private MethodGraph graph;
 
@@ -15,7 +15,7 @@ public class JoanaCompoundVertex extends JoanaVertex implements CompoundVertex<J
 	}
 
 	@Override
-	public Graph<? extends JoanaVertex, ? extends JoanaEdge<JoanaVertex>> getGraph() {
+	public MethodGraph getGraph() {
 		return this.graph;
 	}
 

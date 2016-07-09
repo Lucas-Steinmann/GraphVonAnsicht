@@ -1,7 +1,9 @@
 package edu.kit.student.joana;
 
 import edu.kit.student.graphmodel.LayeredGraph;
+import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
+import edu.kit.student.graphmodel.directed.DirectedEdge;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -11,21 +13,21 @@ import java.util.Set;
 /**
  * An abstract superclass for all JOANA specific graphs.
  */
-public abstract class JoanaGraph<V extends JoanaVertex, E extends JoanaEdge<V>>
-    extends DefaultDirectedGraph<V, E>
-    implements LayeredGraph<V, E> {
+public abstract class JoanaGraph
+    extends DefaultDirectedGraph
+    implements LayeredGraph {
 
     // TODO: Ist eine statische maximalbreite hier richtig?
     private static int maxWidth = 600;
-    private List<List<V>> layers;
+    private List<List<JoanaVertex>> layers;
     
     public JoanaGraph(String name) {
         this(name, new HashSet<>(), new HashSet<>());
     }
 
-    public JoanaGraph(String name, Set<V> vertices, Set<E> edges) {
+    public JoanaGraph(String name, Set<JoanaVertex> vertices, Set<JoanaEdge> edges) {
         super(name, vertices, edges);
-        layers = new ArrayList<List<V>>();
+        layers = new ArrayList<List<JoanaVertex>>();
     }
 
     @Override
@@ -47,13 +49,25 @@ public abstract class JoanaGraph<V extends JoanaVertex, E extends JoanaEdge<V>>
     }
 
     @Override
-    public List<V> getLayer(int layerNum) {
+    public List<JoanaVertex> getLayer(int layerNum) {
         return layers.get(layerNum);
     }
 
     @Override
-    public List<List<V>> getLayers() {
+    public List<List<JoanaVertex>> getLayers() {
         return layers;
+    }
+
+    @Override
+    public Set<? extends JoanaVertex> getVertexSet() {
+        // TODO Auto-generated method stub
+        return super.getVertexSet();
+    }
+
+    @Override
+    public Set<? extends JoanaEdge> getEdgeSet() {
+        // TODO Auto-generated method stub
+        return super.getEdgeSet();
     }
 
     @Override

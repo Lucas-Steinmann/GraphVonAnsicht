@@ -17,14 +17,14 @@ import java.util.Set;
 /**
  * This is a specific graph representation for a MethodGraph in JOANA .
  */
-public class MethodGraph extends JoanaGraph<JoanaVertex, JoanaEdge<JoanaVertex>> {
+public class MethodGraph extends JoanaGraph {
 
     private static final String ENTRY_NAME = "Entry";
     private static LayoutRegister<MethodGraphLayoutOption> register;
     private JoanaVertex entry;
     private HashSet<FieldAccess> fieldAccesses;
 
-    public MethodGraph(Set<JoanaVertex> vertices, Set<JoanaEdge<JoanaVertex>> edges, 
+    public MethodGraph(Set<JoanaVertex> vertices, Set<JoanaEdge> edges, 
             Set<FieldAccess> fieldAccesses, String methodName) {
         super(methodName, vertices, edges);
         for(JoanaVertex vertex : vertices) {
@@ -84,8 +84,8 @@ public class MethodGraph extends JoanaGraph<JoanaVertex, JoanaEdge<JoanaVertex>>
     }
 
     @Override
-    public List<LayeredGraph<JoanaVertex, JoanaEdge<JoanaVertex>>> getSubgraphs() {
-        List<LayeredGraph<JoanaVertex, JoanaEdge<JoanaVertex>>> faGraphs = new LinkedList<>();
+    public List<LayeredGraph getSubgraphs() {
+        List<LayeredGraph faGraphs = new LinkedList<>();
         this.getFieldAccesses().forEach((fa) -> faGraphs.add(fa.getGraph()));
         return faGraphs;
     }
