@@ -18,6 +18,7 @@ public class EdgeDrawer implements IEdgeDrawer {
 
 	@Override
 	public void drawEdges(IEdgeDrawerGraph graph) {
+		graph.restoreReplacedEdges();
 		restoreReversedEdges(graph);
 	}
 	

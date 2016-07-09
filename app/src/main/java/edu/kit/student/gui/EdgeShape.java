@@ -11,6 +11,7 @@ import javafx.scene.text.Text;
 import javafx.util.Pair;
 
 import java.util.HashSet;
+import java.util.Random;
 import java.util.Set;
 
 /**
@@ -53,6 +54,9 @@ public class EdgeShape extends GAnsGraphElement {
 			endY = point.y;
 			
 			Line line = new Line(startX, startY, endX, endY);
+			getChildren().add(line);
+			line.setManaged(false);
+			line.relocate(Math.min(startX, endX), Math.min(startY, endY));
 			lines.add(line);
 			
 			startX = endX;
@@ -63,13 +67,16 @@ public class EdgeShape extends GAnsGraphElement {
 		this.endX = vertex.getX();
 		this.endY = vertex.getY();
 		Line line = new Line(startX, startY, this.endX, this.endY);
-		relocate(Math.min(startX, this.endX), Math.min(startY, this.endY));
+		line.setManaged(false);
+		//relocate(Math.min(startX, this.endX), Math.min(startY, this.endY));
 		lines.add(line);
+		getChildren().add(line);
 		
 		setText(edge.getLabel());
 		
-		getChildren().addAll(this.lines);
+		//getChildren().addAll(this.lines);
 		getChildren().add(this.text);
+		setColor(null);
 	}
 	
 	public EdgeShape(DirectedEdge<?> edge) {
@@ -89,8 +96,11 @@ public class EdgeShape extends GAnsGraphElement {
 
 	@Override
 	public void setColor(Color color) {
+		Random random = new Random();
+		color = Color.rgb(random.nextInt(255), random.nextInt(255), random.nextInt(255));
 		for(Line line: this.lines) {
 			line.setFill(color);
+			line.setStroke(color);
 		}
 	}
 }

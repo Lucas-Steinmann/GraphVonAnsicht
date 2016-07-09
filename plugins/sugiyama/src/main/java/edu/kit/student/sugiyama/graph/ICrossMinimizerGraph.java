@@ -1,10 +1,11 @@
 package edu.kit.student.sugiyama.graph;
 
-import java.util.List;
-
 import edu.kit.student.graphmodel.LayeredGraph;
 import edu.kit.student.sugiyama.graph.SugiyamaGraph.DummyVertex;
 import edu.kit.student.sugiyama.graph.SugiyamaGraph.SupplementEdge;
+
+import java.util.List;
+import java.util.Set;
 
 /**
  * A LayeredGraph which additionally defines functions that can be used to minimize the crossings in the sugiyama-layout.
@@ -73,4 +74,6 @@ public interface ICrossMinimizerGraph extends LayeredGraph<ISugiyamaVertex, ISug
 	 * @return a new supplement edge
 	 */
 	public SupplementEdge createSupplementEdge(String name, String label);
+
+	public Set<SugiyamaGraph.SupplementPath> getSupplementPaths();
 }

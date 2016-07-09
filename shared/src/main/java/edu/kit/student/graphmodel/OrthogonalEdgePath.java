@@ -1,21 +1,26 @@
 package edu.kit.student.graphmodel;
 
-import java.util.List;
-
 import edu.kit.student.util.Point;
+
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * An orthogonal edge path used as standard graphical edge representation.
  */
 public class OrthogonalEdgePath extends EdgePath {
+	private List<Point> nodes;
+
+	public OrthogonalEdgePath() {
+		nodes = new LinkedList<>();
+	}
 
 	/* (non-Javadoc)
-	 * @see graphmodel.EdgePath#getSegments()
-	 */
+         * @see graphmodel.EdgePath#getSegments()
+         */
 	@Override
 	public int getSegmentsCount() {
-		// TODO Auto-generated method stub
-		return 0;
+		return nodes.size();
 	}
 
 	/* (non-Javadoc)
@@ -23,8 +28,7 @@ public class OrthogonalEdgePath extends EdgePath {
 	 */
 	@Override
 	public List<Point> getNodes() {
-		// TODO Auto-generated method stub
-		return null;
+		return this.nodes;
 	}
 
 }

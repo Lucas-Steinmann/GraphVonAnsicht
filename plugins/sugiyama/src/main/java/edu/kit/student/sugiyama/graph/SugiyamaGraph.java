@@ -1,7 +1,6 @@
 package edu.kit.student.sugiyama.graph;
 
 import edu.kit.student.graphmodel.*;
-import edu.kit.student.graphmodel.directed.DefaultDirectedEdge;
 import edu.kit.student.graphmodel.directed.DirectedEdge;
 import edu.kit.student.graphmodel.directed.DirectedGraph;
 import edu.kit.student.plugin.LayoutOption;
@@ -34,6 +33,7 @@ public class SugiyamaGraph
 	private FastGraphAccessor fga;
 	private Set<ISugiyamaVertex> vertexSet;
 	private Set<ISugiyamaEdge> edgeSet;
+	private Set<SupplementPath> supplementPaths;
 
 	/**
 	 * Constructs a new SugiyamaGraph and sets the Graph which is the underlying representation.
@@ -48,6 +48,7 @@ public class SugiyamaGraph
 		this.graph = graph;
 		this.fga = new FastGraphAccessor();
 		this.reversedEdges = new LinkedList<Edge<Vertex>>();
+		this.supplementPaths = new HashSet<>();
 		layers = new LinkedList<>();
 		List<ISugiyamaVertex> startingLayer = new LinkedList<>();
 
@@ -86,6 +87,10 @@ public class SugiyamaGraph
 		//TODO implement
 	}
 
+	public Set<SupplementPath> getSupplementPaths() {
+		return supplementPaths;
+	}
+
 	@Override
 	public int getLayerCount() {
 		return this.layers.size();
@@ -98,8 +103,7 @@ public class SugiyamaGraph
 
 	@Override
 	public void reverseEdge(ISugiyamaEdge edge) {
-		edge.setReversed(true);
-		edge.setVertices(edge.getTarget(), edge.getSource());
+		edge.setReversed(!edge.isReversed());
 	}
 
 	@Override
@@ -336,7 +340,18 @@ public class SugiyamaGraph
 
 	@Override
 	public Set<ISugiyamaEdge> restoreReplacedEdges() {
-		// TODO Auto-generated method stub
+		for (SupplementPath supplementPath : this.supplementPaths) {
+			ISugiyamaEdge edge = supplementPath.replacedEdge;
+			List<Point> path = edge.getPath().getNodes();
+
+			for (ISugiyamaVertex dummy : supplementPath.getDummyVertices()) {
+				path.add(new Point(dummy.getX(), dummy.getY()));
+			}
+
+			if (edge.isReversed()) {
+				Collections.reverse(path);
+			}
+		}
 		return null;
 	}
 
@@ -422,34 +437,38 @@ public class SugiyamaGraph
 	 * A supplement path for connecting vertices, which are more than one layer apart.
 	 * They are stored in the ISugiyamaEdge along with the substituted edge.
 	 */
-	public static class SupplementPath extends DefaultDirectedEdge<DummyVertex> {
-		public SupplementPath(String name, String label) {
-			super(name, label);
+	public static class SupplementPath {
+		private final ISugiyamaEdge replacedEdge;
+		private final List<ISugiyamaVertex> dummies;
+
+		public SupplementPath(ISugiyamaEdge replacedEdge, List<ISugiyamaVertex> dummies) {
+			this.replacedEdge = replacedEdge;
+			this.dummies = dummies;
 		}
 
 		/**
 		 * Returns the number of vertices including source and target.
 		 * @return the length of the path
 		 */
-		public int getLength() {return 0;}
+		public int getLength() {
+			return dummies.size();
+		}
 
 		/**
 		 * Returns the list of vertices on the path sorted from source to target excluding the source and target.
 		 * @return the list of vertices
 		 */
-		public List<DummyVertex> getDummyVertices() {return null;}
-
-		/**
-		 * Returns the list of edges on the path from source to target
-		 * @return the edges
-		 */
-		public List<SupplementEdge> getEdges() {return null;}
+		public List<ISugiyamaVertex> getDummyVertices() {
+			return this.dummies;
+		}
 
 		/**
 		 * Returns the edge which is substituted by this path
 		 * @return the replaced edge
 		 */
-		//public E getReplacedEdge() {return null;}
+		public ISugiyamaEdge getReplacedEdge() {
+			return this.replacedEdge;
+		}
 	}
 	/**
 	 * A supplement edge which is part of a {@link SupplementPath}.
@@ -682,6 +701,12 @@ public class SugiyamaGraph
 		 * 		sets, if this edge is reversed or not
 		 */
 		public void setReversed(boolean reversed) {
+			if (reversed != this.isReversed) {
+				ISugiyamaVertex tmp = source;
+				source = target;
+				target = tmp;
+			}
+
 			this.isReversed = reversed;
 		}
 

@@ -1,10 +1,10 @@
 package edu.kit.student.sugiyama.graph;
 
-import java.util.List;
-import java.util.Set;
-
 import edu.kit.student.graphmodel.LayeredGraph;
 import edu.kit.student.util.Point;
+
+import java.util.List;
+import java.util.Set;
 
 /**
  * A LayeredGraph which additionally defines functions draw the edges in the sugiyama-layout.
