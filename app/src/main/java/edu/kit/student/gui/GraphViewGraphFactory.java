@@ -19,9 +19,9 @@ import javafx.util.Pair;
  */
 public class GraphViewGraphFactory {
 
-	private Graph<Vertex,Edge<Vertex>> graph;
+	private Graph graph;
 	private Map<VertexShape, Vertex> vertices;
-	private Map<EdgeShape, Edge<Vertex>> edges;
+	private Map<EdgeShape, Edge> edges;
 
 	/**
 	 * Constructor. Sets the graph and generates the vertices and edges for
@@ -30,16 +30,16 @@ public class GraphViewGraphFactory {
 	 * @param graph
 	 *            The graph data that will be shown.
 	 */
-	public GraphViewGraphFactory(Graph<Vertex,Edge<Vertex>> graph) {
+	public GraphViewGraphFactory(Graph graph) {
 		vertices = new HashMap<VertexShape, Vertex>();
-		edges = new HashMap<EdgeShape, Edge<Vertex>>();
+		edges = new HashMap<EdgeShape, Edge>();
 		this.graph = graph;
 		
 		createVertices();
 		createEdges();
 	}
 	
-	public Graph<Vertex,Edge<Vertex>> getGraph() {
+	public Graph getGraph() {
 		return this.graph;
 	}
 
@@ -80,7 +80,7 @@ public class GraphViewGraphFactory {
 	 *            The shape that represents the edge.
 	 * @return The Edge being represented by the passed shape.
 	 */
-	public Edge<?> getEdgeFromShape(GAnsGraphElement shape) {
+	public Edge getEdgeFromShape(GAnsGraphElement shape) {
 		return edges.get(shape);
 	}
 	
@@ -98,7 +98,7 @@ public class GraphViewGraphFactory {
 	}
 	
 	private void createVertices() {
-		Set<Vertex> set = graph.getVertexSet();
+		Set<? extends Vertex> set = graph.getVertexSet();
 		for(Vertex vertex : set) {
 			VertexShape shape = new VertexShape(vertex);
 			vertices.put(shape, vertex);
@@ -106,8 +106,8 @@ public class GraphViewGraphFactory {
 	}
 	
 	private void createEdges() {
-		Set<Edge<Vertex>> set = graph.getEdgeSet();
-		for(Edge<Vertex> edge : set) {
+		Set<? extends Edge> set = graph.getEdgeSet();
+		for(Edge edge : set) {
 			EdgeShape shape = new EdgeShape(edge);
 			edges.put(shape, edge);
 		}

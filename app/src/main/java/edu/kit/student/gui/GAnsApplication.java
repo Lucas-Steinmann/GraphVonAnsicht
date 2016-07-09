@@ -10,10 +10,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
-import edu.kit.student.graphmodel.Edge;
 import edu.kit.student.graphmodel.Graph;
 import edu.kit.student.graphmodel.GraphModel;
-import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.objectproperty.GAnsProperty;
 import edu.kit.student.parameter.Settings;
 import edu.kit.student.plugin.Exporter;
@@ -110,7 +108,7 @@ public class GAnsApplication extends Application {
 			public void handle(MouseEvent mouseEvent) {
 				if (mouseEvent.getClickCount() == 2) {
 					int id = structureView.getIdOfSelectedItem();
-					Graph<? extends Vertex, ? extends Edge<? extends Vertex>> graph = getGraphFromId(model.getRootGraphs(), id);
+					Graph graph = getGraphFromId(model.getRootGraphs(), id);
 					if(graph != null) {
 						boolean found = false;
 						for(Tab tab : graphViewTabPane.getTabs()) {
@@ -381,13 +379,14 @@ public class GAnsApplication extends Application {
 		return true;
 	}
 	
-	private Graph<? extends Vertex, ? extends Edge<? extends Vertex>> getGraphFromId(List<Graph<? extends Vertex, ? extends Edge<? extends Vertex>>> graphs, Integer id) {
-		for(Graph<? extends Vertex, ? extends Edge<? extends Vertex>> graph : graphs) {
+	//TODO; Move to GraphModel
+	private Graph getGraphFromId(List<? extends Graph> graphs, Integer id) {
+		for(Graph graph : graphs) {
 			if(graph.getID().compareTo(id) == 0) {
 				return graph;
 			}
 			
-			Graph<? extends Vertex, ? extends Edge<? extends Vertex>> tmp = getGraphFromId(graph.getChildGraphs(), id);
+			Graph tmp = getGraphFromId(graph.getChildGraphs(), id);
 			if(tmp != null) {
 				return tmp;
 			}

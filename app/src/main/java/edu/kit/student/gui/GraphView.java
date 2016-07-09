@@ -105,7 +105,7 @@ public class GraphView extends Pane {
 	 * @param graph
 	 *            The graph to be visualized in the view.
 	 */
-	public void setGraph(Graph<Vertex, Edge<Vertex>> graph) {
+	public void setGraph(Graph graph) {
 		graphFactory = new GraphViewGraphFactory(graph);
 
 		getChildren().addAll(graphFactory.getGraphicalElements());

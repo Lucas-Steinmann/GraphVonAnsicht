@@ -33,7 +33,7 @@ public class EdgeShape extends GAnsGraphElement {
 	 * Constructs a EdgeShape with the information supplied by edge. The path of the EdgeShape is set by the EdgePath of edge.
 	 * @param edge The Edge that supplies the information for building an EdgeShape.
 	 */
-	public EdgeShape(Edge<?> edge) {
+	public EdgeShape(Edge edge) {
 		//TODO: Woher wei� man welche vertex die am n�hsten an dem ersten punkt des pfads ist?! (Damit auch von wo aus dem knoten die kante gehen soll!)
 		this.lines = new HashSet<>();
 		this.text = new Text();
@@ -79,7 +79,7 @@ public class EdgeShape extends GAnsGraphElement {
 		setColor(null);
 	}
 	
-	public EdgeShape(DirectedEdge<?> edge) {
+	public EdgeShape(DirectedEdge edge) {
 		// TODO: anderen konstruktor aufrufen und zeichnen des pfeilkopfes.
 	}
 
