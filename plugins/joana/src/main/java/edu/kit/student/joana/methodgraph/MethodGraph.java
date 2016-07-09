@@ -1,6 +1,13 @@
 package edu.kit.student.joana.methodgraph;
 
+import edu.kit.student.graphmodel.DefaultGraphLayering;
+import edu.kit.student.graphmodel.FastGraphAccessor;
+import edu.kit.student.graphmodel.GraphLayering;
 import edu.kit.student.graphmodel.LayeredGraph;
+import edu.kit.student.graphmodel.SerializedGraph;
+import edu.kit.student.graphmodel.Vertex;
+import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
+import edu.kit.student.graphmodel.directed.DirectedEdge;
 import edu.kit.student.joana.FieldAccess;
 import edu.kit.student.joana.JoanaEdge;
 import edu.kit.student.joana.JoanaGraph;
@@ -22,14 +29,23 @@ public class MethodGraph extends JoanaGraph {
     private static final String ENTRY_NAME = "Entry";
     private static LayoutRegister<MethodGraphLayoutOption> register;
     private JoanaVertex entry;
-    private HashSet<FieldAccess> fieldAccesses;
+    private Set<FieldAccess> fieldAccesses;
+    DefaultDirectedGraph<JoanaVertex, JoanaEdge> graph;
+    DefaultGraphLayering<JoanaVertex> layering;
 
     public MethodGraph(Set<JoanaVertex> vertices, Set<JoanaEdge> edges, 
             Set<FieldAccess> fieldAccesses, String methodName) {
-        super(methodName, vertices, edges);
+        super(methodName);
         for(JoanaVertex vertex : vertices) {
-        	if(vertex.getNodeKind() == Kind.ENTR) this.entry = vertex;
+        	if(vertex.getNodeKind() == Kind.ENTR) {
+        	    this.entry = vertex;
+        	    break;
+            }
         }
+        if (entry == null) {
+            throw new IllegalArgumentException("Cannot create MethodGraph without entry vertex!");
+        }
+        //TODO: Search for method calls, field accesses, etc.
         this.fieldAccesses = new HashSet<>(fieldAccesses);
     }
     
@@ -83,12 +99,12 @@ public class MethodGraph extends JoanaGraph {
         MethodGraph.register = register;
     }
 
-    @Override
-    public List<LayeredGraph getSubgraphs() {
-        List<LayeredGraph faGraphs = new LinkedList<>();
-        this.getFieldAccesses().forEach((fa) -> faGraphs.add(fa.getGraph()));
-        return faGraphs;
-    }
+//    @Override
+//    public List<LayeredGraph> getSubgraphs() {
+//        List<LayeredGraph faGraphs = new LinkedList<>();
+//        this.getFieldAccesses().forEach((fa) -> faGraphs.add(fa.getGraph()));
+//        return faGraphs;
+//    }
 
     @Override
     public List<LayoutOption> getRegisteredLayouts() {
@@ -100,7 +116,7 @@ public class MethodGraph extends JoanaGraph {
             option.setGraph(this);
         }
         List<LayoutOption> layoutOptions = new LinkedList<>(methodGraphLayouts);
-        layoutOptions.addAll(super.getRegisteredLayouts());
+        layoutOptions.addAll(graph.getRegisteredLayouts());
         return layoutOptions;
     }
     
@@ -119,4 +135,62 @@ public class MethodGraph extends JoanaGraph {
 			}
 		};
 	}
+
+    @Override
+    public Integer outdegreeOf(Vertex vertex) {
+        return graph.outdegreeOf(vertex);
+    }
+
+    @Override
+    public Integer indegreeOf(Vertex vertex) {
+        return graph.indegreeOf(vertex);
+    }
+
+    @Override
+    public Set<JoanaEdge> outgoingEdgesOf(Vertex vertex) {
+        return graph.outgoingEdgesOf(vertex);
+    }
+
+    @Override
+    public Set<JoanaEdge> incomingEdgesOf(Vertex vertex) {
+        return graph.incomingEdgesOf(vertex);
+    }
+
+    @Override
+    public Set<JoanaVertex> getVertexSet() {
+        return graph.getVertexSet();
+    }
+
+    @Override
+    public Set<JoanaEdge> getEdgeSet() {
+        return graph.getEdgeSet();
+    }
+
+    @Override
+    public Set<JoanaEdge> edgesOf(Vertex vertex) {
+        return graph.edgesOf(vertex);
+    }
+
+    @Override
+    public FastGraphAccessor getFastGraphAccessor() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void addToFastGraphAccessor(FastGraphAccessor fga) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public SerializedGraph serialize() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public GraphLayering<JoanaVertex> getGraphLayering() {
+        return layering;
+    }
 }

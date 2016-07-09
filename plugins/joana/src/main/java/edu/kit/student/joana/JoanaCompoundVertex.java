@@ -1,7 +1,7 @@
 package edu.kit.student.joana;
 
 import edu.kit.student.graphmodel.CompoundVertex;
-import edu.kit.student.graphmodel.Graph;
+import edu.kit.student.graphmodel.Edge;
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.joana.methodgraph.MethodGraph;
 
@@ -20,7 +20,7 @@ public class JoanaCompoundVertex extends JoanaVertex implements CompoundVertex {
 	}
 
 	@Override
-	public Vertex getConnectedVertex(JoanaEdge<JoanaVertex> edge) {
+	public Vertex getConnectedVertex(Edge edge) {
 		if(edge.getVertices().contains(this)) {
 			return this.graph.getEntryVertex();
 		}

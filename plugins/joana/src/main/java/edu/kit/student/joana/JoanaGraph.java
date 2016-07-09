@@ -1,89 +1,55 @@
 package edu.kit.student.joana;
 
-import edu.kit.student.graphmodel.LayeredGraph;
-import edu.kit.student.graphmodel.Vertex;
-import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
-import edu.kit.student.graphmodel.directed.DirectedEdge;
 
-import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
+
+import edu.kit.student.graphmodel.Graph;
+import edu.kit.student.graphmodel.LayeredGraph;
+import edu.kit.student.graphmodel.directed.DirectedGraph;
 
 /**
  * An abstract superclass for all JOANA specific graphs.
  */
 public abstract class JoanaGraph
-    extends DefaultDirectedGraph
-    implements LayeredGraph {
-
-    // TODO: Ist eine statische maximalbreite hier richtig?
-    private static int maxWidth = 600;
-    private List<List<JoanaVertex>> layers;
+    implements DirectedGraph, LayeredGraph {
     
+    public Graph parent;
+    public List<Graph> children;
+    public String name;
+
     public JoanaGraph(String name) {
-        this(name, new HashSet<>(), new HashSet<>());
-    }
-
-    public JoanaGraph(String name, Set<JoanaVertex> vertices, Set<JoanaEdge> edges) {
-        super(name, vertices, edges);
-        layers = new ArrayList<List<JoanaVertex>>();
+        this.name = name;
     }
 
     @Override
-    public int getLayerCount() {
-        return layers.size();
+    public String getName() {
+        return name;
     }
 
     @Override
-    public int getVertexCount(int layerNum) {
-        return layers.get(layerNum).size();
-    }
-
-    @Override
-    public int getLayerFromVertex(JoanaVertex vertex) {
-        for(int i = 0; i < layers.size(); i++){
-            if(layers.get(i).contains(vertex)) return i;
-        }
-        return -1;
-    }
-
-    @Override
-    public List<JoanaVertex> getLayer(int layerNum) {
-        return layers.get(layerNum);
-    }
-
-    @Override
-    public List<List<JoanaVertex>> getLayers() {
-        return layers;
-    }
-
-    @Override
-    public Set<? extends JoanaVertex> getVertexSet() {
-        // TODO Auto-generated method stub
-        return super.getVertexSet();
-    }
-
-    @Override
-    public Set<? extends JoanaEdge> getEdgeSet() {
-        // TODO Auto-generated method stub
-        return super.getEdgeSet();
-    }
-
-    @Override
-    public int getHeight() {
-        // TODO Auto-generated method stub
+    public Integer getID() {
+        //TODO: Generate unique ID across Graphs
         return 0;
     }
 
     @Override
-    public int getMaxWidth() {
-        return maxWidth;
+    public Graph getParentGraph() {
+        return this.parent;
     }
 
     @Override
-    public int getLayerWidth(int layerN) {
-        // TODO Auto-generated method stub
-        return 0;
+    public void setParentGraph(Graph parent) {
+        this.parent = parent;
+        
+    }
+
+    @Override
+    public List<Graph> getChildGraphs() {
+        return this.children;
+    }
+
+    @Override
+    public void addChildGraph(Graph child) {
+        this.children.add(child);
     }
 }

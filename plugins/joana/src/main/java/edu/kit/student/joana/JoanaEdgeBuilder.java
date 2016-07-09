@@ -50,6 +50,12 @@ public class JoanaEdgeBuilder implements IEdgeBuilder {
         if (source == null || target == null) {
             return null;
         }
+<<<<<<< Upstream, based on origin/master
+=======
+        // Lookup source and target.
+        
+        return new JoanaEdge(name, name, edgeKind);
+>>>>>>> ad55e61 Removed inheritance from JoanaGraph to DefaultDirectedGraph.
 
         Optional<JoanaVertex> sourceVertex = vertexPool.stream().filter(joanaVertex -> joanaVertex.getName().equals(source)).findFirst();
         Optional<JoanaVertex> targetVertex = vertexPool.stream().filter(joanaVertex -> joanaVertex.getName().equals(target)).findFirst();

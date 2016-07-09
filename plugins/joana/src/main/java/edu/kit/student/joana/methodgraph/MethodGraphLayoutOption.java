@@ -15,7 +15,7 @@ import edu.kit.student.plugin.LayoutOption;
 public abstract class MethodGraphLayoutOption extends LayoutOption {
 	
 	private MethodGraph graph;
-	private LayoutAlgorithm<MethodGraph, JoanaVertex, JoanaEdge<JoanaVertex>> layout;
+	private LayoutAlgorithm<MethodGraph, JoanaVertex, JoanaEdge> layout;
 	
 	/**
 	 * Sets the {@link MethodGraph} that will be the target of the CallGraphLayoutOption.
@@ -34,7 +34,7 @@ public abstract class MethodGraphLayoutOption extends LayoutOption {
 	 * @param layout
 	 *            The LayoutAlgorithm that will be used to layout the set graph.
 	 */
-	public void setLayout(LayoutAlgorithm<MethodGraph, JoanaVertex, JoanaEdge<JoanaVertex>> layout) {
+	public void setLayout(LayoutAlgorithm<MethodGraph, JoanaVertex, JoanaEdge> layout) {
 		this.layout = layout;
 	}
 	

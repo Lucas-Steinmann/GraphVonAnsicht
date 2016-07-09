@@ -20,8 +20,12 @@ public class MethodGraphBuilder implements IGraphBuilder {
 
     String name;
     Set<JoanaVertex> vertices = new HashSet<JoanaVertex>();
+<<<<<<< Upstream, based on origin/master
     Set<String> vertexIds = new HashSet<>();
     Set<JoanaEdge<JoanaVertex>> edges = new HashSet<>();
+=======
+    Set<JoanaEdge> edges = new HashSet<>();
+>>>>>>> ad55e61 Removed inheritance from JoanaGraph to DefaultDirectedGraph.
     Set<JoanaVertexBuilder> vertexBuilders = new HashSet<>();
     Set<JoanaEdgeBuilder> edgeBuilders = new HashSet<>();
     

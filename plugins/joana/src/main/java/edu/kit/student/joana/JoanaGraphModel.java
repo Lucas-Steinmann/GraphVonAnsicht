@@ -52,8 +52,8 @@ public class JoanaGraphModel extends GraphModel {
 	}
 
 	@Override
-	public List<Graph<? extends Vertex, ? extends Edge<? extends Vertex>>> getRootGraphs() {
-		List<Graph<? extends Vertex, ? extends Edge<? extends Vertex>>> root = new ArrayList<Graph<? extends Vertex, ? extends Edge<? extends Vertex>>>();
+	public List<CallGraph> getRootGraphs() {
+		List<CallGraph> root = new ArrayList<>();
 		root.add(this.callgraph);
 		return root;
 	}
