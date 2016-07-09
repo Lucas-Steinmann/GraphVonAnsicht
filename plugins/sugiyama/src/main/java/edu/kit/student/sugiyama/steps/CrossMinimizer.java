@@ -18,10 +18,6 @@ public class CrossMinimizer implements ICrossMinimizer {
 
 	@Override
 	public void minimizeCrossings(ICrossMinimizerGraph graph) {
-		System.out.println(graph.getEdgeSet().size());
-		//prints the name of every vertex on every layer before minimizing
-		graph.getLayers().forEach(iSugiyamaVertices -> System.out.println(iSugiyamaVertices.stream().map(iSugiyamaVertex -> iSugiyamaVertex.getName()).collect(Collectors.joining(", "))));
-		System.out.println("");
 		int layerCount = graph.getLayerCount();
 
 		addDummyAndEdges(graph);
@@ -29,7 +25,6 @@ public class CrossMinimizer implements ICrossMinimizer {
 		//add dummy knots
 		int newCrossings = 0;
 		int oldCrossings = crossings((SugiyamaGraph) graph);
-		System.out.println("crossings before " + oldCrossings);
 		int counter = 0;
 
 		while (counter < 10) {
@@ -51,10 +46,8 @@ public class CrossMinimizer implements ICrossMinimizer {
 
 			newCrossings = crossings((SugiyamaGraph) graph);
 
-			System.out.println("  crossings in " + counter + ". run: " + newCrossings);
 
 			if (oldCrossings - newCrossings < 0) {
-				System.out.println("revert");
 				graph.getLayers().clear();
 				graph.getLayers().addAll(undo);
 				break;
@@ -66,16 +59,6 @@ public class CrossMinimizer implements ICrossMinimizer {
 
 			oldCrossings = newCrossings;
 		}
-
-		System.out.println(" ");
-		System.out.println("runs = " + counter);
-		System.out.println(" ");
-		System.out.println("crossings after " + crossings((SugiyamaGraph) graph));
-		System.out.println("");
-		//prints the name of every vertex on every layer after minimization
-		graph.getLayers().forEach(iSugiyamaVertices -> System.out.println(iSugiyamaVertices.stream().map(iSugiyamaVertex -> iSugiyamaVertex.getName()).collect(Collectors.joining(", "))));
-		System.out.println("");
-		System.out.println("");
 	}
 
 	/**
@@ -85,7 +68,6 @@ public class CrossMinimizer implements ICrossMinimizer {
 	 * @param graph input graph to add dummy vertices and supplement edges to
 	 */
 	private void addDummyAndEdges(ICrossMinimizerGraph graph) {
-		System.out.println("Vertices before: "+graph.getVertexSet().size()+", Edges before: "+graph.getEdgeSet().size());
 		Set<ISugiyamaVertex> vertices = graph.getVertexSet();
 		Set<ISugiyamaEdge> edges = graph.getEdgeSet();
 		Set<ISugiyamaEdge> newEdges = new HashSet<ISugiyamaEdge>();
@@ -137,7 +119,6 @@ public class CrossMinimizer implements ICrossMinimizer {
 		}
 
 		edges.removeAll(replacedEdges);	//remove all replaced edges from the original edge set
-		System.out.println("Vertices after: "+graph.getVertexSet().size()+", Edges after: "+graph.getEdgeSet().size());
 	}
 
 	private int optimizeLayer(ICrossMinimizerGraph graph, int optimizingLayer, Direction dir) {

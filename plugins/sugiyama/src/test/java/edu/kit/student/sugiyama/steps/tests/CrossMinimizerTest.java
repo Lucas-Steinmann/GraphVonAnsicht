@@ -10,8 +10,9 @@ import edu.kit.student.sugiyama.steps.CrossMinimizer;
 import org.junit.Before;
 import org.junit.Test;
 
-import java.util.Date;
 import java.util.Random;
+
+import static org.junit.Assert.assertTrue;
 
 /**
  * Created by Sven on 04.07.2016.
@@ -91,17 +92,20 @@ public class CrossMinimizerTest {
     @Test
     public void singleRandomTest(){
     	SugiyamaGraph sugiyamaGraph = GraphUtil.generateSugiyamaGraph(20, 3, 4, true, (new Random()).nextLong());
+        int crossingsBefore = CrossMinimizer.crossings(sugiyamaGraph);
         minimizer.minimizeCrossings(sugiyamaGraph);
+        int crossingAfter = CrossMinimizer.crossings(sugiyamaGraph);
+        assertTrue("crossingsBefore should be smaller or equal to crossingsAfter", crossingsBefore <= crossingAfter);
     }
 
     @Test
     public void randomTests() {
         for (int i = 10; i < 30; i++) {
             SugiyamaGraph sugiyamaGraph = GraphUtil.generateSugiyamaGraph(i, 2, 8, true, (new Random()).nextLong());
-            long timeStart = (new Date()).getTime();
+            int crossingsBefore = CrossMinimizer.crossings(sugiyamaGraph);
             minimizer.minimizeCrossings(sugiyamaGraph);
-            System.out.println("time for run with " + i + " random vertices: " + ((new Date()).getTime() - timeStart) + "ms");
-            System.out.println("");
+            int crossingAfter = CrossMinimizer.crossings(sugiyamaGraph);
+            assertTrue("crossingsBefore should be smaller or equal to crossingsAfter", crossingsBefore <= crossingAfter);
         }
     }
 
@@ -109,17 +113,17 @@ public class CrossMinimizerTest {
     public void performanceTest() {
         for (int i = 0; i < 20; i++) {
             SugiyamaGraph sugiyamaGraph = GraphUtil.generateSugiyamaGraph(75, 2, 8, true, (new Random()).nextLong());
-            long timeStart = (new Date()).getTime();
+            int crossingsBefore = CrossMinimizer.crossings(sugiyamaGraph);
             minimizer.minimizeCrossings(sugiyamaGraph);
-            System.out.println("run " + i + " time : " + ((new Date()).getTime() - timeStart) + "ms");
-            System.out.println("");
+            int crossingAfter = CrossMinimizer.crossings(sugiyamaGraph);
+            assertTrue("crossingsBefore should be smaller or equal to crossingsAfter", crossingsBefore <= crossingAfter);
         }
     }
 
     public void hugeTest() {
         SugiyamaGraph sugiyamaGraph = GraphUtil.generateSugiyamaGraph(250, 2, 6, true, (new Random()).nextLong());
-        long timeStart = (new Date()).getTime();
-        minimizer.minimizeCrossings(sugiyamaGraph);
-        System.out.println("time for run with 1000 random vertices: " + ((new Date()).getTime() - timeStart) + "ms");
+        int crossingsBefore = CrossMinimizer.crossings(sugiyamaGraph);
+        int crossingAfter = CrossMinimizer.crossings(sugiyamaGraph);
+        assertTrue("crossingsBefore should be smaller or equal to crossingsAfter", crossingsBefore <= crossingAfter);
     }
 }
