@@ -4,6 +4,7 @@ import edu.kit.student.graphmodel.*;
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
 import edu.kit.student.graphmodel.directed.DirectedEdge;
 import edu.kit.student.graphmodel.directed.DirectedGraph;
+import edu.kit.student.objectproperty.GAnsProperty;
 import edu.kit.student.plugin.LayoutOption;
 import edu.kit.student.util.Point;
 
@@ -601,6 +602,11 @@ public class SugiyamaGraph extends DefaultDirectedGraph<ISugiyamaVertex, ISugiya
         public SerializedVertex serialize() {
             return this.vertex.serialize();
         }
+
+		@Override
+		public List<GAnsProperty<?>> getProperties() {
+			return this.vertex.getProperties();
+		}
 	}
 
 	/**

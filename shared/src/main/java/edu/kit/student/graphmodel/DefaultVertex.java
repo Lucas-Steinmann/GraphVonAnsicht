@@ -27,7 +27,7 @@ public class DefaultVertex implements Vertex {
 	 * @param id of the new vertex
 	 */
 	public DefaultVertex(String name, String label) {
-        this.name = new GAnsProperty<String>("graphName", name);
+        this.name = new GAnsProperty<String>("name", name);
         this.label = new GAnsProperty<String>("label", label);
         this.id = IdGenerator.getInstance().createId();
 	}
@@ -88,4 +88,12 @@ public class DefaultVertex implements Vertex {
     public void setY(int y) {
         this.y = y;
     }
+
+	@Override
+	public List<GAnsProperty<?>> getProperties() {
+		LinkedList<GAnsProperty<?>> properties = new LinkedList<>();
+		properties.add(name);
+		properties.add(label);
+		return properties;
+	}
 }

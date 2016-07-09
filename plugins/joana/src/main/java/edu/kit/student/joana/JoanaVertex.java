@@ -1,5 +1,9 @@
 package edu.kit.student.joana;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 import edu.kit.student.graphmodel.DefaultVertex;
 import edu.kit.student.objectproperty.GAnsProperty;
 
@@ -70,6 +74,22 @@ public class JoanaVertex extends DefaultVertex {
         this.nodeEr.setValue(nodeEr);
         this.nodeEc.setValue(nodeEc);
     }
+    
+    @Override
+	public List<GAnsProperty<?>> getProperties() {
+    	List<GAnsProperty<?>> properties = super.getProperties();
+		properties.add(nodeKind);
+		properties.add(nodeSource);
+		properties.add(nodeProc);
+		properties.add(nodeOperation);
+		properties.add(nodeBcName);
+		properties.add(nodeBcIndex);
+		properties.add(nodeSr);
+		properties.add(nodeSc);
+		properties.add(nodeEr);
+		properties.add(nodeEc);
+		return properties;
+	}
 
     /**
      * Returns the nodeKind of the JoanaVertex.

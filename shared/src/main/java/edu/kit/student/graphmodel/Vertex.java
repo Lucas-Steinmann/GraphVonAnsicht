@@ -1,5 +1,9 @@
 package edu.kit.student.graphmodel;
 
+import java.util.List;
+
+import edu.kit.student.objectproperty.GAnsProperty;
+
 /**
  * This vertex interface specifies a vertex. Every vertex contains an ID, a name
  * and a label. The ID of a vertex is unique.
@@ -72,4 +76,11 @@ public interface Vertex {
 	 * @return The {@link SerializedVertex} representation of the graph.
 	 */
 	public SerializedVertex serialize();
+	
+	/**
+	 * Returns a set of properties of the Vertex that should be shown 
+	 * in the InformationView when selected
+	 * @return 
+	 */
+	public List<GAnsProperty<?>> getProperties();
 }

@@ -14,6 +14,7 @@ import edu.kit.student.graphmodel.Edge;
 import edu.kit.student.graphmodel.Graph;
 import edu.kit.student.graphmodel.GraphModel;
 import edu.kit.student.graphmodel.Vertex;
+import edu.kit.student.objectproperty.GAnsProperty;
 import edu.kit.student.parameter.Settings;
 import edu.kit.student.plugin.Exporter;
 import edu.kit.student.plugin.Importer;
@@ -24,14 +25,15 @@ import edu.kit.student.plugin.WorkspaceOption;
 import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
-import javafx.collections.ListChangeListener;
+import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableSet;
+import javafx.collections.SetChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -40,12 +42,12 @@ import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
@@ -71,12 +73,8 @@ public class GAnsApplication extends Application {
 	private GraphModel model;
 
 	private GraphView currentGraphView;
-	// Mapped TabId zum Controller.
-	private LinkedList<GraphViewEventHandler> graphViewEventHandler;
-	private GraphViewSelectionModel graphViewSelectionModel;
 
 	private File currentFile;
-//	private MethodGraphLayout methodlayout = new MethodGraphLayout();
 
 	/**
 	 * Main method.
@@ -90,8 +88,6 @@ public class GAnsApplication extends Application {
 
 	@Override
 	public void start(Stage primaryStage) throws Exception {
-		graphViewEventHandler = new LinkedList<GraphViewEventHandler>();
-
 		this.primaryStage = primaryStage;
 		primaryStage.setTitle("Graph von Ansicht - Graphviewer");
 
@@ -135,33 +131,15 @@ public class GAnsApplication extends Application {
 			}
 		});
 
-		graphViewSelectionModel = new GraphViewSelectionModel();
-		graphViewSelectionModel.getSelectedItems().addListener(new ListChangeListener<GAnsGraphElement>() {
-			public void onChanged(Change<? extends GAnsGraphElement> changedItem) {
-				ObservableList<GAnsGraphElement> selectedItems = graphViewSelectionModel.getSelectedItems();
-				for (int i = 0; i < selectedItems.size(); i++) {
-					GAnsGraphElement element = selectedItems.get(i);
-					// TODO: Vertex oder Edge herausfinden und deren Properties
-					// passend in eine observable list und an informationView.
-				}
-				// TODO: holen der selectierten Items, ueber currentGraphView
-				// auf factory zugreifen
-				// Factory bietet zugriff auf map (GAnsGraphElement,Vertex/Edge)
-				// Properties der Vertex/Edge-Elemente speichern und an
-				// informationView uebergeben.
-
-				// informationView.setInformations(graphViewSelectionModel.getSelectedItems());
-			}
-		});
-
 		SplitPane mainViewLayout = new SplitPane();
 		mainViewLayout.setDividerPosition(0, 0.75);
 		graphViewTabPane = new TabPane();
 		graphViewTabPane.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>() {
 			@Override
 			public void changed(ObservableValue<? extends Tab> observable, Tab oldValue, Tab newValue) {
-				//TODO: Boese :D
-				Pane pane = ((Pane) newValue.getContent());
+				//TODO: Bad :D
+				ScrollPane scrollPane = ((ScrollPane) newValue.getContent());
+				Pane pane = (Pane) scrollPane.getContent();
 				Group group = ((Group) pane.getChildren().get(pane.getChildren().size() - 1));
 				currentGraphView = ((GraphView) group.getChildren().get(group.getChildren().size() - 1));
 			}
@@ -244,26 +222,37 @@ public class GAnsApplication extends Application {
 
 		group.getChildren().add(graphView);
 		// Die Oberflaeche die gezogen und gezoomed werden kann.
-		Pane pane = new Pane(group);
-
-		GraphViewEventHandler eventHandler = new GraphViewEventHandler(graphView);
-		pane.addEventFilter(MouseEvent.MOUSE_PRESSED, eventHandler.getOnMousePressedEventHandler());
-		pane.addEventFilter(MouseEvent.MOUSE_DRAGGED, eventHandler.getOnMouseDraggedEventHandler());
-		pane.addEventFilter(ScrollEvent.ANY, eventHandler.getOnScrollEventHandler());
-
-		// TODO: kann vermutlich weg
-		graphViewEventHandler.add(eventHandler);
-
-		graphView.setSelectionModel(graphViewSelectionModel);
+		
+		Pane outerPane = new Pane(group);
+		outerPane.setPrefSize(graphViewTabPane.getWidth(), graphViewTabPane.getHeight());
+		
+		ScrollPane scrollPane = new ScrollPane(outerPane);
+		scrollPane.setPrefSize(graphViewTabPane.getWidth(), graphViewTabPane.getHeight());
+		
+		GraphViewSelectionModel selectionModel = new GraphViewSelectionModel(outerPane, graphView);
+		graphView.setSelectionModel(selectionModel);
 
 		Tab tab = new Tab(graph.getName());
 		tab.setId(graph.getID().toString());
-		tab.setContent(pane);
+		tab.setContent(scrollPane);
 		graphViewTabPane.getTabs().add(tab);
 		graphViewTabPane.getSelectionModel().select(tab);
-
+		
 		graphView.addGrid();
 		graphView.setGraph(graph);
+		
+		graphView.getSelectionModel().getSelectedItems().addListener(new SetChangeListener<VertexShape>() {
+			public void onChanged(Change<? extends VertexShape> changedItem) {
+				ObservableSet<VertexShape> selectedItems = graphView.getSelectionModel().getSelectedItems();
+				List<GAnsProperty> tmp = new LinkedList<GAnsProperty>();
+				ObservableList<GAnsProperty> properties = FXCollections.observableList(tmp);
+				for (VertexShape element : selectedItems) {
+					properties.addAll(currentGraphView.getFactory().getVertexFromShape(element).getProperties());
+				}
+				
+				informationView.setInformations(properties);
+			}
+		});
 	}
 
 	private void setupMenuBar() {
@@ -322,17 +311,7 @@ public class GAnsApplication extends Application {
 		MenuItem layoutPropertiesItem = new MenuItem("Properties");
 		menuLayout.getItems().addAll(changeLayoutItem, layoutPropertiesItem);
 
-		Menu menuView = new Menu("View");
-		MenuItem testItem = new MenuItem("test");
-		testItem.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-//				openTestDialog();
-			}
-		});
-		menuView.getItems().add(testItem);
-
-		menuBar.getMenus().addAll(menuFile, menuLayout, menuView);
+		menuBar.getMenus().addAll(menuFile, menuLayout);
 	}
 
 	private boolean openWorkspaceDialog() {

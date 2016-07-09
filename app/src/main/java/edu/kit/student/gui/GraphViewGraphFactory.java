@@ -55,6 +55,10 @@ public class GraphViewGraphFactory {
 		
 		return elements;
 	}
+	
+	public Set<VertexShape> getVertexShapes() {
+		return vertices.keySet();
+	}
 
 	/**
 	 * Returns the vertex element from the graph model that is being represented

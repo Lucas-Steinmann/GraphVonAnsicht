@@ -64,4 +64,8 @@ public class VertexShape extends GAnsGraphElement {
 		rectangle.setFill(color);
 	}
 
+	@Override
+	public String toString() {
+		return "Vertex \"" + text.getText() + "\"";
+	}
 }

@@ -10,7 +10,6 @@ import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 
-//TODO: Muss vlt noch zusaetzlich ein SelectionModel bekommen, welches die selection der Knoten per Maus ueberwacht.
 // Implementation grossteils von http://stackoverflow.com/questions/29506156/javafx-8-zooming-relative-to-mouse-pointer
 // muss noch umgeschrieben und angepasst werden.
 
@@ -23,19 +22,15 @@ import javafx.scene.paint.Color;
 public class GraphView extends Pane {
 
 	private DoubleProperty myScale = new SimpleDoubleProperty(1.0);
-
-	// TODO: selectionModel muss ueber EventHandler bei selektion aktualisiert
-	// werden.
 	private GraphViewSelectionModel selectionModel;
-
 	private GraphViewGraphFactory graphFactory;
 
 	/**
 	 * Constructor.
 	 */
 	public GraphView() {
-		// setPrefSize(600, 600);
-		// setStyle("-fx-background-color: lightgrey;");
+		 setPrefSize(600, 600);
+//		 setStyle("-fx-background-color: lightgrey;");
 
 		// add scale transform
 		scaleXProperty().bind(myScale);
@@ -110,7 +105,7 @@ public class GraphView extends Pane {
 	 * @param graph
 	 *            The graph to be visualized in the view.
 	 */
-	public void setGraph(Graph<Vertex,Edge<Vertex>> graph) {
+	public void setGraph(Graph<Vertex, Edge<Vertex>> graph) {
 		graphFactory = new GraphViewGraphFactory(graph);
 
 		getChildren().addAll(graphFactory.getGraphicalElements());
@@ -124,12 +119,11 @@ public class GraphView extends Pane {
 	public GraphViewGraphFactory getFactory() {
 		return graphFactory;
 	}
-
+	
 	/**
-	 * Sets the selection model for the GraphView.
+	 * Sets the selection model of the GraphView.
 	 * 
-	 * @param selectionModel
-	 *            The selection model for the GraphView.
+	 * @param The selection model of the GraphView.
 	 */
 	public void setSelectionModel(GraphViewSelectionModel selectionModel) {
 		this.selectionModel = selectionModel;

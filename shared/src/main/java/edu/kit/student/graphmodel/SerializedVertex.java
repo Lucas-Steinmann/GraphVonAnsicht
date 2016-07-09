@@ -1,7 +1,9 @@
 package edu.kit.student.graphmodel;
 
+import edu.kit.student.objectproperty.GAnsProperty;
 import edu.kit.student.plugin.Exporter;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -86,4 +88,10 @@ public class SerializedVertex implements Vertex {
         // TODO Auto-generated method stub
         
     }
+
+	@Override
+	public List<GAnsProperty<?>> getProperties() {
+		// TODO Auto-generated method stub
+		return new LinkedList<GAnsProperty<?>>();
+	}
 }

@@ -2,6 +2,7 @@ package edu.kit.student.gui;
 
 import edu.kit.student.objectproperty.GAnsProperty;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableSet;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -31,8 +32,7 @@ public class InformationView extends TableView<GAnsProperty> {
 		TableColumn<GAnsProperty, String> propertyNameCol = new TableColumn<GAnsProperty, String>("Property");
 		propertyNameCol.setCellValueFactory(new PropertyValueFactory<GAnsProperty, String>(GAnsProperty.name));
 		TableColumn<GAnsProperty, String> propertyValueCol = new TableColumn<GAnsProperty, String>("Value");
-		propertyValueCol
-				.setCellValueFactory(new PropertyValueFactory<GAnsProperty, String>(GAnsProperty.valueAsString));
+		propertyValueCol.setCellValueFactory(new PropertyValueFactory<GAnsProperty, String>(GAnsProperty.valueAsString));
 
 		getColumns().setAll(propertyNameCol, propertyValueCol);
 
