@@ -1,13 +1,12 @@
 package edu.kit.student.joana;
 
-import edu.kit.student.graphmodel.LayeredGraph;
 import edu.kit.student.parameter.Settings;
 import edu.kit.student.sugiyama.LayeredLayoutAlgorithm;
 
 /**
  * The FieldAccessLayout applies its layout to a {@link FieldAccess}.
  */
-public class FieldAccessLayout implements LayeredLayoutAlgorithm<FieldAccessGraph, JoanaVertex, JoanaEdge> {
+public class FieldAccessLayout implements LayeredLayoutAlgorithm<FieldAccessGraph> {
 
 	@Override
 	public Settings getSettings() {
@@ -21,7 +20,7 @@ public class FieldAccessLayout implements LayeredLayoutAlgorithm<FieldAccessGrap
 	}
 
 	@Override
-	public void layoutLayeredGraph(LayeredGraph graph) {
+	public void layoutLayeredGraph(FieldAccessGraph graph) {
 		// TODO Auto-generated method stub
 		
 	}

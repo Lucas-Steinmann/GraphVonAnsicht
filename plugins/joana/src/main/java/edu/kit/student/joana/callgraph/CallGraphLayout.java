@@ -24,7 +24,7 @@ import edu.kit.student.sugiyama.steps.VertexPositioner;
  * Offers a layout for {@link CallGraph}.
  * Groups vertices representing the same Java-Method together.
  */
-public class CallGraphLayout implements LayeredLayoutAlgorithm <CallGraph, JoanaCompoundVertex, JoanaEdge> {
+public class CallGraphLayout implements LayeredLayoutAlgorithm<CallGraph> {
 
 	@Override
 	public Settings getSettings() {
@@ -52,7 +52,7 @@ public class CallGraphLayout implements LayeredLayoutAlgorithm <CallGraph, Joana
 	}
 
 	@Override
-	public void layoutLayeredGraph(LayeredGraph graph) {
+	public void layoutLayeredGraph(CallGraph graph) {
 		// TODO Auto-generated method stub
 		
 	}

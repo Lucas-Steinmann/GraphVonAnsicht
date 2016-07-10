@@ -31,7 +31,7 @@ import edu.kit.student.sugiyama.steps.VertexPositioner;
  * Implements hierarchical layout with layers for {@link MethodGraph}.
  * This graph contains field access subgraphs.
  */
-public class MethodGraphLayout implements LayeredLayoutAlgorithm<MethodGraph, JoanaVertex, JoanaEdge> {
+public class MethodGraphLayout implements LayeredLayoutAlgorithm<MethodGraph> {
 
 	@Override
 	public Settings getSettings() {
@@ -76,7 +76,7 @@ public class MethodGraphLayout implements LayeredLayoutAlgorithm<MethodGraph, Jo
 	}
 
 	@Override
-	public void layoutLayeredGraph(LayeredGraph<JoanaVertex, JoanaEdge> graph) {
+	public void layoutLayeredGraph(MethodGraph graph) {
 		// TODO Auto-generated method stub
 		
 	}

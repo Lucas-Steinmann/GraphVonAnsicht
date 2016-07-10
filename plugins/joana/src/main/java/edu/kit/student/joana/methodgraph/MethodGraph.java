@@ -45,6 +45,7 @@ public class MethodGraph extends JoanaGraph {
         if (entry == null) {
             throw new IllegalArgumentException("Cannot create MethodGraph without entry vertex!");
         }
+        graph = new DefaultDirectedGraph<>(methodName, vertices, edges);
         //TODO: Search for method calls, field accesses, etc.
         this.fieldAccesses = new HashSet<>(fieldAccesses);
     }

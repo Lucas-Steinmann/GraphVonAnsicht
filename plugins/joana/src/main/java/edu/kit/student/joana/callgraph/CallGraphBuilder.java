@@ -1,18 +1,17 @@
 package edu.kit.student.joana.callgraph;
 
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
+
 import edu.kit.student.graphmodel.builder.IEdgeBuilder;
 import edu.kit.student.graphmodel.builder.IGraphBuilder;
 import edu.kit.student.graphmodel.builder.IVertexBuilder;
 import edu.kit.student.joana.JoanaCompoundVertex;
 import edu.kit.student.joana.JoanaEdge;
 import edu.kit.student.joana.JoanaEdgeBuilder;
-import edu.kit.student.joana.JoanaVertex;
 import edu.kit.student.joana.methodgraph.MethodGraph;
 import edu.kit.student.joana.methodgraph.MethodGraphBuilder;
-
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * The CallGraphBuilder implements an {@link IGraphBuilder} and builds 
@@ -61,7 +60,7 @@ public class CallGraphBuilder implements IGraphBuilder {
             methodGraphs.add(b.build());
         }
         HashMap<Integer, JoanaCompoundVertex> vertices = new HashMap<>();
-        HashMap<JoanaCompoundVertex, Set<JoanaEdge<JoanaCompoundVertex>>> edges = new HashMap<>();
+        HashMap<JoanaCompoundVertex, Set<JoanaEdge>> edges = new HashMap<>();
 
         // Generate Callgraph
         // Generate method vertices.
@@ -71,10 +70,10 @@ public class CallGraphBuilder implements IGraphBuilder {
         // Add call edges between vertices.
         for (MethodGraph methodGraph : methodGraphs) {
             JoanaCompoundVertex source = vertices.get(methodGraph.getID());
-            edges.put(source, new HashSet<JoanaEdge<JoanaCompoundVertex>>());
+            edges.put(source, new HashSet<JoanaEdge>());
 
             // Search for method calls.
-            for (JoanaEdge<JoanaVertex> e : methodGraph.getEdgeSet()) {
+            for (JoanaEdge e : methodGraph.getEdgeSet()) {
                 if (e.getEdgeKind() == edu.kit.student.joana.JoanaEdge.Kind.CL) {
                     if (vertices.containsKey(e.getName())) {
                         JoanaCompoundVertex target = vertices.get(e.getName());
@@ -82,7 +81,7 @@ public class CallGraphBuilder implements IGraphBuilder {
                             // Second call from this function. Skip.
                             continue;
                         }
-                        JoanaEdge<JoanaCompoundVertex> edge = new JoanaEdge<JoanaCompoundVertex>(e.getName(),
+                        JoanaEdge edge = new JoanaEdge(e.getName(),
                                                             e.getLabel(), e.getEdgeKind());
                         edge.setVertices(source, target);
                         edges.get(source).add(edge);
@@ -90,8 +89,8 @@ public class CallGraphBuilder implements IGraphBuilder {
                 }
             }
         }
-        HashSet<JoanaEdge<JoanaCompoundVertex>> merged = new HashSet<>();
-        for (Set<JoanaEdge<JoanaCompoundVertex>> edgeSet : edges.values()) {
+        HashSet<JoanaEdge> merged = new HashSet<>();
+        for (Set<JoanaEdge> edgeSet : edges.values()) {
             merged.addAll(edgeSet);
             
         }

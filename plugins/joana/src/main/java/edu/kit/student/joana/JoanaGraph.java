@@ -1,6 +1,7 @@
 package edu.kit.student.joana;
 
 
+import java.util.LinkedList;
 import java.util.List;
 
 import edu.kit.student.graphmodel.Graph;
@@ -14,7 +15,7 @@ public abstract class JoanaGraph
     implements DirectedGraph, LayeredGraph {
     
     public Graph parent;
-    public List<Graph> children;
+    public List<Graph> children = new LinkedList<>();
     public String name;
 
     public JoanaGraph(String name) {
