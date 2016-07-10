@@ -2,6 +2,8 @@ package edu.kit.student.graphmodel;
 
 import java.util.List;
 
+import edu.kit.student.objectproperty.GAnsProperty;
+
 /**
  * This edge interface specifies an edge. An edge contains two vertices, an ID,
  * a name and a label.
@@ -42,14 +44,6 @@ public interface Edge<V extends Vertex> {
 	 * @param fga The {@link FastGraphAccessor} to whom this edge will be added.
 	 */
 	public void addToFastGraphAccessor(FastGraphAccessor fga);
-
-	/**
-	 * Returns a {@link SerializedEdge} representation of the edge.
-	 *
-	 * @return The {@link SerializedEdge} representation of the edge.
-	 */
-	public SerializedEdge<V> serialize();
-	
 	
 	/**
 	 * Returns the {@link EdgePath} of the edge.
@@ -58,4 +52,10 @@ public interface Edge<V extends Vertex> {
 	 * @return the edge path
 	 */
 	public EdgePath getPath();
+	
+	/**
+	 * Returns a set of properties of the Edge.
+	 * @return 
+	 */
+	public List<GAnsProperty<?>> getProperties();
 }

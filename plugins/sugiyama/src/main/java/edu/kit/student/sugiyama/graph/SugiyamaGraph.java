@@ -307,12 +307,6 @@ public class SugiyamaGraph extends DefaultDirectedGraph<ISugiyamaVertex, ISugiya
 	}
 
 	@Override
-	public SerializedGraph serialize() {
-		// TODO muss weg
-		return null;
-	}
-
-	@Override
 	public List<LayoutOption> getRegisteredLayouts() {
 		// TODO muss weg
 		return null;
@@ -411,7 +405,7 @@ public class SugiyamaGraph extends DefaultDirectedGraph<ISugiyamaVertex, ISugiya
 	/**
 	 * A supplement edge which is part of a {@link SupplementPath}.
 	 */
-	public static class SupplementEdge  implements ISugiyamaEdge{
+	public static class SupplementEdge implements ISugiyamaEdge{
 		
 		private String name;
 		private String label;
@@ -476,12 +470,6 @@ public class SugiyamaGraph extends DefaultDirectedGraph<ISugiyamaVertex, ISugiya
 		}
 
 		@Override
-		public SerializedEdge<ISugiyamaVertex> serialize() {
-			// TODO implement!!!
-			return null;
-		}
-
-		@Override
 		public EdgePath getPath() {
 			// TODO implement? is necessary ?
 			return null;
@@ -497,6 +485,10 @@ public class SugiyamaGraph extends DefaultDirectedGraph<ISugiyamaVertex, ISugiya
 			return false;
 		}
 
+		@Override
+		public List<GAnsProperty<?>> getProperties() {
+			return new LinkedList<GAnsProperty<?>>();
+		}
 	}
 
 	/**
@@ -596,11 +588,6 @@ public class SugiyamaGraph extends DefaultDirectedGraph<ISugiyamaVertex, ISugiya
         public void addToFastGraphAccessor(FastGraphAccessor fga) {
             this.vertex.addToFastGraphAccessor(fga);
             
-        }
-
-        @Override
-        public SerializedVertex serialize() {
-            return this.vertex.serialize();
         }
 
 		@Override
@@ -737,9 +724,8 @@ public class SugiyamaGraph extends DefaultDirectedGraph<ISugiyamaVertex, ISugiya
 		}
 
 		@Override
-		public SerializedEdge<ISugiyamaVertex> serialize() {
-			// TODO implement
-			return null;
+		public List<GAnsProperty<?>> getProperties() {
+			return wrappedEdge.getProperties();
 		}
 	}
 }

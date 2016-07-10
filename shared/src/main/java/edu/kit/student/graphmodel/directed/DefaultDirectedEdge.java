@@ -6,8 +6,8 @@ import java.util.List;
 
 import edu.kit.student.graphmodel.FastGraphAccessor;
 import edu.kit.student.graphmodel.OrthogonalEdgePath;
-import edu.kit.student.graphmodel.SerializedEdge;
 import edu.kit.student.graphmodel.Vertex;
+import edu.kit.student.graphmodel.serialize.SerializedEdge;
 import edu.kit.student.objectproperty.GAnsProperty;
 import edu.kit.student.util.IdGenerator;
 
@@ -28,7 +28,7 @@ public class DefaultDirectedEdge<V extends Vertex> implements DirectedEdge<V>{
 	 * @param id of the new edge
 	 */
     public DefaultDirectedEdge(String name, String label) {       
-        this.name = new GAnsProperty<String>("graphName", name);
+        this.name = new GAnsProperty<String>("name", name);
         this.label = new GAnsProperty<String>("label", label);
         this.id = IdGenerator.getInstance().createId();
         this.path = new OrthogonalEdgePath();
@@ -113,18 +113,15 @@ public class DefaultDirectedEdge<V extends Vertex> implements DirectedEdge<V>{
 	}
 
 	@Override
-	public SerializedEdge<V> serialize() {
-		List<String[]> attributes = new LinkedList<>();
-		attributes.add(new String[] {"name", this.name.toString()});
-		attributes.add(new String[] {"id", this.id.toString()});
-		attributes.add(new String[] {"label", this.label.toString()});
-		//TODO: add Vertices
-
-		return new SerializedEdge<>(attributes, this.name.toString(), this.id, this.label.toString());
+	public OrthogonalEdgePath getPath() {
+	    return path;
 	}
 
 	@Override
-	public OrthogonalEdgePath getPath() {
-	    return path;
+	public List<GAnsProperty<?>> getProperties() {
+		LinkedList<GAnsProperty<?>> properties = new LinkedList<>();
+		properties.add(name);
+		properties.add(label);
+		return properties;
 	}
 }

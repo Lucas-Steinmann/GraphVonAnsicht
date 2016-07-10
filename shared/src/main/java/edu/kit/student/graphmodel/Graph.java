@@ -62,12 +62,6 @@ public interface Graph<V extends Vertex, E extends Edge<V>> {
 	public void addToFastGraphAccessor(FastGraphAccessor fga);
 	
 	/**
-	 * Returns a {@link SerializedGraph} representation of the graph.
-	 * @return The {@link SerializedGraph} representation of the graph.
-	 */
-	public SerializedGraph serialize();
-	
-	/**
 	 * Returns a list of layouts which have been registered at the corresponding
 	 * LayoutRegister for this graph type. The graph implementing this interface
 	 * will be set as target of the LayoutOption.

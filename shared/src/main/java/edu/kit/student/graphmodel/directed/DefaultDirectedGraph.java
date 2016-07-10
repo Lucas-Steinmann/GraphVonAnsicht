@@ -11,11 +11,11 @@ import edu.kit.student.graphmodel.CollapsedVertex;
 import edu.kit.student.graphmodel.Edge;
 import edu.kit.student.graphmodel.FastGraphAccessor;
 import edu.kit.student.graphmodel.Graph;
-import edu.kit.student.graphmodel.SerializedEdge;
-import edu.kit.student.graphmodel.SerializedGraph;
-import edu.kit.student.graphmodel.SerializedVertex;
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.ViewableGraph;
+import edu.kit.student.graphmodel.serialize.SerializedEdge;
+import edu.kit.student.graphmodel.serialize.SerializedGraph;
+import edu.kit.student.graphmodel.serialize.SerializedVertex;
 import edu.kit.student.objectproperty.GAnsProperty;
 import edu.kit.student.plugin.LayoutOption;
 import edu.kit.student.util.IdGenerator;
@@ -210,24 +210,6 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge<V>>
 		for (E e : getEdgeSet()) {
 			e.addToFastGraphAccessor(fga);
 		}
-	}
-
-	@Override
-	public SerializedGraph serialize() {
-		List<String[]> attributes = new LinkedList<>();
-		SerializedGraph graph = new SerializedGraph(attributes);
-
-		for (Vertex v : getVertexSet()) {
-			SerializedVertex vertex = v.serialize();
-			// TODO add to graph
-		}
-
-		for (Edge e : getEdgeSet()) {
-			SerializedEdge edge = e.serialize();
-			// TODO add to graph
-		}
-
-		return graph;
 	}
 
 	@Override

@@ -1,6 +1,7 @@
 package edu.kit.student.gui;
 
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -9,6 +10,14 @@ import java.util.Set;
 import edu.kit.student.graphmodel.Edge;
 import edu.kit.student.graphmodel.Graph;
 import edu.kit.student.graphmodel.Vertex;
+import edu.kit.student.graphmodel.serialize.SerializedEdge;
+import edu.kit.student.graphmodel.serialize.SerializedGraph;
+import edu.kit.student.graphmodel.serialize.SerializedVertex;
+import edu.kit.student.objectproperty.GAnsProperty;
+import javafx.geometry.Bounds;
+import javafx.scene.shape.LineTo;
+import javafx.scene.shape.Path;
+import javafx.scene.shape.PathElement;
 import javafx.util.Pair;
 
 /**
@@ -111,5 +120,64 @@ public class GraphViewGraphFactory {
 			EdgeShape shape = new EdgeShape(edge);
 			edges.put(shape, edge);
 		}
+	}
+	
+	public SerializedGraph serializeGraph() {
+		return new SerializedGraph(new HashMap<String, String>(), new HashMap<String, String>(),
+				serializeVertices(), serializeEdges());
+	}
+	
+	private Set<SerializedVertex> serializeVertices() {
+		Set<SerializedVertex> set = new HashSet<SerializedVertex>();
+		for(VertexShape shape : vertices.keySet()) {
+			Map<String,String> shapeProperties = new HashMap<String,String>();
+			final Bounds bounds = shape.getElementShape().getBoundsInParent();
+			shapeProperties.put("label", shape.getText());
+			shapeProperties.put("minX", Double.toString(bounds.getMinX()));
+			shapeProperties.put("minY", Double.toString(bounds.getMinY()));
+			shapeProperties.put("MaxX", Double.toString(bounds.getMaxX()));
+			shapeProperties.put("MaxY", Double.toString(bounds.getMaxY()));
+			shapeProperties.put("arcWidth", Double.toString(shape.getElementShape().getArcWidth()));
+			shapeProperties.put("arcHeight", Double.toString(shape.getElementShape().getArcHeight()));
+			
+			Map<String,String> metaProperties = new HashMap<String,String>();
+			Vertex vertex = vertices.get(shape);
+			for(GAnsProperty<?> property : vertex.getProperties()) {
+				metaProperties.put(property.getName(), property.getValueAsString());
+			}
+			SerializedVertex serialized = new SerializedVertex(shapeProperties, metaProperties);
+			set.add(serialized);
+		}
+		
+		return set;
+	}
+	
+	private Set<SerializedEdge> serializeEdges() {
+		Set<SerializedEdge> set = new HashSet<SerializedEdge>();
+		for(EdgeShape shape : edges.keySet()) {
+			Map<String,String> shapeProperties = new HashMap<String,String>();
+			Path path = shape.getElementShape();
+			shapeProperties.put("label", shape.getText());
+			for(int i = 0; i < path.getElements().size(); i++) {
+				PathElement element = path.getElements().get(i);
+				if(LineTo.class.equals(element.getClass())) {
+					LineTo line = (LineTo)element;
+					shapeProperties.put(i + "X", Double.toString(line.getX()));
+					shapeProperties.put(i + "Y", Double.toString(line.getY()));
+				} else {
+					//TODO: throw exception, only straight lines allowed in path!
+				}
+			}
+			
+			Map<String,String> metaProperties = new HashMap<String,String>();
+			Edge<?> edge = edges.get(shape);
+			for(GAnsProperty<?> property : edge.getProperties()) {
+				metaProperties.put(property.getName(), property.getValueAsString());
+			}
+			SerializedEdge serialized = new SerializedEdge(shapeProperties, metaProperties);
+			set.add(serialized);
+		}
+		
+		return set;
 	}
 }

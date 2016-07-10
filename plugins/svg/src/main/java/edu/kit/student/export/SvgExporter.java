@@ -1,7 +1,7 @@
 package edu.kit.student.export;
 
 
-import edu.kit.student.graphmodel.SerializedGraph;
+import edu.kit.student.graphmodel.serialize.SerializedGraph;
 import edu.kit.student.plugin.Exporter;
 
 import java.io.FileOutputStream;
