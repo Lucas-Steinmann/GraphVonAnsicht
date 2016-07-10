@@ -16,7 +16,7 @@ public class JoanaEdge extends DefaultDirectedEdge {
         edgeKind = new GAnsProperty<Kind>("edgeKind", kind);
     }
 
-    public JoanaEdge(String name, String label, V source, V target, Kind edgeKind) {
+    public JoanaEdge(String name, String label, JoanaVertex source, JoanaVertex target, Kind edgeKind) {
         super(name, label, source, target);
         this.edgeKind = new GAnsProperty<Kind>("edgeKind", edgeKind);
     }

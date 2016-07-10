@@ -53,17 +53,12 @@ public class DefaultGraphLayering<V extends Vertex> implements GraphLayering<V> 
 
     @Override
     public int getLayerFromVertex(Vertex vertex) {
-<<<<<<< Upstream, based on origin/master
         return getPosition(vertex).y;
     }
 
     public Point getPosition(Vertex vertex) {
         if (!this.vertexToPoint.containsKey(vertex)) {
             throw new IllegalArgumentException("Vertex is not contained in layering!");
-=======
-        for(int i = 0; i < layers.size(); i++){
-            if(layers.get(i).contains(vertex)) return i;
->>>>>>> f1a740d Fixed all current compile time errors appeared due to refactoring.
         }
         return vertexToPoint.get(vertex);
     }

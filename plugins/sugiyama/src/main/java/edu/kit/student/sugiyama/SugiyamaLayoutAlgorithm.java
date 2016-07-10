@@ -2,7 +2,6 @@ package edu.kit.student.sugiyama;
 
 import edu.kit.student.graphmodel.DefaultVertex;
 import edu.kit.student.graphmodel.LayeredGraph;
-import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
 import edu.kit.student.graphmodel.directed.DirectedEdge;
 import edu.kit.student.graphmodel.directed.DirectedGraph;
@@ -125,7 +124,7 @@ public class SugiyamaLayoutAlgorithm<G extends DirectedGraph & LayeredGraph>
 		drawer.drawEdges(wrappedGraph);
     }
 
-	public void layout(DefaultDirectedGraph<DefaultVertex, DirectedEdge<DefaultVertex>> graph) {
+	public void layout(DefaultDirectedGraph<DefaultVertex, DirectedEdge> graph) {
 		SugiyamaGraph wrappedGraph = new SugiyamaGraph(graph);
 		assigner.addConstraints(relativeLayerConstraints);
 

@@ -129,11 +129,11 @@ public class CycleRemoverTest {
 		return graph.getEdgeSet().size() == edges.size();
 	}
 
-	private Set<DirectedEdge> getCorrectedOutcomingEdges(Vertex vertex, Set<DirectedEdge> graphEdges, DirectedGraph<Vertex, DirectedEdge<Vertex>> graph) {
+	private Set<DirectedEdge> getCorrectedOutcomingEdges(Vertex vertex, Set<DirectedEdge> graphEdges, DirectedGraph graph) {
 		return graph.outgoingEdgesOf(vertex).stream().filter(edge -> !graphEdges.contains(edge)).collect(Collectors.toSet());
 	}
 
-	private Set<DirectedEdge> getCorrectedIncomingEdges(Vertex vertex, Set<DirectedEdge> graphEdges, DirectedGraph<Vertex, DirectedEdge<Vertex>> graph) {
+	private Set<DirectedEdge> getCorrectedIncomingEdges(Vertex vertex, Set<DirectedEdge> graphEdges, DirectedGraph graph) {
 		return graph.incomingEdgesOf(vertex).stream().filter(edge -> !graphEdges.contains(edge)).collect(Collectors.toSet());
 	}
 
