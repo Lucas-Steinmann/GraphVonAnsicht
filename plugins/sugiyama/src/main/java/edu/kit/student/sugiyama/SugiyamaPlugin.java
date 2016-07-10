@@ -1,9 +1,7 @@
 package edu.kit.student.sugiyama;
 
 
-import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
-import edu.kit.student.graphmodel.directed.DirectedEdge;
 import edu.kit.student.graphmodel.directed.DirectedGraph;
 import edu.kit.student.graphmodel.directed.DirectedGraphLayoutOption;
 import edu.kit.student.parameter.Settings;
@@ -52,7 +50,7 @@ public class SugiyamaPlugin extends AbstractPluginBase {
             @Override
             public void applyLayout() {
                 //TODO: Remove casting by changing some interface (probably LayoutAlgorithm.layout)
-                this.algo.layout((DirectedGraph<Vertex, DirectedEdge<Vertex>>) graph);
+                this.algo.layout((DirectedGraph) graph);
             }
         });;
     }

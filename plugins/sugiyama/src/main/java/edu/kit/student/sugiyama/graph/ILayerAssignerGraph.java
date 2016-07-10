@@ -1,11 +1,10 @@
 package edu.kit.student.sugiyama.graph;
 
-import edu.kit.student.graphmodel.LayeredGraph;
 
 /**
  * A LayeredGraph which additionally defines functions to assign layers in the sugiyama-layout.
  */
-public interface ILayerAssignerGraph extends LayeredGraph<ISugiyamaVertex, ISugiyamaEdge> {
+public interface ILayerAssignerGraph extends ISugiyamaStepGraph {
 	
 	/**
 	 * Assigns a vertex to a certain layer represented by a number.

@@ -93,7 +93,42 @@ public class FieldAccessGraph extends JoanaGraph {
     }
 
     @Override
-    public GraphLayering<JoanaVertex> getGraphLayering() {
-        return layering;
+    public int getLayerCount() {
+        return this.layering.getLayerCount();
+    }
+
+    @Override
+    public int getVertexCount(int layerNum) {
+        return layering.getVertexCount(layerNum);
+    }
+
+    @Override
+    public int getLayerFromVertex(Vertex vertex) {
+        return layering.getLayerFromVertex(vertex);
+    }
+
+    @Override
+    public List<? extends Vertex> getLayer(int layerNum) {
+        return layering.getLayer(layerNum);
+    }
+
+    @Override
+    public List<List<JoanaVertex>> getLayers() {
+        return layering.getLayers();
+    }
+
+    @Override
+    public int getHeight() {
+        return layering.getHeight();
+    }
+
+    @Override
+    public int getLayerWidth(int layerN) {
+        return layering.getLayerWidth(layerN);
+    }
+
+    @Override
+    public int getMaxWidth() {
+        return layering.getMaxWidth();
     }
 }

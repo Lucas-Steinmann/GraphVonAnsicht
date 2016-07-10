@@ -325,7 +325,7 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
 //		return false;
 //	}
 	
-    private void removeEdge(E edge) {
+    public void removeEdge(E edge) {
         for (Set<E> outgoingEdges : vertexToEdge.values()) {
             outgoingEdges.remove(edge);
         }
@@ -335,7 +335,7 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
 
     }
 
-    private void removeVertex(V vertex) {
+    public void removeVertex(V vertex) {
         assert (this.outdegreeOf(vertex) == 0);
         assert (this.indegreeOf(vertex) == 0);
         vertexToEdge.remove(vertex);
@@ -343,19 +343,19 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
 //        collapsedVertices.remove(vertex);
     }
 
-    private void removeAllVertices(Set<V> vertices) {
+    public void removeAllVertices(Set<V> vertices) {
         for (V vertex : vertices ) {
             removeVertex(vertex);
         }
     }
 
-    private void addAllEdges(Set<E> edges) {
+    public void addAllEdges(Set<E> edges) {
         for (E edge : edges) {
             this.addEdge(edge);
         }
     }
 
-    private void addAllVertices(Set<V> vertices) {
+    public void addAllVertices(Set<V> vertices) {
         for (V vertex : vertices) {
             addVertex(vertex);
         }

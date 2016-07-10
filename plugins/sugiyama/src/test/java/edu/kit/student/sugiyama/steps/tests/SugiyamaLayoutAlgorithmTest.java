@@ -1,6 +1,7 @@
 package edu.kit.student.sugiyama.steps.tests;
 
 import edu.kit.student.graphmodel.DefaultVertex;
+import edu.kit.student.graphmodel.LayeredGraph;
 import edu.kit.student.graphmodel.directed.DefaultDirectedEdge;
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
 import edu.kit.student.graphmodel.directed.DirectedEdge;
@@ -12,11 +13,11 @@ import org.junit.Test;
 
 public class SugiyamaLayoutAlgorithmTest {
 
-	private SugiyamaLayoutAlgorithm alg;
+	private SugiyamaLayoutAlgorithm<LayeredGraph> alg;
 	
 	@Before
 	public void setUp(){
-		this.alg = new SugiyamaLayoutAlgorithm();
+		this.alg = new SugiyamaLayoutAlgorithm<LayeredGraph>();
 		alg.setCycleRemover(new CycleRemover());
 		alg.setLayerAssigner(new LayerAssigner());
 		alg.setCrossMinimizer(new CrossMinimizer());
@@ -27,21 +28,16 @@ public class SugiyamaLayoutAlgorithmTest {
 	@Test
 	public void testSmallGraph(){
 //		MethodGraph MGraph = new MethodGraph("",0);
-		DefaultDirectedGraph<DefaultVertex, DirectedEdge<DefaultVertex>> DDGraph = new DefaultDirectedGraph<DefaultVertex, DirectedEdge<DefaultVertex>>("");
+		DefaultDirectedGraph<DefaultVertex, DirectedEdge> DDGraph = new DefaultDirectedGraph<DefaultVertex, DirectedEdge>("");
 		DefaultVertex v1 = new DefaultVertex("v1", "");
 		DefaultVertex v2 = new DefaultVertex("v2", "");
 		DefaultVertex v3 = new DefaultVertex("v3", "");
 		DefaultVertex v4 = new DefaultVertex("v4", "");
-		DirectedEdge<DefaultVertex> e1 = new DefaultDirectedEdge<DefaultVertex>("e1","");
-		DirectedEdge<DefaultVertex> e2 = new DefaultDirectedEdge<DefaultVertex>("e2","");
-		DirectedEdge<DefaultVertex> e3 = new DefaultDirectedEdge<DefaultVertex>("e3","");
-		DirectedEdge<DefaultVertex> e4 = new DefaultDirectedEdge<DefaultVertex>("e4","");
-		DirectedEdge<DefaultVertex> e5 = new DefaultDirectedEdge<DefaultVertex>("e5","");
-		e1.setVertices(v1, v2);
-		e2.setVertices(v2, v3);
-		e3.setVertices(v3, v4);
-		e4.setVertices(v4, v1);
-		e5.setVertices(v2, v4);
+		DirectedEdge e1 = new DefaultDirectedEdge("e1","", v1, v2);
+		DirectedEdge e2 = new DefaultDirectedEdge("e2","", v2, v3);
+		DirectedEdge e3 = new DefaultDirectedEdge("e3","", v3, v4);
+		DirectedEdge e4 = new DefaultDirectedEdge("e4","", v4, v1);
+		DirectedEdge e5 = new DefaultDirectedEdge("e5","", v2, v4);
 		DDGraph.addVertex(v1);
 		DDGraph.addVertex(v2);
 		DDGraph.addVertex(v3);
@@ -57,7 +53,7 @@ public class SugiyamaLayoutAlgorithmTest {
 	@Test
 	public void testRandomGraph() {
 		for (int i = 0; i < 3; i++) {
-			DefaultDirectedGraph<DefaultVertex, DirectedEdge<DefaultVertex>> DDGraph = GraphUtil.generateGraph(30, 0.1f, true);
+			DefaultDirectedGraph<DefaultVertex, DirectedEdge> DDGraph = GraphUtil.generateGraph(30, 0.1f, true);
 			this.alg.layout(DDGraph);
 		}
 	}

@@ -9,7 +9,7 @@ import java.util.Set;
 /**
  * A LayeredGraph which additionally defines functions draw the edges in the sugiyama-layout.
  */
-public interface IEdgeDrawerGraph  extends LayeredGraph<ISugiyamaVertex, ISugiyamaEdge> {
+public interface IEdgeDrawerGraph  extends ISugiyamaStepGraph {
 	
 	/**
 	 * Reverses the direction of an directed edge.

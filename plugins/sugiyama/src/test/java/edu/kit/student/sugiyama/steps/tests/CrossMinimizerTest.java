@@ -27,7 +27,7 @@ public class CrossMinimizerTest {
 
     
     public void minimizeCrossings() throws Exception {
-        DefaultDirectedGraph<DefaultVertex, DirectedEdge<DefaultVertex>> DDGraph = new DefaultDirectedGraph<DefaultVertex, DirectedEdge<DefaultVertex>>("");
+        DefaultDirectedGraph<DefaultVertex, DirectedEdge> DDGraph = new DefaultDirectedGraph<DefaultVertex, DirectedEdge>("");
         DefaultVertex v1 = new DefaultVertex("v1", "0");
         DefaultVertex v2 = new DefaultVertex("v2", "0");
         DefaultVertex v3 = new DefaultVertex("v3", "0");
@@ -37,14 +37,14 @@ public class CrossMinimizerTest {
         DefaultVertex v7 = new DefaultVertex("v7", "1");
         DefaultVertex v8 = new DefaultVertex("v8", "2");
         DefaultVertex v9 = new DefaultVertex("v9", "2");
-        DirectedEdge<DefaultVertex> e1 = new DefaultDirectedEdge<DefaultVertex>("e1","");
-        DirectedEdge<DefaultVertex> e2 = new DefaultDirectedEdge<DefaultVertex>("e2","");
-        DirectedEdge<DefaultVertex> e3 = new DefaultDirectedEdge<DefaultVertex>("e3","");
-        DirectedEdge<DefaultVertex> e4 = new DefaultDirectedEdge<DefaultVertex>("e4","");
-        DirectedEdge<DefaultVertex> e5 = new DefaultDirectedEdge<DefaultVertex>("e5","");
-        DirectedEdge<DefaultVertex> e6 = new DefaultDirectedEdge<DefaultVertex>("e6","");
-        DirectedEdge<DefaultVertex> e7 = new DefaultDirectedEdge<DefaultVertex>("e7","");
-        DirectedEdge<DefaultVertex> e8 = new DefaultDirectedEdge<DefaultVertex>("e8","");
+        DirectedEdge e1 = new DefaultDirectedEdge("e1","", v1, v9);
+        DirectedEdge e2 = new DefaultDirectedEdge("e2","", v1, v6);
+        DirectedEdge e3 = new DefaultDirectedEdge("e3","", v2, v6);
+        DirectedEdge e4 = new DefaultDirectedEdge("e4","", v3, v7);
+        DirectedEdge e5 = new DefaultDirectedEdge("e5","", v4, v7);
+        DirectedEdge e6 = new DefaultDirectedEdge("e6","", v6, v8);
+        DirectedEdge e7 = new DefaultDirectedEdge("e7","", v6, v9);
+        DirectedEdge e8 = new DefaultDirectedEdge("e8","", v7, v9);
 //        e1.setVertices(v1, v5);	old edges
 //        e2.setVertices(v1, v6);
 //        e3.setVertices(v2, v6);
@@ -54,14 +54,6 @@ public class CrossMinimizerTest {
 //        e7.setVertices(v6, v9);
 //        e8.setVertices(v7, v9);
         
-        e1.setVertices(v1, v9);
-        e2.setVertices(v1, v6);
-        e3.setVertices(v2, v6);
-        e4.setVertices(v3, v7);
-        e5.setVertices(v4, v7);
-        e6.setVertices(v6, v8);
-        e7.setVertices(v6, v9);
-        e8.setVertices(v7, v9);
         
         DDGraph.addVertex(v9);
         DDGraph.addVertex(v2);

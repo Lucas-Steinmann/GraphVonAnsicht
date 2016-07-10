@@ -24,7 +24,7 @@ public interface GraphLayering<V extends Vertex> {
 	 * @param vertex the vertex to get its layer from
 	 * @return  	 the layer number from this vertex
 	 */
-	public int getLayerFromVertex(V vertex);
+	public int getLayerFromVertex(Vertex vertex);
 	
 	/**
 	 * Get all vertices from a certain layer.

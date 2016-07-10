@@ -26,16 +26,13 @@ public class CycleRemoverTest {
 	@Test
 	public void testSimpleCycle(){
 //		MethodGraph MGraph = new MethodGraph("",0);
-		DefaultDirectedGraph<DefaultVertex, DirectedEdge<DefaultVertex>> DDGraph = new DefaultDirectedGraph<DefaultVertex, DirectedEdge<DefaultVertex>>("");
+		DefaultDirectedGraph<DefaultVertex, DirectedEdge> DDGraph = new DefaultDirectedGraph<DefaultVertex, DirectedEdge>("");
 		DefaultVertex v1 = new DefaultVertex("v1", "");
 		DefaultVertex v2 = new DefaultVertex("v2", "");
 		DefaultVertex v3 = new DefaultVertex("v3", "");
-		DirectedEdge<DefaultVertex> e1 = new DefaultDirectedEdge<DefaultVertex>("e1","");
-		DirectedEdge<DefaultVertex> e2 = new DefaultDirectedEdge<DefaultVertex>("e2","");
-		DirectedEdge<DefaultVertex> e3 = new DefaultDirectedEdge<DefaultVertex>("e3","");
-		e1.setVertices(v1, v2);
-		e2.setVertices(v2, v3);
-		e3.setVertices(v3, v1);
+		DirectedEdge e1 = new DefaultDirectedEdge("e1","",v1, v2);
+		DirectedEdge e2 = new DefaultDirectedEdge("e2","",v2, v3);
+		DirectedEdge e3 = new DefaultDirectedEdge("e3","",v3, v1);
 		DDGraph.addVertex(v1);
 		DDGraph.addVertex(v2);
 		DDGraph.addVertex(v3);
@@ -52,21 +49,16 @@ public class CycleRemoverTest {
 	
 	@Test
 	public void testDoubleCycle(){
-		DefaultDirectedGraph<DefaultVertex, DirectedEdge<DefaultVertex>> DDGraph = new DefaultDirectedGraph<DefaultVertex, DirectedEdge<DefaultVertex>>("");
+		DefaultDirectedGraph<DefaultVertex, DirectedEdge> DDGraph = new DefaultDirectedGraph<DefaultVertex, DirectedEdge>("");
 		DefaultVertex v1 = new DefaultVertex("v1", "");
 		DefaultVertex v2 = new DefaultVertex("v2", "");
 		DefaultVertex v3 = new DefaultVertex("v3", "");
 		DefaultVertex v4 = new DefaultVertex("v4", "");
-		DirectedEdge<DefaultVertex> e1 = new DefaultDirectedEdge<DefaultVertex>("e1","");
-		DirectedEdge<DefaultVertex> e2 = new DefaultDirectedEdge<DefaultVertex>("e2","");
-		DirectedEdge<DefaultVertex> e3 = new DefaultDirectedEdge<DefaultVertex>("e3","");
-		DirectedEdge<DefaultVertex> e4 = new DefaultDirectedEdge<DefaultVertex>("e4","");
-		DirectedEdge<DefaultVertex> e5 = new DefaultDirectedEdge<DefaultVertex>("e5","");
-		e1.setVertices(v1, v2);
-		e2.setVertices(v2, v3);
-		e3.setVertices(v3, v4);
-		e4.setVertices(v4, v1);
-		e5.setVertices(v2, v4);
+		DirectedEdge e1 = new DefaultDirectedEdge("e1","",v1, v2);
+		DirectedEdge e2 = new DefaultDirectedEdge("e2","",v2, v3);
+		DirectedEdge e3 = new DefaultDirectedEdge("e3","",v3, v4);
+		DirectedEdge e4 = new DefaultDirectedEdge("e4","",v4, v1);
+		DirectedEdge e5 = new DefaultDirectedEdge("e5","",v2, v4);
 		DDGraph.addVertex(v1);
 		DDGraph.addVertex(v2);
 		DDGraph.addVertex(v3);

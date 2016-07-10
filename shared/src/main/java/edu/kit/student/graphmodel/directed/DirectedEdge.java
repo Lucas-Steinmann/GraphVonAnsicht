@@ -8,16 +8,6 @@ import edu.kit.student.graphmodel.Vertex;
  * The direction of the edge is specified.
  */
 public interface DirectedEdge extends Edge {
-
-
-    
-    /**
-     * Set source and target vertex of this directed edge
-     * 
-     * @param source vertex
-     * @param target vertex
-     */
-    public void setVertices(Vertex source, Vertex target);
 	
 	/**
 	 * Returns the source vertex of this directed edge.

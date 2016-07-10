@@ -1,6 +1,5 @@
 package edu.kit.student.sugiyama.graph;
 
-import edu.kit.student.graphmodel.LayeredGraph;
 import edu.kit.student.sugiyama.graph.SugiyamaGraph.DummyVertex;
 import edu.kit.student.sugiyama.graph.SugiyamaGraph.SupplementEdge;
 
@@ -10,7 +9,7 @@ import java.util.Set;
 /**
  * A LayeredGraph which additionally defines functions that can be used to minimize the crossings in the sugiyama-layout.
  */
-public interface ICrossMinimizerGraph extends LayeredGraph<ISugiyamaVertex, ISugiyamaEdge> {
+public interface ICrossMinimizerGraph extends ISugiyamaStepGraph {
 
 	/**
 	 * Get the amount of layers.

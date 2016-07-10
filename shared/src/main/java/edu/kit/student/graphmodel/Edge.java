@@ -13,7 +13,7 @@ public interface Edge {
 	 * 
 	 * @return The vertices connected with the edge.
 	 */
-	public List<Vertex> getVertices();
+	public List<? extends Vertex> getVertices();
 
 	/**
 	 * Returns the name of the edge.
