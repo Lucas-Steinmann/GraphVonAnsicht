@@ -7,6 +7,8 @@ import edu.kit.student.graphmodel.directed.DirectedEdge;
 import edu.kit.student.util.Point;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Line;
+import javafx.scene.shape.Path;
+import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
 import javafx.util.Pair;
 
@@ -102,5 +104,11 @@ public class EdgeShape extends GAnsGraphElement {
 			line.setFill(color);
 			line.setStroke(color);
 		}
+	}
+
+	@Override
+	public Path getElementShape() {
+		// TODO oben im Konstruktor einen Path erstellen
+		return new Path();
 	}
 }

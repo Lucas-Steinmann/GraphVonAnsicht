@@ -3,6 +3,7 @@ package edu.kit.student.gui;
 import edu.kit.student.graphmodel.Vertex;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
 
 /**
@@ -67,5 +68,10 @@ public class VertexShape extends GAnsGraphElement {
 	@Override
 	public String toString() {
 		return "Vertex \"" + text.getText() + "\"";
+	}
+
+	@Override
+	public Rectangle getElementShape() {
+		return rectangle;
 	}
 }

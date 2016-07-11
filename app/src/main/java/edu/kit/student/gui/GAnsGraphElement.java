@@ -2,6 +2,7 @@ package edu.kit.student.gui;
 
 import javafx.scene.layout.StackPane;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Shape;
 
 /**
  * A abstract class to generalize the visual elements that can be displayed in
@@ -33,4 +34,6 @@ public abstract class GAnsGraphElement extends StackPane {
 	 *            The color the element will be displayed in.
 	 */
 	public abstract void setColor(Color color);
+	
+	public abstract Shape getElementShape();
 }

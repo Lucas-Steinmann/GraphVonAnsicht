@@ -2,7 +2,6 @@ package edu.kit.student.joana.callgraph;
 
 import edu.kit.student.graphmodel.DefaultGraphLayering;
 import edu.kit.student.graphmodel.FastGraphAccessor;
-import edu.kit.student.graphmodel.SerializedGraph;
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
 import edu.kit.student.joana.JoanaCompoundVertex;
@@ -128,12 +127,6 @@ public class CallGraph extends JoanaGraph {
     public void addToFastGraphAccessor(FastGraphAccessor fga) {
         // TODO Auto-generated method stub
         
-    }
-
-    @Override
-    public SerializedGraph serialize() {
-        // TODO Auto-generated method stub
-        return null;
     }
 
     @Override

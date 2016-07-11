@@ -57,19 +57,6 @@ public class DefaultVertex implements Vertex {
 	}
 
 	@Override
-	public SerializedVertex serialize() {
-		List<String[]> attributes = new LinkedList<>();
-		attributes.add(new String[] {"name", this.name.toString()});
-		attributes.add(new String[] {"id", this.id.toString()});
-		attributes.add(new String[] {"label", this.label.toString()});
-		attributes.add(new String[] {"x", Integer.toString(this.x)});
-		attributes.add(new String[] {"y", Integer.toString(this.y)});
-		//TODO: add Vertices
-
-		return new SerializedVertex(attributes, this.name.toString(), this.id, this.label.toString());
-	}
-
-	@Override
 	public int getX() {
 		return x;
 	}

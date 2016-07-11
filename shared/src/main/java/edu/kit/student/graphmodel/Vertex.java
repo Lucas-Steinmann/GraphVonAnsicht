@@ -70,12 +70,6 @@ public interface Vertex {
 	 *            added.
 	 */
 	public void addToFastGraphAccessor(FastGraphAccessor fga);
-
-	/**
-	 * Returns a {@link SerializedVertex} representation of the graph.
-	 * @return The {@link SerializedVertex} representation of the graph.
-	 */
-	public SerializedVertex serialize();
 	
 	/**
 	 * Returns a set of properties of the Vertex that should be shown 

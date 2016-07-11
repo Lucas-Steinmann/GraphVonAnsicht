@@ -1,5 +1,7 @@
 package edu.kit.student.joana;
 
+import java.util.List;
+
 import edu.kit.student.graphmodel.directed.DefaultDirectedEdge;
 import edu.kit.student.objectproperty.GAnsProperty;
 
@@ -32,6 +34,13 @@ public class JoanaEdge extends DefaultDirectedEdge {
      */
     public Kind getEdgeKind() {
         return edgeKind.getValue();
+    }
+    
+    @Override
+    public List<GAnsProperty<?>> getProperties() {
+    	List<GAnsProperty<?>> properties = super.getProperties();
+    	properties.add(edgeKind);
+    	return properties;
     }
     
     // TODO: Add missing.

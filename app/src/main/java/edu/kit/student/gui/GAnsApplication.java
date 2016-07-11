@@ -207,7 +207,7 @@ public class GAnsApplication extends Application {
 			String fileName = saveFile.getName();
 			String fileExtension = "*" + fileName.substring(fileName.lastIndexOf('.'));
 			Exporter exporter = exporterList.get(supportedFileExtensions.indexOf(fileExtension));
-			exporter.exportGraph(currentGraphView.getFactory().getGraph().serialize(), outputStream);
+			exporter.exportGraph(currentGraphView.getFactory().serializeGraph(), outputStream);
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

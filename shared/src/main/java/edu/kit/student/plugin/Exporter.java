@@ -1,8 +1,8 @@
 package edu.kit.student.plugin;
 
-import edu.kit.student.graphmodel.SerializedGraph;
-
 import java.io.FileOutputStream;
+
+import edu.kit.student.graphmodel.serialize.SerializedGraph;
 
 /**
  * The exporter interface is implemented to export a graph 

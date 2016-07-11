@@ -312,12 +312,6 @@ public class SugiyamaGraph
 	}
 
 	@Override
-	public SerializedGraph serialize() {
-		// TODO muss weg
-		return null;
-	}
-
-	@Override
 	public List<LayoutOption> getRegisteredLayouts() {
 		// TODO muss weg
 		return null;
@@ -481,12 +475,6 @@ public class SugiyamaGraph
 		}
 
 		@Override
-		public SerializedEdge serialize() {
-			// TODO implement!!!
-			return null;
-		}
-
-		@Override
 		public EdgePath getPath() {
 			// TODO implement? is necessary ?
 			return null;
@@ -502,6 +490,11 @@ public class SugiyamaGraph
 		public boolean isReversed() {
 			return false;
 		}
+
+        @Override
+        public List<GAnsProperty<?>> getProperties() {
+            return new LinkedList<>();
+        }
 	}
 
 	/**
@@ -598,11 +591,6 @@ public class SugiyamaGraph
         public void addToFastGraphAccessor(FastGraphAccessor fga) {
             this.vertex.addToFastGraphAccessor(fga);
             
-        }
-
-        @Override
-        public SerializedVertex serialize() {
-            return this.vertex.serialize();
         }
 
 		@Override
@@ -736,9 +724,8 @@ public class SugiyamaGraph
 		}
 
 		@Override
-		public SerializedEdge serialize() {
-			// TODO implement
-			return null;
+		public List<GAnsProperty<?>> getProperties() {
+			return wrappedEdge.getProperties();
 		}
 
         @Override
