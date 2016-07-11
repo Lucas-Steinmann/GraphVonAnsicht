@@ -83,4 +83,9 @@ public class DefaultVertex implements Vertex {
 		properties.add(label);
 		return properties;
 	}
+	
+	@Override
+	public String toString(){
+		return this.name.toString();
+	}
 }

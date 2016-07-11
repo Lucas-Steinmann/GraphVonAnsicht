@@ -482,6 +482,11 @@ public class SugiyamaGraph extends DefaultDirectedGraph<ISugiyamaVertex, ISugiya
 		public List<GAnsProperty<?>> getProperties() {
 			return new LinkedList<GAnsProperty<?>>();
 		}
+		
+		@Override
+		public String toString(){
+			return this.name + "(" + this.source.toString() + "->" + this.target.toString() + ")";
+		}
 	}
 
 	/**
@@ -508,6 +513,11 @@ public class SugiyamaGraph extends DefaultDirectedGraph<ISugiyamaVertex, ISugiya
 		@Override
 		public void setLayer(int layerNum) {
 			this.layer=layerNum;
+		}
+		
+		@Override
+		public String toString(){
+			return this.getName();
 		}
 	}
 
@@ -586,6 +596,11 @@ public class SugiyamaGraph extends DefaultDirectedGraph<ISugiyamaVertex, ISugiya
 		@Override
 		public List<GAnsProperty<?>> getProperties() {
 			return this.vertex.getProperties();
+		}
+		
+		@Override
+		public String toString(){
+			return this.getName();
 		}
 	}
 
@@ -719,6 +734,11 @@ public class SugiyamaGraph extends DefaultDirectedGraph<ISugiyamaVertex, ISugiya
 		@Override
 		public List<GAnsProperty<?>> getProperties() {
 			return wrappedEdge.getProperties();
+		}
+		
+		@Override
+		public String toString(){
+			return this.getName() + "(" + this.source.toString() + "->" + this.target.toString() + ")";
 		}
 	}
 }

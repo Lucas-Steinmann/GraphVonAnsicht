@@ -25,8 +25,8 @@ public class CycleRemover implements ICycleRemover {
 		Set<ISugiyamaEdge> DAGEdges = new HashSet<ISugiyamaEdge>();
 		Set<ISugiyamaVertex> DDVertices = DDGraph.getVertexSet();
 		Set<ISugiyamaEdge> DDEdges = DDGraph.getEdgeSet();
-		System.out.println("vertices: " + DDVertices.size());
-		System.out.println("edges: " + DDEdges.size());
+		printVertices("vertices: ",DDVertices);
+		printEdges("edges: ",DDEdges);
 
 		while(!DDVertices.isEmpty()) {
 			ISugiyamaVertex vertex = getCurrentSink(DDVertices, DDEdges);
@@ -150,8 +150,7 @@ public class CycleRemover implements ICycleRemover {
 			}
 		}
 
-		System.out.println("reversed: " + result.size());
-		System.out.println("");
+		printEdges("reversed: ",result);
 		return result;
 	}
 	
@@ -194,6 +193,34 @@ public class CycleRemover implements ICycleRemover {
 		for(ISugiyamaEdge e: (Set<ISugiyamaEdge>)DDGraph.getEdgeSet()){
 			out+=e.getName()+",";
 		}
+		System.out.println(out);
+	}
+	
+	/**
+	 * Prints all vertices in the given set.
+	 * 
+	 * @param before prints this string before the output
+	 * @param set given set
+	 */
+	private void printVertices(String before, Set<ISugiyamaVertex> set){
+		String out = before + set.size()+", {";
+		for(ISugiyamaVertex v:set){
+		}
+		out=out.substring(0,out.length()-1) + "}";
+		System.out.println(out);
+	}
+	
+	/**
+	 * Prints all edges in the given set.
+	 * 
+	 * @param before prints this string before the output
+	 * @param set given set
+	 */
+	private void printEdges(String before, Set<ISugiyamaEdge> set){
+		String out = before + set.size()+", {";
+		for(ISugiyamaEdge e: set){
+		}
+		out=out.substring(0,out.length()-1) + "}";
 		System.out.println(out);
 	}
 }
