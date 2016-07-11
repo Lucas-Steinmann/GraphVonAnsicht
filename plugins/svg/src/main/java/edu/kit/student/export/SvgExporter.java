@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.Set;
 
 
+
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -28,6 +29,12 @@ import javax.xml.transform.stream.StreamResult;
 
 public class SvgExporter implements Exporter {
 
+    private static String rectStyle = "opacity:0.25868728;"
+            + "color:#000000;fill:#04B45F;fill-opacity:1;"
+            + "fill-rule:nonzero;marker:none;visibility:visible;"
+            + "display:inline;overflow:visible;enable-background:accumulate";
+    
+    
     @Override
     public String getSupportedFileEnding() {
         return "*.svg";
@@ -69,10 +76,13 @@ public class SvgExporter implements Exporter {
         
         document.appendChild(rootElement);
         
-        Element em = document.createElement("rect");
-        em.setAttribute("width", "200");
-        em.setAttribute("height", "300");
-        rootElement.appendChild(em);
+        //add Vertex Elements to DOM
+        Set<SerializedVertex> vertices = graph.getVertices();
+        for (SerializedVertex v : vertices) {
+            Element vertex = this.createVertexElement(document, v.getShapeProperties());
+            rootElement.appendChild(vertex);
+
+        }
         
         
         //Transform DOM tree to writeable file
@@ -120,6 +130,66 @@ public class SvgExporter implements Exporter {
                 e.printStackTrace();
             }
         }
+    }
+    
+    private Element createVertexElement(Document document, Map<String, String> shapeProp) {
+        
+        //get Properties for this Vertex
+        String label = "";   
+        double minX = 0.0;
+        double maxX = 0.0;
+        double minY = 0.0;
+        double maxY = 0.0;
+        
+        for (String s: shapeProp.keySet()) {
+            
+            switch (s) {
+              case "minX":
+                  minX = Double.parseDouble(shapeProp.get(s));
+                  break;
+              case "minY":
+                  minY = Double.parseDouble(shapeProp.get(s));
+                  break;
+              case "maxX":
+                  maxX = Double.parseDouble(shapeProp.get(s));
+                  break;
+              case "maxY":
+                  maxY = Double.parseDouble(shapeProp.get(s));
+                  break;
+              case "label":
+                  label = shapeProp.get(s);
+                  break;
+              default:                          
+            }
+        }
+        
+        //TODO: Catch NumberFormatException
+        double width = Math.abs(maxX - minX);
+        double height = Math.abs(maxY - minY);
+        
+        
+        //create Rectangle
+        Element rect = document.createElement("rect");
+        
+        rect.setAttribute("x", Double.toString(minX));
+        rect.setAttribute("y", Double.toString(minY));
+        rect.setAttribute("width", Double.toString(width));
+        rect.setAttribute("height", Double.toString(height));
+        rect.setAttribute("style", SvgExporter.rectStyle);
+        
+        //create group
+        Element group = document.createElement("g");
+        group.appendChild(rect);
+        
+        //create text
+        Element text = document.createElement("text");
+        text.setAttribute("x", Double.toString(minX + 5.0));
+        text.setAttribute("y", Double.toString(minY + 15.0));
+        text.appendChild(document.createTextNode(label));
+        
+        group.appendChild(text);
+        
+        return group;
     }
 
 }
