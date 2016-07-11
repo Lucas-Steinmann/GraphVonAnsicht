@@ -182,11 +182,13 @@ public class CrossMinimizer implements ICrossMinimizer {
 
 	public static int crossings(SugiyamaGraph graph) {
 		int result = 0;
+		List<List<ISugiyamaVertex>> layers = graph.getLayers();
+
 
 		result = IntStream.range(0, graph.getLayerCount() - 1)
 				.parallel()
 				.map(i -> {
-					return crossingsOfLayers(graph, graph.getLayer(i), graph.getLayer(i + 1));
+					return crossingsOfLayers(graph, layers.get(i), layers.get(i + 1));
 				}).sum();
 
 		return result;

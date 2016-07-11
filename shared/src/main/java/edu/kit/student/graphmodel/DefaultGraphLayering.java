@@ -101,9 +101,6 @@ public class DefaultGraphLayering<V extends Vertex> implements GraphLayering<V> 
             System.out.println("Error");
         }
         assert (vertex == getVertex(getPosition(vertex)));
-        for (V v : vertexToPoint.keySet()) {
-            assert (v == getVertex(getPosition(v)));
-        }
     }
     
     public void setLayer(V vertex, int layer) {
@@ -112,9 +109,6 @@ public class DefaultGraphLayering<V extends Vertex> implements GraphLayering<V> 
         }
         setPosition(vertex, new Point(this.getLayer(layer).size(), layer));
         assert (vertex == getVertex(getPosition(vertex)));
-        for (V v : vertexToPoint.keySet()) {
-            assert (v == getVertex(getPosition(v)));
-        }
     }
     
     public void addVertex(V vertex, int layer) {
@@ -122,9 +116,6 @@ public class DefaultGraphLayering<V extends Vertex> implements GraphLayering<V> 
         this.layers.get(0).add(vertex);
         
         this.setLayer(vertex, layer);
-        for (V v : vertexToPoint.keySet()) {
-            assert (v == getVertex(getPosition(v)));
-        }
     }
 
     @Override
