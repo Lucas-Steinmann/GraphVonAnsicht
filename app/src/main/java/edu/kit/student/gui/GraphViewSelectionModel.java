@@ -6,6 +6,10 @@ import java.util.HashSet;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 import javafx.event.EventHandler;
+import javafx.geometry.BoundingBox;
+import javafx.geometry.Bounds;
+import javafx.geometry.Point2D;
+import javafx.geometry.Point3D;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
@@ -51,6 +55,10 @@ public class GraphViewSelectionModel {
 	public boolean contains(VertexShape node) {
 		return selection.contains(node);
 	}
+	
+	public boolean isEmpty() {
+		return selection.isEmpty();
+	}
 
 	public void log() {
 		System.out.println("Items in model: " + Arrays.asList(selection.toArray()));
@@ -85,11 +93,11 @@ public class GraphViewSelectionModel {
 		EventHandler<MouseEvent> onMousePressedEventHandler = new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
-				dragContext.mouseAnchorX = event.getSceneX();
-				dragContext.mouseAnchorY = event.getSceneY();
+				dragContext.mouseAnchorX = event.getX();
+				dragContext.mouseAnchorY = event.getY();
 
 				if(event.getButton() == MouseButton.PRIMARY) {
-//					System.out.println("Primary clicked!");
+					System.out.println("Primary clicked!");
 					rect.setX(dragContext.mouseAnchorX);
 					rect.setY(dragContext.mouseAnchorY);
 					rect.setWidth(0);
@@ -97,12 +105,12 @@ public class GraphViewSelectionModel {
 	
 					outerPane.getChildren().add(rect);
 				} else if(event.getButton() == MouseButton.SECONDARY) {
-//					System.out.println("Secondary clicked!");
+					System.out.println("Secondary clicked!");
 					dragContext.translateAnchorX = view.getTranslateX();
 					dragContext.translateAnchorY = view.getTranslateY();
 				}
 				
-//				System.out.println(dragContext.toString());
+				System.out.println(dragContext.toString());
 
 				event.consume();
 			}
@@ -111,26 +119,28 @@ public class GraphViewSelectionModel {
 		EventHandler<MouseEvent> onMouseDraggedEventHandler = new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
-				if(event.getButton() == MouseButton.PRIMARY) { //Rubberband selection
-					double offsetX = dragContext.translateAnchorX + event.getSceneX() - dragContext.mouseAnchorX;
-					double offsetY = dragContext.translateAnchorX + event.getSceneY() - dragContext.mouseAnchorY;
+				//Rubberband selection
+				if(event.getButton() == MouseButton.PRIMARY) { 
+					double offsetX = event.getX() - dragContext.mouseAnchorX;
+					double offsetY = event.getY() - dragContext.mouseAnchorY;
 
-					if(offsetX > 0)
+					if(offsetX > 0) {
 						rect.setWidth(offsetX);
-					else {
-						rect.setX(event.getSceneX());
+					} else {
+						rect.setX(event.getX());
 						rect.setWidth(dragContext.mouseAnchorX - rect.getX());
 					}
 
 					if(offsetY > 0) {
 						rect.setHeight(offsetY);
 					} else {
-						rect.setY(event.getSceneY());
+						rect.setY(event.getY());
 						rect.setHeight(dragContext.mouseAnchorY - rect.getY());
 					}
-				} else if(event.getButton() == MouseButton.SECONDARY) { //Moving the view
-					//Works
-//					System.out.println("Secondary dragged!");
+				//Moving the view
+				} else if(event.getButton() == MouseButton.SECONDARY) { 
+					//Done
+					System.out.println("Secondary dragged!");
 					view.setTranslateX(dragContext.translateAnchorX + event.getSceneX() - dragContext.mouseAnchorX);
 					view.setTranslateY(dragContext.translateAnchorY + event.getSceneY() - dragContext.mouseAnchorY);
 				}
@@ -140,41 +150,40 @@ public class GraphViewSelectionModel {
 		};
 
 		EventHandler<MouseEvent> onMouseReleasedEventHandler = new EventHandler<MouseEvent>() {
+			//Done
 			@Override
 			public void handle(MouseEvent event) {
+				// selection like in explorer
 				if(event.getButton() == MouseButton.PRIMARY) {
-//					System.out.println("Primary released!");
-//					System.out.println("Rect:");
-//					System.out.println(rect.getBoundsInParent());
-//					System.out.println("View:");
-//					System.out.println(view.getBoundsInParent());
+					// selection needs to be cleared before adding new shapes
+					if(!event.isControlDown() && !GraphViewSelectionModel.this.isEmpty()) {
+						GraphViewSelectionModel.this.clear();
+					}
+					
+					boolean shapeSelected = false;
 					for (VertexShape shape : view.getFactory().getVertexShapes()) {
 						//mapping the position inside of the graphView to the relative position in the outerPane
 						double x = shape.getBoundsInParent().getMinX() + view.getBoundsInParent().getMinX();
 						double y = shape.getBoundsInParent().getMinY() + view.getBoundsInParent().getMinY();
 						double w = shape.getBoundsInParent().getWidth() * view.getScale();
 						double h = shape.getBoundsInParent().getHeight() * view.getScale();
-//						System.out.println("Shape: " + shape.getText());
-//						System.out.println(shape.getBoundsInParent());
-//						System.out.println("x:" + x + "; y:" + y + "; w:" + w + "; h:" + h);
+						BoundingBox shapeBounds = new BoundingBox(x,y,w,h);
 						
-						//TODO: does not seem to work properly. Every shape that is partially inside of the rect should be selected.
-						if(rect.getBoundsInParent().intersects(x, y, w, h)) {
-							GraphViewSelectionModel.this.add(shape);
-//							if (event.isShiftDown()) {
-//								GraphViewSelectionModel.this.add(shape);
-//							} else if (event.isControlDown()) {
-//								if (GraphViewSelectionModel.this.contains(shape)) {
-//									GraphViewSelectionModel.this.remove(shape);
-//								} else {
-//									GraphViewSelectionModel.this.add(shape);
-//								}
-//							} else {
-//								GraphViewSelectionModel.this.add(shape);
-//							}
-						} else {
-							GraphViewSelectionModel.this.clear();
-						}
+						if(shapeBounds.intersects(rect.getBoundsInParent())) {
+							if(event.isControlDown()) { 
+								if(GraphViewSelectionModel.this.contains(shape)) {
+									GraphViewSelectionModel.this.remove(shape);
+								} else {
+									GraphViewSelectionModel.this.add(shape);
+								}
+							} else {
+								GraphViewSelectionModel.this.add(shape);
+							}
+							shapeSelected = true;
+						} 
+					}
+					if(!shapeSelected) {
+						GraphViewSelectionModel.this.clear();
 					}
 					
 					GraphViewSelectionModel.this.log();
