@@ -2,7 +2,6 @@ package edu.kit.student.sugiyama.graph;
 
 import edu.kit.student.graphmodel.LayeredGraph;
 import edu.kit.student.util.Point;
-
 import java.util.List;
 import java.util.Set;
 
@@ -19,12 +18,11 @@ public interface IEdgeDrawerGraph  extends LayeredGraph<ISugiyamaVertex, ISugiya
 	public void reverseEdge(ISugiyamaEdge edge);
 	
 	/**
-	 * Deletes the supplement edges, which have been created when an edge was reversed.
-	 * Adds all reversed edges back to the set of edges and returns them.
-	 * 
-	 * @return the set of edges, which have been restored.
+	 * Sets the edgepath of all edges that have been replaced through a supplement path.
+	 * Sets a {@see Point} for every DummyVertex inherited in a supplement path.
 	 */
-	public Set<ISugiyamaEdge> restoreAllEdges();
+	public void setEdgepaths();
+	
 
 	/**
 	 * Returns the set of all with {@code reverseEdge(E edge)} reversed edges.
@@ -39,14 +37,6 @@ public interface IEdgeDrawerGraph  extends LayeredGraph<ISugiyamaVertex, ISugiya
 	 * @return the set of replaced edges
 	 */
 	public Set<ISugiyamaEdge> getReplacedEdges();
-	
-	/**
-	 * Deletes all dummy vertices and edges connecting dummy vertices.
-	 * Adds the replaced edges back to set of edges.
-	 * 
-	 * @return the set of edges, which has been restored
-	 */
-	public Set<ISugiyamaEdge> restoreReplacedEdges();
 	
 	
 	/**
@@ -76,4 +66,5 @@ public interface IEdgeDrawerGraph  extends LayeredGraph<ISugiyamaVertex, ISugiya
 	 * @return	   the list of points of the corners on the edge
 	 */
 	public List<Point> getEdgeCorners(ISugiyamaEdge edge);
+
 }

@@ -265,19 +265,13 @@ public class SugiyamaGraph extends DefaultDirectedGraph<ISugiyamaVertex, ISugiya
 	}
 
 	@Override
-	public Set<ISugiyamaEdge> restoreAllEdges() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
 	public Set<ISugiyamaEdge> getReplacedEdges() {
 		// TODO Auto-generated method stub
 		return null;
 	}
 
 	@Override
-	public Set<ISugiyamaEdge> restoreReplacedEdges() {
+	public void setEdgepaths() {
 		for (SupplementPath supplementPath : this.supplementPaths) {
 			ISugiyamaEdge edge = supplementPath.replacedEdge;
 			List<Point> path = edge.getPath().getNodes();
@@ -290,7 +284,6 @@ public class SugiyamaGraph extends DefaultDirectedGraph<ISugiyamaVertex, ISugiya
 				Collections.reverse(path);
 			}
 		}
-		return null;
 	}
 
 	@Override
