@@ -138,7 +138,7 @@ public class GAnsProperty<T extends Object> {
 	 * @return The string-representation of the value from the GAnsProperty.
 	 */
 	public String getValueAsString() {
-		return propertyValueAsString().toString();
+		return propertyValueAsString().get();
 	}
 
 	/**

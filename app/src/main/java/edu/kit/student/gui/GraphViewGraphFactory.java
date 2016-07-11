@@ -131,12 +131,12 @@ public class GraphViewGraphFactory {
 		Set<SerializedVertex> set = new HashSet<SerializedVertex>();
 		for(VertexShape shape : vertices.keySet()) {
 			Map<String,String> shapeProperties = new HashMap<String,String>();
-			final Bounds bounds = shape.getElementShape().getBoundsInParent();
+			Bounds bounds = shape.getBoundsInParent();
 			shapeProperties.put("label", shape.getText());
 			shapeProperties.put("minX", Double.toString(bounds.getMinX()));
 			shapeProperties.put("minY", Double.toString(bounds.getMinY()));
-			shapeProperties.put("MaxX", Double.toString(bounds.getMaxX()));
-			shapeProperties.put("MaxY", Double.toString(bounds.getMaxY()));
+			shapeProperties.put("maxX", Double.toString(bounds.getMaxX()));
+			shapeProperties.put("maxY", Double.toString(bounds.getMaxY()));
 			shapeProperties.put("arcWidth", Double.toString(shape.getElementShape().getArcWidth()));
 			shapeProperties.put("arcHeight", Double.toString(shape.getElementShape().getArcHeight()));
 			
