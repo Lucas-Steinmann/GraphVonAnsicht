@@ -184,7 +184,7 @@ public class JoanaVertex extends DefaultVertex {
     public enum Kind {
         NORM, CALL, EXIT, ENTR,
         ACTI, ACTO, FRMO, FRMI,
-        EXPR, PRED;
+        EXPR, PRED, SYNC;
         
         @Override
         public String toString() {
@@ -199,6 +199,7 @@ public class JoanaVertex extends DefaultVertex {
         	case FRMI: return "FRMI";
         	case EXPR: return "EXPR";
         	case PRED: return "PRED";
+        	case SYNC: return "SYNC";
         	default: return "";
         	}
         }
