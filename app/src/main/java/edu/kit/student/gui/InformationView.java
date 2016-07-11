@@ -2,7 +2,6 @@ package edu.kit.student.gui;
 
 import edu.kit.student.objectproperty.GAnsProperty;
 import javafx.collections.ObservableList;
-import javafx.collections.ObservableSet;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.control.cell.PropertyValueFactory;

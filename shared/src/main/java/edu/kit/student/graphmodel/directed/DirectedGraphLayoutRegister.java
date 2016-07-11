@@ -3,7 +3,6 @@ package edu.kit.student.graphmodel.directed;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.kit.student.plugin.LayoutOption;
 import edu.kit.student.plugin.LayoutRegister;
 
 /**

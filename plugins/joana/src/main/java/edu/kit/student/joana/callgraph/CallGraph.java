@@ -10,8 +10,6 @@ import java.util.Set;
 import edu.kit.student.joana.JoanaEdge;
 import edu.kit.student.joana.JoanaGraph;
 import edu.kit.student.joana.methodgraph.MethodGraph;
-import edu.kit.student.joana.methodgraph.MethodGraphLayout;
-import edu.kit.student.joana.methodgraph.MethodGraphLayoutOption;
 import edu.kit.student.plugin.LayoutOption;
 import edu.kit.student.plugin.LayoutRegister;
 

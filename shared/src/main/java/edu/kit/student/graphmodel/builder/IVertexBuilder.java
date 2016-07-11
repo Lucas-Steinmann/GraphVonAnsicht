@@ -1,7 +1,5 @@
 package edu.kit.student.graphmodel.builder;
 
-import edu.kit.student.graphmodel.Vertex;
-
 /**
  * An abstract interface, which is used to build one vertex.
  */

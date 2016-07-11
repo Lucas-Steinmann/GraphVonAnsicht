@@ -1,8 +1,6 @@
 package edu.kit.student.joana;
 
-import java.util.HashSet;
 import java.util.List;
-import java.util.Set;
 
 import edu.kit.student.graphmodel.DefaultVertex;
 import edu.kit.student.objectproperty.GAnsProperty;

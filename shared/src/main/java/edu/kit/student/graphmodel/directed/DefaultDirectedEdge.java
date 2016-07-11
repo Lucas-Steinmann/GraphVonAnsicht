@@ -7,7 +7,6 @@ import java.util.List;
 import edu.kit.student.graphmodel.FastGraphAccessor;
 import edu.kit.student.graphmodel.OrthogonalEdgePath;
 import edu.kit.student.graphmodel.Vertex;
-import edu.kit.student.graphmodel.serialize.SerializedEdge;
 import edu.kit.student.objectproperty.GAnsProperty;
 import edu.kit.student.util.IdGenerator;
 

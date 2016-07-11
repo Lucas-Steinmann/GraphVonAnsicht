@@ -1,11 +1,8 @@
 package edu.kit.student.gui;
 
-import java.util.HashMap;
-
 import edu.kit.student.graphmodel.Edge;
 import edu.kit.student.graphmodel.Graph;
 import edu.kit.student.graphmodel.Vertex;
-import edu.kit.student.graphmodel.serialize.SerializedGraph;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.canvas.Canvas;

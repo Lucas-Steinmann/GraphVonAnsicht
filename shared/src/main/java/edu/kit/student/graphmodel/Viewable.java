@@ -1,9 +1,6 @@
 package edu.kit.student.graphmodel;
 
-import java.util.List;
-
 import edu.kit.student.graphmodel.serialize.SerializedGraph;
-import edu.kit.student.plugin.LayoutOption;
 
 import java.util.Set;
 
