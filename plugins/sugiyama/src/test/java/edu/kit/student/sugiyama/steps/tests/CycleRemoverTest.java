@@ -1,6 +1,7 @@
 package edu.kit.student.sugiyama.steps.tests;
 
 import edu.kit.student.graphmodel.DefaultVertex;
+import edu.kit.student.graphmodel.Edge;
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.directed.DefaultDirectedEdge;
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
@@ -27,12 +28,12 @@ public class CycleRemoverTest {
 	public void testSimpleCycle(){
 //		MethodGraph MGraph = new MethodGraph("",0);
 		DefaultDirectedGraph<DefaultVertex, DirectedEdge> DDGraph = new DefaultDirectedGraph<DefaultVertex, DirectedEdge>("");
-		DefaultVertex v1 = new DefaultVertex("v1", "");
-		DefaultVertex v2 = new DefaultVertex("v2", "");
-		DefaultVertex v3 = new DefaultVertex("v3", "");
-		DirectedEdge e1 = new DefaultDirectedEdge("e1","",v1, v2);
-		DirectedEdge e2 = new DefaultDirectedEdge("e2","",v2, v3);
-		DirectedEdge e3 = new DefaultDirectedEdge("e3","",v3, v1);
+		DefaultVertex v1 = new DefaultVertex("v1", "v1");
+		DefaultVertex v2 = new DefaultVertex("v2", "v2");
+		DefaultVertex v3 = new DefaultVertex("v3", "v3");
+		DirectedEdge e1 = new DefaultDirectedEdge("e1","e1",v1, v2);
+		DirectedEdge e2 = new DefaultDirectedEdge("e2","e2",v2, v3);
+		DirectedEdge e3 = new DefaultDirectedEdge("e3","e3",v3, v1);
 		DDGraph.addVertex(v1);
 		DDGraph.addVertex(v2);
 		DDGraph.addVertex(v3);
@@ -43,8 +44,15 @@ public class CycleRemoverTest {
 
 		CycleRemover cr = new CycleRemover();
 		cr.removeCycles(SGraph);
+		
+		for (DirectedEdge e : SGraph.getEdgeSet()) {
+		    System.out.println(graphicPrint(e));
+		}
 
 		assertTrue(isAcyclic(SGraph));
+	}
+	public String graphicPrint(DirectedEdge edge) {
+	    return edge.getSource().getLabel() + " --" + edge.getLabel() + "-> " + edge.getTarget().getLabel();
 	}
 	
 	@Test
@@ -109,7 +117,10 @@ public class CycleRemoverTest {
 		}
 
 		Set<DirectedEdge> edges = new HashSet<>();
-		Set<Vertex> vertices = (Set<Vertex>) graph.getVertexSet().stream().filter(vertex -> graph.incomingEdgesOf((Vertex) vertex).size() == 0).collect(Collectors.toSet());
+		for (Vertex v : graph.getVertexSet()) {
+		    System.out.println(graph.incomingEdgesOf(v).size());
+		}
+		Set<Vertex> vertices = graph.getVertexSet().stream().filter(vertex -> graph.incomingEdgesOf(vertex).size() == 0).collect(Collectors.toSet());
 
 		while (vertices.size() > 0) {
 			Vertex vertex = getRandom(vertices);

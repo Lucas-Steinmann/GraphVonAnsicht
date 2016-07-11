@@ -45,6 +45,7 @@ public class SugiyamaGraph
 		HashSet<ISugiyamaEdge> edges = new HashSet<>();
 		this.wrappedGraph = graph;
 
+		layering = new DefaultGraphLayering<>(new HashSet<>());
 		for (Vertex vertex: graph.getVertexSet()) {
 		    //TODO: Why -1 and not 0? Does -1 mean an illegal state? Why not just put all vertices on layer 0 at start to achieve an consistent state at all time.
 		    //      In the statement after this all vertices are set to the starting layer. Isn't this layer 0?
@@ -53,14 +54,13 @@ public class SugiyamaGraph
 			vertices.add(sugiyamaVertex);	//fills vertexset with all wrapped vertices
 			tmpVertexMap.put(vertex.getID(), sugiyamaVertex);
 		}
-		layering = new DefaultGraphLayering<>(vertices);
 		for(DirectedEdge edge: graph.getEdgeSet()){
 			SugiyamaEdge sugiyamaEdge = new SugiyamaEdge(edge, 
 			        tmpVertexMap.get(edge.getSource().getID()),
 			        tmpVertexMap.get(edge.getTarget().getID()));
 			edges.add(sugiyamaEdge);	//fills edgeset with all wrapped edges
 		}
-
+		this.graph = new DefaultDirectedGraph<>(getName(), vertices, edges);
 		layerPositions = new LinkedList<>();
 		layerPositions.add(0);
 	}
@@ -97,7 +97,9 @@ public class SugiyamaGraph
 
 	@Override
 	public void reverseEdge(ISugiyamaEdge edge) {
+	    graph.removeEdge(edge);
 	    edge.setReversed(!edge.isReversed());
+	    graph.addEdge(edge);
 	}
 
 	@Override

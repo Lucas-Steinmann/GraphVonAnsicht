@@ -127,4 +127,5 @@ public class DefaultDirectedEdge implements DirectedEdge {
 	public OrthogonalEdgePath getPath() {
 	    return path;
 	}
+	
 }

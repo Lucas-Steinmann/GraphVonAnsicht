@@ -39,7 +39,7 @@ public interface GraphLayering<V extends Vertex> {
 	 * 
 	 * @return a list of lists of vertices which are on this layer
 	 */
-	public List<List<V>> getLayers();
+	public List<? extends List<V>> getLayers();
 	
 	/**
 	 * Returns the height, i.e. the number of layers.

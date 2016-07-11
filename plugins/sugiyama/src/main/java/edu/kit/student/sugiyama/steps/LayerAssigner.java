@@ -112,7 +112,7 @@ public class LayerAssigner implements ILayerAssigner {
 		for(ISugiyamaEdge edge: this.graphEdges){
 			DDEdges.add(edge);
 		}
-		this.DDGraph = new DefaultDirectedGraph("", DDVertices, DDEdges);
+		this.DDGraph = new DefaultDirectedGraph<>("", DDVertices, DDEdges);
 	}
 	
 
