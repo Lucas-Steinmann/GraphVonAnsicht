@@ -205,6 +205,7 @@ public class CycleRemover implements ICycleRemover {
 	private void printVertices(String before, Set<ISugiyamaVertex> set){
 		String out = before + set.size()+", {";
 		for(ISugiyamaVertex v:set){
+			out+=v.toString()+",";
 		}
 		out=out.substring(0,out.length()-1) + "}";
 		System.out.println(out);
@@ -219,6 +220,7 @@ public class CycleRemover implements ICycleRemover {
 	private void printEdges(String before, Set<ISugiyamaEdge> set){
 		String out = before + set.size()+", {";
 		for(ISugiyamaEdge e: set){
+			out+=e.toString()+",";
 		}
 		out=out.substring(0,out.length()-1) + "}";
 		System.out.println(out);
