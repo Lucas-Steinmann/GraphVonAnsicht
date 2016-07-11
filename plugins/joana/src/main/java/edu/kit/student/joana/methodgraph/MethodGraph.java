@@ -25,12 +25,15 @@ public class MethodGraph extends JoanaGraph<JoanaVertex, JoanaEdge<JoanaVertex>>
     private HashSet<FieldAccess> fieldAccesses;
 
     public MethodGraph(Set<JoanaVertex> vertices, Set<JoanaEdge<JoanaVertex>> edges, 
-            Set<FieldAccess> fieldAccesses, String methodName) {
+            String methodName) {
         super(methodName, vertices, edges);
         for(JoanaVertex vertex : vertices) {
         	if(vertex.getNodeKind() == Kind.ENTR) this.entry = vertex;
         }
-        this.fieldAccesses = new HashSet<>(fieldAccesses);
+        
+        //TODO: get fieldAccesses
+        
+        this.fieldAccesses = new HashSet<>();
     }
     
     /**

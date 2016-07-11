@@ -70,7 +70,6 @@ public class MethodGraphBuilder implements IGraphBuilder {
         for (JoanaEdgeBuilder builder : edgeBuilders) {
             edges.add(builder.build(vertices));
         }
-        //TODO: Get fieldaccess
 
         String name = "";
         for (JoanaVertex v : vertices) {
@@ -85,7 +84,7 @@ public class MethodGraphBuilder implements IGraphBuilder {
             //TODO: throw exception
         }
         
-        MethodGraph methodGraph = new MethodGraph(vertices, edges, new HashSet<>(), name);
+        MethodGraph methodGraph = new MethodGraph(vertices, edges, name);
         
         return methodGraph;
     }
