@@ -60,6 +60,7 @@ public class CrossMinimizer implements ICrossMinimizer {
 
 			oldCrossings = newCrossings;
 		}
+		System.out.println("vertices: " + graph.getVertexSet().size()+'\n'+"edges: "+graph.getEdgeSet().size());
 		//for printing the layers after cross minimization
 		graph.getLayers().forEach(iSugiyamaVertices -> System.out.println(iSugiyamaVertices.stream().map(iSugiyamaVertex -> iSugiyamaVertex.getName()).collect(Collectors.joining(", "))));
 	}
@@ -82,7 +83,7 @@ public class CrossMinimizer implements ICrossMinimizer {
 			int lowerLayer = source.getLayer();
 			int upperLayer = target.getLayer();
 			int diff = upperLayer - lowerLayer;
-			assert(diff >= 1);	//diff must not be lower than zero
+			assert(diff >= 1);	//diff must not be lower than one, both vertices must not be on the same layer!
 			assert(graph.getLayer(lowerLayer).contains(source));
 			assert(graph.getLayer(upperLayer).contains(target));
 
