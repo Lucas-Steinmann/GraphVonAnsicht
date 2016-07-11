@@ -27,7 +27,7 @@ public class SugiyamaPlugin extends AbstractPluginBase {
     public void load() {
         DefaultDirectedGraph.getDirectedGraphLayoutRegister().addLayoutOption(new DirectedGraphLayoutOption() {
             
-            SugiyamaLayoutAlgorithm algo;
+            SugiyamaLayoutAlgorithm<? extends DirectedGraph> algo;
             
             {
                 this.setName("Sugiyama");
@@ -44,7 +44,7 @@ public class SugiyamaPlugin extends AbstractPluginBase {
             
             @Override
             public void chooseLayout() {
-                algo = new SugiyamaLayoutAlgorithm();
+                algo = new SugiyamaLayoutAlgorithm<>();
             }
             
             @Override

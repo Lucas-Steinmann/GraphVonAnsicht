@@ -3,8 +3,6 @@
  */
 package edu.kit.student.joana.methodgraph;
 
-import edu.kit.student.joana.JoanaEdge;
-import edu.kit.student.joana.JoanaVertex;
 import edu.kit.student.parameter.Settings;
 import edu.kit.student.plugin.LayoutAlgorithm;
 import edu.kit.student.plugin.LayoutOption;

@@ -17,7 +17,7 @@ import javafx.beans.value.ChangeListener;
  * 
  * @author Nicolas
  */
-public class GAnsProperty<T extends Object> {
+public class GAnsProperty<T> {
 
 	/**
 	 * A string with whom, factories or other elements from the GUI, can

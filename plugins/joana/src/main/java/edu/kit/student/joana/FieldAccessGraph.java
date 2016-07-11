@@ -2,7 +2,6 @@ package edu.kit.student.joana;
 
 import edu.kit.student.graphmodel.DefaultGraphLayering;
 import edu.kit.student.graphmodel.FastGraphAccessor;
-import edu.kit.student.graphmodel.GraphLayering;
 import edu.kit.student.graphmodel.SerializedGraph;
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;

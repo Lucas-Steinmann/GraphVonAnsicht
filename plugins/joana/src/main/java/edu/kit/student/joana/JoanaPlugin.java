@@ -8,7 +8,6 @@ import edu.kit.student.joana.methodgraph.MethodGraphLayout;
 import edu.kit.student.joana.methodgraph.MethodGraphLayoutOption;
 import edu.kit.student.parameter.Settings;
 import edu.kit.student.plugin.AbstractPluginBase;
-import edu.kit.student.plugin.LayoutOption;
 import edu.kit.student.plugin.LayoutRegister;
 import edu.kit.student.plugin.Workspace;
 import edu.kit.student.plugin.WorkspaceOption;

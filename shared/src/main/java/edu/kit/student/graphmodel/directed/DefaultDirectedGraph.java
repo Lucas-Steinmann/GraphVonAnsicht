@@ -5,18 +5,14 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
-import edu.kit.student.graphmodel.CollapsedVertex;
-import edu.kit.student.graphmodel.Edge;
 import edu.kit.student.graphmodel.FastGraphAccessor;
 import edu.kit.student.graphmodel.Graph;
 import edu.kit.student.graphmodel.SerializedEdge;
 import edu.kit.student.graphmodel.SerializedGraph;
 import edu.kit.student.graphmodel.SerializedVertex;
 import edu.kit.student.graphmodel.Vertex;
-import edu.kit.student.graphmodel.ViewableGraph;
 import edu.kit.student.objectproperty.GAnsProperty;
 import edu.kit.student.plugin.LayoutOption;
 import edu.kit.student.util.IdGenerator;
@@ -361,7 +357,7 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
         }
     }
     
-    private boolean contains(Vertex vertex) {
+    public boolean contains(Vertex vertex) {
         return this.getVertexSet().contains(vertex);
     }
 

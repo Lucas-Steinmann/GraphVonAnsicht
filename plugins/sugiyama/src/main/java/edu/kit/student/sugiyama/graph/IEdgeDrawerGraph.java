@@ -1,6 +1,5 @@
 package edu.kit.student.sugiyama.graph;
 
-import edu.kit.student.graphmodel.LayeredGraph;
 import edu.kit.student.util.Point;
 
 import java.util.List;

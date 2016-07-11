@@ -242,8 +242,8 @@ public class GAnsApplication extends Application {
 		graphView.getSelectionModel().getSelectedItems().addListener(new SetChangeListener<VertexShape>() {
 			public void onChanged(Change<? extends VertexShape> changedItem) {
 				ObservableSet<VertexShape> selectedItems = graphView.getSelectionModel().getSelectedItems();
-				List<GAnsProperty> tmp = new LinkedList<GAnsProperty>();
-				ObservableList<GAnsProperty> properties = FXCollections.observableList(tmp);
+				List<GAnsProperty<?>> tmp = new LinkedList<GAnsProperty<?>>();
+				ObservableList<GAnsProperty<?>> properties = FXCollections.observableList(tmp);
 				for (VertexShape element : selectedItems) {
 					properties.addAll(currentGraphView.getFactory().getVertexFromShape(element).getProperties());
 				}

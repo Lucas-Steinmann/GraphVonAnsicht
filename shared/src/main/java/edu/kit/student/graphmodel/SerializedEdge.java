@@ -2,7 +2,6 @@ package edu.kit.student.graphmodel;
 
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 
 /**
  * A serialized version of a {@link Edge}.

@@ -2,12 +2,9 @@ package edu.kit.student.joana.methodgraph;
 
 import edu.kit.student.graphmodel.DefaultGraphLayering;
 import edu.kit.student.graphmodel.FastGraphAccessor;
-import edu.kit.student.graphmodel.GraphLayering;
-import edu.kit.student.graphmodel.LayeredGraph;
 import edu.kit.student.graphmodel.SerializedGraph;
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
-import edu.kit.student.graphmodel.directed.DirectedEdge;
 import edu.kit.student.joana.FieldAccess;
 import edu.kit.student.joana.JoanaEdge;
 import edu.kit.student.joana.JoanaGraph;

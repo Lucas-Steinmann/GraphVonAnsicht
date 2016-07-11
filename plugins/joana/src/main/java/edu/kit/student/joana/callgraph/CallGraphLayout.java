@@ -3,9 +3,6 @@ package edu.kit.student.joana.callgraph;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import edu.kit.student.graphmodel.LayeredGraph;
-import edu.kit.student.joana.JoanaCompoundVertex;
-import edu.kit.student.joana.JoanaEdge;
 import edu.kit.student.parameter.Settings;
 import edu.kit.student.sugiyama.LayeredLayoutAlgorithm;
 import edu.kit.student.sugiyama.RelativeLayerConstraint;

@@ -1,6 +1,5 @@
 package edu.kit.student.sugiyama.graph;
 
-import edu.kit.student.graphmodel.LayeredGraph;
 
 /**
  * A LayeredGraph which additionally defines functions to position vertices in the sugiyama-layout.

@@ -6,9 +6,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 
-import edu.kit.student.graphmodel.LayeredGraph;
-import edu.kit.student.joana.JoanaEdge;
-import edu.kit.student.joana.JoanaVertex;
 import edu.kit.student.parameter.IntegerParameter;
 import edu.kit.student.parameter.MultipleChoiceParameter;
 import edu.kit.student.parameter.Parameter;

@@ -1,28 +1,21 @@
 package edu.kit.student.joana.callgraph;
 
 import edu.kit.student.graphmodel.DefaultGraphLayering;
-import edu.kit.student.graphmodel.Edge;
 import edu.kit.student.graphmodel.FastGraphAccessor;
-import edu.kit.student.graphmodel.GraphLayering;
-import edu.kit.student.graphmodel.LayeredGraph;
 import edu.kit.student.graphmodel.SerializedGraph;
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
-import edu.kit.student.graphmodel.directed.DirectedEdge;
 import edu.kit.student.joana.JoanaCompoundVertex;
+import edu.kit.student.joana.JoanaEdge;
+import edu.kit.student.joana.JoanaGraph;
+import edu.kit.student.joana.methodgraph.MethodGraph;
+import edu.kit.student.plugin.LayoutOption;
+import edu.kit.student.plugin.LayoutRegister;
+
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-
-import edu.kit.student.joana.JoanaEdge;
-import edu.kit.student.joana.JoanaGraph;
-import edu.kit.student.joana.JoanaVertex;
-import edu.kit.student.joana.methodgraph.MethodGraph;
-import edu.kit.student.joana.methodgraph.MethodGraphLayout;
-import edu.kit.student.joana.methodgraph.MethodGraphLayoutOption;
-import edu.kit.student.plugin.LayoutOption;
-import edu.kit.student.plugin.LayoutRegister;
 
 /**
  * This is a specified graph representation for the Callgraph in Joana.

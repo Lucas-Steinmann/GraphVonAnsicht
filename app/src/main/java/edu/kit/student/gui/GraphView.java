@@ -1,8 +1,6 @@
 package edu.kit.student.gui;
 
-import edu.kit.student.graphmodel.Edge;
 import edu.kit.student.graphmodel.Graph;
-import edu.kit.student.graphmodel.Vertex;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.canvas.Canvas;
