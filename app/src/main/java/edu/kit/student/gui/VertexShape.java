@@ -3,7 +3,6 @@ package edu.kit.student.gui;
 import edu.kit.student.graphmodel.Vertex;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
-import javafx.scene.shape.Shape;
 import javafx.scene.text.Text;
 
 /**
@@ -17,6 +16,8 @@ public class VertexShape extends GAnsGraphElement {
 	private Text text;
 	private static double mindWidth = 20;
 	private static double mindHeight = 5;
+	private static double leftRightMargin = 8;
+	private static double topBottomMargin = 4;
 
 	/**
 	 * Constructor
@@ -43,8 +44,8 @@ public class VertexShape extends GAnsGraphElement {
 	@Override
 	public void setText(String text) {
 		this.text.setText(text);
-		double width = this.text.getLayoutBounds().getWidth() + 8;
-		double height = this.text.getLayoutBounds().getHeight() + 4;
+		double width = this.text.getLayoutBounds().getWidth() + leftRightMargin;
+		double height = this.text.getLayoutBounds().getHeight() + topBottomMargin;
 
 		if (width < mindWidth)
 			width = mindWidth;

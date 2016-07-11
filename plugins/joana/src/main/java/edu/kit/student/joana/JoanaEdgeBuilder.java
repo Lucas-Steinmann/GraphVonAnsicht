@@ -25,6 +25,7 @@ public class JoanaEdgeBuilder implements IEdgeBuilder {
     
     @Override
     public void setID(String id) {
+    	// not needed, an edge in joana is defined only by its source, targed and kind.
         this.name = id;
     }
 
@@ -55,7 +56,7 @@ public class JoanaEdgeBuilder implements IEdgeBuilder {
         Optional<JoanaVertex> targetVertex = vertexPool.stream().filter(joanaVertex -> joanaVertex.getName().equals(target)).findFirst();
 
         if (sourceVertex.isPresent() && targetVertex.isPresent()) {
-            return new JoanaEdge(name, name, sourceVertex.get(), targetVertex.get(), edgeKind);
+            return new JoanaEdge(sourceVertex.get(), targetVertex.get(), edgeKind);
         }
 
         return null;
