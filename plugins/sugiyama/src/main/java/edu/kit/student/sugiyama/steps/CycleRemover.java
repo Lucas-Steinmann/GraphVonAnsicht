@@ -19,6 +19,7 @@ public class CycleRemover implements ICycleRemover {
 	
 	@Override
 	public void removeCycles(ICycleRemoverGraph graph) {
+		System.out.println("CycleRemover.removeCycles():");
 		initialize(graph);
 
 		Set<ISugiyamaEdge> DAGEdges = new HashSet<ISugiyamaEdge>();

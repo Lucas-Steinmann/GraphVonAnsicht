@@ -18,6 +18,7 @@ public class CrossMinimizer implements ICrossMinimizer {
 
 	@Override
 	public void minimizeCrossings(ICrossMinimizerGraph graph) {
+		System.out.println("CrossMinimizer.minimizeCrossings():");
 		int layerCount = graph.getLayerCount();
 
 		addDummyAndEdges(graph);
@@ -59,6 +60,8 @@ public class CrossMinimizer implements ICrossMinimizer {
 
 			oldCrossings = newCrossings;
 		}
+		//for printing the layers after cross minimization
+		graph.getLayers().forEach(iSugiyamaVertices -> System.out.println(iSugiyamaVertices.stream().map(iSugiyamaVertex -> iSugiyamaVertex.getName()).collect(Collectors.joining(", "))));
 	}
 
 	/**
@@ -83,7 +86,7 @@ public class CrossMinimizer implements ICrossMinimizer {
 			assert(graph.getLayer(lowerLayer).contains(source));
 			assert(graph.getLayer(upperLayer).contains(target));
 
-			if(diff>1){	//need to add diff dummy vertices
+			if(diff>1){	//need to add #diff dummy vertices
 				List<ISugiyamaVertex> dummies = new LinkedList<>();
 				replacedEdges.add(edge);		// the  distance of both vertices of this edge is greater than 1 so it must be replaced
 				ISugiyamaVertex nv = null;	// through dummy vertices and supplement edges. add it here to remove it later from the original edge set.

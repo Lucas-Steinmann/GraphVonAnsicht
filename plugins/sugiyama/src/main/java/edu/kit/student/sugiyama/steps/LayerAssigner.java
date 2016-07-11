@@ -8,6 +8,7 @@ import edu.kit.student.sugiyama.graph.ISugiyamaVertex;
 
 import java.util.HashSet;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * This class takes a directed graph and assigns every vertex in it a layer.
@@ -37,6 +38,7 @@ public class LayerAssigner implements ILayerAssigner {
 
 	@Override
 	public void assignLayers(ILayerAssignerGraph graph) {
+		System.out.println("LayerAssigner.assignLayers():");
 		initialize(graph);
 		Set<ISugiyamaVertex> DDVertices = DDGraph.getVertexSet();
 		Set<ISugiyamaEdge> DDEdges = DDGraph.getEdgeSet();
@@ -53,6 +55,8 @@ public class LayerAssigner implements ILayerAssigner {
 
 			layer++;
 		}
+		//for printing the layers after layer assigning
+		graph.getLayers().forEach(iSugiyamaVertices -> System.out.println(iSugiyamaVertices.stream().map(iSugiyamaVertex -> iSugiyamaVertex.getName()).collect(Collectors.joining(", "))));
 	}
 
 	private Set<ISugiyamaVertex> getSources(

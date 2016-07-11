@@ -13,6 +13,7 @@ public class VertexPositioner implements IVertexPositioner {
 
 	@Override
 	public void positionVertices(IVertexPositionerGraph graph) {
+		System.out.println("VertexPositioner.positionVertices():");
 		int maxwidth = graph.getLayers().stream().mapToInt(layer -> layer.size()).max().getAsInt() * 4;
 		List<List<List<ISugiyamaVertex>>> vertexMatrix = new ArrayList<>();
 
