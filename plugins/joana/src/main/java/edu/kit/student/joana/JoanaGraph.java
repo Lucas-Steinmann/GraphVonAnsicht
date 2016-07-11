@@ -7,6 +7,7 @@ import java.util.List;
 import edu.kit.student.graphmodel.Graph;
 import edu.kit.student.graphmodel.LayeredGraph;
 import edu.kit.student.graphmodel.directed.DirectedGraph;
+import edu.kit.student.util.IdGenerator;
 
 /**
  * An abstract superclass for all JOANA specific graphs.
@@ -17,9 +18,11 @@ public abstract class JoanaGraph
     public Graph parent;
     public List<Graph> children = new LinkedList<>();
     public String name;
+    public Integer id;
 
     public JoanaGraph(String name) {
         this.name = name;
+        this.id = IdGenerator.getInstance().createId();    
     }
 
     @Override
@@ -29,8 +32,7 @@ public abstract class JoanaGraph
 
     @Override
     public Integer getID() {
-        //TODO: Generate unique ID across Graphs
-        return 0;
+        return this.id;
     }
 
     @Override
