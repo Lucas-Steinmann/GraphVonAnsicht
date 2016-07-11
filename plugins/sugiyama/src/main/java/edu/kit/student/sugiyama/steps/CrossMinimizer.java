@@ -48,8 +48,11 @@ public class CrossMinimizer implements ICrossMinimizer {
 
 
 			if (oldCrossings - newCrossings < 0) {
-				graph.getLayers().clear();
-				graph.getLayers().addAll(undo);
+			    int y = 0;
+			    for (List<ISugiyamaVertex> layer : undo) {
+			        graph.setPositionsOnLayer(y, layer);
+			        y++;
+			    }
 				break;
 			}
 
@@ -134,8 +137,7 @@ public class CrossMinimizer implements ICrossMinimizer {
 		//barycenterMap = layer.stream().parallel().collect(Collectors.toMap(vertex -> vertex, vertex -> getBarycenter(graph, vertex, dir)));
 
 		newLayer = toSortedKeyList(barycenterMap);
-		layer.clear();
-		layer.addAll(newLayer);
+		graph.setPositionsOnLayer(optimizingLayer, newLayer);
 
 		return changes;
 	}

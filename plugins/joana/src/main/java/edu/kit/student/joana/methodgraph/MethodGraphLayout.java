@@ -13,6 +13,7 @@ import edu.kit.student.parameter.Settings;
 import edu.kit.student.parameter.StringParameter;
 import edu.kit.student.sugiyama.LayeredLayoutAlgorithm;
 import edu.kit.student.sugiyama.RelativeLayerConstraint;
+import edu.kit.student.sugiyama.graph.ISugiyamaVertex;
 import edu.kit.student.sugiyama.graph.SugiyamaGraph;
 import edu.kit.student.sugiyama.steps.CrossMinimizer;
 import edu.kit.student.sugiyama.steps.CycleRemover;
@@ -70,6 +71,23 @@ public class MethodGraphLayout implements LayeredLayoutAlgorithm<MethodGraph> {
 		minimizer.minimizeCrossings(wrappedGraph);
 		positioner.positionVertices(wrappedGraph);
 		drawer.drawEdges(wrappedGraph);
+		
+		for (List<ISugiyamaVertex> layer : wrappedGraph.getLayers()) {
+		    int lastX = 0;
+		    for (ISugiyamaVertex v : layer) {
+		        if (v.isDummy()) {
+		            for (int i = 0; i < (v.getX() - lastX)/50; i++)
+                        System.out.print(" ");
+                    System.out.print("a");
+		        } else {
+		            for (int i = 0; i < (v.getX() - lastX)/50; i++)
+                        System.out.print(" ");
+                    System.out.print("X");
+		        }
+		        lastX = v.getX();
+		    }
+            System.out.println("");
+		}
 	}
 
 	@Override

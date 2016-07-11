@@ -4,6 +4,7 @@ import edu.kit.student.sugiyama.graph.SugiyamaGraph.DummyVertex;
 import edu.kit.student.sugiyama.graph.SugiyamaGraph.SupplementEdge;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -24,6 +25,8 @@ public interface ICrossMinimizerGraph extends ISugiyamaStepGraph {
 	 * @param second second vertex to change position with
 	 */
 	public void swapVertices(ISugiyamaVertex first, ISugiyamaVertex second);
+	
+	public void setPositionsOnLayer(int layer, List<ISugiyamaVertex> newLayer);
 	
 	/**
 	 * Get the number of vertices which are on a  certain layer

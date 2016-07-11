@@ -109,23 +109,11 @@ public class SugiyamaGraph
 
 	@Override
 	public void swapVertices(ISugiyamaVertex first, ISugiyamaVertex second) {
-		assert(this.getLayer(first)==this.getLayer(second)); //both vertices have to be on the same layer!
-		int layerNum = this.getLayer(first);
-		List<ISugiyamaVertex> layer = this.getLayer(layerNum);
-		int pos1 = layer.indexOf(first);
-		int pos2 = layer.indexOf(second);
-		layer.remove(first);
-		layer.remove(second);
-
-		if (pos1 < pos2) {
-			layer.add(pos1, second);
-			layer.add(pos2, first);
-		} else {
-			layer.add(pos2, first);
-			layer.add(pos1, second);
-		}
-
-		//		List does not support inserting at a special index in the list, just "add(obj)"
+		assert (this.getLayer(first)==this.getLayer(second)); //both vertices have to be on the same layer!
+		
+		Point tmp = layering.getPosition(first);
+		layering.setPosition(first, layering.getPosition(second));
+		layering.setPosition(second, tmp);
 	}
 
 	@Override
@@ -781,5 +769,17 @@ public class SugiyamaGraph
     @Override
     public Set<ISugiyamaEdge> getEdgeSet() {
         return graph.getEdgeSet();
+    }
+
+    @Override
+    public void setPositionsOnLayer(int layer, List<ISugiyamaVertex> newLayer) {
+        int x = 0; 
+        for (ISugiyamaVertex vertex : newLayer) {
+            if (!(this.layering.getLayerFromVertex(vertex) == layer)) {
+                throw new IllegalArgumentException("All vertices have to be on the specified layer, when calling setPositionOnLayer");
+            }
+            this.layering.setPosition(vertex, new Point(x, layer));
+            x++;
+        }
     }
 }
