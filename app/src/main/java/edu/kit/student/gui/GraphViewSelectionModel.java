@@ -38,7 +38,7 @@ public class GraphViewSelectionModel {
 	}
 
 	public void add(VertexShape node) {
-		node.setStyle("-fx-effect: dropshadow(three-pass-box, red, 10, 10, 0, 0);");
+		node.setStyle("-fx-effect: dropshadow(three-pass-box, red, 4, 4, 0, 0);");
 		selection.add(node);
 	}
 	
@@ -107,7 +107,6 @@ public class GraphViewSelectionModel {
 				dragContext.mouseAnchorY = event.getY();
 
 				if(event.getButton() == MouseButton.PRIMARY) {
-					System.out.println("Primary clicked!");
 					rect.setX(dragContext.mouseAnchorX);
 					rect.setY(dragContext.mouseAnchorY);
 					rect.setWidth(0);
@@ -115,7 +114,6 @@ public class GraphViewSelectionModel {
 	
 					outerPane.getChildren().add(rect);
 				} else if(event.getButton() == MouseButton.SECONDARY) {
-					System.out.println("Secondary clicked!");
 					if(event.isControlDown()) {
 						dragContext.translateAnchorX = view.getTranslateX();
 						dragContext.translateAnchorY = view.getTranslateY();
@@ -149,9 +147,7 @@ public class GraphViewSelectionModel {
 					}
 				//Moving the view
 				} else if(event.getButton() == MouseButton.SECONDARY) { 
-					//Done
-					if(event.isAltDown()) {
-						System.out.println("View dragged!");
+					if(event.isControlDown()) {
 						view.setTranslateX(dragContext.translateAnchorX + event.getSceneX() - dragContext.mouseAnchorX);
 						view.setTranslateY(dragContext.translateAnchorY + event.getSceneY() - dragContext.mouseAnchorY);
 					}
@@ -201,7 +197,6 @@ public class GraphViewSelectionModel {
 						BoundingBox clickBound = new BoundingBox(event.getX(),event.getY(),0,0);
 						//should mostly contain one item(if there are nodes on top of each other there can be more items contained)
 						Set<VertexShape> selection = intersectedShapes(clickBound);
-						System.out.println("click slelection: " + selection);
 						if(selection.isEmpty()) {
 							GraphViewSelectionModel.this.clear();
 						} else {
@@ -210,9 +205,11 @@ public class GraphViewSelectionModel {
 								GraphViewSelectionModel.this.addAll(selection);
 							}
 							//TODO: Contextmenu is shown in the wrong place
-							menu.show(view, event.getX(),event.getY());
+							menu.show(outerPane, event.getX(),event.getY());
 						} 
 					}
+					
+					GraphViewSelectionModel.this.log();
 				}
 
 				event.consume();

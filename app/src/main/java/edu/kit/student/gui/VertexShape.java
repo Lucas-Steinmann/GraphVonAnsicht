@@ -37,7 +37,8 @@ public class VertexShape extends GAnsGraphElement {
 	 */
 	public VertexShape(Vertex vertex) {
 		this();
-
+		
+		setColor(vertex.getColor());
 		setText(vertex.getLabel());
 		relocate(vertex.getX(), vertex.getY());
 	}

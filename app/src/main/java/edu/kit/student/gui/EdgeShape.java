@@ -13,7 +13,6 @@ import javafx.scene.text.Text;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Random;
 
 /**
  * A visual representation of an edge with a text.
@@ -91,7 +90,7 @@ public class EdgeShape extends GAnsGraphElement {
 		
 		getChildren().addAll(this.path, this.text);
 		
-		setColor(null);
+		setColor(edge.getColor());
 		setText(edge.getLabel());
 	}
 
@@ -108,8 +107,6 @@ public class EdgeShape extends GAnsGraphElement {
 
 	@Override
 	public void setColor(Color color) {
-		Random random = new Random();
-		color = Color.rgb(random.nextInt(255), random.nextInt(255), random.nextInt(255));
 		this.color = color;
 		path.setStroke(color);
 	}

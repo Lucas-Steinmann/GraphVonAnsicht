@@ -3,6 +3,8 @@ package edu.kit.student.graphmodel;
 import java.util.List;
 
 import edu.kit.student.objectproperty.GAnsProperty;
+import javafx.scene.paint.Color;
+import javafx.util.Pair;
 
 /**
  * This edge interface specifies an edge. An edge contains two vertices, an ID,
@@ -53,5 +55,14 @@ public interface Edge {
 	 */
 	public EdgePath getPath();
 
-    List<GAnsProperty<?>> getProperties();
+	/**
+	 * Returns a set of properties of the edge that should be shown 
+	 * in the InformationView when selected
+	 * @return 
+	 */
+	public List<GAnsProperty<?>> getProperties();
+	
+	public Pair<Double, Double> getSize();
+	
+	public Color getColor();
 }

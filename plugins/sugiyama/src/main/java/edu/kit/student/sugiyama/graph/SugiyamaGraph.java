@@ -7,6 +7,8 @@ import edu.kit.student.graphmodel.directed.DirectedGraph;
 import edu.kit.student.objectproperty.GAnsProperty;
 import edu.kit.student.plugin.LayoutOption;
 import edu.kit.student.util.Point;
+import javafx.scene.paint.Color;
+import javafx.util.Pair;
 
 import java.util.*;
 
@@ -486,6 +488,18 @@ public class SugiyamaGraph
 		public String toString(){
 			return this.name + "[S" + this.getID() + "](" + this.source.toString() + "->" + this.target.toString() + ")";
 		}
+
+		@Override
+		public Pair<Double, Double> getSize() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public Color getColor() {
+			// TODO Auto-generated method stub
+			return null;
+		}
 	}
 
 	/**
@@ -597,6 +611,18 @@ public class SugiyamaGraph
 		@Override
 		public String toString(){
 			return this.getName() + "[" + this.getID() + "]";
+		}
+
+		@Override
+		public Pair<Double, Double> getSize() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public Color getColor() {
+			// TODO Auto-generated method stub
+			return null;
 		}
 	}
 
@@ -744,6 +770,18 @@ public class SugiyamaGraph
 		@Override
 		public String toString(){
 			return this.getName() + "[" + this.getID() + "](" + this.source.toString() + "->" + this.target.toString() + ")";
+		}
+
+		@Override
+		public Pair<Double, Double> getSize() {
+			// TODO Auto-generated method stub
+			return null;
+		}
+
+		@Override
+		public Color getColor() {
+			// TODO Auto-generated method stub
+			return null;
 		}
 	}
 

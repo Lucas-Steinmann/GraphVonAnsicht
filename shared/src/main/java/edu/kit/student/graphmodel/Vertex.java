@@ -3,6 +3,8 @@ package edu.kit.student.graphmodel;
 import java.util.List;
 
 import edu.kit.student.objectproperty.GAnsProperty;
+import javafx.scene.paint.Color;
+import javafx.util.Pair;
 
 /**
  * This vertex interface specifies a vertex. Every vertex contains an ID, a name
@@ -77,4 +79,8 @@ public interface Vertex {
 	 * @return 
 	 */
 	public List<GAnsProperty<?>> getProperties();
+	
+	public Pair<Double, Double> getSize();
+	
+	public Color getColor();
 }

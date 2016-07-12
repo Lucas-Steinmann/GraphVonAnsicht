@@ -4,6 +4,8 @@ import java.util.List;
 
 import edu.kit.student.graphmodel.DefaultVertex;
 import edu.kit.student.objectproperty.GAnsProperty;
+import javafx.scene.paint.Color;
+import javafx.util.Pair;
 
 /**
  * A Joana specific Vertex. It contains parameters which are only used/useful
@@ -179,28 +181,43 @@ public class JoanaVertex extends DefaultVertex {
         return nodeEc.getValue();
     }
     
+	@Override
+	public Pair<Double, Double> getSize() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Color getColor() {
+		return nodeKind.getValue().color();
+	}
+    
     public enum Kind {
         NORM, CALL, EXIT, ENTR,
         ACTI, ACTO, FRMO, FRMI,
         EXPR, PRED, SYNC, FOLD, SUMMARY;
+    	
+    	@Override
+    	public String toString() {
+    		return this.name();
+    	}
         
-        @Override
-        public String toString() {
+        public Color color() {
         	switch(this) {
-        	case NORM: return "NORM";
-        	case CALL: return "CALL";
-        	case EXIT: return "EXIT";
-        	case ENTR: return "ENTR";
-        	case ACTI: return "ACTI";
-        	case ACTO: return "ACTO";
-        	case FRMO: return "FRMO";
-        	case FRMI: return "FRMI";
-        	case EXPR: return "EXPR";
-        	case PRED: return "PRED";
-        	case SYNC: return "SYNC";
-        	case FOLD: return "FOLD";
-        	case SUMMARY: return "Summary";
-        	default: return "";
+        	case NORM: return Color.web("0xFFC125");
+        	case CALL: return Color.web("0xBFEFFF");
+        	case EXIT: return Color.web("0xFFC125");
+        	case ENTR: return Color.web("0xCBCBCB");
+        	case ACTI: return Color.web("0x87CEFA");
+        	case ACTO: return Color.web("0x00BFFF");
+        	case FRMO: return Color.web("0x00EE00");
+        	case FRMI: return Color.web("0x98FB98");
+        	case EXPR: return Color.web("0xFFFF00");
+        	case PRED: return Color.web("0xFFC125");
+        	case SYNC: return Color.web("0xFFC125");
+        	case FOLD: return Color.BROWN;
+        	case SUMMARY: return Color.BROWN;
+        	default: return Color.BEIGE;
         	}
         }
     }

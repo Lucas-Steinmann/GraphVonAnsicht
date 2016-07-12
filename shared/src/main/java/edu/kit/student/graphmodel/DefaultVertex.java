@@ -2,6 +2,8 @@ package edu.kit.student.graphmodel;
 
 import edu.kit.student.objectproperty.GAnsProperty;
 import edu.kit.student.util.IdGenerator;
+import javafx.scene.paint.Color;
+import javafx.util.Pair;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -87,5 +89,16 @@ public class DefaultVertex implements Vertex {
 	@Override
 	public String toString(){
 		return this.name.toString() + "[" + this.id + "]";
+	}
+
+	@Override
+	public Pair<Double, Double> getSize() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Color getColor() {
+		return Color.LIGHTGREY;
 	}
 }
