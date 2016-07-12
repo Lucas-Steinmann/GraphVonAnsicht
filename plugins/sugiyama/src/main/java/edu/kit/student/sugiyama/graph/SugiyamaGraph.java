@@ -408,6 +408,11 @@ public class SugiyamaGraph
 			this.source=source;
 			this.target=target;
 		}
+				
+		// a SupplementEdge is a SupplementEdge
+		public boolean isSupplementEdge(){
+			return true;
+		}
 
 		@Override
 		public void setVertices(ISugiyamaVertex source, ISugiyamaVertex target) {
@@ -642,6 +647,11 @@ public class SugiyamaGraph
 
 		public void reverse() {
 		    this.setReversed(!isReversed());
+		//a SugiyamaEdge is not a SupplementEdge
+		}
+		
+		public boolean isSupplementEdge(){
+			return false;
 		}
 //		/**
 //		 * Returns true, if this edge was replaced by a {@link SupplementPath} that contains source and target vertices and at least one dummy vertex.

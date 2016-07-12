@@ -10,6 +10,8 @@ public interface ISugiyamaEdge extends DirectedEdge {
 	void setReversed(boolean b);
 
 	boolean isReversed();
+	
+	public boolean isSupplementEdge();
 
     @Override
     public List<? extends Vertex> getVertices();
