@@ -162,8 +162,8 @@ public class GraphViewGraphFactory {
 				PathElement element = path.getElements().get(i);
 				if(LineTo.class.equals(element.getClass())) {
 					LineTo line = (LineTo)element;
-					shapeProperties.put(i + "X", Double.toString(line.getX()));
-					shapeProperties.put(i + "Y", Double.toString(line.getY()));
+					shapeProperties.put(i + "x", Double.toString(line.getX()));
+					shapeProperties.put(i + "y", Double.toString(line.getY()));
 				} else {
 					//TODO: throw exception, only straight lines allowed in path!
 				}

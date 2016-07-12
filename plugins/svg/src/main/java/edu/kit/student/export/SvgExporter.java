@@ -1,6 +1,7 @@
 package edu.kit.student.export;
 
 
+import edu.kit.student.graphmodel.serialize.SerializedEdge;
 import edu.kit.student.graphmodel.serialize.SerializedGraph;
 import edu.kit.student.graphmodel.serialize.SerializedVertex;
 import edu.kit.student.plugin.Exporter;
@@ -11,8 +12,15 @@ import org.w3c.dom.Element;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
+import java.lang.reflect.Array;
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
+
+
+
+
 
 
 
@@ -33,6 +41,7 @@ public class SvgExporter implements Exporter {
             + "color:#000000;fill:#04B45F;fill-opacity:1;"
             + "fill-rule:nonzero;marker:none;visibility:visible;"
             + "display:inline;overflow:visible;enable-background:accumulate";
+    private static String lineStyle = "stroke:rgb(255,0,0);stroke-width:2";
     
     
     @Override
@@ -42,21 +51,6 @@ public class SvgExporter implements Exporter {
 
     @Override
     public void exportGraph(SerializedGraph graph, FileOutputStream filestream) {
-        //get vertices
-        /*
-        Set<SerializedVertex> vertices = graph.getVertices();
-        for(SerializedVertex v : vertices) {
-            Map<String, String> props = v.getShapeProperties();
-            for(String s: props.keySet()){
-                System.out.print(s + ": ");
-                System.out.print(props.get(s));
-                System.out.println("");
-            }
-            System.out.println("");
-        }
-        
-        System.out.println("test");
-        */
         
         //Create new DOM document
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -83,6 +77,14 @@ public class SvgExporter implements Exporter {
             rootElement.appendChild(vertex);
 
         }
+        
+        //add Edges to DOM
+        
+        Set<SerializedEdge> edges = graph.getEdges();
+        for (SerializedEdge e : edges) {
+            Element edge = this.createEdgeElement(document, e.getShapeProperties());
+            rootElement.appendChild(edge);
+        }    
         
         
         //Transform DOM tree to writeable file
@@ -132,6 +134,79 @@ public class SvgExporter implements Exporter {
         }
     }
     
+    
+    /**
+     * Creates an edge element which contains the path of the edge as svglines.
+     * 
+     * @param document
+     * @param shapeProp
+     * @return
+     */
+    private Element createEdgeElement(Document document, Map<String, String> shapeProp) {
+        
+        //create Map for coords
+        Map<Integer, String> xcoords = new HashMap<Integer, String>();
+        Map<Integer, String> ycoords = new HashMap<Integer, String>();
+        String label = "";
+        
+        //set keys in map
+        for (String s: shapeProp.keySet()) {
+            
+            int num = 0;
+            
+            try {
+                num = Integer.parseInt(s.replaceAll("\\D+",""));
+            } catch (NumberFormatException e) {
+                //TODO: throw Error
+            }
+            String key = s.replaceAll("\\d+", "");
+            
+            switch (key) {
+              case "x":
+                  xcoords.put(num, shapeProp.get(s));
+                  break;
+              case "y":
+                  ycoords.put(num, shapeProp.get(s));
+                  break;
+              case "label":
+                  label = shapeProp.get(s);
+                  break;
+              default:                          
+            }
+        }
+
+        //create group element
+        Element group = document.createElement("g");
+        //add all lines to this group
+        for (int i : xcoords.keySet()) {
+            //check if x and y coord exist
+            if ((xcoords.containsKey(i) && ycoords.containsKey(i)) 
+                    && (xcoords.containsKey(i + 1) && ycoords.containsKey(i + 1))) {
+                //create Line
+                Element line = document.createElement("line");
+                line.setAttribute("x1", xcoords.get(i));
+                line.setAttribute("y1", ycoords.get(i));
+                line.setAttribute("x2", xcoords.get(i + 1));
+                line.setAttribute("y2", ycoords.get(i + 1));
+                line.setAttribute("style", SvgExporter.lineStyle);
+                
+                //add to group
+                group.appendChild(line);
+            } else {
+                //TODO:throw Error?
+            }
+        }
+        
+        return group;
+    }
+    
+    /**
+     * Creates an vertex Element which contains a rectangle for svg.
+     * 
+     * @param document
+     * @param shapeProp
+     * @return element of vertex
+     */
     private Element createVertexElement(Document document, Map<String, String> shapeProp) {
         
         //get Properties for this Vertex
