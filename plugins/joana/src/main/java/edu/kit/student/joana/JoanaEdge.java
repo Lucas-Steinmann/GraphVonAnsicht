@@ -45,6 +45,8 @@ public class JoanaEdge<V extends JoanaVertex> extends DefaultDirectedEdge<V> {
     
     // TODO: Add missing.
     public enum Kind {
-    	CD, CE, CF, CL, DD, DH, HE, PI, PO, PS, RF, SU
+    	CD, CE, CF, CL, DD, DH, HE, PI, PO, PS, RF, SU, NF, JF, UN, CC, JD, NTSCD,
+    	SD, DA, DL, VD, RD, SH, SF, ID, IW, RY, FORK, FORK_IN, FORK_OUT, JOIN, JOIN_OUT,
+    	CONFLICT_DATA, CONFLICT_ORDER, FD, FI
     }
 }
