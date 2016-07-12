@@ -608,7 +608,7 @@ public class SugiyamaGraph extends DefaultDirectedGraph<ISugiyamaVertex, ISugiya
 	 * A wrapper class for directed edges to implement additional functionality
 	 * to apply the sugiyama layout to the SugiyamaGraph containing them.
 	 */
-	public static class SugiyamaEdge implements DirectedEdge<ISugiyamaVertex>, ISugiyamaEdge {
+	public static class SugiyamaEdge implements ISugiyamaEdge {
 		List<Vector<Integer>> corners;
 		private boolean isReversed;
 		private boolean isSupplement;
