@@ -71,8 +71,8 @@ public class PluginManager {
      * Returns a list of all edge filter provided by plugins.
      * @return a list of all edge filter
      */
-    public List<EdgeFilter<? extends Edge<? extends Vertex>, ? extends Vertex>> getEdgeFilter() {
-        LinkedList<EdgeFilter<? extends Edge<? extends Vertex>, ? extends Vertex>> result =
+    public List<EdgeFilter<? extends Edge, ? extends Vertex>> getEdgeFilter() {
+        LinkedList<EdgeFilter<? extends Edge, ? extends Vertex>> result =
                 new LinkedList<>();
         plugins.forEach((plugin) -> result.addAll(plugin.getEdgeFilter()));
         return result;

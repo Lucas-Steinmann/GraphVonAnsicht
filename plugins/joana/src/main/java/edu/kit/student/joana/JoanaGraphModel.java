@@ -3,10 +3,7 @@ package edu.kit.student.joana;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.kit.student.graphmodel.Edge;
-import edu.kit.student.graphmodel.Graph;
 import edu.kit.student.graphmodel.GraphModel;
-import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.joana.callgraph.CallGraph;
 import edu.kit.student.joana.methodgraph.MethodGraph;
 
@@ -52,8 +49,8 @@ public class JoanaGraphModel extends GraphModel {
 	}
 
 	@Override
-	public List<Graph<? extends Vertex, ? extends Edge<? extends Vertex>>> getRootGraphs() {
-		List<Graph<? extends Vertex, ? extends Edge<? extends Vertex>>> root = new ArrayList<Graph<? extends Vertex, ? extends Edge<? extends Vertex>>>();
+	public List<CallGraph> getRootGraphs() {
+		List<CallGraph> root = new ArrayList<>();
 		root.add(this.callgraph);
 		return root;
 	}

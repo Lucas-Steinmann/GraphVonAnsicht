@@ -1,5 +1,7 @@
 package edu.kit.student.graphmodel.directed;
 
+import edu.kit.student.plugin.LayoutRegister;
+
 import java.util.ArrayList;
 import java.util.List;
 

@@ -31,7 +31,7 @@ public class EdgeShape extends GAnsGraphElement {
 	 * Constructs a EdgeShape with the information supplied by edge. The path of the EdgeShape is set by the EdgePath of edge.
 	 * @param edge The Edge that supplies the information for building an EdgeShape.
 	 */
-	public EdgeShape(Edge<?> edge) {
+	public EdgeShape(Edge edge) {
 		this.path = new Path();
 		this.text = new Text();
 		

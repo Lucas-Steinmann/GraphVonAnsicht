@@ -22,14 +22,12 @@ public class VertexPositionerTest {
 
     @Test
     public void positionVertices() throws Exception {
-        DefaultDirectedGraph<DefaultVertex, DirectedEdge<DefaultVertex>> DDGraph = new DefaultDirectedGraph<DefaultVertex, DirectedEdge<DefaultVertex>>("");
+        DefaultDirectedGraph<DefaultVertex, DirectedEdge> DDGraph = new DefaultDirectedGraph<DefaultVertex, DirectedEdge>("");
         DefaultVertex v1 = new DefaultVertex("v1", "0");
         DefaultVertex v2 = new DefaultVertex("v2", "0");
         DefaultVertex v3 = new DefaultVertex("v3", "1");
-        DirectedEdge<DefaultVertex> e1 = new DefaultDirectedEdge<DefaultVertex>("e1","");
-        DirectedEdge<DefaultVertex> e2 = new DefaultDirectedEdge<DefaultVertex>("e2","");
-        e1.setVertices(v1, v2);
-        e2.setVertices(v1, v3);
+        DirectedEdge e1 = new DefaultDirectedEdge("e1","", v1, v2);
+        DirectedEdge e2 = new DefaultDirectedEdge("e2","", v1, v3);
         DDGraph.addVertex(v1);
         DDGraph.addVertex(v2);
         DDGraph.addVertex(v3);

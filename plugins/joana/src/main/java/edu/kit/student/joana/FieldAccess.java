@@ -9,7 +9,7 @@ import edu.kit.student.graphmodel.FastGraphAccessor;
  * contains a {@code FieldAccessGraph}.
  */
 public class FieldAccess extends JoanaVertex 
-    implements CompoundVertex<JoanaVertex, Edge<JoanaVertex>> {
+    implements CompoundVertex {
 
     /**
      * Constructor.
@@ -34,7 +34,7 @@ public class FieldAccess extends JoanaVertex
     }
 
     @Override
-    public JoanaVertex getConnectedVertex(Edge<JoanaVertex> edge) {
+    public JoanaVertex getConnectedVertex(Edge edge) {
         // TODO Auto-generated method stub
         return null;
     }

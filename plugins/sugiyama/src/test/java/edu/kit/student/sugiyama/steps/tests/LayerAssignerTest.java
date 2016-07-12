@@ -28,22 +28,17 @@ public class LayerAssignerTest {
 
     @Test
     public void assignLayers() throws Exception {
-        DefaultDirectedGraph<DefaultVertex, DirectedEdge<DefaultVertex>> DDGraph = new DefaultDirectedGraph<DefaultVertex, DirectedEdge<DefaultVertex>>("");
+        DefaultDirectedGraph<DefaultVertex, DirectedEdge> DDGraph = new DefaultDirectedGraph<DefaultVertex, DirectedEdge>("");
         DefaultVertex v1 = new DefaultVertex("v1", "0"); //use labels to save the desired Layer for Vertex
         DefaultVertex v2 = new DefaultVertex("v2", "0");
         DefaultVertex v3 = new DefaultVertex("v3", "1");
         DefaultVertex v4 = new DefaultVertex("v3", "2");
         DefaultVertex v5 = new DefaultVertex("v3", "2");
-        DirectedEdge<DefaultVertex> e1 = new DefaultDirectedEdge<DefaultVertex>("e1","");
-        DirectedEdge<DefaultVertex> e2 = new DefaultDirectedEdge<DefaultVertex>("e2","");
-        DirectedEdge<DefaultVertex> e3 = new DefaultDirectedEdge<DefaultVertex>("e3","");
-        DirectedEdge<DefaultVertex> e4 = new DefaultDirectedEdge<DefaultVertex>("e3","");
-        DirectedEdge<DefaultVertex> e5 = new DefaultDirectedEdge<DefaultVertex>("e3","");
-        e1.setVertices(v1, v3);
-        e2.setVertices(v2, v3);
-        e3.setVertices(v2, v5);
-        e4.setVertices(v3, v5);
-        e5.setVertices(v3, v4);
+        DirectedEdge e1 = new DefaultDirectedEdge("e1","", v1, v3);
+        DirectedEdge e2 = new DefaultDirectedEdge("e2","", v2, v3);
+        DirectedEdge e3 = new DefaultDirectedEdge("e3","", v2, v5);
+        DirectedEdge e4 = new DefaultDirectedEdge("e3","", v3, v5);
+        DirectedEdge e5 = new DefaultDirectedEdge("e3","", v3, v4);
         DDGraph.addVertex(v1);
         DDGraph.addVertex(v2);
         DDGraph.addVertex(v3);
@@ -69,7 +64,7 @@ public class LayerAssignerTest {
     
     @Test
     public void LayerAssignerTest2(){
-    	DefaultDirectedGraph<DefaultVertex, DirectedEdge<DefaultVertex>> DDGraph = new DefaultDirectedGraph<DefaultVertex, DirectedEdge<DefaultVertex>>("");
+    	DefaultDirectedGraph<DefaultVertex, DirectedEdge> DDGraph = new DefaultDirectedGraph<>("");
         DefaultVertex v1 = new DefaultVertex("v1", "0");
         DefaultVertex v2 = new DefaultVertex("v2", "0");
         DefaultVertex v3 = new DefaultVertex("v3", "0");
@@ -77,26 +72,16 @@ public class LayerAssignerTest {
         DefaultVertex v5 = new DefaultVertex("v5", "1");
         DefaultVertex v6 = new DefaultVertex("v6", "2");
         DefaultVertex v7 = new DefaultVertex("v7", "3");
-        DirectedEdge<DefaultVertex> e1 = new DefaultDirectedEdge<DefaultVertex>("e1","");
-        DirectedEdge<DefaultVertex> e2 = new DefaultDirectedEdge<DefaultVertex>("e2","");
-        DirectedEdge<DefaultVertex> e3 = new DefaultDirectedEdge<DefaultVertex>("e3","");
-        DirectedEdge<DefaultVertex> e4 = new DefaultDirectedEdge<DefaultVertex>("e4","");
-        DirectedEdge<DefaultVertex> e5 = new DefaultDirectedEdge<DefaultVertex>("e5","");
-        DirectedEdge<DefaultVertex> e6 = new DefaultDirectedEdge<DefaultVertex>("e6","");
-        DirectedEdge<DefaultVertex> e7 = new DefaultDirectedEdge<DefaultVertex>("e7","");
-        DirectedEdge<DefaultVertex> e8 = new DefaultDirectedEdge<DefaultVertex>("e8","");
-        DirectedEdge<DefaultVertex> e9 = new DefaultDirectedEdge<DefaultVertex>("e9","");
-        DirectedEdge<DefaultVertex> e10 = new DefaultDirectedEdge<DefaultVertex>("e10","");
-        e1.setVertices(v1,v4);
-        e2.setVertices(v1,v6);
-        e3.setVertices(v6,v7);
-        e4.setVertices(v5,v7);
-        e5.setVertices(v2,v4);
-        e6.setVertices(v2,v5);
-        e7.setVertices(v4,v6);
-        e8.setVertices(v5,v6);
-        e9.setVertices(v3,v4);
-        e10.setVertices(v3,v5);
+        DirectedEdge e1 = new DefaultDirectedEdge("e1","", v1,v4);
+        DirectedEdge e2 = new DefaultDirectedEdge("e2","", v1,v6);
+        DirectedEdge e3 = new DefaultDirectedEdge("e3","", v6,v7);
+        DirectedEdge e4 = new DefaultDirectedEdge("e4","", v5,v7);
+        DirectedEdge e5 = new DefaultDirectedEdge("e5","", v2,v4);
+        DirectedEdge e6 = new DefaultDirectedEdge("e6","", v2,v5);
+        DirectedEdge e7 = new DefaultDirectedEdge("e7","", v4,v6);
+        DirectedEdge e8 = new DefaultDirectedEdge("e8","", v5,v6);
+        DirectedEdge e9 = new DefaultDirectedEdge("e9","", v3,v4);
+        DirectedEdge e10 = new DefaultDirectedEdge("e10","", v3,v5);
         
         DDGraph.addVertex(v1);
         DDGraph.addVertex(v2);

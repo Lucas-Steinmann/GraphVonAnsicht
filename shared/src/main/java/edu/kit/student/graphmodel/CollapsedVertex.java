@@ -3,27 +3,25 @@ package edu.kit.student.graphmodel;
 import java.util.HashMap;
 import java.util.Map;
 
-public class CollapsedVertex<V extends Vertex, E extends Edge<V>> extends DefaultVertex implements CompoundVertex<V, E> {
+public class CollapsedVertex extends DefaultVertex implements CompoundVertex {
 	
-	private Graph<V, E> graph;
-	private Map<E,V> modifiedEdgeMap;
+	private Graph graph;
+	private Map<Edge,Vertex> modifiedEdgeMap;
 
-	public CollapsedVertex(String name, String label) {
+	public CollapsedVertex(String name, String label, Graph graph, 
+	        Map<? extends Vertex, ? extends Edge> collapsedVertexToCutEdge) {
 		super(name, label);
-		modifiedEdgeMap = new HashMap<E,V>();
-	}
-	
-	public void setGraph(Graph<V, E> graph) {
+		modifiedEdgeMap = new HashMap<Edge,Vertex>();
 		this.graph = graph;
 	}
 
 	@Override
-	public Graph<V, E> getGraph() {
+	public Graph getGraph() {
 		return graph;
 	}
 
 	@Override
-	public Vertex getConnectedVertex(E edge) {
+	public Vertex getConnectedVertex(Edge edge) {
 		if(graph.getEdgeSet().contains(edge)) {
 			for(Vertex v : edge.getVertices()) {
 				if(graph.getVertexSet().contains(v)) return v;
@@ -32,11 +30,12 @@ public class CollapsedVertex<V extends Vertex, E extends Edge<V>> extends Defaul
 		return null;
 	}
 	
-	public void addModifiedEdge(E edge, V vertex) {
+	@Deprecated
+	public void addModifiedEdge(Edge edge, Vertex vertex) {
 		modifiedEdgeMap.put(edge, vertex);
 	}
 	
-	public V getVertexForEdge(E edge) {
+	public Vertex getVertexForEdge(Edge edge) {
 		return modifiedEdgeMap.get(edge);
 	}
 }

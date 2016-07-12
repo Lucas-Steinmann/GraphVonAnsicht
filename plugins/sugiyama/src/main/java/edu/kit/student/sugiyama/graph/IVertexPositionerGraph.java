@@ -1,11 +1,10 @@
 package edu.kit.student.sugiyama.graph;
 
-import edu.kit.student.graphmodel.LayeredGraph;
 
 /**
  * A LayeredGraph which additionally defines functions to position vertices in the sugiyama-layout.
  */
-public interface IVertexPositionerGraph extends LayeredGraph<ISugiyamaVertex, ISugiyamaEdge> {
+public interface IVertexPositionerGraph extends ISugiyamaStepGraph {
 
 	/**
 	 * Sets the y-coordinate of all vertices on layer Y.

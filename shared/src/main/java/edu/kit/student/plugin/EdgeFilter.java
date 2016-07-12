@@ -8,7 +8,7 @@ import edu.kit.student.graphmodel.Vertex;
  * To check if an edge passes through this filter, 
  * the client can specify it in {@code matches(Edge edge)}.
  */
-public abstract class EdgeFilter<E extends Edge<V>, V extends Vertex> {
+public abstract class EdgeFilter<E extends Edge, V extends Vertex> {
 
     private String name;
 

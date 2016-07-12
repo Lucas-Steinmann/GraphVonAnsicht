@@ -2,7 +2,6 @@ package edu.kit.student.sugiyama;
 
 import edu.kit.student.graphmodel.DefaultVertex;
 import edu.kit.student.graphmodel.LayeredGraph;
-import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
 import edu.kit.student.graphmodel.directed.DirectedEdge;
 import edu.kit.student.graphmodel.directed.DirectedGraph;
@@ -18,8 +17,8 @@ import java.util.Set;
  * The single stages of the framework can be chosen individually.
  * Additionally this class tries to follow the given constraints, if possible.
  */
-public class SugiyamaLayoutAlgorithm 
-	implements LayeredLayoutAlgorithm<DirectedGraph<Vertex, DirectedEdge<Vertex>>, Vertex, DirectedEdge<Vertex>> {
+public class SugiyamaLayoutAlgorithm<G extends DirectedGraph & LayeredGraph> 
+	implements LayeredLayoutAlgorithm<G> {
 	private ICycleRemover remover;
 	private ILayerAssigner assigner;
 	private ICrossMinimizer minimizer;
@@ -102,7 +101,7 @@ public class SugiyamaLayoutAlgorithm
 	}
 
     @Override
-    public void layout(DirectedGraph<Vertex, DirectedEdge<Vertex>> graph) {
+    public void layout(DirectedGraph graph) {
 		SugiyamaGraph wrappedGraph = new SugiyamaGraph(graph);
 		assigner.addConstraints(relativeLayerConstraints);
 
@@ -114,7 +113,7 @@ public class SugiyamaLayoutAlgorithm
     }
 
     @Override
-    public void layoutLayeredGraph(LayeredGraph<Vertex, DirectedEdge<Vertex>> graph) {
+    public void layoutLayeredGraph(G graph) {
 		SugiyamaGraph wrappedGraph = new SugiyamaGraph(graph);
 		assigner.addConstraints(relativeLayerConstraints);
 
@@ -125,7 +124,7 @@ public class SugiyamaLayoutAlgorithm
 		drawer.drawEdges(wrappedGraph);
     }
 
-	public void layout(DefaultDirectedGraph<DefaultVertex, DirectedEdge<DefaultVertex>> graph) {
+	public void layout(DefaultDirectedGraph<DefaultVertex, DirectedEdge> graph) {
 		SugiyamaGraph wrappedGraph = new SugiyamaGraph(graph);
 		assigner.addConstraints(relativeLayerConstraints);
 

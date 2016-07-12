@@ -2,16 +2,7 @@ package edu.kit.student.graphmodel;
 
 import java.util.List;
 
-import edu.kit.student.graphmodel.directed.DirectedGraph;
-
-/**
- * A DirectedGraph which in addition to coordinates saves the relative position of all vertices
- * in a layered structure.
- * Every vertex is in a layer. Every layer is sorted so that every node has zero to two horizontal neighbors.
- *
- */
-public interface LayeredGraph extends DirectedGraph {
-    //TODO: shouldn't be inherit from directed graph but graph
+public interface GraphLayering<V extends Vertex> {
 
 	/**
 	 * Get the amount of layers.
@@ -41,14 +32,14 @@ public interface LayeredGraph extends DirectedGraph {
 	 * @param layerNum the index of the layer
 	 * @return 		 a list of all vertices which are on this layer
 	 */
-	public List<? extends Vertex> getLayer(int layerNum);
+	public List<V> getLayer(int layerNum);
 	
 	/**
 	 * Get all layers that contain vertices.
 	 * 
 	 * @return a list of lists of vertices which are on this layer
 	 */
-	public List<? extends List<? extends Vertex>> getLayers();
+	public List<? extends List<V>> getLayers();
 	
 	/**
 	 * Returns the height, i.e. the number of layers.

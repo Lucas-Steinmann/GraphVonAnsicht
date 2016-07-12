@@ -10,10 +10,10 @@ import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.objectproperty.GAnsProperty;
 import edu.kit.student.util.IdGenerator;
 
-public class DefaultDirectedEdge<V extends Vertex> implements DirectedEdge<V>{
+public class DefaultDirectedEdge implements DirectedEdge {
 
-	private V target;
-	private V source;
+	private Vertex target;
+	private Vertex source;
 	private GAnsProperty<String> name;
 	private Integer id;
 	private GAnsProperty<String> label;
@@ -42,7 +42,7 @@ public class DefaultDirectedEdge<V extends Vertex> implements DirectedEdge<V>{
      * @param source
      * @param target
      */
-    public DefaultDirectedEdge(String name, String label, V source, V target) {  
+    public DefaultDirectedEdge(String name, String label, Vertex source, Vertex target) {  
     	this(name,label);
         this.source = source;
         this.target = target;
@@ -54,7 +54,7 @@ public class DefaultDirectedEdge<V extends Vertex> implements DirectedEdge<V>{
      * @param source vertex
      * @param target vertex
      */
-    public void setVertices(V source, V target) {
+    public void setVertices(Vertex source, Vertex target) {
         //set source to first index and target to second
         this.source = source;
         this.target = target;
@@ -65,7 +65,7 @@ public class DefaultDirectedEdge<V extends Vertex> implements DirectedEdge<V>{
 	 * 
 	 * @return The vertex the edge is coming from.
 	 */
-	public V getSource() {
+	public Vertex getSource() {
 	    return this.source;		
 	}
 
@@ -74,13 +74,13 @@ public class DefaultDirectedEdge<V extends Vertex> implements DirectedEdge<V>{
 	 * 
 	 * @return The vertex the edge is pointing at/going to.
 	 */
-	public V getTarget() {
+	public Vertex getTarget() {
         return this.target;
 	}
 
 	@Override
-	public List<V> getVertices() {
-		List<V> vertices = new ArrayList<V>();
+	public List<Vertex> getVertices() {
+		List<Vertex> vertices = new ArrayList<Vertex>();
 		vertices.add(this.source);
 		vertices.add(this.target);
 	    return vertices;
@@ -115,7 +115,7 @@ public class DefaultDirectedEdge<V extends Vertex> implements DirectedEdge<V>{
 	public OrthogonalEdgePath getPath() {
 	    return path;
 	}
-
+	
 	@Override
 	public List<GAnsProperty<?>> getProperties() {
 		LinkedList<GAnsProperty<?>> properties = new LinkedList<>();

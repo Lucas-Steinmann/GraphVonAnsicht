@@ -9,7 +9,7 @@ import java.util.Set;
  * This interface differentiates between domain specific graphs, which can be viewed (children of ViewableGraph),
  * and utility graphs like {@link SerializedGraph} and {@link SugiyamaGraph}
  */
-public interface Viewable<V extends Vertex, E extends Edge<V>> {
+public interface Viewable {
 
 	/**
 	 * Collapses a set of vertices in one compound vertex.
@@ -18,7 +18,7 @@ public interface Viewable<V extends Vertex, E extends Edge<V>> {
 	 * @param subset the subset to collapse
 	 * @return		 the resulting collapsed vertex
 	 */
-	public CollapsedVertex<V, E> collapse(Set<V> subset);
+	public CollapsedVertex collapse(Set<Vertex> subset);
 	
 	/**
 	 * Expands a collapsed vertex into its substituted set of vertices
@@ -29,13 +29,13 @@ public interface Viewable<V extends Vertex, E extends Edge<V>> {
 	 * @param vertex the collapsed vertex to expand
 	 * @return 		 the set of vertices which was substituted by the collapsed vertex
 	 */
-	public Set<V> expand(CollapsedVertex<V, E> vertex);
+	public Set<? extends Vertex> expand(CollapsedVertex vertex);
 	
 	/**
 	 * Returns true if the specified vertex is a compound vertex
 	 * @param vertex the vertex to check
 	 * @return 		 true if the vertex is a compound, false otherwise
 	 */
-	public boolean isCollapsed(V vertex);
+	public boolean isCollapsed(Vertex vertex);
 	
 }

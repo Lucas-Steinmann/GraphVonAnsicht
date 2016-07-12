@@ -17,7 +17,7 @@ import java.util.*;
  * All vertices are assigned to a layer.
  * The positions of the vertices can be viewed as a grid (with varying widths per layer).
  */
-public class SugiyamaGraph extends DefaultDirectedGraph<ISugiyamaVertex, ISugiyamaEdge>
+public class SugiyamaGraph
 		implements ICycleRemoverGraph,
 		ILayerAssignerGraph,
 		ICrossMinimizerGraph,
@@ -25,14 +25,11 @@ public class SugiyamaGraph extends DefaultDirectedGraph<ISugiyamaVertex, ISugiya
 		IEdgeDrawerGraph
 {
 
-	private List<Edge<Vertex>> reversedEdges;
-	private List<List<ISugiyamaVertex>> layers;
 	private List<Integer> layerPositions;
-	private Map<Vertex, Integer> vertexToLayer;
-	private Set<Edge<Vertex>> brokenCycleEdges;
-	private Set<Vertex> insertedVertices;
-	private Graph<? extends Vertex, ? extends Edge<? extends Vertex>> graph;
-	private Set<SupplementPath> supplementPaths;
+	private DefaultDirectedGraph<ISugiyamaVertex, ISugiyamaEdge> graph;
+	private DirectedGraph wrappedGraph;
+	private Set<SupplementPath> supplementPaths = new HashSet<>();
+	private DefaultGraphLayering<ISugiyamaVertex> layering;
 
 	/**
 	 * Constructs a new SugiyamaGraph and sets the Graph which is the underlying representation.
@@ -41,39 +38,35 @@ public class SugiyamaGraph extends DefaultDirectedGraph<ISugiyamaVertex, ISugiya
 	 *
 	 * @param graph the graph used as underlying representation.
 	 */
-	public SugiyamaGraph(DirectedGraph<? extends Vertex, ? extends DirectedEdge<? extends Vertex>> graph)  {
-		super(graph.getName());
-		this.graph = graph;
-		this.reversedEdges = new LinkedList<Edge<Vertex>>();
-		this.supplementPaths = new HashSet<>();
-		layers = new LinkedList<>();
-		List<ISugiyamaVertex> startingLayer = new LinkedList<>();
+	public SugiyamaGraph(DirectedGraph graph)  {
 
 		Map<Integer, ISugiyamaVertex> tmpVertexMap = new HashMap<>();
+		HashSet<ISugiyamaVertex> vertices = new HashSet<>();
+		HashSet<ISugiyamaEdge> edges = new HashSet<>();
+		this.wrappedGraph = graph;
 
+		layering = new DefaultGraphLayering<>(new HashSet<>());
 		for (Vertex vertex: graph.getVertexSet()) {
-			SugiyamaVertex SugiyamaVertex = new SugiyamaVertex(vertex, -1);
-			startingLayer.add(SugiyamaVertex);	//fills first layer with all vertices and default layer number
-			addVertex(SugiyamaVertex);	//fills vertexset with all wrapped vertices
-			tmpVertexMap.put(vertex.getID(), SugiyamaVertex);
+		    //TODO: Why -1 and not 0? Does -1 mean an illegal state? Why not just put all vertices on layer 0 at start to achieve an consistent state at all time.
+		    //      In the statement after this all vertices are set to the starting layer. Isn't this layer 0?
+			//SugiyamaVertex sugiyamaVertex = new SugiyamaVertex(vertex, -1);
+			SugiyamaVertex sugiyamaVertex = new SugiyamaVertex(vertex);
+			vertices.add(sugiyamaVertex);	//fills vertexset with all wrapped vertices
+			tmpVertexMap.put(vertex.getID(), sugiyamaVertex);
 		}
-
 		for(DirectedEdge edge: graph.getEdgeSet()){
-			SugiyamaEdge SugiyamaEdge = new SugiyamaEdge(edge);
-			SugiyamaEdge.setVertices(
-					tmpVertexMap.get(edge.getSource().getID()),
-					tmpVertexMap.get(edge.getTarget().getID())
-			);
-			addEdge(SugiyamaEdge);	//fills edgeset with all wrapped edges
+			SugiyamaEdge sugiyamaEdge = new SugiyamaEdge(edge, 
+			        tmpVertexMap.get(edge.getSource().getID()),
+			        tmpVertexMap.get(edge.getTarget().getID()));
+			edges.add(sugiyamaEdge);	//fills edgeset with all wrapped edges
 		}
-
-		layers.add(startingLayer);
+		this.graph = new DefaultDirectedGraph<>(getName(), vertices, edges);
 		layerPositions = new LinkedList<>();
 		layerPositions.add(0);
 	}
 
-	public SugiyamaGraph(String name, Set vertices, Set edges) {
-		super(name, vertices, edges);
+	public SugiyamaGraph(String name, Set<ISugiyamaVertex> vertices, Set<ISugiyamaEdge> edges) {
+	    this(new DefaultDirectedGraph<>(name, vertices, edges));
 	}
 
 	/**
@@ -94,19 +87,19 @@ public class SugiyamaGraph extends DefaultDirectedGraph<ISugiyamaVertex, ISugiya
 
 	@Override
 	public int getLayerCount() {
-		return this.layers.size();
+	    return layering.getLayerCount();
 	}
 
 	@Override
 	public int getVertexCount(int layerNum) {
-		return this.layers.get(layerNum).size();
+	    return layering.getVertexCount(layerNum);
 	}
 
 	@Override
 	public void reverseEdge(ISugiyamaEdge edge) {
-		removeEdge(edge);
-		edge.setReversed(!edge.isReversed());
-		addEdge(edge);
+	    graph.removeEdge(edge);
+	    edge.setReversed(!edge.isReversed());
+	    graph.addEdge(edge);
 	}
 
 	@Override
@@ -116,38 +109,44 @@ public class SugiyamaGraph extends DefaultDirectedGraph<ISugiyamaVertex, ISugiya
 
 	@Override
 	public void swapVertices(ISugiyamaVertex first, ISugiyamaVertex second) {
-		assert(this.getLayer(first)==this.getLayer(second)); //both vertices have to be on the same layer!
-		int layerNum = this.getLayer(first);
-		List<ISugiyamaVertex> layer = this.getLayer(layerNum);
-		int pos1 = layer.indexOf(first);
-		int pos2 = layer.indexOf(second);
-		layer.remove(first);
-		layer.remove(second);
-
-		if (pos1 < pos2) {
-			layer.add(pos1, second);
-			layer.add(pos2, first);
-		} else {
-			layer.add(pos2, first);
-			layer.add(pos1, second);
-		}
-
-		//		List does not support inserting at a special index in the list, just "add(obj)"
+		assert (this.getLayer(first)==this.getLayer(second)); //both vertices have to be on the same layer!
+		
+		Point tmp = layering.getPosition(first);
+		layering.setPosition(first, layering.getPosition(second));
+		layering.setPosition(second, tmp);
 	}
 
 	@Override
 	public int getLayer(ISugiyamaVertex vertex) {
 		return vertex.getLayer();
 	}
+	
+	private int getLayerById(int vertexID) {
+	    ISugiyamaVertex v = this.getVertexByID(vertexID);
+	    if (v == null) {
+	        return -1;
+	    }
+	    return v.getLayer();
+	}
+	
+	private ISugiyamaVertex getVertexByID(int vertexID) {
+	    for (ISugiyamaVertex vertex : this.getVertexSet()) {
+	        if (vertex.getID() == vertexID) {
+	            return vertex;
+	        }
+	    }
+	    return null;
+	}
+	
 
 	@Override
 	public List<ISugiyamaVertex> getLayer(int layerNum) {
-		return this.layers.get(layerNum); //TODO check if it would be wiser to change the method signature to List<V>
+	    return layering.getLayer(layerNum);
 	}
 
 	@Override
 	public List<List<ISugiyamaVertex>> getLayers() {
-		return this.layers; //TODO see getLayer()
+	    return layering.getLayers();
 	}
 	
 	@Override
@@ -164,14 +163,26 @@ public class SugiyamaGraph extends DefaultDirectedGraph<ISugiyamaVertex, ISugiya
 		return supplementEdge;
 	}
 
-	public SupplementPath createSupplementPath(ISugiyamaEdge replacedEdge, List<ISugiyamaVertex> dummies) {
+    public SupplementPath createSupplementPath(ISugiyamaEdge replacedEdge, List<ISugiyamaVertex> dummies) {
 		SupplementPath supplementPath = new SupplementPath(replacedEdge, dummies);
 		this.supplementPaths.add(supplementPath);
 		this.removeEdge(replacedEdge);
 		return supplementPath;
 	}
 
-	@Override
+	private void removeEdge(ISugiyamaEdge edge) {
+	    graph.removeEdge(edge);
+    }
+
+	private void addEdge(ISugiyamaEdge edge) {
+        graph.addEdge(edge);
+    }
+
+	private void addVertex(ISugiyamaVertex edge) {
+        graph.addVertex(edge);
+    }
+
+    @Override
 	public void addEdgeCorner(ISugiyamaEdge edge, int x, int y, int index) {
 		// TODO Auto-generated method stub
 
@@ -194,7 +205,6 @@ public class SugiyamaGraph extends DefaultDirectedGraph<ISugiyamaVertex, ISugiya
 		if (layerNum >= layerPositions.size()) {
 			throw new IndexOutOfBoundsException();
 		}
-
 		layerPositions.set(layerNum, y);
 	}
 
@@ -206,15 +216,7 @@ public class SugiyamaGraph extends DefaultDirectedGraph<ISugiyamaVertex, ISugiya
 
 	@Override
 	public void assignToLayer(ISugiyamaVertex vertex, int layerNum) {
-		int layer = Math.max(vertex.getLayer(), 0);
-		this.layers.get(layer).remove(vertex);
-
-		for (int i = layers.size() - 1; i < layerNum; i++) {
-			this.layers.add(new LinkedList<>());
-		}
-
-		this.layers.get(layerNum).add(vertex);
-		vertex.setLayer(layerNum);
+	    this.layering.setLayer(vertex, layerNum);
 	}
 
 	@Override
@@ -231,37 +233,28 @@ public class SugiyamaGraph extends DefaultDirectedGraph<ISugiyamaVertex, ISugiya
 	@Override
 	public String getName() {
 		// Is not needed in this graph.
-		return graph.getName();
+		return wrappedGraph.getName();
 	}
 
 	@Override
 	public Integer getID() {
 		// Is not needed in this graph.
-		return graph.getID();
+		return wrappedGraph.getID();
 	}
 
 	@Override
 	public int getHeight() {
-		return this.layers.size();
+	    return layering.getHeight();
 	}
 
 	@Override
 	public int getMaxWidth() {
-		int max = 0;
-		for(List<ISugiyamaVertex> layer: this.layers){
-			if(layer.size()>max){
-				max = layer.size();
-			}
-		}
-		return max;
+	    return layering.getMaxWidth();
 	}
 	
 	@Override
 	public int getLayerWidth(int layerN) {
-		if(layerN > this.layers.size()){
-			return 0;
-		}
-		return this.layers.get(layerN).size();
+	    return layering.getLayerWidth(layerN);
 	}
 
 	@Override
@@ -286,17 +279,17 @@ public class SugiyamaGraph extends DefaultDirectedGraph<ISugiyamaVertex, ISugiya
 		}
 	}
 
-	@Override
-	public List<LayeredGraph<ISugiyamaVertex, ISugiyamaEdge>> getSubgraphs() {
-		return null;
-		//TODO really null ?
-	}
+//	@Override
+//	public List<LayeredGraph> getSubgraphs() {
+//		return null;
+//		//TODO really null ?
+//	}
 
 	
 
 	@Override
-	public int getLayerFromVertex(ISugiyamaVertex vertex) {
-		return this.getLayer(vertex);
+	public int getLayerFromVertex(Vertex vertex) {
+		return getLayerById(vertex.getID());
 	}
 
 	@Override
@@ -324,7 +317,7 @@ public class SugiyamaGraph extends DefaultDirectedGraph<ISugiyamaVertex, ISugiya
 	}
 
 	@Override
-	public List<Graph<? extends Vertex, ? extends Edge<? extends Vertex>>> getChildGraphs() {
+	public List<Graph> getChildGraphs() {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -398,7 +391,7 @@ public class SugiyamaGraph extends DefaultDirectedGraph<ISugiyamaVertex, ISugiya
 	/**
 	 * A supplement edge which is part of a {@link SupplementPath}.
 	 */
-	public static class SupplementEdge implements ISugiyamaEdge{
+	public class SupplementEdge implements ISugiyamaEdge {
 		
 		private String name;
 		private String label;
@@ -410,7 +403,7 @@ public class SugiyamaGraph extends DefaultDirectedGraph<ISugiyamaVertex, ISugiya
 			this.label=label;
 		}
 		
-		public SupplementEdge(String name, String label, ISugiyamaVertex source, ISugiyamaVertex target){
+		public SupplementEdge(String name, String label, ISugiyamaVertex source, ISugiyamaVertex target) {
 			this(name,label);
 			this.source=source;
 			this.target=target;
@@ -471,6 +464,7 @@ public class SugiyamaGraph extends DefaultDirectedGraph<ISugiyamaVertex, ISugiya
 		@Override
 		public void setReversed(boolean b) {
 			//does not make sense to reverse a SupplementEdge
+		    // TODO: Then maybe their shouldn't be a function for that and the type hierarchy is broken?
 		}
 
 		@Override
@@ -478,10 +472,10 @@ public class SugiyamaGraph extends DefaultDirectedGraph<ISugiyamaVertex, ISugiya
 			return false;
 		}
 
-		@Override
-		public List<GAnsProperty<?>> getProperties() {
-			return new LinkedList<GAnsProperty<?>>();
-		}
+        @Override
+        public List<GAnsProperty<?>> getProperties() {
+            return new LinkedList<>();
+        }
 		
 		@Override
 		public String toString(){
@@ -492,13 +486,11 @@ public class SugiyamaGraph extends DefaultDirectedGraph<ISugiyamaVertex, ISugiya
 	/**
 	 * A supplement vertex which is part of a {@link SupplementPath}.
 	 */
-	public static class DummyVertex extends DefaultVertex implements ISugiyamaVertex {
-		
-		int layer;
+	public class DummyVertex extends DefaultVertex implements ISugiyamaVertex {
 		
 		public DummyVertex(String name, String label, int layer) {
 			super(name, label);
-			this.layer = layer;
+			layering.addVertex(this, layer);
 		}
 
 		public boolean isDummy() {
@@ -507,12 +499,12 @@ public class SugiyamaGraph extends DefaultDirectedGraph<ISugiyamaVertex, ISugiya
 
 		@Override
 		public int getLayer() {
-			return this.layer;
+		    return layering.getLayerFromVertex(this);
 		}
 
 		@Override
 		public void setLayer(int layerNum) {
-			this.layer=layerNum;
+		    layering.setLayer(this, layerNum);
 		}
 		
 		@Override
@@ -525,13 +517,12 @@ public class SugiyamaGraph extends DefaultDirectedGraph<ISugiyamaVertex, ISugiya
 	 * A wrapper class for vertices used in the sugiyama framework.
 	 * A ISugiyamaVertex can be a {@link DefaultVertex} or a {@link DummyVertex}
 	 */
-	public static class SugiyamaVertex implements Vertex, ISugiyamaVertex {
+	public class SugiyamaVertex implements Vertex, ISugiyamaVertex {
 		private final Vertex vertex;
-		private int layer;
 
-		public SugiyamaVertex(Vertex vertex, int layer) {
+		public SugiyamaVertex(Vertex vertex) {
 			this.vertex = vertex;
-			this.layer = layer;
+			layering.addVertex(this, 0);
 		}
 
 		public boolean isDummy() {
@@ -543,11 +534,11 @@ public class SugiyamaGraph extends DefaultDirectedGraph<ISugiyamaVertex, ISugiya
 		}
 
 		public int getLayer() {
-			return layer;
+			return layering.getLayerFromVertex(this);
 		}
 
 		public void setLayer(int layer) {
-			this.layer = layer;
+		    layering.setLayer(this, layer);
 		}
 
         @Override
@@ -608,19 +599,21 @@ public class SugiyamaGraph extends DefaultDirectedGraph<ISugiyamaVertex, ISugiya
 	 * A wrapper class for directed edges to implement additional functionality
 	 * to apply the sugiyama layout to the SugiyamaGraph containing them.
 	 */
-	public static class SugiyamaEdge implements ISugiyamaEdge {
+	public class SugiyamaEdge implements ISugiyamaEdge {
 		List<Vector<Integer>> corners;
-		private boolean isReversed;
-		private boolean isSupplement;
-		private DirectedEdge<Vertex> wrappedEdge;
+		private boolean reversed;
+
+		// TODO: is this really necessary?
+//		private boolean isSupplement;
+		private DirectedEdge wrappedEdge;
 		private ISugiyamaVertex source;
 		private ISugiyamaVertex target;
-		private SupplementPath supplementpath;
 
-		private SugiyamaEdge(DirectedEdge edge) {
+		private SugiyamaEdge(DirectedEdge edge, ISugiyamaVertex source, ISugiyamaVertex target) {
 			this.wrappedEdge = edge;
-			this.isReversed = false;
-			this.isSupplement=false;
+			this.reversed = false;
+			this.source = source;
+			this.target = target;
 		}
 
 		//private E getEdge() { return null; }
@@ -630,7 +623,7 @@ public class SugiyamaGraph extends DefaultDirectedGraph<ISugiyamaVertex, ISugiya
 		 * 		true if this edge is reversed, false otherwise
 		 */
 		public boolean isReversed() {
-			return this.isReversed;
+			return this.reversed;
 		}
 
 		/**
@@ -639,52 +632,47 @@ public class SugiyamaGraph extends DefaultDirectedGraph<ISugiyamaVertex, ISugiya
 		 * 		sets, if this edge is reversed or not
 		 */
 		public void setReversed(boolean reversed) {
-			if (reversed != this.isReversed) {
+			if (reversed != this.reversed) {
 				ISugiyamaVertex tmp = source;
 				source = target;
 				target = tmp;
 			}
-
-			this.isReversed = reversed;
+			this.reversed = reversed;
 		}
 
-		/**
-		 * Returns true, if this edge was replaced by a {@link SupplementPath} that contains source and target vertices and at least one dummy vertex.
-		 * @return
-		 * 		True if this edge is an supplement path, false otherwise
-		 */
-		private boolean isReplaced() {
-			return false;
+		public void reverse() {
+		    this.setReversed(!isReversed());
 		}
-
-		/**
-		 * Returns the {@link SupplementPath} which this {@link ISugiyamaEdge} represents.
-		 * @return
-		 */
-		private SupplementPath getSupplementPath() {
-			if(this.isSupplement){
-				return this.supplementpath;
-			}
-//			SupplementPath supplement = new SupplementPath();//TODO implement
-//			return supplement;
-		    return null;
-		}
-		
-		private boolean isSupplementPath(){
-			return this.isSupplement;
-		}
-		
-		private void setSupplementPath(int length){
-			//this.supplementpath=new SupplementPath(this,length);	//TODO check if it would be wiser to add a constructor to SupplementPath to
-			//SupplementPath(String, String, ISugiyamaEdge edge, int length)
-		}
-
-		@Override
-		public void setVertices(ISugiyamaVertex source, ISugiyamaVertex target) {
-			this.source = source;
-			this.target = target;
-		}
-
+//		/**
+//		 * Returns true, if this edge was replaced by a {@link SupplementPath} that contains source and target vertices and at least one dummy vertex.
+//		 * @return
+//		 * 		True if this edge is an supplement path, false otherwise
+//		 */
+//		private boolean isReplaced() {
+//			return false;
+//		}
+//
+//		/**
+//		 * Returns the {@link SupplementPath} which this {@link ISugiyamaEdge} represents.
+//		 * @return
+//		 */
+//		private SupplementPath getSupplementPath() {
+//			if(this.isSupplement){
+//				return this.supplementpath;
+//			}
+////			SupplementPath supplement = new SupplementPath();//TODO implement
+////			return supplement;
+//		    return null;
+//		}
+//		
+//		private boolean isSupplementPath(){
+//			return this.isSupplement;
+//		}
+//		
+//		private void setSupplementPath(int length){
+//			//this.supplementpath=new SupplementPath(this,length);	//TODO check if it would be wiser to add a constructor to SupplementPath to
+//			//SupplementPath(String, String, ISugiyamaEdge edge, int length)
+//		}
 
 		@Override
 		public String getName() {
@@ -736,9 +724,75 @@ public class SugiyamaGraph extends DefaultDirectedGraph<ISugiyamaVertex, ISugiya
 			return wrappedEdge.getProperties();
 		}
 		
+        @Override
+        public void setVertices(ISugiyamaVertex source, ISugiyamaVertex nv) {
+            this.source = source;
+            this.target = nv;
+            
+        }
+        
 		@Override
 		public String toString(){
 			return this.getName() + "[" + this.getID() + "](" + this.source.toString() + "->" + this.target.toString() + ")";
 		}
 	}
+
+    @Override
+    public Integer outdegreeOf(Vertex vertex) {
+        return graph.outdegreeOf(vertex);
+    }
+
+    @Override
+    public Integer indegreeOf(Vertex vertex) {
+        return graph.indegreeOf(vertex);
+    }
+
+    @Override
+    public FastGraphAccessor getFastGraphAccessor() {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public void addToFastGraphAccessor(FastGraphAccessor fga) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public Set<ISugiyamaEdge> edgesOf(Vertex vertex) {
+        return graph.edgesOf(vertex);
+    }
+
+    @Override
+    public Set<ISugiyamaEdge> outgoingEdgesOf(Vertex vertex) {
+        return graph.outgoingEdgesOf(vertex);
+    }
+
+    @Override
+    public Set<ISugiyamaEdge> incomingEdgesOf(Vertex vertex) {
+        return graph.incomingEdgesOf(vertex);
+    }
+
+    @Override
+    public Set<ISugiyamaVertex> getVertexSet() {
+        return graph.getVertexSet();
+    }
+
+    @Override
+    public Set<ISugiyamaEdge> getEdgeSet() {
+        return graph.getEdgeSet();
+    }
+
+    @Override
+    public void setPositionsOnLayer(int layer, List<ISugiyamaVertex> newLayer) {
+        int x = 0; 
+        for (ISugiyamaVertex vertex : newLayer) {
+            if (!(this.layering.getLayerFromVertex(vertex) == layer)) {
+                throw new IllegalArgumentException("All vertices have to be on the specified layer, when calling setPositionOnLayer");
+            }
+            this.layering.setPosition(vertex, new Point(x, layer));
+            x++;
+        }
+    }
 }

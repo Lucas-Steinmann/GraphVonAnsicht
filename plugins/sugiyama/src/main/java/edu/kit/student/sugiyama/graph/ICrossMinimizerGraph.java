@@ -1,16 +1,16 @@
 package edu.kit.student.sugiyama.graph;
 
-import edu.kit.student.graphmodel.LayeredGraph;
 import edu.kit.student.sugiyama.graph.SugiyamaGraph.DummyVertex;
 import edu.kit.student.sugiyama.graph.SugiyamaGraph.SupplementEdge;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
  * A LayeredGraph which additionally defines functions that can be used to minimize the crossings in the sugiyama-layout.
  */
-public interface ICrossMinimizerGraph extends LayeredGraph<ISugiyamaVertex, ISugiyamaEdge> {
+public interface ICrossMinimizerGraph extends ISugiyamaStepGraph {
 
 	/**
 	 * Get the amount of layers.
@@ -25,6 +25,8 @@ public interface ICrossMinimizerGraph extends LayeredGraph<ISugiyamaVertex, ISug
 	 * @param second second vertex to change position with
 	 */
 	public void swapVertices(ISugiyamaVertex first, ISugiyamaVertex second);
+	
+	public void setPositionsOnLayer(int layer, List<ISugiyamaVertex> newLayer);
 	
 	/**
 	 * Get the number of vertices which are on a  certain layer

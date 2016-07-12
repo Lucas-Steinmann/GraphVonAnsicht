@@ -3,9 +3,6 @@ package edu.kit.student.joana.callgraph;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import edu.kit.student.graphmodel.LayeredGraph;
-import edu.kit.student.joana.JoanaCompoundVertex;
-import edu.kit.student.joana.JoanaEdge;
 import edu.kit.student.parameter.Settings;
 import edu.kit.student.sugiyama.LayeredLayoutAlgorithm;
 import edu.kit.student.sugiyama.RelativeLayerConstraint;
@@ -24,7 +21,7 @@ import edu.kit.student.sugiyama.steps.VertexPositioner;
  * Offers a layout for {@link CallGraph}.
  * Groups vertices representing the same Java-Method together.
  */
-public class CallGraphLayout implements LayeredLayoutAlgorithm <CallGraph, JoanaCompoundVertex, JoanaEdge<JoanaCompoundVertex>> {
+public class CallGraphLayout implements LayeredLayoutAlgorithm<CallGraph> {
 
 	@Override
 	public Settings getSettings() {
@@ -52,7 +49,7 @@ public class CallGraphLayout implements LayeredLayoutAlgorithm <CallGraph, Joana
 	}
 
 	@Override
-	public void layoutLayeredGraph(LayeredGraph<JoanaCompoundVertex, JoanaEdge<JoanaCompoundVertex>> graph) {
+	public void layoutLayeredGraph(CallGraph graph) {
 		// TODO Auto-generated method stub
 		
 	}

@@ -49,8 +49,11 @@ public class CrossMinimizer implements ICrossMinimizer {
 
 
 			if (oldCrossings - newCrossings < 0) {
-				graph.getLayers().clear();
-				graph.getLayers().addAll(undo);
+			    int y = 0;
+			    for (List<ISugiyamaVertex> layer : undo) {
+			        graph.setPositionsOnLayer(y, layer);
+			        y++;
+			    }
 				break;
 			}
 
@@ -138,8 +141,7 @@ public class CrossMinimizer implements ICrossMinimizer {
 		//barycenterMap = layer.stream().parallel().collect(Collectors.toMap(vertex -> vertex, vertex -> getBarycenter(graph, vertex, dir)));
 
 		newLayer = toSortedKeyList(barycenterMap);
-		layer.clear();
-		layer.addAll(newLayer);
+		graph.setPositionsOnLayer(optimizingLayer, newLayer);
 
 		return changes;
 	}
@@ -184,11 +186,13 @@ public class CrossMinimizer implements ICrossMinimizer {
 
 	public static int crossings(SugiyamaGraph graph) {
 		int result = 0;
+		List<List<ISugiyamaVertex>> layers = graph.getLayers();
+
 
 		result = IntStream.range(0, graph.getLayerCount() - 1)
 				.parallel()
 				.map(i -> {
-					return crossingsOfLayers(graph, graph.getLayer(i), graph.getLayer(i + 1));
+					return crossingsOfLayers(graph, layers.get(i), layers.get(i + 1));
 				}).sum();
 
 		return result;

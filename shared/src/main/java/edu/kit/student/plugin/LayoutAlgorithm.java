@@ -1,8 +1,6 @@
 package edu.kit.student.plugin;
 
-import edu.kit.student.graphmodel.Edge;
 import edu.kit.student.graphmodel.Graph;
-import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.parameter.Settings;
 
 /**
@@ -15,7 +13,7 @@ import edu.kit.student.parameter.Settings;
  * @param <V> the type of vertex used in the graph
  * @param <E> the type of edge used in the graph
  */
-public interface LayoutAlgorithm<G extends Graph<V, E>, V extends Vertex, E extends Edge<V>> {
+public interface LayoutAlgorithm<G extends Graph> {
 
     /**
      * Get the set of parameters for this instance of the algorithm.

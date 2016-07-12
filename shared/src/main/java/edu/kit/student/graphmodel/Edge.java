@@ -8,14 +8,14 @@ import edu.kit.student.objectproperty.GAnsProperty;
  * This edge interface specifies an edge. An edge contains two vertices, an ID,
  * a name and a label.
  */
-public interface Edge<V extends Vertex> {
+public interface Edge {
 
 	/**
 	 * Returns the vertices connected with this edge.
 	 * 
 	 * @return The vertices connected with the edge.
 	 */
-	public List<V> getVertices();
+	public List<? extends Vertex> getVertices();
 
 	/**
 	 * Returns the name of the edge.
@@ -52,10 +52,6 @@ public interface Edge<V extends Vertex> {
 	 * @return the edge path
 	 */
 	public EdgePath getPath();
-	
-	/**
-	 * Returns a set of properties of the Edge.
-	 * @return 
-	 */
-	public List<GAnsProperty<?>> getProperties();
+
+    List<GAnsProperty<?>> getProperties();
 }

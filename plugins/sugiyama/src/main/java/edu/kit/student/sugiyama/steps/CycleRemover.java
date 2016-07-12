@@ -176,7 +176,7 @@ public class CycleRemover implements ICycleRemover {
 		for(ISugiyamaEdge edge: graphEdges){
 			DDEdges.add(edge);
 		}
-		this.DDGraph = new DefaultDirectedGraph("", DDVertices, DDEdges);
+		this.DDGraph = new DefaultDirectedGraph<>("", DDVertices, DDEdges);
 	}
 	
 	/**

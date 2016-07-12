@@ -12,7 +12,7 @@ import edu.kit.student.plugin.LayoutOption;
 public abstract class CallGraphLayoutOption extends LayoutOption {
 
 	private CallGraph graph;
-	private LayoutAlgorithm<CallGraph, JoanaCompoundVertex, JoanaEdge<JoanaCompoundVertex>> layout;
+	private LayoutAlgorithm<CallGraph> layout;
 
 	/**
 	 * Sets the {@link CallGraph} that will be the target of the
@@ -32,7 +32,7 @@ public abstract class CallGraphLayoutOption extends LayoutOption {
 	 * @param layout
 	 *            The LayoutAlgorithm that will be used to layout the set graph.
 	 */
-	public void setLayout(LayoutAlgorithm<CallGraph, JoanaCompoundVertex, JoanaEdge<JoanaCompoundVertex>> layout) {
+	public void setLayout(LayoutAlgorithm<CallGraph> layout) {
 		this.layout = layout;
 	}
 

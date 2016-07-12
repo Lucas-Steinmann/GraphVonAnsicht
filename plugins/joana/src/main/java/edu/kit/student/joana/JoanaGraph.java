@@ -1,75 +1,58 @@
 package edu.kit.student.joana;
 
-import edu.kit.student.graphmodel.LayeredGraph;
-import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
 
-import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.Set;
+
+import edu.kit.student.graphmodel.Graph;
+import edu.kit.student.graphmodel.LayeredGraph;
+import edu.kit.student.graphmodel.directed.DirectedGraph;
+import edu.kit.student.util.IdGenerator;
 
 /**
  * An abstract superclass for all JOANA specific graphs.
  */
-public abstract class JoanaGraph<V extends JoanaVertex, E extends JoanaEdge<V>>
-    extends DefaultDirectedGraph<V, E>
-    implements LayeredGraph<V, E> {
-
-    // TODO: Ist eine statische maximalbreite hier richtig?
-    private static int maxWidth = 600;
-    private List<List<V>> layers;
+public abstract class JoanaGraph
+    implements DirectedGraph, LayeredGraph {
     
+    public Graph parent;
+    public List<Graph> children = new LinkedList<>();
+    public String name;
+    public Integer id;
+
     public JoanaGraph(String name) {
-        this(name, new HashSet<>(), new HashSet<>());
-    }
-
-    public JoanaGraph(String name, Set<V> vertices, Set<E> edges) {
-        super(name, vertices, edges);
-        layers = new ArrayList<List<V>>();
+        this.name = name;
+        this.id = IdGenerator.getInstance().createId();    
     }
 
     @Override
-    public int getLayerCount() {
-        return layers.size();
+    public String getName() {
+        return name;
     }
 
     @Override
-    public int getVertexCount(int layerNum) {
-        return layers.get(layerNum).size();
+    public Integer getID() {
+        return this.id;
     }
 
     @Override
-    public int getLayerFromVertex(JoanaVertex vertex) {
-        for(int i = 0; i < layers.size(); i++){
-            if(layers.get(i).contains(vertex)) return i;
-        }
-        return -1;
+    public Graph getParentGraph() {
+        return this.parent;
     }
 
     @Override
-    public List<V> getLayer(int layerNum) {
-        return layers.get(layerNum);
+    public void setParentGraph(Graph parent) {
+        this.parent = parent;
+        
     }
 
     @Override
-    public List<List<V>> getLayers() {
-        return layers;
+    public List<Graph> getChildGraphs() {
+        return this.children;
     }
 
     @Override
-    public int getHeight() {
-        // TODO Auto-generated method stub
-        return 0;
-    }
-
-    @Override
-    public int getMaxWidth() {
-        return maxWidth;
-    }
-
-    @Override
-    public int getLayerWidth(int layerN) {
-        // TODO Auto-generated method stub
-        return 0;
+    public void addChildGraph(Graph child) {
+        this.children.add(child);
     }
 }

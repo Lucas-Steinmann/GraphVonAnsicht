@@ -4,10 +4,8 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-import edu.kit.student.graphmodel.Edge;
 import edu.kit.student.graphmodel.Graph;
 import edu.kit.student.graphmodel.GraphModel;
-import edu.kit.student.graphmodel.Vertex;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 
@@ -43,9 +41,9 @@ public class StructureView extends TreeView<String> {
 		setRoot(root);
 	}
 	
-	private void addGraphsToItem(List<Graph<? extends Vertex, ? extends Edge<? extends Vertex>>> graphs, TreeItem<String> item) {
+	private void addGraphsToItem(List<? extends Graph> graphs, TreeItem<String> item) {
 		List<TreeItem<String>> items = new LinkedList<TreeItem<String>>();
-		for(Graph<? extends Vertex, ? extends Edge<? extends Vertex>> graph : graphs) {
+		for(Graph graph : graphs) {
 			TreeItem<String> graphItem = new TreeItem<String>(graph.getName());
 			graphItem.setExpanded(true);
 			itemMap.put(graphItem, graph.getID());

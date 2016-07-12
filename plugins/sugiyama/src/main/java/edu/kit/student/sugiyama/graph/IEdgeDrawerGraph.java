@@ -1,6 +1,5 @@
 package edu.kit.student.sugiyama.graph;
 
-import edu.kit.student.graphmodel.LayeredGraph;
 import edu.kit.student.util.Point;
 import java.util.List;
 import java.util.Set;
@@ -8,7 +7,7 @@ import java.util.Set;
 /**
  * A LayeredGraph which additionally defines functions draw the edges in the sugiyama-layout.
  */
-public interface IEdgeDrawerGraph  extends LayeredGraph<ISugiyamaVertex, ISugiyamaEdge> {
+public interface IEdgeDrawerGraph  extends ISugiyamaStepGraph {
 	
 	/**
 	 * Reverses the direction of an directed edge.

@@ -1,8 +1,6 @@
 package edu.kit.student.gui;
 
-import edu.kit.student.graphmodel.Edge;
 import edu.kit.student.graphmodel.Graph;
-import edu.kit.student.graphmodel.Vertex;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.canvas.Canvas;
@@ -105,7 +103,7 @@ public class GraphView extends Pane {
 	 * @param graph
 	 *            The graph to be visualized in the view.
 	 */
-	public void setGraph(Graph<Vertex, Edge<Vertex>> graph) {
+	public void setGraph(Graph graph) {
 		graphFactory = new GraphViewGraphFactory(graph);
 
 		getChildren().addAll(graphFactory.getGraphicalElements());

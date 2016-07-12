@@ -9,7 +9,7 @@ import edu.kit.student.plugin.LayoutOption;
 /**
  * This graph interface specifies a graph. A graph contains edges and vertices.
  */
-public interface Graph<V extends Vertex, E extends Edge<V>> {
+public interface Graph {
 
 	/**
 	 * Returns the name of the Graph.
@@ -30,14 +30,14 @@ public interface Graph<V extends Vertex, E extends Edge<V>> {
 	 * 
 	 * @return A set of all vertices of the graph.
 	 */
-	public Set<V> getVertexSet();
+	public Set<? extends Vertex> getVertexSet();
 
 	/**
 	 * Returns all edges of the graph.
 	 * 
 	 * @return A set of all edges of the graph.
 	 */
-	public Set<E> getEdgeSet();
+	public Set<? extends Edge> getEdgeSet();
 
 	/**
 	 * Returns a list of all edges of a vertex.
@@ -45,7 +45,7 @@ public interface Graph<V extends Vertex, E extends Edge<V>> {
 	 * @param vertex the vertex which edges will be returned.
 	 * @return All edges which are connected with the supplied vertex.
 	 */
-	public Set<E> edgesOf(V vertex);
+	public Set<? extends Edge> edgesOf(Vertex vertex);
 
 	/**
 	 * Returns the FastGraphAccessor of this Graph.
@@ -83,7 +83,7 @@ public interface Graph<V extends Vertex, E extends Edge<V>> {
 	
 	public void setParentGraph(Graph parent);
 	
-	public List<Graph<? extends Vertex, ? extends Edge<? extends Vertex>>> getChildGraphs();
+	public List<Graph> getChildGraphs();
 	
-	public void addChildGraph(Graph<? extends Vertex, ? extends Edge<? extends Vertex>> child);
+	public void addChildGraph(Graph child);
 }

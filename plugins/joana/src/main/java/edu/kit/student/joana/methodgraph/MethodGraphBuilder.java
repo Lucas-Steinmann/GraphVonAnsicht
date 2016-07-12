@@ -21,7 +21,7 @@ public class MethodGraphBuilder implements IGraphBuilder {
     String name;
     Set<JoanaVertex> vertices = new HashSet<JoanaVertex>();
     Set<String> vertexIds = new HashSet<>();
-    Set<JoanaEdge<JoanaVertex>> edges = new HashSet<>();
+    Set<JoanaEdge> edges = new HashSet<>();
     Set<JoanaVertexBuilder> vertexBuilders = new HashSet<>();
     Set<JoanaEdgeBuilder> edgeBuilders = new HashSet<>();
     

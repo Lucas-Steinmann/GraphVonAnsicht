@@ -17,8 +17,8 @@ import java.util.Random;
  */
 public class GraphUtil {
 
-    public static DefaultDirectedGraph<DefaultVertex, DirectedEdge<DefaultVertex>> generateGraph(int vertexCount, float density, boolean isCyclic) {
-        DefaultDirectedGraph graph = new DefaultDirectedGraph("randomGraph");
+    public static DefaultDirectedGraph<DefaultVertex, DirectedEdge> generateGraph(int vertexCount, float density, boolean isCyclic) {
+        DefaultDirectedGraph<DefaultVertex, DirectedEdge> graph = new DefaultDirectedGraph<DefaultVertex, DirectedEdge>("randomGraph");
         density = Math.min(Math.max(density, 0f), 1f);
         int edgeCount = (int) (density * vertexCount * (vertexCount - 1));
         List<Vertex> vertices = new LinkedList<>();
@@ -36,15 +36,12 @@ public class GraphUtil {
 
             for (int j = 0; j < i; j++) {
                 if (isCyclic) {
-                    DirectedEdge edge = new DefaultDirectedEdge("e(v" + Integer.toString(i) + ", v" + Integer.toString(j) + ")", "");
-                    edge.setVertices(vertex, vertices.get(j));
+                    DirectedEdge edge = new DefaultDirectedEdge("e(v" + Integer.toString(i) + ", v" + Integer.toString(j) + ")", "", vertex, vertices.get(j));
                     edges.add(edge);
-                    edge = new DefaultDirectedEdge("e(v" + Integer.toString(j) + ", v" + Integer.toString(i) + ")", "");
-                    edge.setVertices(vertices.get(j), vertex);
+                    edge = new DefaultDirectedEdge("e(v" + Integer.toString(j) + ", v" + Integer.toString(i) + ")", "", vertex, vertices.get(j));
                     edges.add(edge);
                 } else {
-                    DirectedEdge edge = new DefaultDirectedEdge("e(v" + Integer.toString(j) + ", v" + Integer.toString(i) + ")", "");
-                    edge.setVertices(vertices.get(j), vertex);
+                    DirectedEdge edge = new DefaultDirectedEdge("e(v" + Integer.toString(j) + ", v" + Integer.toString(i) + ")", "", vertices.get(j), vertex);
                     edges.add(edge);
                 }
             }
@@ -67,7 +64,7 @@ public class GraphUtil {
     }
 
     public static SugiyamaGraph generateSugiyamaGraph(int vertexCount, int minEdges, int maxEdges, boolean skipsLayers, long seed) {
-        DefaultDirectedGraph graph = new DefaultDirectedGraph("randomGraph");
+        DefaultDirectedGraph<DefaultVertex, DirectedEdge> graph = new DefaultDirectedGraph<>("randomGraph");
         List<Integer> layerSizes = new LinkedList<>();
         int currentLayerStart = 0;
         int lastLayerStart = 0;
@@ -106,8 +103,7 @@ public class GraphUtil {
                     } else {
                         neighborNumber = random.nextInt(currentLayerStart);
                     }
-                    DirectedEdge edge = new DefaultDirectedEdge("e(v" + Integer.toString(neighborNumber) + ", v" + Integer.toString(i) + ")", "");
-                    edge.setVertices(vertices.get(neighborNumber), vertex);
+                    DirectedEdge edge = new DefaultDirectedEdge("e(v" + Integer.toString(neighborNumber) + ", v" + Integer.toString(i) + ")", "", vertices.get(neighborNumber), vertex);
                     graph.addEdge(edge);
                 }
             }
@@ -131,7 +127,7 @@ public class GraphUtil {
             return new SugiyamaGraph(generateGraph(vertexCount, density, isCyclic));
         }
 
-        DefaultDirectedGraph graph = new DefaultDirectedGraph("randomGraph");
+        DefaultDirectedGraph<Vertex, DirectedEdge> graph = new DefaultDirectedGraph<>("randomGraph");
         density = Math.min(Math.max(density, 0f), 1f);
         int edgeCount = 0;
         int maxEdgeCount = 0;
@@ -160,16 +156,13 @@ public class GraphUtil {
                 for (int j = lastLayerStart; j < currentLayerStart; j++) {
 
                     if (isCyclic) {
-                        DirectedEdge edge = new DefaultDirectedEdge("e(v" + Integer.toString(i) + ", v" + Integer.toString(j) + ")", "");
-                        edge.setVertices(vertex, vertices.get(j));
+                        DirectedEdge edge = new DefaultDirectedEdge("e(v" + Integer.toString(i) + ", v" + Integer.toString(j) + ")", "", vertex, vertices.get(j));
                         edges.add(edge);
-                        edge = new DefaultDirectedEdge("e(v" + Integer.toString(j) + ", v" + Integer.toString(i) + ")", "");
-                        edge.setVertices(vertices.get(j), vertex);
+                        edge = new DefaultDirectedEdge("e(v" + Integer.toString(j) + ", v" + Integer.toString(i) + ")", "", vertices.get(j), vertex);
                         edges.add(edge);
                         maxEdgeCount += 2;
                     } else {
-                        DirectedEdge edge = new DefaultDirectedEdge("e(v" + Integer.toString(j) + ", v" + Integer.toString(i) + ")", "");
-                        edge.setVertices(vertices.get(j), vertex);
+                        DirectedEdge edge = new DefaultDirectedEdge("e(v" + Integer.toString(j) + ", v" + Integer.toString(i) + ")", "", vertices.get(j), vertex);
                         edges.add(edge);
                         maxEdgeCount += 1;
                     }
