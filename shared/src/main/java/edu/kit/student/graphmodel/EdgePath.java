@@ -23,6 +23,12 @@ public abstract class EdgePath {
 	 * @return the list of nodes
 	 */
 	public abstract List<Point> getNodes();
+	
+	/**
+	 * Adds a new Point to to this EdgePath.
+	 * @param newPoint new point to add to this Edgepath
+	 */
+	public abstract void addPoint(Point newPoint);
 
 
 }

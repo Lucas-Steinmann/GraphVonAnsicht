@@ -31,4 +31,9 @@ public class OrthogonalEdgePath extends EdgePath {
 		return this.nodes;
 	}
 
+	@Override
+	public void addPoint(Point newPoint) {
+		this.nodes.add(newPoint);
+	}
+
 }
