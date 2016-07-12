@@ -1,6 +1,7 @@
 package edu.kit.student.sugiyama.graph;
 
 import edu.kit.student.graphmodel.LayeredGraph;
+import edu.kit.student.sugiyama.graph.SugiyamaGraph.SupplementPath;
 import edu.kit.student.util.Point;
 import java.util.List;
 import java.util.Set;
@@ -23,6 +24,13 @@ public interface IEdgeDrawerGraph  extends LayeredGraph<ISugiyamaVertex, ISugiya
 	 */
 	public void setEdgepaths();
 	
+	/**
+	 * Returns all SupplementPaths that have been created in CrossMinimizer.
+	 * So these are all paths that contain DummyVertices
+	 * 
+	 * @return a set of all SupplementPaths 
+	 */
+	public Set<SupplementPath> getSupplementPaths();
 
 	/**
 	 * Returns the set of all with {@code reverseEdge(E edge)} reversed edges.

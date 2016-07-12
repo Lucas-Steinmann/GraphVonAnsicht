@@ -4,8 +4,9 @@ import edu.kit.student.graphmodel.directed.DirectedEdge;
 
 public interface ISugiyamaEdge extends DirectedEdge<ISugiyamaVertex>{
 
-	void setReversed(boolean b);
+	public void setReversed(boolean b);
 
-	boolean isReversed();
-
+	public boolean isReversed();
+	
+	public boolean isSupplementEdge();
 }

@@ -88,8 +88,9 @@ public class SugiyamaGraph extends DefaultDirectedGraph<ISugiyamaVertex, ISugiya
 		//TODO implement
 	}
 
+	@Override
 	public Set<SupplementPath> getSupplementPaths() {
-		return supplementPaths;
+		return this.supplementPaths;
 	}
 
 	@Override
@@ -415,6 +416,11 @@ public class SugiyamaGraph extends DefaultDirectedGraph<ISugiyamaVertex, ISugiya
 			this.source=source;
 			this.target=target;
 		}
+		
+		// a SupplementEdge is a SupplementEdge
+		public boolean isSupplementEdge(){
+			return true;
+		}
 
 		@Override
 		public void setVertices(ISugiyamaVertex source, ISugiyamaVertex target) {
@@ -611,16 +617,12 @@ public class SugiyamaGraph extends DefaultDirectedGraph<ISugiyamaVertex, ISugiya
 	public static class SugiyamaEdge implements ISugiyamaEdge {
 		List<Vector<Integer>> corners;
 		private boolean isReversed;
-		private boolean isSupplement;
 		private DirectedEdge<Vertex> wrappedEdge;
 		private ISugiyamaVertex source;
 		private ISugiyamaVertex target;
-		private SupplementPath supplementpath;
-
 		private SugiyamaEdge(DirectedEdge edge) {
 			this.wrappedEdge = edge;
 			this.isReversed = false;
-			this.isSupplement=false;
 		}
 
 		//private E getEdge() { return null; }
@@ -648,35 +650,9 @@ public class SugiyamaGraph extends DefaultDirectedGraph<ISugiyamaVertex, ISugiya
 			this.isReversed = reversed;
 		}
 
-		/**
-		 * Returns true, if this edge was replaced by a {@link SupplementPath} that contains source and target vertices and at least one dummy vertex.
-		 * @return
-		 * 		True if this edge is an supplement path, false otherwise
-		 */
-		private boolean isReplaced() {
+		//a SugiyamaEdge is not a SupplementEdge
+		public boolean isSupplementEdge(){
 			return false;
-		}
-
-		/**
-		 * Returns the {@link SupplementPath} which this {@link ISugiyamaEdge} represents.
-		 * @return
-		 */
-		private SupplementPath getSupplementPath() {
-			if(this.isSupplement){
-				return this.supplementpath;
-			}
-//			SupplementPath supplement = new SupplementPath();//TODO implement
-//			return supplement;
-		    return null;
-		}
-		
-		private boolean isSupplementPath(){
-			return this.isSupplement;
-		}
-		
-		private void setSupplementPath(int length){
-			//this.supplementpath=new SupplementPath(this,length);	//TODO check if it would be wiser to add a constructor to SupplementPath to
-			//SupplementPath(String, String, ISugiyamaEdge edge, int length)
 		}
 
 		@Override
