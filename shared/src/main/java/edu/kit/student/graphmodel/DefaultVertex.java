@@ -86,6 +86,6 @@ public class DefaultVertex implements Vertex {
 	
 	@Override
 	public String toString(){
-		return this.name.toString();
+		return this.name.toString() + "[" + this.id + "]";
 	}
 }

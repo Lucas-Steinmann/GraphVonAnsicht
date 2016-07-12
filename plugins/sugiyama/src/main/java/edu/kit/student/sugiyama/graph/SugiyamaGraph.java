@@ -485,7 +485,7 @@ public class SugiyamaGraph extends DefaultDirectedGraph<ISugiyamaVertex, ISugiya
 		
 		@Override
 		public String toString(){
-			return this.name + "(" + this.source.toString() + "->" + this.target.toString() + ")";
+			return this.name + "[S" + this.getID() + "](" + this.source.toString() + "->" + this.target.toString() + ")";
 		}
 	}
 
@@ -517,7 +517,7 @@ public class SugiyamaGraph extends DefaultDirectedGraph<ISugiyamaVertex, ISugiya
 		
 		@Override
 		public String toString(){
-			return this.getName();
+			return this.getName() + "[D" + this.getID() + "]";
 		}
 	}
 
@@ -600,7 +600,7 @@ public class SugiyamaGraph extends DefaultDirectedGraph<ISugiyamaVertex, ISugiya
 		
 		@Override
 		public String toString(){
-			return this.getName();
+			return this.getName() + "[" + this.getID() + "]";
 		}
 	}
 
@@ -738,7 +738,7 @@ public class SugiyamaGraph extends DefaultDirectedGraph<ISugiyamaVertex, ISugiya
 		
 		@Override
 		public String toString(){
-			return this.getName() + "(" + this.source.toString() + "->" + this.target.toString() + ")";
+			return this.getName() + "[" + this.getID() + "](" + this.source.toString() + "->" + this.target.toString() + ")";
 		}
 	}
 }
