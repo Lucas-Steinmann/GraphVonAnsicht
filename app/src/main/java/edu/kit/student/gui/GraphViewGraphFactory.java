@@ -16,6 +16,7 @@ import edu.kit.student.graphmodel.serialize.SerializedVertex;
 import edu.kit.student.objectproperty.GAnsProperty;
 import javafx.geometry.Bounds;
 import javafx.scene.shape.LineTo;
+import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.PathElement;
 import javafx.util.Pair;
@@ -133,6 +134,7 @@ public class GraphViewGraphFactory {
 			Map<String,String> shapeProperties = new HashMap<String,String>();
 			Bounds bounds = shape.getBoundsInParent();
 			shapeProperties.put("label", shape.getText());
+			shapeProperties.put("color", Integer.toHexString(shape.getColor().hashCode()));
 			shapeProperties.put("minX", Double.toString(bounds.getMinX()));
 			shapeProperties.put("minY", Double.toString(bounds.getMinY()));
 			shapeProperties.put("maxX", Double.toString(bounds.getMaxX()));
@@ -158,9 +160,16 @@ public class GraphViewGraphFactory {
 			Map<String,String> shapeProperties = new HashMap<String,String>();
 			Path path = shape.getElementShape();
 			shapeProperties.put("label", shape.getText());
+			// fragile, hashCode() is impl. dependent, could change in later releases
+			shapeProperties.put("color", Integer.toHexString(shape.getColor().hashCode()));
+			
 			for(int i = 0; i < path.getElements().size(); i++) {
 				PathElement element = path.getElements().get(i);
-				if(LineTo.class.equals(element.getClass())) {
+				if(MoveTo.class.equals(element.getClass())) {
+					MoveTo move = (MoveTo)element;
+					shapeProperties.put(i + "x", Double.toString(move.getX()));
+					shapeProperties.put(i + "y", Double.toString(move.getY()));
+				} else if(LineTo.class.equals(element.getClass())) {
 					LineTo line = (LineTo)element;
 					shapeProperties.put(i + "x", Double.toString(line.getX()));
 					shapeProperties.put(i + "y", Double.toString(line.getY()));

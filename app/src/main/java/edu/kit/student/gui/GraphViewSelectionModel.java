@@ -1,12 +1,16 @@
 package edu.kit.student.gui;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
+import java.util.Set;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 import javafx.event.EventHandler;
 import javafx.geometry.BoundingBox;
+import javafx.geometry.Bounds;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
@@ -28,14 +32,20 @@ public class GraphViewSelectionModel {
 
 	private ObservableSet<VertexShape> selection;
 
-	public GraphViewSelectionModel(Pane outerPane, GraphView view) {
+	public GraphViewSelectionModel(Pane outerPane, GraphView view, ContextMenu menu) {
 		selection = FXCollections.observableSet(new HashSet<VertexShape>());
-		new RubberBandSelection(outerPane, view);
+		new RubberBandSelection(outerPane, view, menu);
 	}
 
 	public void add(VertexShape node) {
 		node.setStyle("-fx-effect: dropshadow(three-pass-box, red, 10, 10, 0, 0);");
 		selection.add(node);
+	}
+	
+	public void addAll(Collection<VertexShape> nodes) {
+		for(VertexShape node : nodes) {
+			add(node);
+		}
 	}
 
 	public void remove(VertexShape node) {
@@ -70,10 +80,12 @@ public class GraphViewSelectionModel {
 		Rectangle rect;
 		Pane outerPane;
 		GraphView view;
+		ContextMenu menu;
 
-		public RubberBandSelection(Pane outerPane, GraphView view) {
+		public RubberBandSelection(Pane outerPane, GraphView view, ContextMenu menu) {
 			this.outerPane = outerPane;
 			this.view = view;
+			this.menu = menu;
 
 			rect = new Rectangle(0, 0, 0, 0);
 			rect.setStroke(Color.BLUE);
@@ -90,6 +102,7 @@ public class GraphViewSelectionModel {
 		EventHandler<MouseEvent> onMousePressedEventHandler = new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent event) {
+				menu.hide();
 				dragContext.mouseAnchorX = event.getX();
 				dragContext.mouseAnchorY = event.getY();
 
@@ -103,11 +116,11 @@ public class GraphViewSelectionModel {
 					outerPane.getChildren().add(rect);
 				} else if(event.getButton() == MouseButton.SECONDARY) {
 					System.out.println("Secondary clicked!");
-					dragContext.translateAnchorX = view.getTranslateX();
-					dragContext.translateAnchorY = view.getTranslateY();
+					if(event.isControlDown()) {
+						dragContext.translateAnchorX = view.getTranslateX();
+						dragContext.translateAnchorY = view.getTranslateY();
+					}
 				}
-				
-				System.out.println(dragContext.toString());
 
 				event.consume();
 			}
@@ -137,9 +150,11 @@ public class GraphViewSelectionModel {
 				//Moving the view
 				} else if(event.getButton() == MouseButton.SECONDARY) { 
 					//Done
-					System.out.println("Secondary dragged!");
-					view.setTranslateX(dragContext.translateAnchorX + event.getSceneX() - dragContext.mouseAnchorX);
-					view.setTranslateY(dragContext.translateAnchorY + event.getSceneY() - dragContext.mouseAnchorY);
+					if(event.isAltDown()) {
+						System.out.println("View dragged!");
+						view.setTranslateX(dragContext.translateAnchorX + event.getSceneX() - dragContext.mouseAnchorX);
+						view.setTranslateY(dragContext.translateAnchorY + event.getSceneY() - dragContext.mouseAnchorY);
+					}
 				}
 
 				event.consume();
@@ -147,7 +162,6 @@ public class GraphViewSelectionModel {
 		};
 
 		EventHandler<MouseEvent> onMouseReleasedEventHandler = new EventHandler<MouseEvent>() {
-			//Done
 			@Override
 			public void handle(MouseEvent event) {
 				// selection like in explorer
@@ -157,16 +171,11 @@ public class GraphViewSelectionModel {
 						GraphViewSelectionModel.this.clear();
 					}
 					
-					boolean shapeSelected = false;
-					for (VertexShape shape : view.getFactory().getVertexShapes()) {
-						//mapping the position inside of the graphView to the relative position in the outerPane
-						double x = shape.getBoundsInParent().getMinX() + view.getBoundsInParent().getMinX();
-						double y = shape.getBoundsInParent().getMinY() + view.getBoundsInParent().getMinY();
-						double w = shape.getBoundsInParent().getWidth() * view.getScale();
-						double h = shape.getBoundsInParent().getHeight() * view.getScale();
-						BoundingBox shapeBounds = new BoundingBox(x,y,w,h);
-						
-						if(shapeBounds.intersects(rect.getBoundsInParent())) {
+					Set<VertexShape> shapes = intersectedShapes(rect.getBoundsInParent());
+					if(shapes.isEmpty()) {
+						GraphViewSelectionModel.this.clear();
+					} else {
+						for(VertexShape shape : shapes) {
 							if(event.isControlDown()) { 
 								if(GraphViewSelectionModel.this.contains(shape)) {
 									GraphViewSelectionModel.this.remove(shape);
@@ -176,11 +185,7 @@ public class GraphViewSelectionModel {
 							} else {
 								GraphViewSelectionModel.this.add(shape);
 							}
-							shapeSelected = true;
-						} 
-					}
-					if(!shapeSelected) {
-						GraphViewSelectionModel.this.clear();
+						}
 					}
 					
 					GraphViewSelectionModel.this.log();
@@ -191,6 +196,23 @@ public class GraphViewSelectionModel {
 					rect.setHeight(0);
 
 					outerPane.getChildren().remove(rect);
+				} else if (event.getButton() == MouseButton.SECONDARY) {
+					if(!event.isControlDown()) {
+						BoundingBox clickBound = new BoundingBox(event.getX(),event.getY(),0,0);
+						//should mostly contain one item(if there are nodes on top of each other there can be more items contained)
+						Set<VertexShape> selection = intersectedShapes(clickBound);
+						System.out.println("click slelection: " + selection);
+						if(selection.isEmpty()) {
+							GraphViewSelectionModel.this.clear();
+						} else {
+							if(!GraphViewSelectionModel.this.selection.containsAll(selection)) {
+								GraphViewSelectionModel.this.clear();
+								GraphViewSelectionModel.this.addAll(selection);
+							}
+							//TODO: Contextmenu is shown in the wrong place
+							menu.show(view, event.getX(),event.getY());
+						} 
+					}
 				}
 
 				event.consume();
@@ -199,10 +221,11 @@ public class GraphViewSelectionModel {
 		
 		// Mouse wheel handler: zoom to pivot point.
 		EventHandler<ScrollEvent> onScrollEventHandler = new EventHandler<ScrollEvent>() {
-			//Done
 			@Override
 			public void handle(ScrollEvent event) {
-				if(event.isControlDown()) { //Enable Scrolling
+				//Enable Scrolling
+				if(event.isControlDown()) { 
+					menu.hide();
 					double delta = 1.2;
 					double scale = view.getScale(); // currently we only use Y, same
 														// value is used for X
@@ -229,6 +252,23 @@ public class GraphViewSelectionModel {
 				event.consume();
 			}
 		};
+		
+		private Set<VertexShape> intersectedShapes(Bounds bound) {
+			Set<VertexShape> shapes = new HashSet<VertexShape>();
+			for(VertexShape shape : view.getFactory().getVertexShapes()) {
+				//mapping the position inside of the graphView to the relative position in the outerPane
+				double x = (shape.getBoundsInParent().getMinX() * view.getScale()) + view.getBoundsInParent().getMinX();
+				double y = (shape.getBoundsInParent().getMinY() * view.getScale()) + view.getBoundsInParent().getMinY();
+				double w = shape.getBoundsInParent().getWidth() * view.getScale();
+				double h = shape.getBoundsInParent().getHeight() * view.getScale();
+				BoundingBox shapeBounds = new BoundingBox(x,y,w,h);
+				
+				if(shapeBounds.intersects(bound)) {
+					shapes.add(shape);
+				} 
+			}
+			return shapes;
+		}
 		
 		private double clamp(double value, double min, double max) {
 			if (Double.compare(value, min) < 0)

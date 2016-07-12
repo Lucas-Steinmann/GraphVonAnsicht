@@ -25,4 +25,8 @@ jar {
 
 dependencies {
 	compile project(':shared')
+	compile project(":plugins:sugiyama")
+    compile project(":plugins:joana")
+    compile project(":plugins:svg")
+    compile project(":plugins:graphml")
 }

@@ -58,6 +58,8 @@ public class StructureView extends TreeView<String> {
 	 * @return The id of the selected graph.
 	 */
 	public Integer getIdOfSelectedItem() {
-		return itemMap.get(getSelectionModel().getSelectedItem());
+		Integer id = itemMap.get(getSelectionModel().getSelectedItem());
+		if(id == null) return -1;
+		return id;
 	}
 }

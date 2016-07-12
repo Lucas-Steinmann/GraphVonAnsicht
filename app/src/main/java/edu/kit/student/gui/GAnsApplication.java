@@ -37,6 +37,7 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
+import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -45,6 +46,7 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -66,6 +68,8 @@ public class GAnsApplication extends Application {
 	private TabPane graphViewTabPane;
 	private Stage primaryStage;
 	private MenuBar menuBar;
+	private ContextMenu graphViewContextMenu;
+	private ContextMenu structureViewContextMenu;
 	
 	private Workspace workspace;
 	private GraphModel model;
@@ -94,6 +98,10 @@ public class GAnsApplication extends Application {
 
 		menuBar = new MenuBar();
 		setupMenuBar();
+		
+		this.graphViewContextMenu = new ContextMenu();
+		this.structureViewContextMenu = new ContextMenu();
+		setupContextMenus();
 
 		SplitPane treeInfoLayout = new SplitPane();
 		treeInfoLayout.setOrientation(Orientation.VERTICAL);
@@ -106,25 +114,9 @@ public class GAnsApplication extends Application {
 		structureView.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent mouseEvent) {
-				if (mouseEvent.getClickCount() == 2) {
-					int id = structureView.getIdOfSelectedItem();
-					Graph graph = getGraphFromId(model.getRootGraphs(), id);
-					if(graph != null) {
-						boolean found = false;
-						for(Tab tab : graphViewTabPane.getTabs()) {
-							if(tab.getId().compareTo(graph.getID().toString()) == 0) {
-								found = true;
-								graphViewTabPane.getSelectionModel().select(tab);
-								break;
-							}
-						}
-						if(!found) {
-							LayoutOption defaultOption = graph.getDefaultLayout();
-							defaultOption.chooseLayout();
-							defaultOption.applyLayout();
-							showGraph(graph);
-						}
-					}
+				GAnsApplication.this.currentGraphView.getSelectionModel().clear();
+				if (mouseEvent.getButton() == MouseButton.PRIMARY && mouseEvent.getClickCount() == 2) {
+					openGraph(GAnsApplication.this.structureView.getIdOfSelectedItem());
 				}
 			}
 		});
@@ -136,10 +128,14 @@ public class GAnsApplication extends Application {
 			@Override
 			public void changed(ObservableValue<? extends Tab> observable, Tab oldValue, Tab newValue) {
 				//TODO: Bad :D
-				ScrollPane scrollPane = ((ScrollPane) newValue.getContent());
-				Pane pane = (Pane) scrollPane.getContent();
-				Group group = ((Group) pane.getChildren().get(pane.getChildren().size() - 1));
-				currentGraphView = ((GraphView) group.getChildren().get(group.getChildren().size() - 1));
+				if(newValue == null) {
+					GAnsApplication.this.currentGraphView = null;
+				} else {
+					ScrollPane scrollPane = ((ScrollPane) newValue.getContent());
+					Pane pane = (Pane) scrollPane.getContent();
+					Group group = ((Group) pane.getChildren().get(pane.getChildren().size() - 1));
+					GAnsApplication.this.currentGraphView = ((GraphView) group.getChildren().get(group.getChildren().size() - 1));
+				}
 			}
 		});
 		
@@ -207,7 +203,11 @@ public class GAnsApplication extends Application {
 			String fileName = saveFile.getName();
 			String fileExtension = "*" + fileName.substring(fileName.lastIndexOf('.'));
 			Exporter exporter = exporterList.get(supportedFileExtensions.indexOf(fileExtension));
-			exporter.exportGraph(currentGraphView.getFactory().serializeGraph(), outputStream);
+			if(this.currentGraphView == null) {
+				// TODO: Alert
+			} else {
+				exporter.exportGraph(this.currentGraphView.getFactory().serializeGraph(), outputStream);
+			}
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -219,15 +219,14 @@ public class GAnsApplication extends Application {
 		GraphView graphView = new GraphView();
 
 		group.getChildren().add(graphView);
-		// Die Oberflaeche die gezogen und gezoomed werden kann.
-		
+		//the pane that can be moved with the cursor
 		Pane outerPane = new Pane(group);
 		outerPane.setPrefSize(graphViewTabPane.getWidth(), graphViewTabPane.getHeight());
 		
 		ScrollPane scrollPane = new ScrollPane(outerPane);
 		scrollPane.setPrefSize(graphViewTabPane.getWidth(), graphViewTabPane.getHeight());
 		
-		GraphViewSelectionModel selectionModel = new GraphViewSelectionModel(outerPane, graphView);
+		GraphViewSelectionModel selectionModel = new GraphViewSelectionModel(outerPane, graphView, graphViewContextMenu);
 		graphView.setSelectionModel(selectionModel);
 
 		Tab tab = new Tab(graph.getName());
@@ -252,66 +251,7 @@ public class GAnsApplication extends Application {
 			}
 		});
 	}
-
-	private void setupMenuBar() {
-		Menu menuFile = new Menu("File");
-		MenuItem importItem = new MenuItem("Import");
-		importItem.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				importClicked();
-			}
-		});
-		if(PluginManager.getPluginManager().getImporter().isEmpty()) {
-			importItem.setDisable(true);
-		}
-		MenuItem exportItem = new MenuItem("Export");
-		exportItem.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				exportClicked();
-			}
-		});
-		if(PluginManager.getPluginManager().getExporter().isEmpty()) {
-			exportItem.setDisable(true);
-		}
-		MenuItem exitItem = new MenuItem("Exit");
-		exitItem.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				System.exit(0);
-			}
-		});
-		menuFile.getItems().addAll(importItem, exportItem, exitItem);
-
-		Menu menuLayout = new Menu("Layout");
-		Menu changeLayoutItem = new Menu("Change algorithms");
-		
-		menuLayout.setOnShowing(new EventHandler<Event>() {
-			@Override
-			public void handle(Event e) {
-				changeLayoutItem.getItems().clear();
-				if(currentGraphView != null) {
-					for(LayoutOption option: currentGraphView.getFactory().getGraph().getRegisteredLayouts()) {
-						MenuItem item = new MenuItem(option.getName());
-						item.setOnAction(new EventHandler<ActionEvent>() {
-							@Override
-							public void handle(ActionEvent e) {
-								option.chooseLayout();
-								if(openParameterDialog(option.getSettings())) option.applyLayout();
-							}
-						});
-						changeLayoutItem.getItems().add(item);
-					}
-				}
-			}
-		});
-		MenuItem layoutPropertiesItem = new MenuItem("Properties");
-		menuLayout.getItems().addAll(changeLayoutItem, layoutPropertiesItem);
-
-		menuBar.getMenus().addAll(menuFile, menuLayout);
-	}
-
+	
 	private boolean openWorkspaceDialog() {
 		List<String> workspaceNames = new ArrayList<String>();
 		List<WorkspaceOption> options = PluginManager.getPluginManager().getWorkspaceOptions();
@@ -377,6 +317,115 @@ public class GAnsApplication extends Application {
 			return false;
 		}
 		return true;
+	}
+
+	private void setupMenuBar() {
+		Menu menuFile = new Menu("File");
+		MenuItem importItem = new MenuItem("Import");
+		importItem.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent e) {
+				importClicked();
+			}
+		});
+		if(PluginManager.getPluginManager().getImporter().isEmpty()) {
+			importItem.setDisable(true);
+		}
+		MenuItem exportItem = new MenuItem("Export");
+		exportItem.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent e) {
+				exportClicked();
+			}
+		});
+		if(PluginManager.getPluginManager().getExporter().isEmpty()) {
+			exportItem.setDisable(true);
+		}
+		MenuItem exitItem = new MenuItem("Exit");
+		exitItem.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent e) {
+				System.exit(0);
+			}
+		});
+		menuFile.getItems().addAll(importItem, exportItem, exitItem);
+		
+		// disabling the export button if there is no graphView
+		menuFile.setOnShowing(new EventHandler<Event>() {
+			@Override
+			public void handle(Event e) {
+				exportItem.setDisable(GAnsApplication.this.currentGraphView == null);
+			}
+		});
+
+		Menu menuLayout = new Menu("Layout");
+		Menu changeLayoutItem = new Menu("Change algorithms");
+		MenuItem layoutPropertiesItem = new MenuItem("Properties");
+		menuLayout.getItems().addAll(changeLayoutItem, layoutPropertiesItem);
+		
+		menuLayout.setOnShowing(new EventHandler<Event>() {
+			@Override
+			public void handle(Event e) {
+				if(GAnsApplication.this.currentGraphView == null) {
+					changeLayoutItem.setDisable(true);
+					layoutPropertiesItem.setDisable(true);
+				} else {
+					changeLayoutItem.setDisable(false);
+					layoutPropertiesItem.setDisable(false);
+					changeLayoutItem.getItems().clear();
+					for(LayoutOption option: GAnsApplication.this.currentGraphView.getFactory().getGraph().getRegisteredLayouts()) {
+						MenuItem item = new MenuItem(option.getName());
+						item.setOnAction(new EventHandler<ActionEvent>() {
+							@Override
+							public void handle(ActionEvent e) {
+								option.chooseLayout();
+								if(openParameterDialog(option.getSettings())) option.applyLayout();
+							}
+						});
+						changeLayoutItem.getItems().add(item);
+					}
+				}
+			}
+		});
+
+		menuBar.getMenus().addAll(menuFile, menuLayout);
+	}
+	
+	private void setupContextMenus() {
+		
+		MenuItem test = new MenuItem("Test");
+		
+		this.graphViewContextMenu.getItems().add(test);
+		
+		MenuItem openGraph = new MenuItem("Open");
+		openGraph.setOnAction(new EventHandler<ActionEvent>() {
+		    public void handle(ActionEvent e) {
+		    	openGraph(GAnsApplication.this.structureView.getIdOfSelectedItem());
+		    }
+		});
+		
+		this.structureViewContextMenu.getItems().add(openGraph);
+	}
+	
+	private void openGraph(Integer id) {
+		if(id == -1) return;
+		Graph graph = getGraphFromId(model.getRootGraphs(), id);
+		if(graph != null) {
+			boolean found = false;
+			for(Tab tab : GAnsApplication.this.graphViewTabPane.getTabs()) {
+				if(tab.getId().compareTo(graph.getID().toString()) == 0) {
+					found = true;
+					GAnsApplication.this.graphViewTabPane.getSelectionModel().select(tab);
+					break;
+				}
+			}
+			if(!found) {
+				LayoutOption defaultOption = graph.getDefaultLayout();
+				defaultOption.chooseLayout();
+				defaultOption.applyLayout();
+				showGraph(graph);
+			}
+		}
 	}
 	
 	//TODO; Move to GraphModel

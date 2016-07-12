@@ -35,5 +35,7 @@ public abstract class GAnsGraphElement extends StackPane {
 	 */
 	public abstract void setColor(Color color);
 	
+	public abstract Color getColor();
+	
 	public abstract Shape getElementShape();
 }

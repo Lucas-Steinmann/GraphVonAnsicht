@@ -24,6 +24,7 @@ public class EdgeShape extends GAnsGraphElement {
 
 	private Text text;
 	private Path path;
+	private Color color;
 	private double middleX;
 	private double middleY;
 
@@ -109,8 +110,13 @@ public class EdgeShape extends GAnsGraphElement {
 	public void setColor(Color color) {
 		Random random = new Random();
 		color = Color.rgb(random.nextInt(255), random.nextInt(255), random.nextInt(255));
-		//path.setFill(color);
+		this.color = color;
 		path.setStroke(color);
+	}
+	
+	@Override
+	public Color getColor() {
+		return this.color;
 	}
 
 	@Override
