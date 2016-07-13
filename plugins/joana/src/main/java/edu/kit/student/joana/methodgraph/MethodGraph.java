@@ -261,64 +261,68 @@ public class MethodGraph extends JoanaGraph {
                 }
             } else if (this.isNormCompoundField(v1)) {
                 //check for static field get
-                for (JoanaEdge e : this.outgoingEdgesOf(v1)) {
-                    if (e.getEdgeKind() == JoanaEdge.Kind.CF) {
-                        JoanaVertex v2 = e.getTarget();
-                        if (this.isExprReference(v2)) {
-                            
-                            boolean isValidStaticFieldGet = true;
-                            
-                            //check if not subgraph of field get or array field get
-                            for (JoanaEdge pred : this.incomingEdgesOf(v1)) {
-                                if (pred.getEdgeKind() == JoanaEdge.Kind.CF
-                                        && (this.isNormCompoundBase(pred.getSource())
-                                                || this.isNormCompoundIndex(pred.getSource()))) {
-                                    isValidStaticFieldGet = false;
-                                    break;
-                                }
-                            }
-
-                            //TODO: check for outgoing and incoming Edges
-                            if (isValidStaticFieldGet) {
-                                //found static field get
-                              System.out.println("static field-get: " + v1.getName() + " : " + v2.getName());
-                            }
-                        }
-                    }
-                }
+                this.findStaticFieldGet(v1);
             } else if (this.isExprModify(v1)) {
                 //check for static field set
-                for (JoanaEdge e : this.outgoingEdgesOf(v1)) {
-                    if (e.getEdgeKind() == JoanaEdge.Kind.CF) {
-                        JoanaVertex v2 = e.getTarget();
-                        if (this.isNormCompoundField(v2)) {
-                            //check if not subgraph of field set or array field set
-                            boolean isValidStaticFieldSet = true;
-                            for (JoanaEdge pred : this.incomingEdgesOf(v1)) {
-                                if (pred.getEdgeKind() == JoanaEdge.Kind.CF
-                                        && (this.isNormCompoundBase(pred.getSource())
-                                                || this.isNormCompoundIndex(pred.getSource()))) {
-                                    isValidStaticFieldSet = false;
-                                    break;
-                                }
-                            }
-                            //TODO: check for outgoing and incoming Edges
-                            
-                            if (isValidStaticFieldSet) {
-                                //found static field Set
-                              System.out.println("static field-set: " + v1.getName() + " : " + v2.getName());
-                            }
-                        }
-                    }
-                }
+                this.findStaticFieldSet(v1);
             }
             
         }
         
     }
     
+    //function to search for StaticFieldGet. Gets the first vertex of an possible staticFieldGet
+    private void findStaticFieldGet(JoanaVertex v1) {
+      
+        for (JoanaEdge e : this.outgoingEdgesOf(v1)) {
+            if (e.getEdgeKind() == JoanaEdge.Kind.CF) {
+                JoanaVertex v2 = e.getTarget();
+                if (this.isExprReference(v2)) {                 
+
+                    //TODO: check for outgoing and incoming Edges
+                    if (this.isValidStaticField(v1)) {
+                        //found static field get
+                      System.out.println("static field-get: " + v1.getName() + " : " + v2.getName());
+                    }
+                }
+            }
+        }
+    }
     
-    //TODO: change names of the checker
+    //function to search for StaticFieldSet. Gets the first vertex of an possible StatiFieldSet
+    private void findStaticFieldSet(JoanaVertex v1) {
+
+        for (JoanaEdge e : this.outgoingEdgesOf(v1)) {
+            if (e.getEdgeKind() == JoanaEdge.Kind.CF) {
+                JoanaVertex v2 = e.getTarget();
+                if (this.isNormCompoundField(v2)) {
+                    //TODO: check for outgoing and incoming Edges
+                    
+                    if (this.isValidStaticField(v1)) {
+                        //found static field Set
+                      System.out.println("static field-set: " + v1.getName() + " : " + v2.getName());
+                    }
+                }
+            }
+        }
+    }
+    
+    //checks if the first vertex of an static field access is subgraph of other field access
+    private boolean isValidStaticField(JoanaVertex v) {
+        boolean result = true;
+        for (JoanaEdge pred : this.incomingEdgesOf(v)) {
+            if (pred.getEdgeKind() == JoanaEdge.Kind.CF
+                    && (this.isNormCompoundBase(pred.getSource())
+                            || this.isNormCompoundIndex(pred.getSource()))) {
+                result = false;
+                break;
+            }
+        }
+        
+        return result;
+    }
+    
+    //TODO: change names of the checkers and maybe add additional criterions
     private boolean isNormCompoundBase(JoanaVertex vertex) {
         if (vertex.getNodeKind() == JoanaVertex.Kind.NORM 
                 && vertex.getNodeOperation().equals("compound") 
