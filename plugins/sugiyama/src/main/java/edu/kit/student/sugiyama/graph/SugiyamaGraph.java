@@ -71,17 +71,17 @@ public class SugiyamaGraph
 	    this(new DefaultDirectedGraph<>(name, vertices, edges));
 	}
 
-	/**
-	 * Replaces the specified edge with a path of dummy vertices of the specified length.
-	 * Replaced edges are removed from the set of edges but saved for later retrieval
-	 * with {@code getReplacedEdges()} or restored with {@code restoreReplacedEdges}.
-	 *
-	 * @param edge the edge to be replaced
-	 * @param length the length of the path which replaces the edge
-	 */
-	private void replaceWithSupplementPath(ISugiyamaEdge edge, int length) {
-		//TODO implement
-	}
+//	/**
+//	 * Replaces the specified edge with a path of dummy vertices of the specified length.
+//	 * Replaced edges are removed from the set of edges but saved for later retrieval
+//	 * with {@code getReplacedEdges()} or restored with {@code restoreReplacedEdges}.
+//	 *
+//	 * @param edge the edge to be replaced
+//	 * @param length the length of the path which replaces the edge
+//	 */
+//	private void replaceWithSupplementPath(ISugiyamaEdge edge, int length) {
+//		//TODO implement ? or unnecessary ?! edges are yet replaced with createSupplementpath() 
+//	}
 
 	public Set<SupplementPath> getSupplementPaths() {
 		return supplementPaths;
@@ -491,13 +491,13 @@ public class SugiyamaGraph
 
 		@Override
 		public Pair<Double, Double> getSize() {
-			// TODO Auto-generated method stub
+			// TODO necessary ?
 			return null;
 		}
 
 		@Override
 		public Color getColor() {
-			// TODO Auto-generated method stub
+			// TODO necessary ?
 			return null;
 		}
 	}
@@ -536,7 +536,7 @@ public class SugiyamaGraph
 	 * A wrapper class for vertices used in the sugiyama framework.
 	 * A ISugiyamaVertex can be a {@link DefaultVertex} or a {@link DummyVertex}
 	 */
-	public class SugiyamaVertex implements Vertex, ISugiyamaVertex {
+	public class SugiyamaVertex implements ISugiyamaVertex {
 		private final Vertex vertex;
 
 		public SugiyamaVertex(Vertex vertex) {
@@ -615,14 +615,12 @@ public class SugiyamaGraph
 
 		@Override
 		public Pair<Double, Double> getSize() {
-			// TODO Auto-generated method stub
-			return null;
+			return this.vertex.getSize();
 		}
 
 		@Override
 		public Color getColor() {
-			// TODO Auto-generated method stub
-			return null;
+			return this.vertex.getColor();
 		}
 	}
 
@@ -673,9 +671,8 @@ public class SugiyamaGraph
 
 		public void reverse() {
 		    this.setReversed(!isReversed());
-		//a SugiyamaEdge is not a SupplementEdge
 		}
-		
+		//a SugiyamaEdge is not a SupplementEdge
 		public boolean isSupplementEdge(){
 			return false;
 		}
@@ -696,7 +693,7 @@ public class SugiyamaGraph
 //			if(this.isSupplement){
 //				return this.supplementpath;
 //			}
-////			SupplementPath supplement = new SupplementPath();//TODO implement
+////			SupplementPath supplement = new SupplementPath();//TODO implement, if necessary ?
 ////			return supplement;
 //		    return null;
 //		}
@@ -774,14 +771,12 @@ public class SugiyamaGraph
 
 		@Override
 		public Pair<Double, Double> getSize() {
-			// TODO Auto-generated method stub
-			return null;
+			return this.wrappedEdge.getSize();
 		}
 
 		@Override
 		public Color getColor() {
-			// TODO Auto-generated method stub
-			return null;
+			return this.wrappedEdge.getColor();
 		}
 	}
 
