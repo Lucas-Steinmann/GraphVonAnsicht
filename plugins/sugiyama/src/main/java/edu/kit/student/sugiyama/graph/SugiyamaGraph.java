@@ -100,7 +100,7 @@ public class SugiyamaGraph
 	@Override
 	public void reverseEdge(ISugiyamaEdge edge) {
 	    graph.removeEdge(edge);
-	    edge.setReversed(!edge.isReversed());
+	    edge.reverse();
 	    graph.addEdge(edge);
 	}
 
@@ -389,6 +389,14 @@ public class SugiyamaGraph
 		public ISugiyamaEdge getReplacedEdge() {
 			return this.replacedEdge;
 		}
+		
+		/**
+		 * Reverses a supplement path by reversing the replaced edge and reversing the order of the dummy vertices on this path.
+		 */
+		public void reverse(){
+			Collections.reverse(this.dummies);
+			this.replacedEdge.reverse();
+		}
 	}
 	/**
 	 * A supplement edge which is part of a {@link SupplementPath}.
@@ -471,21 +479,13 @@ public class SugiyamaGraph
 		}
 
 		/**
-		 * Sets this edge to be reversed or not.
-		 * @param reversed
-		 * 		sets, if this edge is reversed or not
+		 * Reverses this edge.
 		 */
-		public void setReversed(boolean reversed) {
-			if (reversed != this.isReversed) {
-				ISugiyamaVertex tmp = source;
-				source = target;
-				target = tmp;
-			}
-			this.isReversed = reversed;
-		}
-
 		public void reverse() {
-		    this.setReversed(!isReversed());
+			ISugiyamaVertex tmp = source;
+			source = target;
+			target = tmp;
+			this.isReversed=!this.isReversed;
 		}
 
 		@Override
@@ -644,7 +644,7 @@ public class SugiyamaGraph
 	 */
 	public class SugiyamaEdge implements ISugiyamaEdge {
 		List<Vector<Integer>> corners;
-		private boolean reversed;
+		private boolean isReversed;
 
 		// TODO: is this really necessary?
 //		private boolean isSupplement;
@@ -654,7 +654,7 @@ public class SugiyamaGraph
 
 		private SugiyamaEdge(DirectedEdge edge, ISugiyamaVertex source, ISugiyamaVertex target) {
 			this.wrappedEdge = edge;
-			this.reversed = false;
+			this.isReversed = false;
 			this.source = source;
 			this.target = target;
 		}
@@ -666,26 +666,19 @@ public class SugiyamaGraph
 		 * 		true if this edge is reversed, false otherwise
 		 */
 		public boolean isReversed() {
-			return this.reversed;
+			return this.isReversed;
 		}
 
 		/**
-		 * Sets this edge to be reversed or not.
-		 * @param reversed
-		 * 		sets, if this edge is reversed or not
+		 * Reverses this edge.
 		 */
-		public void setReversed(boolean reversed) {
-			if (reversed != this.reversed) {
-				ISugiyamaVertex tmp = source;
-				source = target;
-				target = tmp;
-			}
-			this.reversed = reversed;
-		}
-
 		public void reverse() {
-		    this.setReversed(!isReversed());
+			ISugiyamaVertex tmp = source;
+			source = target;
+			target = tmp;
+			this.isReversed=!this.isReversed;
 		}
+		
 		//a SugiyamaEdge is not a SupplementEdge
 		public boolean isSupplementEdge(){
 			return false;

@@ -7,7 +7,7 @@ import edu.kit.student.graphmodel.directed.DirectedEdge;
 
 public interface ISugiyamaEdge extends DirectedEdge {
 
-	void setReversed(boolean b);
+	void reverse();
 
 	boolean isReversed();
 	
