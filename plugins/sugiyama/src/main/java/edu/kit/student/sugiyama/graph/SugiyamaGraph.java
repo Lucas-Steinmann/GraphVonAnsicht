@@ -259,11 +259,11 @@ public class SugiyamaGraph
 	    return layering.getLayerWidth(layerN);
 	}
 
-	@Override
-	public Set<ISugiyamaEdge> getReplacedEdges() {
-		// TODO Auto-generated method stub
-		return null;
-	}
+//	@Override
+//	public Set<ISugiyamaEdge> getReplacedEdges() {
+//		// TODO necessary for anything ?
+//		return null;
+//	}
 
 	@Override
 	public void setEdgepaths() {
@@ -399,6 +399,7 @@ public class SugiyamaGraph
 		private String label;
 		private ISugiyamaVertex source;
 		private ISugiyamaVertex target;
+		private boolean isReversed;
 		
 		public SupplementEdge(String name, String label) {
 			this.name=name;
@@ -409,6 +410,7 @@ public class SugiyamaGraph
 			this(name,label);
 			this.source=source;
 			this.target=target;
+			this.isReversed=false;
 		}
 				
 		// a SupplementEdge is a SupplementEdge
@@ -468,15 +470,27 @@ public class SugiyamaGraph
 			return null;
 		}
 
-		@Override
-		public void setReversed(boolean b) {
-			//does not make sense to reverse a SupplementEdge
-		    // TODO: Then maybe their shouldn't be a function for that and the type hierarchy is broken?
+		/**
+		 * Sets this edge to be reversed or not.
+		 * @param reversed
+		 * 		sets, if this edge is reversed or not
+		 */
+		public void setReversed(boolean reversed) {
+			if (reversed != this.isReversed) {
+				ISugiyamaVertex tmp = source;
+				source = target;
+				target = tmp;
+			}
+			this.isReversed = reversed;
+		}
+
+		public void reverse() {
+		    this.setReversed(!isReversed());
 		}
 
 		@Override
 		public boolean isReversed() {
-			return false;
+			return this.isReversed;
 		}
 
         @Override

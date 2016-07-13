@@ -38,12 +38,12 @@ public interface IEdgeDrawerGraph  extends ISugiyamaStepGraph {
 	 */
 	public Set<ISugiyamaEdge> getReversedEdges();
 
-	/**
-	 * Returns the set of replaced edges.
-	 * 
-	 * @return the set of replaced edges
-	 */
-	public Set<ISugiyamaEdge> getReplacedEdges();
+//	/**
+//	 * Returns the set of replaced edges.
+//	 * 
+//	 * @return the set of replaced edges
+//	 */
+//	public Set<ISugiyamaEdge> getReplacedEdges();
 	
 	
 	/**
