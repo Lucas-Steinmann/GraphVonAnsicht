@@ -12,17 +12,9 @@ import org.w3c.dom.Element;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
-import java.lang.reflect.Array;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-
-
-
-
-
-
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -47,7 +39,7 @@ public class SvgExporter implements Exporter {
     }
 
     @Override
-    public void exportGraph(SerializedGraph graph, FileOutputStream filestream) {
+    public void exportGraph(SerializedGraph graph, FileOutputStream filestream) throws Exception {
         
         //Create new DOM document
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -55,8 +47,7 @@ public class SvgExporter implements Exporter {
         try {
             docBuilder = factory.newDocumentBuilder();
         } catch (ParserConfigurationException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
+            throw new Exception(e1);
         }
         
         Document document = docBuilder.newDocument();
@@ -99,8 +90,7 @@ public class SvgExporter implements Exporter {
         try {
             transformer = transformerFactory.newTransformer();
         } catch (TransformerConfigurationException e2) {
-            // TODO Auto-generated catch block
-            e2.printStackTrace();
+            throw new Exception(e2);
         }
         DOMSource source = new DOMSource(document);
 
@@ -111,8 +101,7 @@ public class SvgExporter implements Exporter {
         try {
             transformer.transform(source, result);
         } catch (TransformerException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
+            throw new Exception(e1);
         }
         
         
@@ -128,14 +117,14 @@ public class SvgExporter implements Exporter {
             filestream.close();
 
         } catch (IOException e) {
-            e.printStackTrace();
+            throw new Exception(e);
         } finally {
             try {
                 if (filestream != null) {
                     filestream.close();
                 }
             } catch (IOException e) {
-                e.printStackTrace();
+                throw new Exception(e);
             }
         }
     }
@@ -148,7 +137,7 @@ public class SvgExporter implements Exporter {
      * @param shapeProp
      * @return
      */
-    private Element createEdgeElement(Document document, Map<String, String> shapeProp) {
+    private Element createEdgeElement(Document document, Map<String, String> shapeProp) throws Exception {
         
         //create Map for coords
         Map<Integer, String> xcoords = new HashMap<Integer, String>();
@@ -164,7 +153,7 @@ public class SvgExporter implements Exporter {
             try {
                 num = Integer.parseInt(s.replaceAll("\\D+",""));
             } catch (NumberFormatException e) {
-                //TODO: throw Error
+                //Do nothing because it is not an x or y coord.
             }
             String key = s.replaceAll("\\d+", "");
             
@@ -202,8 +191,6 @@ public class SvgExporter implements Exporter {
                 
                 //add to group
                 group.appendChild(line);
-            } else {
-                //TODO:throw Error?
             }
         }
         
@@ -217,7 +204,7 @@ public class SvgExporter implements Exporter {
      * @param shapeProp
      * @return element of vertex
      */
-    private Element createVertexElement(Document document, Map<String, String> shapeProp) {
+    private Element createVertexElement(Document document, Map<String, String> shapeProp) throws Exception {
         
         //get Properties for this Vertex
         String label = "";  
@@ -252,7 +239,6 @@ public class SvgExporter implements Exporter {
             }
         }
         
-        //TODO: Catch NumberFormatException
         double width = Math.abs(maxX - minX);
         double height = Math.abs(maxY - minY);
         

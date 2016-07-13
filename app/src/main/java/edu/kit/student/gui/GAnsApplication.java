@@ -206,7 +206,11 @@ public class GAnsApplication extends Application {
 			if(this.currentGraphView == null) {
 				// TODO: Alert
 			} else {
-				exporter.exportGraph(this.currentGraphView.getFactory().serializeGraph(), outputStream);
+				try {
+                    exporter.exportGraph(this.currentGraphView.getFactory().serializeGraph(), outputStream);
+                } catch (Exception e) {
+                    // TODO Alert export failed
+                }
 			}
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
