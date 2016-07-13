@@ -13,3 +13,11 @@ Optional: Install "Minimalist Gradle Editor" for viewing and editing Gradle file
 - File -> Import -> Gradle -> Gradle Project
 - Import: Wizard: Next -> Select Git Root Folder -> Next -> Next -> Finish (Keep existing files when asked)
 - Gradle Tasks -> Graph von Ansicht -> ide -> eclipse -> execute task
+
+## Build
+
+To build an executable version of the jar containing all currently available plugins execute the gradle task `allJar` from the projects root folder or from your IDE.
+```bash
+./gradlew clean allJar
+```
+The jar will be placed into `build/libs/`.
