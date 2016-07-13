@@ -244,7 +244,7 @@ public class MethodGraph extends JoanaGraph {
                                     }
                                 }
                             }
-                        } else if(this.isExprModify(v2)) {
+                        } else if (this.isExprModify(v2)) {
                             //check for field sets
                             for (JoanaEdge e2 : this.outgoingEdgesOf(v2)) {
                                 if (e2.getEdgeKind() == JoanaEdge.Kind.CF) {
@@ -252,6 +252,37 @@ public class MethodGraph extends JoanaGraph {
                                     if (this.isNormCompoundField(v3)) {
                                         //TODO: check if there is an edge back
                                         System.out.println("field-set: " + v1.getName() + " : " + v2.getName() + " : " + v3.getName());
+                                    }
+                                }
+                            }
+                            
+                        } else if (this.isNormCompoundIndex(v2)) {
+                            //check if array field access
+                            for (JoanaEdge e2 : this.outgoingEdgesOf(v2)) {
+                                if (e2.getEdgeKind() == JoanaEdge.Kind.CF) {
+                                    JoanaVertex v3 = e2.getTarget();
+                                    //check if array field gets
+                                    if (this.isNormCompoundField(v3)) {
+                                        for (JoanaEdge e3 : this.outgoingEdgesOf(v3)) {
+                                            if (e3.getEdgeKind() == JoanaEdge.Kind.CF) {
+                                                JoanaVertex v4 = e3.getTarget();
+                                                if (this.isExprReference(v4)) {
+                                                    //TODO: check there is an edge back
+                                                    System.out.println("array field-get: " + v1.getName() + " : " + v2.getName() + " : " + v3.getName()+ " : " + v4.getName());
+                                                }
+                                            }
+                                        }
+                                    } else if (this.isExprModify(v3)) {
+                                        //check if array field sets
+                                        for (JoanaEdge e3 : this.outgoingEdgesOf(v3)) {
+                                            if (e3.getEdgeKind() == JoanaEdge.Kind.CF) {
+                                                JoanaVertex v4 = e3.getTarget();
+                                                if (this.isNormCompoundField(v4)) {
+                                                    //TODO: check there is an edge back
+                                                    System.out.println("array field-set: " + v1.getName() + " : " + v2.getName() + " : " + v3.getName()+ " : " + v4.getName());
+                                                }
+                                            }
+                                        }
                                     }
                                 }
                             }
