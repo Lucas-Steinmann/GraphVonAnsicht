@@ -164,7 +164,7 @@ public class JoanaEdge implements DirectedEdge {
     }
 
     @Override
-    public Vertex getTarget() {
+    public JoanaVertex getTarget() {
         return this.target;
     }
 }

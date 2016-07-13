@@ -36,7 +36,7 @@ public class JoanaVertexBuilder implements IVertexBuilder {
           case "nodeSource": 
               this.source = value;
               break;
-          case "nodeOperaton":
+          case "nodeOperation":
               operation = value;
               break;
           case "nodeLabel":

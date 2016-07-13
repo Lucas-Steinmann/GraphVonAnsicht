@@ -43,6 +43,8 @@ public class MethodGraph extends JoanaGraph {
         }
         graph = new DefaultDirectedGraph<>(methodName, vertices, edges);
         //TODO: Search for method calls, field accesses, etc.
+        this.searchFieldAccesses();
+        
         this.fieldAccesses = new HashSet<>();
     }
     
@@ -218,5 +220,41 @@ public class MethodGraph extends JoanaGraph {
     @Override
     public int getMaxWidth() {
         return layering.getMaxWidth();
+    }
+    
+    //private method to search all Fieldaccesses in the graph
+    private void searchFieldAccesses() {
+        
+        for (JoanaVertex v1 : this.graph.getVertexSet()) {
+            //check for field-gets field-sets and arrays
+            if (v1.getNodeKind() == JoanaVertex.Kind.NORM 
+                    && v1.getNodeOperation().equals("compound") 
+                    && v1.getLabel().equals("base")) {
+                for (JoanaEdge e : this.outgoingEdgesOf(v1)) {
+                    if (e.getEdgeKind() == JoanaEdge.Kind.CF) {
+                        JoanaVertex v2 = e.getTarget();
+                        
+                        //check for field gets
+                        if (v2.getNodeKind() == JoanaVertex.Kind.NORM 
+                                && v2.getNodeOperation().equals("compound") 
+                                && v2.getLabel().matches("field\\s.*")) {
+                            for (JoanaEdge e2 : this.outgoingEdgesOf(v2)) {
+                                if (e2.getEdgeKind() == JoanaEdge.Kind.CF) {
+                                    JoanaVertex v3 = e2.getTarget();
+                                    if (v3.getNodeKind() == JoanaVertex.Kind.EXPR
+                                            && v3.getNodeOperation().equals("reference")) {
+                                        //TODO: check if there is an edge back
+                                        //System.out.println(v1.getName() + " : " + v2.getName() + " : " + v3.getName());
+                                    }
+                                }
+                            }
+                            
+                        }
+                    }
+                }
+            }
+            
+        }
+        
     }
 }
