@@ -4,6 +4,7 @@ import java.util.List;
 
 import edu.kit.student.graphmodel.DefaultVertex;
 import edu.kit.student.objectproperty.GAnsProperty;
+import edu.kit.student.util.Settings;
 import javafx.scene.paint.Color;
 import javafx.util.Pair;
 
@@ -183,8 +184,8 @@ public class JoanaVertex extends DefaultVertex {
     
 	@Override
 	public Pair<Double, Double> getSize() {
-		// TODO Auto-generated method stub
-		return null;
+		// TODO: calculating size with different max/min values depending on KIND
+		return super.getSize();
 	}
 
 	@Override

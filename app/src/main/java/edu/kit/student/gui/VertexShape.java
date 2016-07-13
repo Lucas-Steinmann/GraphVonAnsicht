@@ -1,9 +1,11 @@
 package edu.kit.student.gui;
 
 import edu.kit.student.graphmodel.Vertex;
+import edu.kit.student.util.Settings;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
+import javafx.util.Pair;
 
 /**
  * A visual representation of a vertex with a text inside of it.
@@ -17,8 +19,6 @@ public class VertexShape extends GAnsGraphElement {
 	private Color color;
 	private static double mindWidth = 20;
 	private static double mindHeight = 5;
-	private static double leftRightMargin = 8;
-	private static double topBottomMargin = 4;
 
 	/**
 	 * Constructor
@@ -36,26 +36,29 @@ public class VertexShape extends GAnsGraphElement {
 	 * @param vertex The vertex that will be represented.
 	 */
 	public VertexShape(Vertex vertex) {
-		this();
+		Pair<Double,Double> size = vertex.getSize();
 		
+		this.rectangle = new Rectangle(size.getKey(), size.getValue());
+		
+//		Text tmp = new Text(vertex.getLabel());
+//		if(tmp.getLayoutBounds().getWidth() + Settings.leftRightMargin > size.getKey()) {
+//			double tmpLength = tmp.getLayoutBounds().getWidth() + Settings.leftRightMargin;
+//			tmpLength = tmpLength - size.getKey();
+//			tmpLength -= new Text("...").getLayoutBounds().getWidth();
+//			//the size that needs to be removed... 
+//		}
+		
+		this.text = new Text(vertex.getLabel());
+		getChildren().addAll(rectangle, text);
+
 		setColor(vertex.getColor());
-		setText(vertex.getLabel());
+		
 		relocate(vertex.getX(), vertex.getY());
 	}
 
 	@Override
 	public void setText(String text) {
 		this.text.setText(text);
-		double width = this.text.getLayoutBounds().getWidth() + leftRightMargin;
-		double height = this.text.getLayoutBounds().getHeight() + topBottomMargin;
-
-		if (width < mindWidth)
-			width = mindWidth;
-		if (height < mindHeight)
-			height = mindHeight;
-
-		rectangle.setWidth(width);
-		rectangle.setHeight(height);
 	}
 
 	@Override
