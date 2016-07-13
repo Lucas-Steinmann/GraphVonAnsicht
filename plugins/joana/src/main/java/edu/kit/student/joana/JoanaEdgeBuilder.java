@@ -56,7 +56,7 @@ public class JoanaEdgeBuilder implements IEdgeBuilder {
         Optional<JoanaVertex> targetVertex = vertexPool.stream().filter(joanaVertex -> joanaVertex.getName().equals(target)).findFirst();
 
         if (sourceVertex.isPresent() && targetVertex.isPresent()) {
-            return new JoanaEdge(sourceVertex.get(), targetVertex.get(), edgeKind);
+            return new JoanaEdge(edgeKind.name(), edgeKind.name(), sourceVertex.get(), targetVertex.get(), edgeKind);
         }
 
         return null;

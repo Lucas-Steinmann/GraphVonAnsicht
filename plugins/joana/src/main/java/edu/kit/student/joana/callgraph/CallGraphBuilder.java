@@ -81,9 +81,7 @@ public class CallGraphBuilder implements IGraphBuilder {
                             // Second call from this function. Skip.
                             continue;
                         }
-                        JoanaEdge edge = new JoanaEdge(e.getName(),
-                                                            e.getLabel(), e.getEdgeKind());
-                        edge.setVertices(source, target);
+                        JoanaEdge edge = new JoanaEdge(e.getName(), e.getLabel(), source, target, e.getEdgeKind());
                         edges.get(source).add(edge);
                     } 
                 }

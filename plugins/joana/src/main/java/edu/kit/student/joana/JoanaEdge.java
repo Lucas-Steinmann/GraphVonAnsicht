@@ -1,9 +1,14 @@
 package edu.kit.student.joana;
 
+import java.util.LinkedList;
 import java.util.List;
 
-import edu.kit.student.graphmodel.directed.DefaultDirectedEdge;
+import edu.kit.student.graphmodel.FastGraphAccessor;
+import edu.kit.student.graphmodel.OrthogonalEdgePath;
+import edu.kit.student.graphmodel.Vertex;
+import edu.kit.student.graphmodel.directed.DirectedEdge;
 import edu.kit.student.objectproperty.GAnsProperty;
+import edu.kit.student.util.IdGenerator;
 import javafx.scene.paint.Color;
 import javafx.util.Pair;
 
@@ -11,18 +16,24 @@ import javafx.util.Pair;
  * A Joana specific {@link Edge}. It contains parameters which are only
  * used/usefull in {@link JoanaGraph}.
  */
-public class JoanaEdge extends DefaultDirectedEdge {
+public class JoanaEdge implements DirectedEdge {
     
     private GAnsProperty<Kind> edgeKind;
+    JoanaVertex source;
+    JoanaVertex target;
+	private GAnsProperty<String> name;
+	private Integer id;
+	private GAnsProperty<String> label;
+	private OrthogonalEdgePath path;
 
-    public JoanaEdge(String name, String label, Kind kind) {
-        super(name, label);
-        edgeKind = new GAnsProperty<Kind>("edgeKind", kind);
-    }
-
-    public JoanaEdge(JoanaVertex source, JoanaVertex target, Kind edgeKind) {
-        super(edgeKind.toString(), edgeKind.toString(), source, target);
-        this.edgeKind = new GAnsProperty<Kind>("edgeKind", edgeKind);
+    public JoanaEdge(String name, String label, JoanaVertex source, JoanaVertex target, Kind kind) {
+        this.edgeKind = new GAnsProperty<Kind>("edgeKind", kind);
+        this.target = target;
+        this.source = source;
+        this.name = new GAnsProperty<String>("name", name);
+        this.label = new GAnsProperty<String>("label", label);
+        this.id = IdGenerator.getInstance().createId();
+        this.path = new OrthogonalEdgePath();
     }
 
     public void setProperties(Kind edgeKind) {
@@ -40,9 +51,10 @@ public class JoanaEdge extends DefaultDirectedEdge {
     
     @Override
     public List<GAnsProperty<?>> getProperties() {
-    	List<GAnsProperty<?>> properties = super.getProperties();
-    	properties.add(edgeKind);
-    	return properties;
+		LinkedList<GAnsProperty<?>> properties = new LinkedList<>();
+		properties.add(name);
+		properties.add(label);
+		return properties;
     }
     
 	@Override
@@ -56,7 +68,6 @@ public class JoanaEdge extends DefaultDirectedEdge {
 		return edgeKind.getValue().color();
 	}
     
-    // TODO: Add missing.
     public enum Kind {
     	CD, CE, CF, CL, DD, DH, HE, PI, PO, PS, RF, SU, NF, JF, UN, CC, JD, NTSCD,
     	SD, DA, DL, VD, RD, SH, SF, ID, IW, RY, FORK, FORK_IN, FORK_OUT, JOIN, JOIN_OUT,
@@ -107,5 +118,53 @@ public class JoanaEdge extends DefaultDirectedEdge {
         	default: return Color.web("0xFFC125");
         	}
         }
+    }
+
+    @Override
+    public List<JoanaVertex> getVertices() {
+        List<JoanaVertex> result = new LinkedList<>();
+        result.add(source);
+        result.add(target);
+        return result;
+    }
+
+    @Override
+    public String getName() {
+        return this.name.getValue();
+    }
+
+    @Override
+    public Integer getID() {
+        return this.id;
+    }
+
+    @Override
+    public String getLabel() {
+        return this.label.getValue();
+    }
+
+    @Override
+    public void addToFastGraphAccessor(FastGraphAccessor fga) {
+	    fga.addEdgeForAttribute(this, "name", this.name.toString());
+	    fga.addEdgeForAttribute(this, "id", this.id);
+	    fga.addEdgeForAttribute(this, "label", this.label.toString());
+
+	    fga.addEdgeForAttribute(this, "sourceVertex", this.source.getID());
+	    fga.addEdgeForAttribute(this, "targetVertex", this.target.getID());
+    }
+
+    @Override
+    public OrthogonalEdgePath getPath() {
+        return this.path;
+    }
+
+    @Override
+    public JoanaVertex getSource() {
+        return this.source;
+    }
+
+    @Override
+    public Vertex getTarget() {
+        return this.target;
     }
 }
