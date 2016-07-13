@@ -15,6 +15,7 @@ import edu.kit.student.graphmodel.serialize.SerializedGraph;
 import edu.kit.student.graphmodel.serialize.SerializedVertex;
 import edu.kit.student.objectproperty.GAnsProperty;
 import javafx.geometry.Bounds;
+import javafx.scene.paint.Color;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
@@ -134,7 +135,7 @@ public class GraphViewGraphFactory {
 			Map<String,String> shapeProperties = new HashMap<String,String>();
 			Bounds bounds = shape.getBoundsInParent();
 			shapeProperties.put("label", shape.getText());
-			shapeProperties.put("color", Integer.toHexString(shape.getColor().hashCode()));
+			shapeProperties.put("color", GraphViewGraphFactory.toRGBCode(shape.getColor()));
 			shapeProperties.put("minX", Double.toString(bounds.getMinX()));
 			shapeProperties.put("minY", Double.toString(bounds.getMinY()));
 			shapeProperties.put("maxX", Double.toString(bounds.getMaxX()));
@@ -161,7 +162,7 @@ public class GraphViewGraphFactory {
 			Path path = shape.getElementShape();
 			shapeProperties.put("label", shape.getText());
 			// fragile, hashCode() is impl. dependent, could change in later releases
-			shapeProperties.put("color", Integer.toHexString(shape.getColor().hashCode()));
+			shapeProperties.put("color", GraphViewGraphFactory.toRGBCode(shape.getColor()));
 			
 			for(int i = 0; i < path.getElements().size(); i++) {
 				PathElement element = path.getElements().get(i);
@@ -189,4 +190,13 @@ public class GraphViewGraphFactory {
 		
 		return set;
 	}
+	
+	//private method to convert color of javafx.scene.paint.color to HexString for Exporter
+    private static String toRGBCode(Color color )
+    {
+        return String.format( "#%02X%02X%02X",
+            (int)( color.getRed() * 255 ),
+            (int)( color.getGreen() * 255 ),
+            (int)( color.getBlue() * 255 ) );
+    }
 }

@@ -37,11 +37,8 @@ import javax.xml.transform.stream.StreamResult;
 
 public class SvgExporter implements Exporter {
 
-    private static String rectStyle = "opacity:0.25868728;"
-            + "color:#000000;fill:#04B45F;fill-opacity:1;"
-            + "fill-rule:nonzero;marker:none;visibility:visible;"
-            + "display:inline;overflow:visible;enable-background:accumulate";
-    private static String lineStyle = "stroke:rgb(255,0,0);stroke-width:2";
+    private static String rectStyle = "opacity:0.5;display:inline;";
+    private static String lineStyle = "stroke-width:2;";
     
     
     @Override
@@ -66,7 +63,16 @@ public class SvgExporter implements Exporter {
         
         //create Nodes for DOM
         String root = "svg";
+        
         Element rootElement = document.createElement(root);
+        
+        //set attributes for svg to show result in every viewer
+        rootElement.setAttribute("xmlns:dc", "http://purl.org/dc/elements/1.1/");
+        rootElement.setAttribute("xmlns:cc", "http://creativecommons.org/ns#");
+        rootElement.setAttribute("xmlns:rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#");
+        rootElement.setAttribute("xmlns:svg", "http://www.w3.org/2000/svg");
+        rootElement.setAttribute("xmlns", "http://www.w3.org/2000/svg");
+        rootElement.setAttribute("xmlns:xlink", "http://www.w3.org/1999/xlink");
         
         document.appendChild(rootElement);
         
@@ -148,6 +154,7 @@ public class SvgExporter implements Exporter {
         Map<Integer, String> xcoords = new HashMap<Integer, String>();
         Map<Integer, String> ycoords = new HashMap<Integer, String>();
         String label = "";
+        String color = "";
         
         //set keys in map
         for (String s: shapeProp.keySet()) {
@@ -171,6 +178,9 @@ public class SvgExporter implements Exporter {
               case "label":
                   label = shapeProp.get(s);
                   break;
+              case "color":
+                  color = shapeProp.get(s).toUpperCase();
+                  break;
               default:                          
             }
         }
@@ -188,7 +198,7 @@ public class SvgExporter implements Exporter {
                 line.setAttribute("y1", ycoords.get(i));
                 line.setAttribute("x2", xcoords.get(i + 1));
                 line.setAttribute("y2", ycoords.get(i + 1));
-                line.setAttribute("style", SvgExporter.lineStyle);
+                line.setAttribute("style", SvgExporter.lineStyle + "stroke:" + color + ";");
                 
                 //add to group
                 group.appendChild(line);
@@ -210,7 +220,8 @@ public class SvgExporter implements Exporter {
     private Element createVertexElement(Document document, Map<String, String> shapeProp) {
         
         //get Properties for this Vertex
-        String label = "";   
+        String label = "";  
+        String color = "";
         double minX = 0.0;
         double maxX = 0.0;
         double minY = 0.0;
@@ -234,6 +245,9 @@ public class SvgExporter implements Exporter {
               case "label":
                   label = shapeProp.get(s);
                   break;
+              case "color":
+                  color = shapeProp.get(s).toUpperCase();
+                  break;
               default:                          
             }
         }
@@ -250,7 +264,7 @@ public class SvgExporter implements Exporter {
         rect.setAttribute("y", Double.toString(minY));
         rect.setAttribute("width", Double.toString(width));
         rect.setAttribute("height", Double.toString(height));
-        rect.setAttribute("style", SvgExporter.rectStyle);
+        rect.setAttribute("style", SvgExporter.rectStyle + "fill:" + color + ";");
         
         //create group
         Element group = document.createElement("g");
