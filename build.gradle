@@ -44,5 +44,52 @@ dependencies {
     compile project(":plugins:graphml")
 }
 
+subprojects.each { subproject -> evaluationDependsOn(subproject.path)}
+
+private def mergeFiles(targetDir, fileTrees, relativePath) {
+  // prepare the merge
+  def mergedFile = new File("${targetDir}/${relativePath}")
+  new File(mergedFile.parent).mkdirs()
+ 
+  fileTrees*.matching({ include "**/${relativePath}" })*.each {
+    mergedFile << it.bytes << "\n"
+  }
+}
+
+task allJar(type: Jar, dependsOn: classes) {
+    baseName = 'graphvonansicht'
+    def mergeDir = "${buildDir}/merge"
+    println mergeDir
+
+    manifest {
+        attributes 'Main-Class': 'edu.kit.student.gui.GAnsApplication'
+    }
+
+    subprojects.findAll {it.name != "plugins"}.each { subproject -> 
+       from subproject.configurations.archives.allArtifacts.files.collect {
+          zipTree(it)
+       }
+    }
+    // might need a lazy var in a multi-module project where deps are inherited
+    def runtimeDeps = configurations.runtime.collect { zipTree(it) }
+    def myServiceConfig = 'META-INF/services/edu.kit.student.plugin.Plugin'
+    
+    doFirst {
+        new File(mergeDir).delete()
+        mergeFiles(mergeDir, runtimeDeps, myServiceConfig)
+    }
+ 
+    // this project's classes and all deps
+    //from sourceSets*.classesDir
+    from(runtimeDeps) {
+        exclude myServiceConfig
+    }
+    from mergeDir
+}
+  
+//artifacts {
+//   archives allJar
+//}
+
 subprojects {
 }

@@ -25,7 +25,11 @@ jar {
 
 dependencies {
 	compile project(':shared')
+<<<<<<< HEAD
 	compile project(":plugins:sugiyama")
+=======
+    compile project(":plugins:sugiyama")
+>>>>>>> refs/heads/gradlejarfix
     compile project(":plugins:joana")
     compile project(":plugins:svg")
     compile project(":plugins:graphml")
