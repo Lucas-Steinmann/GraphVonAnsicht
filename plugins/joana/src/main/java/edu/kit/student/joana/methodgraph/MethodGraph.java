@@ -5,6 +5,7 @@ import edu.kit.student.graphmodel.FastGraphAccessor;
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
 import edu.kit.student.joana.FieldAccess;
+import edu.kit.student.joana.FieldAccessGraph;
 import edu.kit.student.joana.JoanaEdge;
 import edu.kit.student.joana.JoanaGraph;
 import edu.kit.student.joana.JoanaVertex;
@@ -13,6 +14,7 @@ import edu.kit.student.plugin.LayoutOption;
 import edu.kit.student.plugin.LayoutRegister;
 
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -42,10 +44,8 @@ public class MethodGraph extends JoanaGraph {
             throw new IllegalArgumentException("Cannot create MethodGraph without entry vertex!");
         }
         graph = new DefaultDirectedGraph<>(methodName, vertices, edges);
-        //TODO: Search for method calls, field accesses, etc.
-        this.searchFieldAccesses();
-        
-        this.fieldAccesses = new HashSet<>();
+        //TODO: Search for method calls etc.
+        this.fieldAccesses = this.searchFieldAccesses();
     }
     
     /**
@@ -223,7 +223,9 @@ public class MethodGraph extends JoanaGraph {
     }
     
     //private method to search all Fieldaccesses in the graph
-    private void searchFieldAccesses() {
+    private Set<FieldAccess> searchFieldAccesses() {
+        
+        Set<FieldAccess> fieldAccesses = new HashSet<FieldAccess>();
         
         for (JoanaVertex v1 : this.graph.getVertexSet()) {
    
@@ -234,90 +236,175 @@ public class MethodGraph extends JoanaGraph {
                         JoanaVertex v2 = e1.getTarget();                     
                         if (this.isNormCompoundField(v2)) {
                             //check for field gets
-                            this.findFieldGet(v1, v2, e1);
+                            FieldAccess temp = this.findFieldGet(v1, v2, e1);
+                            if (temp != null) {
+                                fieldAccesses.add(temp);
+                            }
                         } else if (this.isExprModify(v2)) {
                             //check for field sets
-                            this.findFieldSet(v1, v2, e1);                           
+                            FieldAccess temp = this.findFieldSet(v1, v2, e1); 
+                            if (temp != null) {
+                                fieldAccesses.add(temp);
+                            }
                         } else if (this.isNormCompoundIndex(v2)) {
                             //check if array field access (Get and Set)
-                            this.findArrayFieldAccess(v1, v2, e1);         
+                            FieldAccess temp = this.findArrayFieldAccess(v1, v2, e1); 
+                            if (temp != null) {
+                                fieldAccesses.add(temp);
+                            }
                         }
                     }
                 }
             } else if (this.isNormCompoundField(v1)) {
                 //check for static field get
-                this.findStaticFieldGet(v1);
+                FieldAccess temp = this.findStaticFieldGet(v1);
+                if (temp != null) {
+                    fieldAccesses.add(temp);
+                }
             } else if (this.isExprModify(v1)) {
                 //check for static field set
-                this.findStaticFieldSet(v1);
+                FieldAccess temp = this.findStaticFieldSet(v1);
+                if (temp != null) {
+                    fieldAccesses.add(temp);
+                }
             } 
-        }  
+        } 
+        
+        return fieldAccesses;
     }
     
     //function to search fieldGet. Gets the first and second vertex of an possible fieldGet
-    private void findFieldGet(JoanaVertex v1, JoanaVertex v2, JoanaEdge e1) {
+    private FieldAccess findFieldGet(JoanaVertex v1, JoanaVertex v2, JoanaEdge e1) {
+        
         for (JoanaEdge e2 : this.outgoingEdgesOf(v2)) {
             if (e2.getEdgeKind() == JoanaEdge.Kind.CF) {
                 JoanaVertex v3 = e2.getTarget();
                 if (this.isExprReference(v3)) {
-                    //TODO: check if there is an edge back
-                    System.out.println("field-get: " + v1.getName() + " : " + v2.getName() + " : " + v3.getName());
+                    //check if there is an edge back
+                    for (JoanaEdge e3 : this.outgoingEdgesOf(v3)) {
+                        if (e3.getEdgeKind() == JoanaEdge.Kind.CF
+                                && e3.getTarget() == v1) {
+                            
+                            //System.out.println("field-get: " + v1.getName() + " : " + v2.getName() + " : " + v3.getName());
+                            
+                            //create FieldAccess
+                            Set<JoanaVertex> vertices = new LinkedHashSet<JoanaVertex>();
+                            Set<JoanaEdge> edges = new LinkedHashSet<JoanaEdge>();                   
+                            vertices.add(v1);
+                            vertices.add(v2);
+                            vertices.add(v3);
+                            edges.add(e1);
+                            edges.add(e2);
+                            edges.add(e3);
+                            
+                            FieldAccessGraph graph = new FieldAccessGraph("field-get", vertices, edges);
+                            return new FieldAccess(graph, "field-get", "field-get");
+                        }
+                    }
                 }
             }
-        } 
+        }
+        
+        return null;
     }
     
     //function to search for fieldSet. Gets the first and second vertex of an possible fieldGet
-    private void findFieldSet(JoanaVertex v1, JoanaVertex v2, JoanaEdge e1) {
+    private FieldAccess findFieldSet(JoanaVertex v1, JoanaVertex v2, JoanaEdge e1) {
         for (JoanaEdge e2 : this.outgoingEdgesOf(v2)) {
             if (e2.getEdgeKind() == JoanaEdge.Kind.CF) {
                 JoanaVertex v3 = e2.getTarget();
                 if (this.isNormCompoundField(v3)) {
-                    //TODO: check if there is an edge back
-                    System.out.println("field-set: " + v1.getName() + " : " + v2.getName() + " : " + v3.getName());
+                    //check if there is an edge back
+                    for (JoanaEdge e3 : this.outgoingEdgesOf(v3)) {
+                        if (e3.getEdgeKind() == JoanaEdge.Kind.CF
+                                && e3.getTarget() == v1) {
+                            
+                            //System.out.println("field-set: " + v1.getName() + " : " + v2.getName() + " : " + v3.getName());
+                            
+                            //create FieldAccess
+                            Set<JoanaVertex> vertices = new LinkedHashSet<JoanaVertex>();
+                            Set<JoanaEdge> edges = new LinkedHashSet<JoanaEdge>();                   
+                            vertices.add(v1);
+                            vertices.add(v2);
+                            vertices.add(v3);
+                            edges.add(e1);
+                            edges.add(e2);
+                            edges.add(e3);
+                            
+                            FieldAccessGraph graph = new FieldAccessGraph("field-set", vertices, edges);
+                            return new FieldAccess(graph, "field-set", "field-set");
+                        }
+                    }
                 }
             }
         }
+        
+        return null;
     }
     
     //function to search for StaticFieldGet. Gets the first vertex of an possible staticFieldGet
-    private void findStaticFieldGet(JoanaVertex v1) {
+    private FieldAccess findStaticFieldGet(JoanaVertex v1) {
       
-        for (JoanaEdge e : this.outgoingEdgesOf(v1)) {
-            if (e.getEdgeKind() == JoanaEdge.Kind.CF) {
-                JoanaVertex v2 = e.getTarget();
+        for (JoanaEdge e1 : this.outgoingEdgesOf(v1)) {
+            if (e1.getEdgeKind() == JoanaEdge.Kind.CF) {
+                JoanaVertex v2 = e1.getTarget();
                 if (this.isExprReference(v2)) {                 
 
-                    //TODO: check for outgoing and incoming Edges
+                    //TODO: check for outgoing and incoming Edges?
                     if (this.isValidStaticField(v1)) {
                         //found static field get
-                      System.out.println("static field-get: " + v1.getName() + " : " + v2.getName());
+                        
+                      //System.out.println("static field-get: " + v1.getName() + " : " + v2.getName());
+                      
+                      //create FieldAccess
+                      Set<JoanaVertex> vertices = new LinkedHashSet<JoanaVertex>();
+                      Set<JoanaEdge> edges = new LinkedHashSet<JoanaEdge>();                   
+                      vertices.add(v1);
+                      vertices.add(v2);
+                      edges.add(e1);
+                      
+                      FieldAccessGraph graph = new FieldAccessGraph("static field-get", vertices, edges);
+                      return new FieldAccess(graph, "static field-get", "static field-get");
                     }
                 }
             }
         }
+        
+        return null;
     }
     
     //function to search for StaticFieldSet. Gets the first vertex of an possible StatiFieldSet
-    private void findStaticFieldSet(JoanaVertex v1) {
+    private FieldAccess findStaticFieldSet(JoanaVertex v1) {
 
-        for (JoanaEdge e : this.outgoingEdgesOf(v1)) {
-            if (e.getEdgeKind() == JoanaEdge.Kind.CF) {
-                JoanaVertex v2 = e.getTarget();
+        for (JoanaEdge e1 : this.outgoingEdgesOf(v1)) {
+            if (e1.getEdgeKind() == JoanaEdge.Kind.CF) {
+                JoanaVertex v2 = e1.getTarget();
                 if (this.isNormCompoundField(v2)) {
-                    //TODO: check for outgoing and incoming Edges
+                    //TODO: check for outgoing and incoming Edges?
                     
                     if (this.isValidStaticField(v1)) {
                         //found static field Set
-                      System.out.println("static field-set: " + v1.getName() + " : " + v2.getName());
+                      //System.out.println("static field-set: " + v1.getName() + " : " + v2.getName());
+                      
+                      //create FieldAccess
+                      Set<JoanaVertex> vertices = new LinkedHashSet<JoanaVertex>();
+                      Set<JoanaEdge> edges = new LinkedHashSet<JoanaEdge>();                   
+                      vertices.add(v1);
+                      vertices.add(v2);
+                      edges.add(e1);
+                      
+                      FieldAccessGraph graph = new FieldAccessGraph("static field-set", vertices, edges);
+                      return new FieldAccess(graph, "static field-set", "static field-set");
                     }
                 }
             }
         }
+        
+        return null;
     }
     
     //function to find array Fieldaccesses. Gets the first and second Vertex of an possible arrayfieldaccess
-    private void findArrayFieldAccess(JoanaVertex v1, JoanaVertex v2, JoanaEdge e1) {
+    private FieldAccess findArrayFieldAccess(JoanaVertex v1, JoanaVertex v2, JoanaEdge e1) {
         
         for (JoanaEdge e2 : this.outgoingEdgesOf(v2)) {
             if (e2.getEdgeKind() == JoanaEdge.Kind.CF) {
@@ -328,8 +415,29 @@ public class MethodGraph extends JoanaGraph {
                         if (e3.getEdgeKind() == JoanaEdge.Kind.CF) {
                             JoanaVertex v4 = e3.getTarget();
                             if (this.isExprReference(v4)) {
-                                //TODO: check there is an edge back
-                                System.out.println("array field-get: " + v1.getName() + " : " + v2.getName() + " : " + v3.getName()+ " : " + v4.getName());
+                                //check there is an edge back
+                                for (JoanaEdge e4 : this.outgoingEdgesOf(v4)) {
+                                    if (e4.getEdgeKind() == JoanaEdge.Kind.CF
+                                            && e4.getTarget() == v1) {
+                                        
+                                        //System.out.println("array field-get: " + v1.getName() + " : " + v2.getName() + " : " + v3.getName()+ " : " + v4.getName());
+                                        
+                                        //create FieldAccess
+                                        Set<JoanaVertex> vertices = new LinkedHashSet<JoanaVertex>();
+                                        Set<JoanaEdge> edges = new LinkedHashSet<JoanaEdge>();                   
+                                        vertices.add(v1);
+                                        vertices.add(v2);
+                                        vertices.add(v3);
+                                        vertices.add(v4);
+                                        edges.add(e1);
+                                        edges.add(e2);
+                                        edges.add(e3);
+                                        edges.add(e4);
+                                        
+                                        FieldAccessGraph graph = new FieldAccessGraph("array field-get", vertices, edges);
+                                        return new FieldAccess(graph, "array field-get", "array field-get");
+                                    }
+                                }
                             }
                         }
                     }
@@ -339,14 +447,37 @@ public class MethodGraph extends JoanaGraph {
                         if (e3.getEdgeKind() == JoanaEdge.Kind.CF) {
                             JoanaVertex v4 = e3.getTarget();
                             if (this.isNormCompoundField(v4)) {
-                                //TODO: check there is an edge back
-                                System.out.println("array field-set: " + v1.getName() + " : " + v2.getName() + " : " + v3.getName()+ " : " + v4.getName());
+                                //check there is an edge back
+                                for (JoanaEdge e4 : this.outgoingEdgesOf(v4)) {
+                                    if (e4.getEdgeKind() == JoanaEdge.Kind.CF
+                                            && e4.getTarget() == v1) {
+                                        
+                                        //System.out.println("array field-set: " + v1.getName() + " : " + v2.getName() + " : " + v3.getName()+ " : " + v4.getName());
+                                        
+                                        //create FieldAccess
+                                        Set<JoanaVertex> vertices = new LinkedHashSet<JoanaVertex>();
+                                        Set<JoanaEdge> edges = new LinkedHashSet<JoanaEdge>();                   
+                                        vertices.add(v1);
+                                        vertices.add(v2);
+                                        vertices.add(v3);
+                                        vertices.add(v4);
+                                        edges.add(e1);
+                                        edges.add(e2);
+                                        edges.add(e3);
+                                        edges.add(e4);
+                                        
+                                        FieldAccessGraph graph = new FieldAccessGraph("array field-set", vertices, edges);
+                                        return new FieldAccess(graph, "array field-set", "array field-set");
+                                    }
+                                }
                             }
                         }
                     }
                 }
             }
         }
+        
+        return null;
     }
     
     //checks if the first vertex of an static field access is subgraph of other field access
