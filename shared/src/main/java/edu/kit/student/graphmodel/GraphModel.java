@@ -13,6 +13,8 @@ public abstract class GraphModel {
 	 * 
 	 * @return A list of all the root{@link Graph} contained in the GraphModel.
 	 */
-	public abstract List<? extends Graph> getRootGraphs();
+	public abstract List<? extends ViewableGraph> getRootGraphs();
+	
+	public abstract ViewableGraph getGraphFromId(Integer id);
 
 }

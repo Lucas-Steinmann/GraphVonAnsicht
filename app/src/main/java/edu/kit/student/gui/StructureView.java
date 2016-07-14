@@ -6,6 +6,7 @@ import java.util.List;
 
 import edu.kit.student.graphmodel.Graph;
 import edu.kit.student.graphmodel.GraphModel;
+import edu.kit.student.graphmodel.ViewableGraph;
 import javafx.scene.control.TreeItem;
 import javafx.scene.control.TreeView;
 
@@ -41,9 +42,9 @@ public class StructureView extends TreeView<String> {
 		setRoot(root);
 	}
 	
-	private void addGraphsToItem(List<? extends Graph> graphs, TreeItem<String> item) {
+	private void addGraphsToItem(List<? extends ViewableGraph> graphs, TreeItem<String> item) {
 		List<TreeItem<String>> items = new LinkedList<TreeItem<String>>();
-		for(Graph graph : graphs) {
+		for(ViewableGraph graph : graphs) {
 			TreeItem<String> graphItem = new TreeItem<String>(graph.getName());
 			graphItem.setExpanded(true);
 			itemMap.put(graphItem, graph.getID());

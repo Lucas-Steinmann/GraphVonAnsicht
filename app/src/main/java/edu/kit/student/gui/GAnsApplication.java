@@ -6,12 +6,17 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
+import edu.kit.student.graphmodel.CollapsedVertex;
 import edu.kit.student.graphmodel.Graph;
 import edu.kit.student.graphmodel.GraphModel;
+import edu.kit.student.graphmodel.Vertex;
+import edu.kit.student.graphmodel.ViewableGraph;
 import edu.kit.student.objectproperty.GAnsProperty;
 import edu.kit.student.parameter.Settings;
 import edu.kit.student.plugin.Exporter;
@@ -172,7 +177,8 @@ public class GAnsApplication extends Application {
 			Importer importer = importerList.get(supportedFileExtensions.indexOf(fileExtension));
 			importer.importGraph(workspace.getGraphModelBuilder(), inputStream);
 			this.model = workspace.getGraphModel();
-			Graph currentGraph = this.model.getRootGraphs().get(0);
+			ViewableGraph currentGraph = this.model.getRootGraphs().get(0);
+			createGraphView();
 			openLayoutSelectionDialog(currentGraph);
 			showGraph(currentGraph);
 			this.structureView.showGraphModel(this.model);
@@ -218,7 +224,15 @@ public class GAnsApplication extends Application {
 		}
 	}
 	
-	private void showGraph(Graph graph) {
+	private void showGraph(ViewableGraph graph) {
+		Tab tab = this.graphViewTabPane.getSelectionModel().getSelectedItem();
+		tab.setText(graph.getName());
+		tab.setId(graph.getID().toString());
+		
+		currentGraphView.setGraph(graph);
+	}
+	
+	private void createGraphView() {
 		Group group = new Group();
 		GraphView graphView = new GraphView();
 
@@ -233,14 +247,12 @@ public class GAnsApplication extends Application {
 		GraphViewSelectionModel selectionModel = new GraphViewSelectionModel(outerPane, graphView, graphViewContextMenu);
 		graphView.setSelectionModel(selectionModel);
 
-		Tab tab = new Tab(graph.getName());
-		tab.setId(graph.getID().toString());
+		Tab tab = new Tab();
 		tab.setContent(scrollPane);
 		graphViewTabPane.getTabs().add(tab);
 		graphViewTabPane.getSelectionModel().select(tab);
 		
 		graphView.addGrid();
-		graphView.setGraph(graph);
 		
 		graphView.getSelectionModel().getSelectedItems().addListener(new SetChangeListener<VertexShape>() {
 			public void onChanged(Change<? extends VertexShape> changedItem) {
@@ -291,6 +303,7 @@ public class GAnsApplication extends Application {
 		    chosenOption.chooseLayout();
 		    Settings settings = chosenOption.getSettings();
 		    if(openParameterDialog(settings)) {
+		    	currentGraphView.setCurrentLayoutOption(chosenOption);
 		    	chosenOption.applyLayout();
 		    }
 		    return true;
@@ -396,10 +409,51 @@ public class GAnsApplication extends Application {
 	}
 	
 	private void setupContextMenus() {
+		//TODO: the contexmenu for graphview could be moved to the selectionmodel, where it is actually called.
+		// Therefore the selectionmodel has to know the factory. OR move to graphview
+		MenuItem collapse = new MenuItem("Collapse");
+		collapse.setOnAction(new EventHandler<ActionEvent>() {
+		    public void handle(ActionEvent e) {
+		    	GraphViewGraphFactory factory = currentGraphView.getFactory();
+		    	Set<Vertex> selectedVertices = new HashSet<Vertex>();
+		    	for(VertexShape shape : currentGraphView.getSelectionModel().getSelectedItems()) {
+		    		selectedVertices.add(factory.getVertexFromShape(shape));
+		    	}
+		    	
+		    	factory.getGraph().collapse(selectedVertices);
+		    	currentGraphView.getCurrentLayoutOption().applyLayout();
+		    	currentGraphView.reloadGraph();
+		    }
+		});
 		
-		MenuItem test = new MenuItem("Test");
+		MenuItem expand = new MenuItem("Expand");
+		expand.setOnAction(new EventHandler<ActionEvent>() {
+		    public void handle(ActionEvent e) {
+		    	GraphViewGraphFactory factory = currentGraphView.getFactory();
+		    	Set<CollapsedVertex> selectedVertices = new HashSet<CollapsedVertex>();
+		    	for(VertexShape shape : currentGraphView.getSelectionModel().getSelectedItems()) {
+		    		Vertex vertex = factory.getVertexFromShape(shape);
+		    		if(factory.getGraph().isCollapsed(vertex)) {
+		    			selectedVertices.add((CollapsedVertex)vertex);
+		    		} else {
+		    			// only a selection of CollapsedVertex can be expanded
+		    			// (only show menuitem when there are only collapsed selected)
+		    			return;
+		    		}
+		    		
+		    	}
+		    	
+		    	for(CollapsedVertex vertex : selectedVertices) {
+		    		factory.getGraph().expand(vertex);
+		    	}
+		    	currentGraphView.getCurrentLayoutOption().applyLayout();
+		    	currentGraphView.reloadGraph();
+		    }
+		});
 		
-		this.graphViewContextMenu.getItems().add(test);
+		MenuItem group = new MenuItem("Expand");
+		
+		this.graphViewContextMenu.getItems().addAll(collapse, expand, group);
 		
 		MenuItem openGraph = new MenuItem("Open");
 		openGraph.setOnAction(new EventHandler<ActionEvent>() {
@@ -413,7 +467,7 @@ public class GAnsApplication extends Application {
 	
 	private void openGraph(Integer id) {
 		if(id == -1) return;
-		Graph graph = getGraphFromId(model.getRootGraphs(), id);
+		ViewableGraph graph = this.model.getGraphFromId(id);
 		if(graph != null) {
 			boolean found = false;
 			for(Tab tab : GAnsApplication.this.graphViewTabPane.getTabs()) {
@@ -424,27 +478,13 @@ public class GAnsApplication extends Application {
 				}
 			}
 			if(!found) {
+				createGraphView();
 				LayoutOption defaultOption = graph.getDefaultLayout();
 				defaultOption.chooseLayout();
+				currentGraphView.setCurrentLayoutOption(defaultOption);
 				defaultOption.applyLayout();
 				showGraph(graph);
 			}
 		}
-	}
-	
-	//TODO; Move to GraphModel
-	private Graph getGraphFromId(List<? extends Graph> graphs, Integer id) {
-		for(Graph graph : graphs) {
-			if(graph.getID().compareTo(id) == 0) {
-				return graph;
-			}
-			
-			Graph tmp = getGraphFromId(graph.getChildGraphs(), id);
-			if(tmp != null) {
-				return tmp;
-			}
-		}
-		
-		return null;
 	}
 }

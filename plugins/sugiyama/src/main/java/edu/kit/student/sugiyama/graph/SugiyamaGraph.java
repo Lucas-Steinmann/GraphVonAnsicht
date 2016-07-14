@@ -305,30 +305,6 @@ public class SugiyamaGraph
 		// TODO muss weg
 		return null;
 	}
-
-	@Override
-	public Graph getParentGraph() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void setParentGraph(Graph parent) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public List<Graph> getChildGraphs() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public void addChildGraph(Graph child) {
-		// TODO Auto-generated method stub
-		
-	}
 	
 	@Override
 	public String toString(){

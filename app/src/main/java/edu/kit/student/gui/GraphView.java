@@ -1,6 +1,8 @@
 package edu.kit.student.gui;
 
 import edu.kit.student.graphmodel.Graph;
+import edu.kit.student.graphmodel.ViewableGraph;
+import edu.kit.student.plugin.LayoutOption;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.scene.canvas.Canvas;
@@ -22,6 +24,7 @@ public class GraphView extends Pane {
 	private DoubleProperty myScale = new SimpleDoubleProperty(1.0);
 	private GraphViewSelectionModel selectionModel;
 	private GraphViewGraphFactory graphFactory;
+	private LayoutOption layout;
 
 	/**
 	 * Constructor.
@@ -103,9 +106,16 @@ public class GraphView extends Pane {
 	 * @param graph
 	 *            The graph to be visualized in the view.
 	 */
-	public void setGraph(Graph graph) {
+	public void setGraph(ViewableGraph graph) {
 		graphFactory = new GraphViewGraphFactory(graph);
 
+		getChildren().addAll(graphFactory.getGraphicalElements());
+	}
+	
+	public void reloadGraph() {
+		graphFactory = new GraphViewGraphFactory(graphFactory.getGraph());
+
+		getChildren().clear();
 		getChildren().addAll(graphFactory.getGraphicalElements());
 	}
 
@@ -134,5 +144,13 @@ public class GraphView extends Pane {
 	 */
 	public GraphViewSelectionModel getSelectionModel() {
 		return this.selectionModel;
+	}
+	
+	public void setCurrentLayoutOption(LayoutOption layout) {
+		this.layout = layout;
+	}
+	
+	public LayoutOption getCurrentLayoutOption() {
+		return this.layout;
 	}
 }
