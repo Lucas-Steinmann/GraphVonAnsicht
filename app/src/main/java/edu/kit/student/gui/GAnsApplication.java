@@ -256,14 +256,17 @@ public class GAnsApplication extends Application {
 		
 		graphView.getSelectionModel().getSelectedItems().addListener(new SetChangeListener<VertexShape>() {
 			public void onChanged(Change<? extends VertexShape> changedItem) {
-				ObservableSet<VertexShape> selectedItems = graphView.getSelectionModel().getSelectedItems();
-				List<GAnsProperty<?>> tmp = new LinkedList<GAnsProperty<?>>();
-				ObservableList<GAnsProperty<?>> properties = FXCollections.observableList(tmp);
-				for (VertexShape element : selectedItems) {
-					properties.addAll(currentGraphView.getFactory().getVertexFromShape(element).getProperties());
-				}
-				
-				informationView.setInformations(properties);
+				//TODO: does not work with collapsed vertices
+//				ObservableSet<VertexShape> selectedItems = graphView.getSelectionModel().getSelectedItems();
+//				List<GAnsProperty<?>> tmp = new LinkedList<GAnsProperty<?>>();
+//				for (VertexShape element : selectedItems) {
+//					GraphViewGraphFactory factory = currentGraphView.getFactory();
+//					Vertex vertex = factory.getVertexFromShape(element);
+//					tmp.addAll(vertex.getProperties());
+//				}
+//				
+//				ObservableList<GAnsProperty<?>> properties = FXCollections.observableList(tmp);
+//				informationView.setInformations(properties);
 			}
 		});
 	}
@@ -421,6 +424,7 @@ public class GAnsApplication extends Application {
 		    	}
 		    	
 		    	factory.getGraph().collapse(selectedVertices);
+		    	currentGraphView.getCurrentLayoutOption().chooseLayout();
 		    	currentGraphView.getCurrentLayoutOption().applyLayout();
 		    	currentGraphView.reloadGraph();
 		    }
@@ -446,12 +450,13 @@ public class GAnsApplication extends Application {
 		    	for(CollapsedVertex vertex : selectedVertices) {
 		    		factory.getGraph().expand(vertex);
 		    	}
+		    	currentGraphView.getCurrentLayoutOption().chooseLayout();
 		    	currentGraphView.getCurrentLayoutOption().applyLayout();
 		    	currentGraphView.reloadGraph();
 		    }
 		});
 		
-		MenuItem group = new MenuItem("Expand");
+		MenuItem group = new MenuItem("Group");
 		
 		this.graphViewContextMenu.getItems().addAll(collapse, expand, group);
 		
