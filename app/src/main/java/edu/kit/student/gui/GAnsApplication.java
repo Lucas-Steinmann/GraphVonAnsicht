@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import edu.kit.student.graphmodel.Graph;
@@ -148,9 +149,30 @@ public class GAnsApplication extends Application {
 
 		primaryStage.setScene(scene);
 		primaryStage.show();
+		
+		parseCommandLineArguments(this.getParameters());
+		
 	}
 	
-	private void parseCommandLineArguments(String[] args) {
+	private void parseCommandLineArguments(Parameters params) {
+	    
+	    Map<String, String> namedParams = params.getNamed();
+	    
+	    for (String key : namedParams.keySet()) {
+	        switch (key) {
+	          case "in":
+	              //blabla
+	              break;
+	          case "layout":
+	              //blosadf
+	              break;
+	          case "ws":
+	              //aölkjböoi
+	              break;
+	          default:
+	              //TODO: Information not specified
+	        }
+	    }
 		
 	}
 
