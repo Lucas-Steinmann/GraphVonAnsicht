@@ -17,6 +17,7 @@ public class VertexShape extends GAnsGraphElement {
 	private Rectangle rectangle;
 	private Text text;
 	private Color color;
+	private String style;
 	private static double mindWidth = 20;
 	private static double mindHeight = 5;
 
@@ -85,5 +86,14 @@ public class VertexShape extends GAnsGraphElement {
 	@Override
 	public Rectangle getElementShape() {
 		return rectangle;
+	}
+	
+	public void setVertexStyle(String style) {
+		this.style = style;
+		this.setStyle(style);
+	}
+	
+	public String getVertexStyle() {
+		return this.style;
 	}
 }

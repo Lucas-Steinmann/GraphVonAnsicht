@@ -31,10 +31,11 @@ public class GraphViewSelectionModel {
 	private static final double MIN_SCALE = .1d;
 
 	private ObservableSet<VertexShape> selection;
+	private RubberBandSelection rubberband;
 
-	public GraphViewSelectionModel(Pane outerPane, GraphView view, ContextMenu menu) {
+	public GraphViewSelectionModel(Pane outerPane, GraphView view) {
 		selection = FXCollections.observableSet(new HashSet<VertexShape>());
-		new RubberBandSelection(outerPane, view, menu);
+		rubberband = new RubberBandSelection(outerPane, view);
 	}
 
 	public void add(VertexShape node) {
@@ -49,7 +50,7 @@ public class GraphViewSelectionModel {
 	}
 
 	public void remove(VertexShape node) {
-		node.setStyle("-fx-effect: null");
+		node.setStyle(node.getVertexStyle());
 		selection.remove(node);
 	}
 
@@ -74,6 +75,10 @@ public class GraphViewSelectionModel {
 	public ObservableSet<VertexShape> getSelectedItems() {
 		return selection;
 	}
+	
+	public void setContexMenu(ContextMenu menu) {
+		rubberband.setContextMenu(menu);
+	}
 
 	private class RubberBandSelection {
 		final DragContext dragContext = new DragContext();
@@ -82,10 +87,9 @@ public class GraphViewSelectionModel {
 		GraphView view;
 		ContextMenu menu;
 
-		public RubberBandSelection(Pane outerPane, GraphView view, ContextMenu menu) {
+		public RubberBandSelection(Pane outerPane, GraphView view) {
 			this.outerPane = outerPane;
 			this.view = view;
-			this.menu = menu;
 
 			rect = new Rectangle(0, 0, 0, 0);
 			rect.setStroke(Color.BLUE);
@@ -97,6 +101,10 @@ public class GraphViewSelectionModel {
 			this.outerPane.addEventHandler(MouseEvent.MOUSE_DRAGGED, onMouseDraggedEventHandler);
 			this.outerPane.addEventHandler(MouseEvent.MOUSE_RELEASED, onMouseReleasedEventHandler);
 			this.outerPane.addEventHandler(ScrollEvent.ANY, onScrollEventHandler);
+		}
+		
+		public void setContextMenu(ContextMenu menu) {
+			this.menu = menu;
 		}
 
 		EventHandler<MouseEvent> onMousePressedEventHandler = new EventHandler<MouseEvent>() {

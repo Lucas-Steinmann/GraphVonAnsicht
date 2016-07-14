@@ -193,7 +193,7 @@ public class GraphViewGraphFactory {
 	}
 	
 	//private method to convert color of javafx.scene.paint.color to HexString for Exporter
-    private static String toRGBCode(Color color )
+    public static String toRGBCode(Color color)
     {
         return String.format( "#%02X%02X%02X",
             (int)( color.getRed() * 255 ),
