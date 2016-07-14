@@ -35,7 +35,7 @@ public class JoanaWorkspace implements Workspace {
 	}
 
 	@Override
-	public IGraphModelBuilder getGraphModelBuilder() {
+	public JoanaGraphModelBuilder getGraphModelBuilder() {
 		return builder;
 	}
 	
@@ -50,7 +50,7 @@ public class JoanaWorkspace implements Workspace {
 	}
 
 	@Override
-	public GraphModel getGraphModel() {
+	public JoanaGraphModel getGraphModel() {
 		return model;
 	}
 

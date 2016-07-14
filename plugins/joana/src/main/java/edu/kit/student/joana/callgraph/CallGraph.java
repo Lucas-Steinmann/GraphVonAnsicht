@@ -1,5 +1,6 @@
 package edu.kit.student.joana.callgraph;
 
+import edu.kit.student.graphmodel.CollapsedVertex;
 import edu.kit.student.graphmodel.DefaultGraphLayering;
 import edu.kit.student.graphmodel.FastGraphAccessor;
 import edu.kit.student.graphmodel.Vertex;
@@ -167,5 +168,23 @@ public class CallGraph extends JoanaGraph {
     @Override
     public int getMaxWidth() {
         return layering.getMaxWidth();
+    }
+
+    @Override
+    public CollapsedVertex collapse(Set<Vertex> subset) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public Set<? extends Vertex> expand(CollapsedVertex vertex) {
+        // TODO Auto-generated method stub
+        return null;
+    }
+
+    @Override
+    public boolean isCollapsed(Vertex vertex) {
+        // TODO Auto-generated method stub
+        return false;
     }
 }

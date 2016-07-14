@@ -1,11 +1,14 @@
 package edu.kit.student.joana.methodgraph;
 
+import edu.kit.student.graphmodel.CollapsedVertex;
 import edu.kit.student.graphmodel.DefaultGraphLayering;
 import edu.kit.student.graphmodel.FastGraphAccessor;
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
 import edu.kit.student.joana.FieldAccess;
 import edu.kit.student.joana.FieldAccessGraph;
+import edu.kit.student.joana.JoanaCollapsedVertex;
+import edu.kit.student.joana.JoanaCompoundVertex;
 import edu.kit.student.joana.JoanaEdge;
 import edu.kit.student.joana.JoanaGraph;
 import edu.kit.student.joana.JoanaVertex;
@@ -13,10 +16,13 @@ import edu.kit.student.joana.JoanaVertex.Kind;
 import edu.kit.student.plugin.LayoutOption;
 import edu.kit.student.plugin.LayoutRegister;
 
+import java.security.GeneralSecurityException;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 /**
@@ -28,6 +34,7 @@ public class MethodGraph extends JoanaGraph {
     private static LayoutRegister<MethodGraphLayoutOption> register;
     private JoanaVertex entry;
     private Set<FieldAccess> fieldAccesses;
+    private List<JoanaCollapsedVertex> collapsedVertices;
     DefaultDirectedGraph<JoanaVertex, JoanaEdge> graph;
     DefaultGraphLayering<JoanaVertex> layering;
 
@@ -46,6 +53,7 @@ public class MethodGraph extends JoanaGraph {
         graph = new DefaultDirectedGraph<>(methodName, vertices, edges);
         //TODO: Search for method calls etc.
         this.fieldAccesses = this.searchFieldAccesses();
+        this.collapsedVertices = new LinkedList<>();
     }
     
     /**
@@ -135,6 +143,195 @@ public class MethodGraph extends JoanaGraph {
 		};
 	}
 	
+	@Override
+	public JoanaCollapsedVertex collapse(Set<Vertex> subset) {
+	    Set<JoanaVertex> directedSubset = new HashSet<JoanaVertex>();
+	    for (Vertex v : subset) {
+	        if (!graph.contains(v)) {
+                throw new IllegalArgumentException("Cannot collapse vertices, not contained in this graph.");
+	        }
+	        else {
+	            directedSubset.add(graph.getVertexById(v.getID()));
+	        }
+	    }
+		DefaultDirectedGraph<JoanaVertex, JoanaEdge> collapsedGraph = new DefaultDirectedGraph<>("", directedSubset, new HashSet<JoanaEdge>());
+		Set<JoanaEdge> internalEdges = new HashSet<>();
+
+		// Incoming and Outgoing edges from subset
+		List<JoanaEdge> outGoing = new LinkedList<>();
+		List<JoanaEdge> inComing = new LinkedList<>();
+
+		for (JoanaEdge edge : getEdgeSet()) {
+			boolean containsSource = subset.contains(edge.getSource());
+			boolean containsTarget = subset.contains(edge.getTarget());
+
+			if (containsSource && containsTarget) {
+                graph.removeEdge(edge);
+				internalEdges.add(edge);
+			} else if (containsSource && !containsTarget) {
+                graph.removeEdge(edge);
+				outGoing.add(edge);
+			} else if (!containsSource && containsTarget) {
+                graph.removeEdge(edge);
+				inComing.add(edge);
+			}
+		}
+		collapsedGraph.addAllEdges(internalEdges);
+
+		// Construct collapsed vertex
+		JoanaCollapsedVertex collapsed = new JoanaCollapsedVertex("Collapsed", "Collapsed (" + collapsedGraph.getVertexSet().size() + ")",
+		        collapsedGraph, new HashMap<>());
+		graph.addVertex(collapsed); 
+		collapsedVertices.add(collapsed);
+
+		// Replace incoming and outgoing edges with new one pointing to the CollapseddVertex
+		for (JoanaEdge edge : outGoing) {
+            JoanaEdge newEdge = new JoanaEdge(edge.getName(), edge.getLabel(), collapsed, edge.getTarget(), edge.getEdgeKind());
+            graph.addEdge(newEdge);
+            collapsed.addModifiedEdge(newEdge, edge);
+
+            if (collapsedVertices.contains(edge.getTarget())) {
+                if (!graph.contains(edge.getTarget())) {
+                    System.out.println("This shouldn't have happened");
+                }
+                JoanaCollapsedVertex otherVertex = getCollapsedVertexByID(edge.getTarget().getID());
+                otherVertex.addModifiedEdge(newEdge, edge);
+            }
+		}
+		for (JoanaEdge edge : inComing) {
+            JoanaEdge newEdge = new JoanaEdge(edge.getName(), edge.getLabel(), edge.getSource(), collapsed, edge.getEdgeKind());
+            graph.addEdge(newEdge);
+            collapsed.addModifiedEdge(newEdge, edge);
+
+            if (collapsedVertices.contains(edge.getSource())) {
+                if (!graph.contains(edge.getSource())) {
+                    System.out.println("This shouldn't have happened");
+                }
+                JoanaCollapsedVertex otherVertex = getCollapsedVertexByID(edge.getSource().getID());
+                otherVertex.addModifiedEdge(newEdge, edge);
+            }
+
+		}
+
+		graph.removeAllVertices(directedSubset);
+		graph.removeAllEdges(new HashSet<>(inComing));
+		graph.removeAllEdges(new HashSet<>(outGoing));
+        System.out.println("Collapsed " +  collapsed.getID());
+		
+		return collapsed;
+    }
+
+	private JoanaCollapsedVertex getCollapsedVertexByID(int id)  {
+	    for (JoanaCollapsedVertex cVertex : collapsedVertices) {
+	        if (id == cVertex.getID()) {
+	            return cVertex;
+	        }
+	    }
+	    return null;
+	}
+	
+	@Override
+    public Set<JoanaVertex> expand(CollapsedVertex vertex) {
+	    if (!collapsedVertices.contains(vertex)) {
+	        throw new IllegalArgumentException("Cannot expand vertex, not collapsed in this graph.");
+	    }
+        for (JoanaCollapsedVertex jvertex : collapsedVertices) {
+            if (vertex.getID() == jvertex.getID()) {
+                return this.expand(jvertex);
+            }
+        }
+        assert (false);
+        return null;
+	}
+
+    private Set<JoanaVertex> expand(JoanaCollapsedVertex vertex) {
+        
+        if (!graph.contains(vertex)) {
+	        throw new IllegalArgumentException("Cannot expand vertex, not in this graph.");
+        }
+        System.out.println("Expanding " +  vertex.getID());
+
+		Set<JoanaVertex> containedVertices = new HashSet<>(vertex.getGraph().getVertexSet());
+
+		// Add all contained vertices and the edges between them...
+		graph.addAllVertices(containedVertices);
+		graph.addAllEdges(vertex.getGraph().getEdgeSet());
+		// .. as well as the edges between vertices in the collapsed subgraph and other vertices
+		for (JoanaEdge edge : outgoingEdgesOf(vertex)) {
+            JoanaCollapsedVertex target = getCollapsedVertexByID(edge.getTarget().getID());
+            if (target != null) {
+                target.removeModifiedEdge(edge);
+                System.out.println("Vertex " + target.getID() + " is modified");
+            }
+            if (!graph.contains(vertex.getModifiedEdge(edge).getTarget()))
+            {
+                printHierarchy();
+                for (JoanaCollapsedVertex v : this.collapsedVertices) {
+                    if (v.getGraph().getVertexSet().contains(vertex.getModifiedEdge(edge).getTarget())) {
+                        System.out.println("Vertex " + vertex.getModifiedEdge(edge).getTarget().getID() + " is buried");
+                    }
+                }
+                System.out.println("Vertex search ended");
+            }
+		    graph.addEdge(vertex.getModifiedEdge(edge));
+		}
+		for (JoanaEdge edge : incomingEdgesOf(vertex)) {
+            JoanaCollapsedVertex source = getCollapsedVertexByID(edge.getSource().getID());
+            if (source != null) {
+                source.removeModifiedEdge(edge);
+            }
+            if (!graph.contains(vertex.getModifiedEdge(edge).getSource()))
+            {
+                printHierarchy();
+                for (JoanaCollapsedVertex v : this.collapsedVertices) {
+                    if (v.getGraph().getVertexSet().contains(vertex.getModifiedEdge(edge).getSource())) {
+                        System.out.println("Vertex " + vertex.getModifiedEdge(edge).getSource().getID() + " is buried");
+                    }
+                }
+                System.out.println("Vertex search ended");
+            }
+		    graph.addEdge(vertex.getModifiedEdge(edge));
+		}
+		
+		// Remove all edges to the collapsed vertex and the collapsed vertex itself.
+		for( JoanaEdge edge : graph.edgesOf(vertex)) {
+		    graph.removeEdge(edge);
+		}
+		graph.removeVertex(vertex);
+		
+		return containedVertices;
+    }
+    private void printHierarchy() {
+        for (JoanaCollapsedVertex v : this.collapsedVertices) {
+            if (this.graph.contains(v)) {
+                printChilds(v, 0);
+            }
+        }
+    }
+    
+    private void printChilds(JoanaCollapsedVertex vertex, int indent) {
+        for (int i = 0; i < indent; i++)
+            System.out.print(" ");
+        System.out.println(vertex.getID());
+        for (JoanaVertex v : vertex.getGraph().getVertexSet()) {
+            if (this.collapsedVertices.contains(v)) {
+                printChilds((JoanaCollapsedVertex) v, indent+2);
+            }
+        }
+    }
+
+
+    // TODO: Not as described in design. Should return true if vertex is of type collapsed 
+    // and not if it is contained in a collapsed vertex but if first is not needed, then there is no problem.
+	@Override
+	public boolean isCollapsed(Vertex vertex) {
+		for (JoanaCollapsedVertex collapsed : collapsedVertices) {
+			if (collapsed.getGraph().getVertexSet().contains(vertex))
+				return true;
+		}
+		return false;
+	}
+
     @Override
     public Integer outdegreeOf(Vertex vertex) {
         return graph.outdegreeOf(vertex);

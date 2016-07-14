@@ -3,9 +3,11 @@ package edu.kit.student.joana;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 import edu.kit.student.graphmodel.Graph;
 import edu.kit.student.graphmodel.LayeredGraph;
+import edu.kit.student.graphmodel.ViewableGraph;
 import edu.kit.student.graphmodel.directed.DirectedGraph;
 import edu.kit.student.util.IdGenerator;
 
@@ -13,8 +15,11 @@ import edu.kit.student.util.IdGenerator;
  * An abstract superclass for all JOANA specific graphs.
  */
 public abstract class JoanaGraph
-    implements DirectedGraph, LayeredGraph {
+    implements DirectedGraph, LayeredGraph, ViewableGraph {
     
+	
+	public abstract Set<JoanaEdge> getEdgeSet();
+
     public Graph parent;
     public List<Graph> children = new LinkedList<>();
     public String name;

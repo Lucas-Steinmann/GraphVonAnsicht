@@ -37,14 +37,14 @@ public class CrossMinimizerTest {
         DefaultVertex v7 = new DefaultVertex("v7", "1");
         DefaultVertex v8 = new DefaultVertex("v8", "2");
         DefaultVertex v9 = new DefaultVertex("v9", "2");
-        DirectedEdge e1 = new DefaultDirectedEdge("e1","", v1, v9);
-        DirectedEdge e2 = new DefaultDirectedEdge("e2","", v1, v6);
-        DirectedEdge e3 = new DefaultDirectedEdge("e3","", v2, v6);
-        DirectedEdge e4 = new DefaultDirectedEdge("e4","", v3, v7);
-        DirectedEdge e5 = new DefaultDirectedEdge("e5","", v4, v7);
-        DirectedEdge e6 = new DefaultDirectedEdge("e6","", v6, v8);
-        DirectedEdge e7 = new DefaultDirectedEdge("e7","", v6, v9);
-        DirectedEdge e8 = new DefaultDirectedEdge("e8","", v7, v9);
+        DirectedEdge e1 = new DefaultDirectedEdge<DefaultVertex>("e1","", v1, v9);
+        DirectedEdge e2 = new DefaultDirectedEdge<DefaultVertex>("e2","", v1, v6);
+        DirectedEdge e3 = new DefaultDirectedEdge<DefaultVertex>("e3","", v2, v6);
+        DirectedEdge e4 = new DefaultDirectedEdge<DefaultVertex>("e4","", v3, v7);
+        DirectedEdge e5 = new DefaultDirectedEdge<DefaultVertex>("e5","", v4, v7);
+        DirectedEdge e6 = new DefaultDirectedEdge<DefaultVertex>("e6","", v6, v8);
+        DirectedEdge e7 = new DefaultDirectedEdge<DefaultVertex>("e7","", v6, v9);
+        DirectedEdge e8 = new DefaultDirectedEdge<DefaultVertex>("e8","", v7, v9);
 //        e1.setVertices(v1, v5);	old edges
 //        e2.setVertices(v1, v6);
 //        e3.setVertices(v2, v6);

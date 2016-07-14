@@ -33,11 +33,11 @@ public class SugiyamaLayoutAlgorithmTest {
 		DefaultVertex v2 = new DefaultVertex("v2", "");
 		DefaultVertex v3 = new DefaultVertex("v3", "");
 		DefaultVertex v4 = new DefaultVertex("v4", "");
-		DirectedEdge e1 = new DefaultDirectedEdge("e1","", v1, v2);
-		DirectedEdge e2 = new DefaultDirectedEdge("e2","", v2, v3);
-		DirectedEdge e3 = new DefaultDirectedEdge("e3","", v3, v4);
-		DirectedEdge e4 = new DefaultDirectedEdge("e4","", v4, v1);
-		DirectedEdge e5 = new DefaultDirectedEdge("e5","", v2, v4);
+		DirectedEdge e1 = new DefaultDirectedEdge<DefaultVertex>("e1","", v1, v2);
+		DirectedEdge e2 = new DefaultDirectedEdge<DefaultVertex>("e2","", v2, v3);
+		DirectedEdge e3 = new DefaultDirectedEdge<DefaultVertex>("e3","", v3, v4);
+		DirectedEdge e4 = new DefaultDirectedEdge<DefaultVertex>("e4","", v4, v1);
+		DirectedEdge e5 = new DefaultDirectedEdge<DefaultVertex>("e5","", v2, v4);
 		DDGraph.addVertex(v1);
 		DDGraph.addVertex(v2);
 		DDGraph.addVertex(v3);

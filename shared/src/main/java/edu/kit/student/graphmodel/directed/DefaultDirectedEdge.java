@@ -12,10 +12,10 @@ import edu.kit.student.util.IdGenerator;
 import javafx.scene.paint.Color;
 import javafx.util.Pair;
 
-public class DefaultDirectedEdge implements DirectedEdge {
+public class DefaultDirectedEdge<V extends Vertex> implements DirectedEdge {
 
-	private Vertex target;
-	private Vertex source;
+	private V target;
+	private V source;
 	private GAnsProperty<String> name;
 	private Integer id;
 	private GAnsProperty<String> label;
@@ -44,7 +44,7 @@ public class DefaultDirectedEdge implements DirectedEdge {
      * @param source
      * @param target
      */
-    public DefaultDirectedEdge(String name, String label, Vertex source, Vertex target) {  
+    public DefaultDirectedEdge(String name, String label, V source, V target) {  
     	this(name,label);
         this.source = source;
         this.target = target;
@@ -56,7 +56,7 @@ public class DefaultDirectedEdge implements DirectedEdge {
      * @param source vertex
      * @param target vertex
      */
-    public void setVertices(Vertex source, Vertex target) {
+    public void setVertices(V source, V target) {
         //set source to first index and target to second
         this.source = source;
         this.target = target;
@@ -81,8 +81,8 @@ public class DefaultDirectedEdge implements DirectedEdge {
 	}
 
 	@Override
-	public List<Vertex> getVertices() {
-		List<Vertex> vertices = new ArrayList<Vertex>();
+	public List<V> getVertices() {
+		List<V> vertices = new ArrayList<>();
 		vertices.add(this.source);
 		vertices.add(this.target);
 	    return vertices;
