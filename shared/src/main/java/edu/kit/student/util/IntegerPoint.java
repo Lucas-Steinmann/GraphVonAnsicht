@@ -3,20 +3,20 @@ package edu.kit.student.util;
 /**
  * This class is a standard immutable 2D Vector with integer values as it's components.
  */
-public class Point implements Cloneable
+public class IntegerPoint implements Cloneable
 {
     public final int x;
     public final int y;
     
-    public Point(int x, int y) {
+    public IntegerPoint(int x, int y) {
         this.x = x;
         this.y = y;
     }
     
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof Point) {
-            if (x == ((Point) obj).x && y == ((Point) obj).y) {
+        if (obj instanceof IntegerPoint) {
+            if (x == ((IntegerPoint) obj).x && y == ((IntegerPoint) obj).y) {
                 return true;
             }
         }
@@ -29,12 +29,12 @@ public class Point implements Cloneable
     }
 
     @Override
-    public Point clone() {
-        return new Point(x, y);
+    public IntegerPoint clone() {
+        return new IntegerPoint(x, y);
     }
     
-    public static Point zero() {
-        return new Point(0, 0);
+    public static IntegerPoint zero() {
+        return new IntegerPoint(0, 0);
     }
 }
 

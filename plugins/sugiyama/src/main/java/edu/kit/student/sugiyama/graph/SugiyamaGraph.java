@@ -6,7 +6,8 @@ import edu.kit.student.graphmodel.directed.DirectedEdge;
 import edu.kit.student.graphmodel.directed.DirectedGraph;
 import edu.kit.student.objectproperty.GAnsProperty;
 import edu.kit.student.plugin.LayoutOption;
-import edu.kit.student.util.Point;
+import edu.kit.student.util.DoublePoint;
+import edu.kit.student.util.IntegerPoint;
 import javafx.scene.paint.Color;
 import javafx.util.Pair;
 
@@ -113,7 +114,7 @@ public class SugiyamaGraph
 	public void swapVertices(ISugiyamaVertex first, ISugiyamaVertex second) {
 		assert (this.getLayer(first)==this.getLayer(second)); //both vertices have to be on the same layer!
 		
-		Point tmp = layering.getPosition(first);
+		IntegerPoint tmp = layering.getPosition(first);
 		layering.setPosition(first, layering.getPosition(second));
 		layering.setPosition(second, tmp);
 	}
@@ -197,7 +198,7 @@ public class SugiyamaGraph
 	}
 
 	@Override
-	public List<Point> getEdgeCorners(ISugiyamaEdge edge) {
+	public List<DoublePoint> getEdgeCorners(ISugiyamaEdge edge) {
 		// TODO Auto-generated method stub
 		return null;
 	}
@@ -269,10 +270,10 @@ public class SugiyamaGraph
 	public void setEdgepaths() {
 		for (SupplementPath supplementPath : this.supplementPaths) {
 			ISugiyamaEdge edge = supplementPath.replacedEdge;
-			List<Point> path = edge.getPath().getNodes();
+			List<DoublePoint> path = edge.getPath().getNodes();
 
 			for (ISugiyamaVertex dummy : supplementPath.getDummyVertices()) {
-				path.add(new Point(dummy.getX(), dummy.getY()));
+				path.add(new DoublePoint(dummy.getX(), dummy.getY()));
 			}
 
 			if (edge.isReversed()) {
@@ -841,7 +842,7 @@ public class SugiyamaGraph
             if (!(this.layering.getLayerFromVertex(vertex) == layer)) {
                 throw new IllegalArgumentException("All vertices have to be on the specified layer, when calling setPositionOnLayer");
             }
-            this.layering.setPosition(vertex, new Point(x, layer));
+            this.layering.setPosition(vertex, new IntegerPoint(x, layer));
             x++;
         }
     }

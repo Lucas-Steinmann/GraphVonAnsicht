@@ -7,17 +7,17 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import edu.kit.student.util.Point;
+import edu.kit.student.util.IntegerPoint;
 
 public class DefaultGraphLayering<V extends Vertex> implements GraphLayering<V> {
     
     private ArrayList<ArrayList<V>> layers = new ArrayList<>();
-    private Map<V, Point> vertexToPoint = new HashMap<>();
+    private Map<V, IntegerPoint> vertexToPoint = new HashMap<>();
     
     public DefaultGraphLayering(Set<V> vertices) {
         this.layers.add(new ArrayList<>(vertices));
         for (V vertex : vertices) {
-            vertexToPoint.put(vertex, Point.zero());
+            vertexToPoint.put(vertex, IntegerPoint.zero());
         }
     }
 
@@ -56,14 +56,14 @@ public class DefaultGraphLayering<V extends Vertex> implements GraphLayering<V> 
         return getPosition(vertex).y;
     }
 
-    public Point getPosition(Vertex vertex) {
+    public IntegerPoint getPosition(Vertex vertex) {
         if (!this.vertexToPoint.containsKey(vertex)) {
             throw new IllegalArgumentException("Vertex is not contained in layering!");
         }
         return vertexToPoint.get(vertex).clone();
     }
     
-    public V getVertex(Point point) {
+    public V getVertex(IntegerPoint point) {
         List<V> layer = this.getLayer(point.y);
         if (layer.size() <= point.x) {
             return null;
@@ -71,8 +71,8 @@ public class DefaultGraphLayering<V extends Vertex> implements GraphLayering<V> 
         return layer.get(point.x);
     }
     
-    public void setPosition(V vertex, Point point) {
-        Point oldPos = getPosition(vertex);
+    public void setPosition(V vertex, IntegerPoint point) {
+    	IntegerPoint oldPos = getPosition(vertex);
         assert (vertex == getVertex(oldPos));
         // Remove from old position
         if (oldPos.x >= this.layers.get(oldPos.y).size()) {
@@ -80,7 +80,7 @@ public class DefaultGraphLayering<V extends Vertex> implements GraphLayering<V> 
         }
         this.layers.get(oldPos.y).remove(oldPos.x);
         for (int i = oldPos.x; i < this.layers.get(oldPos.y).size(); i++) {
-            vertexToPoint.put(this.layers.get(oldPos.y).get(i), new Point(i, oldPos.y));
+            vertexToPoint.put(this.layers.get(oldPos.y).get(i), new IntegerPoint(i, oldPos.y));
         }
 
         // Add enough layers to insert vertex
@@ -94,7 +94,7 @@ public class DefaultGraphLayering<V extends Vertex> implements GraphLayering<V> 
         vertexToPoint.put(vertex, point.clone());
 
         for (int i = point.x + 1; i < layer.size(); i++) {
-            vertexToPoint.put(layer.get(i), new Point(i, point.y));
+            vertexToPoint.put(layer.get(i), new IntegerPoint(i, point.y));
         }
 
         if (vertex != getVertex(getPosition(vertex))) {
@@ -107,12 +107,12 @@ public class DefaultGraphLayering<V extends Vertex> implements GraphLayering<V> 
         if (getLayerFromVertex(vertex) == layer) {
             return;
         }
-        setPosition(vertex, new Point(this.getLayer(layer).size(), layer));
+        setPosition(vertex, new IntegerPoint(this.getLayer(layer).size(), layer));
         assert (vertex == getVertex(getPosition(vertex)));
     }
     
     public void addVertex(V vertex, int layer) {
-        this.vertexToPoint.put(vertex, new Point(layers.get(0).size(), 0));
+        this.vertexToPoint.put(vertex, new IntegerPoint(layers.get(0).size(), 0));
         this.layers.get(0).add(vertex);
         
         this.setLayer(vertex, layer);

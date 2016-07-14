@@ -2,7 +2,7 @@ package edu.kit.student.graphmodel;
 
 import java.util.List;
 
-import edu.kit.student.util.Point;
+import edu.kit.student.util.DoublePoint;
 
 /**
  * An abstract super class for edge paths.
@@ -22,13 +22,13 @@ public abstract class EdgePath {
 	 * In the order it has to pass through them.
 	 * @return the list of nodes
 	 */
-	public abstract List<Point> getNodes();
+	public abstract List<DoublePoint> getNodes();
 	
 	/**
 	 * Adds a new Point to to this EdgePath.
 	 * @param newPoint new point to add to this Edgepath
 	 */
-	public abstract void addPoint(Point newPoint);
+	public abstract void addPoint(DoublePoint newPoint);
 
 
 }

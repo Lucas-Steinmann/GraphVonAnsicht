@@ -1,7 +1,7 @@
 package edu.kit.student.sugiyama.graph;
 
 import edu.kit.student.sugiyama.graph.SugiyamaGraph.SupplementPath;
-import edu.kit.student.util.Point;
+import edu.kit.student.util.DoublePoint;
 import java.util.List;
 import java.util.Set;
 
@@ -72,6 +72,6 @@ public interface IEdgeDrawerGraph  extends ISugiyamaStepGraph {
 	 * @param edge the edge
 	 * @return	   the list of points of the corners on the edge
 	 */
-	public List<Point> getEdgeCorners(ISugiyamaEdge edge);
+	public List<DoublePoint> getEdgeCorners(ISugiyamaEdge edge);
 
 }

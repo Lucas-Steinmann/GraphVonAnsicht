@@ -3,7 +3,7 @@ package edu.kit.student.gui;
 import edu.kit.student.graphmodel.Edge;
 import edu.kit.student.graphmodel.EdgePath;
 import edu.kit.student.graphmodel.Vertex;
-import edu.kit.student.util.Point;
+import edu.kit.student.util.DoublePoint;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
@@ -59,8 +59,8 @@ public class EdgeShape extends GAnsGraphElement {
 				y2 = endY;
 			} else {
 				int listMiddle = nodeCount / 2;
-				Point point1 = edgePath.getNodes().get(listMiddle - 1);
-				Point point2 = edgePath.getNodes().get(listMiddle);
+				DoublePoint point1 = edgePath.getNodes().get(listMiddle - 1);
+				DoublePoint point2 = edgePath.getNodes().get(listMiddle);
 				x1 = point1.x;
 				y1 = point1.y;
 				x2 = point2.x;
@@ -75,7 +75,7 @@ public class EdgeShape extends GAnsGraphElement {
 		}
 	
 		for(int i = 0; i < nodeCount; i++) {
-			Point point = edgePath.getNodes().get(i);
+			DoublePoint point = edgePath.getNodes().get(i);
 			elements.add(new LineTo(point.x, point.y));
 		}
 		

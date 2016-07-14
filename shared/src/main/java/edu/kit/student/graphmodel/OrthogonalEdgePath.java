@@ -1,7 +1,6 @@
 package edu.kit.student.graphmodel;
 
-import edu.kit.student.util.Point;
-
+import edu.kit.student.util.DoublePoint;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -9,7 +8,7 @@ import java.util.List;
  * An orthogonal edge path used as standard graphical edge representation.
  */
 public class OrthogonalEdgePath extends EdgePath {
-	private List<Point> nodes;
+	private List<DoublePoint> nodes;
 
 	public OrthogonalEdgePath() {
 		nodes = new LinkedList<>();
@@ -27,12 +26,12 @@ public class OrthogonalEdgePath extends EdgePath {
 	 * @see graphmodel.EdgePath#getNodes()
 	 */
 	@Override
-	public List<Point> getNodes() {
+	public List<DoublePoint> getNodes() {
 		return this.nodes;
 	}
 
 	@Override
-	public void addPoint(Point newPoint) {
+	public void addPoint(DoublePoint newPoint) {
 		this.nodes.add(newPoint);
 	}
 
