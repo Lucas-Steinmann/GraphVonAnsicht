@@ -29,9 +29,11 @@ import javafx.application.Application;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
 import javafx.collections.ObservableList;
 import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
+import javafx.collections.SetChangeListener.Change;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
@@ -51,6 +53,7 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.control.TreeItem;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.ColumnConstraints;
@@ -116,13 +119,20 @@ public class GAnsApplication extends Application {
 		treeInfoLayout.getItems().addAll(structureView, informationView);
 		
 		structureView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
+		structureView.setContextMenu(structureViewContextMenu);
 		structureView.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent mouseEvent) {
 				GAnsApplication.this.currentGraphView.getSelectionModel().clear();
-				if (mouseEvent.getButton() == MouseButton.PRIMARY && mouseEvent.getClickCount() == 2) {
+				if(mouseEvent.getButton() == MouseButton.PRIMARY && mouseEvent.getClickCount() == 2) {
 					openGraph(GAnsApplication.this.structureView.getIdOfSelectedItem());
+				} else {
+					ViewableGraph graph = model.getGraphFromId(GAnsApplication.this.structureView.getIdOfSelectedItem());
+					
+					ObservableList<GAnsProperty<?>> statistics = FXCollections.observableList(graph.getStatistics());
+					informationView.setInformations(statistics);
 				}
+				mouseEvent.consume();
 			}
 		});
 
@@ -315,7 +325,12 @@ public class GAnsApplication extends Application {
 	}
 	
 	private void openLayoutSettingsDialog() {
-		//TODO: Implementieren und nutzen
+		LayoutOption option = currentGraphView.getCurrentLayoutOption();
+		Settings settings = option.getSettings();
+	    if(openParameterDialog(settings)) {
+	    	currentGraphView.setCurrentLayoutOption(option);
+	    	option.applyLayout();
+	    }
 	}
 
 	private boolean openParameterDialog(Settings settings) {
@@ -381,6 +396,12 @@ public class GAnsApplication extends Application {
 		Menu menuLayout = new Menu("Layout");
 		Menu changeLayoutItem = new Menu("Change algorithms");
 		MenuItem layoutPropertiesItem = new MenuItem("Properties");
+		layoutPropertiesItem.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent e) {
+				openLayoutSettingsDialog();
+			}
+		});
 		menuLayout.getItems().addAll(changeLayoutItem, layoutPropertiesItem);
 		
 		menuLayout.setOnShowing(new EventHandler<Event>() {
@@ -441,7 +462,7 @@ public class GAnsApplication extends Application {
 		    			selectedVertices.add((CollapsedVertex)vertex);
 		    		} else {
 		    			// only a selection of CollapsedVertex can be expanded
-		    			// (only show menuitem when there are only collapsed selected)
+		    			//(only show menuitem when there are only collapsed selected)
 		    			return;
 		    		}
 		    		

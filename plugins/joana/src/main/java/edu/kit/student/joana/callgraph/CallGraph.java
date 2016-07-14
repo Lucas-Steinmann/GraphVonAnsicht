@@ -9,6 +9,7 @@ import edu.kit.student.joana.JoanaCompoundVertex;
 import edu.kit.student.joana.JoanaEdge;
 import edu.kit.student.joana.JoanaGraph;
 import edu.kit.student.joana.methodgraph.MethodGraph;
+import edu.kit.student.objectproperty.GAnsProperty;
 import edu.kit.student.plugin.LayoutOption;
 import edu.kit.student.plugin.LayoutRegister;
 
@@ -25,12 +26,18 @@ public class CallGraph extends JoanaGraph {
     private static LayoutRegister<CallGraphLayoutOption> register;
     DefaultDirectedGraph<JoanaCompoundVertex, JoanaEdge> graph;
     DefaultGraphLayering<JoanaCompoundVertex> layering;
+    
+    private GAnsProperty<Integer> vertexCount;
+    private GAnsProperty<Integer> edgeCount;
 
     public CallGraph(String name, Set<JoanaCompoundVertex> vertices, Set<JoanaEdge> edges) {
         super(name);
         //TODO: Add MethodGraphs as subgraphs?
         this.graph = new DefaultDirectedGraph<>("", vertices, edges);
         this.layering = new DefaultGraphLayering<>(vertices);
+        
+        this.vertexCount = new GAnsProperty<Integer>("Vertex count", vertices.size());
+        this.edgeCount = new GAnsProperty<Integer>("Edge count", edges.size());
     }
 
     public CallGraph(String name) {
@@ -186,5 +193,13 @@ public class CallGraph extends JoanaGraph {
     public boolean isCollapsed(Vertex vertex) {
         // TODO Auto-generated method stub
         return false;
+    }
+    
+    @Override
+    public List<GAnsProperty<?>> getStatistics() {
+    	List<GAnsProperty<?>> statistics = super.getStatistics();
+    	statistics.add(this.vertexCount);
+    	statistics.add(this.edgeCount);
+    	return statistics;
     }
 }

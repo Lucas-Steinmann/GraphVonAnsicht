@@ -2,6 +2,8 @@ package edu.kit.student.graphmodel;
 
 import java.util.List;
 
+import edu.kit.student.objectproperty.GAnsProperty;
+
 /**
  * The base graph accessed by the UI.
  */
@@ -14,4 +16,6 @@ public interface ViewableGraph extends Viewable, Graph {
 	public List<ViewableGraph> getChildGraphs();
 	
 	public void addChildGraph(ViewableGraph child);
+	
+	public List<GAnsProperty<?>> getStatistics();
 }

@@ -13,6 +13,7 @@ import edu.kit.student.joana.JoanaEdge;
 import edu.kit.student.joana.JoanaGraph;
 import edu.kit.student.joana.JoanaVertex;
 import edu.kit.student.joana.JoanaVertex.Kind;
+import edu.kit.student.objectproperty.GAnsProperty;
 import edu.kit.student.plugin.LayoutOption;
 import edu.kit.student.plugin.LayoutRegister;
 
@@ -37,6 +38,10 @@ public class MethodGraph extends JoanaGraph {
     private List<JoanaCollapsedVertex> collapsedVertices;
     DefaultDirectedGraph<JoanaVertex, JoanaEdge> graph;
     DefaultGraphLayering<JoanaVertex> layering;
+    
+    private GAnsProperty<Integer> vertexCount;
+    private GAnsProperty<Integer> fieldAccessCount;
+    private GAnsProperty<Integer> edgeCount;
 
     public MethodGraph(Set<JoanaVertex> vertices, Set<JoanaEdge> edges, 
             String methodName) {
@@ -54,6 +59,11 @@ public class MethodGraph extends JoanaGraph {
         //TODO: Search for method calls etc.
         this.fieldAccesses = this.searchFieldAccesses();
         this.collapsedVertices = new LinkedList<>();
+        
+        
+        this.vertexCount = new GAnsProperty<Integer>("Vertex count", vertices.size());
+        this.fieldAccessCount = new GAnsProperty<Integer>("Field accesses", this.fieldAccesses.size());
+        this.edgeCount = new GAnsProperty<Integer>("Edge count", edges.size());
     }
     
     /**
@@ -417,6 +427,15 @@ public class MethodGraph extends JoanaGraph {
     @Override
     public int getMaxWidth() {
         return layering.getMaxWidth();
+    }
+    
+    @Override
+    public List<GAnsProperty<?>> getStatistics() {
+    	List<GAnsProperty<?>> statistics = super.getStatistics();
+    	statistics.add(this.vertexCount);
+    	statistics.add(this.fieldAccessCount);
+    	statistics.add(this.edgeCount);
+    	return statistics;
     }
     
     //private method to search all Fieldaccesses in the graph

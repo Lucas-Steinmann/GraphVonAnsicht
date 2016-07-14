@@ -1,14 +1,13 @@
 package edu.kit.student.joana;
 
-
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
-import edu.kit.student.graphmodel.Graph;
 import edu.kit.student.graphmodel.LayeredGraph;
 import edu.kit.student.graphmodel.ViewableGraph;
 import edu.kit.student.graphmodel.directed.DirectedGraph;
+import edu.kit.student.objectproperty.GAnsProperty;
 import edu.kit.student.util.IdGenerator;
 
 /**
@@ -22,17 +21,18 @@ public abstract class JoanaGraph
 
     public ViewableGraph parent;
     public List<ViewableGraph> children = new LinkedList<>();
-    public String name;
+    public GAnsProperty<String> name;
     public Integer id;
 
     public JoanaGraph(String name) {
-        this.name = name;
+        this.name = new GAnsProperty<String>("Name", name);
+        
         this.id = IdGenerator.getInstance().createId();    
     }
 
     @Override
     public String getName() {
-        return name;
+        return name.getValue();
     }
 
     @Override
@@ -59,5 +59,12 @@ public abstract class JoanaGraph
     @Override
     public void addChildGraph(ViewableGraph child) {
         this.children.add(child);
+    }
+    
+    @Override
+    public List<GAnsProperty<?>> getStatistics() {
+    	List<GAnsProperty<?>> statistics = new LinkedList<GAnsProperty<?>>();
+    	statistics.add(name);
+    	return statistics;
     }
 }
