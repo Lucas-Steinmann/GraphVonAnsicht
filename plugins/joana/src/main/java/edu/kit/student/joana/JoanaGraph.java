@@ -20,8 +20,8 @@ public abstract class JoanaGraph
 	
 	public abstract Set<JoanaEdge> getEdgeSet();
 
-    public Graph parent;
-    public List<Graph> children = new LinkedList<>();
+    public ViewableGraph parent;
+    public List<ViewableGraph> children = new LinkedList<>();
     public String name;
     public Integer id;
 
@@ -41,23 +41,23 @@ public abstract class JoanaGraph
     }
 
     @Override
-    public Graph getParentGraph() {
+    public ViewableGraph getParentGraph() {
         return this.parent;
     }
 
     @Override
-    public void setParentGraph(Graph parent) {
+    public void setParentGraph(ViewableGraph parent) {
         this.parent = parent;
         
     }
 
     @Override
-    public List<Graph> getChildGraphs() {
+    public List<ViewableGraph> getChildGraphs() {
         return this.children;
     }
 
     @Override
-    public void addChildGraph(Graph child) {
+    public void addChildGraph(ViewableGraph child) {
         this.children.add(child);
     }
 }

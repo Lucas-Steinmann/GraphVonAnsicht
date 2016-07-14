@@ -78,12 +78,4 @@ public interface Graph {
 	 * @return the default layout for this graph
 	 */
 	public LayoutOption getDefaultLayout();
-	
-	public Graph getParentGraph();
-	
-	public void setParentGraph(Graph parent);
-	
-	public List<Graph> getChildGraphs();
-	
-	public void addChildGraph(Graph child);
 }

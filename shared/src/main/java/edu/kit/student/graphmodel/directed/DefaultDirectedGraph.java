@@ -30,9 +30,6 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
 
 	// Maybe replace with FGA
 	private HashMap<Integer, V> idToVertex;
-	
-	private Graph parent = null;
-	private List<Graph> children = new ArrayList<>();
 
 	/**
 	 * Constructor
@@ -63,7 +60,6 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
         this.name = new GAnsProperty<String>("graphName", name);
         this.id = IdGenerator.getInstance().createId();
         this.fga = new FastGraphAccessor();
-        this.children = new ArrayList<Graph>();
 
         this.idToVertex = new HashMap<>();
         this.vertexToEdge = new HashMap<>();
@@ -263,26 +259,6 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
 	@Override
 	public LayoutOption getDefaultLayout() {
 		return null;
-	}
-
-	@Override
-	public Graph getParentGraph() {
-		return this.parent;
-	}
-	
-	@Override
-	public void setParentGraph(Graph parent) {
-		this.parent = parent;
-	}
-
-	@Override
-	public List<Graph> getChildGraphs() {
-		return this.children;
-	}
-	
-	@Override
-	public void addChildGraph(Graph child) {
-		this.children.add(child);
 	}
 	
 	public static DirectedGraphLayoutRegister getDirectedGraphLayoutRegister()

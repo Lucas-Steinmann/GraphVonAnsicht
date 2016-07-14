@@ -10,6 +10,7 @@ import java.util.Set;
 import edu.kit.student.graphmodel.Edge;
 import edu.kit.student.graphmodel.Graph;
 import edu.kit.student.graphmodel.Vertex;
+import edu.kit.student.graphmodel.ViewableGraph;
 import edu.kit.student.graphmodel.serialize.SerializedEdge;
 import edu.kit.student.graphmodel.serialize.SerializedGraph;
 import edu.kit.student.graphmodel.serialize.SerializedVertex;
@@ -30,7 +31,7 @@ import javafx.util.Pair;
  */
 public class GraphViewGraphFactory {
 
-	private Graph graph;
+	private ViewableGraph graph;
 	private Map<VertexShape, Vertex> vertices;
 	private Map<EdgeShape, Edge> edges;
 
@@ -41,7 +42,7 @@ public class GraphViewGraphFactory {
 	 * @param graph
 	 *            The graph data that will be shown.
 	 */
-	public GraphViewGraphFactory(Graph graph) {
+	public GraphViewGraphFactory(ViewableGraph graph) {
 		vertices = new HashMap<VertexShape, Vertex>();
 		edges = new HashMap<EdgeShape, Edge>();
 		this.graph = graph;
@@ -50,7 +51,7 @@ public class GraphViewGraphFactory {
 		createEdges();
 	}
 	
-	public Graph getGraph() {
+	public ViewableGraph getGraph() {
 		return this.graph;
 	}
 
