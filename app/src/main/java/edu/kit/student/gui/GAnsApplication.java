@@ -370,7 +370,11 @@ public class GAnsApplication extends Application {
 					layoutPropertiesItem.setDisable(true);
 				} else {
 					changeLayoutItem.setDisable(false);
-					layoutPropertiesItem.setDisable(false);
+					if(currentGraphView.getCurrentLayoutOption().getSettings().size() == 0) {
+						layoutPropertiesItem.setDisable(true);
+					} else {
+						layoutPropertiesItem.setDisable(false);
+					}
 					changeLayoutItem.getItems().clear();
 					for(LayoutOption option: GAnsApplication.this.currentGraphView.getFactory().getGraph().getRegisteredLayouts()) {
 						MenuItem item = new MenuItem(option.getName());

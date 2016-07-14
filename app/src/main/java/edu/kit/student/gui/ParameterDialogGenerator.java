@@ -110,23 +110,28 @@ public class ParameterDialogGenerator extends ParameterVisitor {
 	 * @return true: Dialog was accepted, false: Dialog was aborted.
 	 */
 	public static boolean showDialog(Settings settings) {
-		GridPane root = new GridPane();
-		ColumnConstraints c1 = new ColumnConstraints();
-		ColumnConstraints c2 = new ColumnConstraints();
-		c1.setPercentWidth(50);
-		c2.setPercentWidth(50);
-		root.getColumnConstraints().add(c1);
-		root.getColumnConstraints().add(c2);
-		new ParameterDialogGenerator(root, settings);
-		Alert dialog = new Alert(AlertType.CONFIRMATION);
-		dialog.setTitle("Settings");
-		dialog.setHeaderText(null);
-		dialog.setGraphic(null);
-		dialog.getDialogPane().setContent(root);
-		Optional<ButtonType> result = dialog.showAndWait();
-		if(result.get() != ButtonType.OK) {
-			return false;
+		if(settings.size() == 0) {
+			// if there are no settings to be shown the dialog will automatically be accepted
+			return true;
+		} else {
+			GridPane root = new GridPane();
+			ColumnConstraints c1 = new ColumnConstraints();
+			ColumnConstraints c2 = new ColumnConstraints();
+			c1.setPercentWidth(50);
+			c2.setPercentWidth(50);
+			root.getColumnConstraints().add(c1);
+			root.getColumnConstraints().add(c2);
+			new ParameterDialogGenerator(root, settings);
+			Alert dialog = new Alert(AlertType.CONFIRMATION);
+			dialog.setTitle("Settings");
+			dialog.setHeaderText(null);
+			dialog.setGraphic(null);
+			dialog.getDialogPane().setContent(root);
+			Optional<ButtonType> result = dialog.showAndWait();
+			if(result.get() != ButtonType.OK) {
+				return false;
+			}
+			return true;
 		}
-		return true;
 	}
 }
