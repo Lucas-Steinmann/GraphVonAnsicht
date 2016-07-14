@@ -34,7 +34,6 @@ import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
-import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
@@ -47,8 +46,6 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
@@ -274,7 +271,7 @@ public class GAnsApplication extends Application {
 		Optional<String> result = dialog.showAndWait();
 		if (result.isPresent()) {
 		    WorkspaceOption chosenOption = options.get(workspaceNames.indexOf(result.get()));
-		    if(openParameterDialog(chosenOption.getSettings())) {
+		    if(ParameterDialogGenerator.showDialog(chosenOption.getSettings())) {
 		    	workspace = chosenOption.getInstance();
 			    return true;
 		    }
@@ -296,7 +293,7 @@ public class GAnsApplication extends Application {
 		    LayoutOption chosenOption = options.get(layoutNames.indexOf(result.get()));
 		    chosenOption.chooseLayout();
 		    Settings settings = chosenOption.getSettings();
-		    if(openParameterDialog(settings)) {
+		    if(ParameterDialogGenerator.showDialog(settings)) {
 		    	currentGraphView.setCurrentLayoutOption(chosenOption);
 		    	chosenOption.applyLayout();
 		    }
@@ -308,31 +305,10 @@ public class GAnsApplication extends Application {
 	private void openLayoutSettingsDialog() {
 		LayoutOption option = currentGraphView.getCurrentLayoutOption();
 		Settings settings = option.getSettings();
-	    if(openParameterDialog(settings)) {
+	    if(ParameterDialogGenerator.showDialog(settings)) {
 	    	currentGraphView.setCurrentLayoutOption(option);
 	    	option.applyLayout();
 	    }
-	}
-
-	private boolean openParameterDialog(Settings settings) {
-		GridPane root = new GridPane();
-		ColumnConstraints c1 = new ColumnConstraints();
-		ColumnConstraints c2 = new ColumnConstraints();
-		c1.setPercentWidth(50);
-		c2.setPercentWidth(50);
-		root.getColumnConstraints().add(c1);
-		root.getColumnConstraints().add(c2);
-		new ParameterDialogGenerator(root, settings);
-		Alert dialog = new Alert(AlertType.CONFIRMATION);
-		dialog.setTitle("Settings");
-		dialog.setHeaderText(null);
-		dialog.setGraphic(null);
-		dialog.getDialogPane().getChildren().add(root);
-		Optional<ButtonType> result = dialog.showAndWait();
-		if(result.get() != ButtonType.OK) {
-			return false;
-		}
-		return true;
 	}
 
 	private void setupMenuBar() {
@@ -402,7 +378,7 @@ public class GAnsApplication extends Application {
 							@Override
 							public void handle(ActionEvent e) {
 								option.chooseLayout();
-								if(openParameterDialog(option.getSettings())) option.applyLayout();
+								if(ParameterDialogGenerator.showDialog(option.getSettings())) option.applyLayout();
 							}
 						});
 						changeLayoutItem.getItems().add(item);
