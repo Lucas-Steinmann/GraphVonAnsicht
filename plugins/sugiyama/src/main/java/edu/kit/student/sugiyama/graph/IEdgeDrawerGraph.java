@@ -17,11 +17,6 @@ public interface IEdgeDrawerGraph  extends ISugiyamaStepGraph {
 	 */
 	public void reverseEdge(ISugiyamaEdge edge);
 	
-	/**
-	 * Sets the edgepath of all edges that have been replaced through a supplement path.
-	 * Sets a {@see Point} for every DummyVertex inherited in a supplement path.
-	 */
-	public void setEdgepaths();
 	
 	/**
 	 * Returns all SupplementPaths that have been created in CrossMinimizer.

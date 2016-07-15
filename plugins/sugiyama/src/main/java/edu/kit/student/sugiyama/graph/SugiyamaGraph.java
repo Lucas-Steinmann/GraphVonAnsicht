@@ -266,21 +266,6 @@ public class SugiyamaGraph
 //		return null;
 //	}
 
-	@Override
-	public void setEdgepaths() {
-		for (SupplementPath supplementPath : this.supplementPaths) {
-			ISugiyamaEdge edge = supplementPath.replacedEdge;
-			List<DoublePoint> path = edge.getPath().getNodes();
-
-			for (ISugiyamaVertex dummy : supplementPath.getDummyVertices()) {
-				path.add(new DoublePoint(dummy.getX(), dummy.getY()));
-			}
-
-			if (edge.isReversed()) {
-				Collections.reverse(path);
-			}
-		}
-	}
 
 //	@Override
 //	public List<LayeredGraph> getSubgraphs() {
@@ -385,10 +370,12 @@ public class SugiyamaGraph
 		private ISugiyamaVertex source;
 		private ISugiyamaVertex target;
 		private boolean isReversed;
+		private EdgePath path;
 		
 		public SupplementEdge(String name, String label) {
 			this.name=name;
 			this.label=label;
+			this.path = new OrthogonalEdgePath();
 		}
 		
 		public SupplementEdge(String name, String label, ISugiyamaVertex source, ISugiyamaVertex target) {
@@ -451,8 +438,7 @@ public class SugiyamaGraph
 
 		@Override
 		public EdgePath getPath() {
-			// TODO implement? is necessary ?
-			return null;
+			return this.path;
 		}
 
 		/**
