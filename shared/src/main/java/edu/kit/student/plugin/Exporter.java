@@ -1,6 +1,7 @@
 package edu.kit.student.plugin;
 
 import java.io.FileOutputStream;
+import java.util.List;
 
 import edu.kit.student.graphmodel.serialize.SerializedGraph;
 
@@ -19,16 +20,25 @@ public interface Exporter {
      *
      * @return the supported file ending.
      */
-    public String getSupportedFileEnding();
+    public List<String> getSupportedFileEndings();
+    
+    
+    /**
+     * A very short description of the file types.
+     * Examples: Image, Vector-Graphic, GraphML
+     * @return the description
+     */
+    public String getFileEndingDescription();
 
     /**
      * This method writes an {@link SerializedGraph} into an FileOutputStream.
      * The {@link SerializedGraph} enables us to read all attributes as Strings.
      * To write the contained Information into the file stream is the task of this method
      * 
-     * @param graph serializedGraph that contains the information to write to a file
-     * @param filestream to write the information into
+     * @param graph         serializedGraph that contains the information to write to a file
+     * @param filestream    to write the information into
+     * @param fileExtension the file extension of the file to write the information to
      */
-    public void exportGraph(SerializedGraph graph, FileOutputStream filestream) throws Exception; 
+    public void exportGraph(SerializedGraph graph, FileOutputStream filestream, String fileExtension) throws Exception; 
 
 }

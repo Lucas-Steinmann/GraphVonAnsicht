@@ -6,9 +6,13 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import edu.kit.student.graphmodel.Graph;
 import edu.kit.student.graphmodel.GraphModel;
@@ -275,27 +279,41 @@ public class GAnsApplication extends Application {
 	}
 
 	private void exportClicked() {
-		List<Exporter> exporterList = PluginManager.getPluginManager().getExporter();
-		List<String> supportedFileExtensions = new ArrayList<String>();
-		exporterList.forEach((exporter) -> supportedFileExtensions.add(exporter.getSupportedFileEnding()));
-		ExtensionFilter filter = new ExtensionFilter("Supported file extensions", supportedFileExtensions);
+		Map<ExtensionFilter, Exporter> supportedFileExtensions = new HashMap<>();
+		for (Exporter exporter : PluginManager.getPluginManager().getExporter()) {
+		        StringBuilder description = new StringBuilder(exporter.getFileEndingDescription() + " (");
+                exporter.getSupportedFileEndings().forEach((fe) -> description.append("*." + fe + ", "));
+                description.delete(description.length() - 2, description.length());
+                description.append(")");
+		        supportedFileExtensions.put(new FileChooser.ExtensionFilter( description.toString(),
+                                                                             exporter.getSupportedFileEndings().stream().map((fe) 
+		                                                                                -> "*." + fe).collect(Collectors.toList())),
+		                                    exporter);
+		}
+
 		FileChooser fileChooser = new FileChooser();
 		fileChooser.setTitle("Select an export location");
-		fileChooser.getExtensionFilters().add(filter);
-		fileChooser.setSelectedExtensionFilter(filter);
+		supportedFileExtensions.keySet().forEach((filter) -> fileChooser.getExtensionFilters().add(filter));
 		File saveFile = fileChooser.showSaveDialog(primaryStage);
-		try {
-			FileOutputStream outputStream = new FileOutputStream(saveFile);
-			String fileName = saveFile.getName();
-			String fileExtension = "*" + fileName.substring(fileName.lastIndexOf('.'));
-			Exporter exporter = exporterList.get(supportedFileExtensions.indexOf(fileExtension));
-			try {
-                exporter.exportGraph(this.currentGraphView.getFactory().serializeGraph(), outputStream);
-            } catch (Exception e) {
-                showErrorDialog("The exporter has encounterd a problem and stopped.");
+
+		// Wait for user to select file
+
+		if (saveFile != null) {
+            String fileExtension = saveFile.getName().substring(saveFile.getName().lastIndexOf('.') + 1);
+            System.out.println(fileExtension);
+            try {
+                FileOutputStream outputStream = new FileOutputStream(saveFile);
+                Exporter exporter = supportedFileExtensions.get(fileChooser.getSelectedExtensionFilter());
+                try {
+                    exporter.exportGraph(this.currentGraphView.getFactory().serializeGraph(), outputStream, fileExtension);
+                } catch (IllegalArgumentException e) {
+                    showErrorDialog(e.getMessage());
+                } catch (Exception e) {
+                    showErrorDialog("The exporter has encounterd a problem and stopped.");
+                }
+            } catch (FileNotFoundException e) {
+                showErrorDialog(e.getMessage());
             }
-		} catch (FileNotFoundException e) {
-			showErrorDialog(e.getMessage());
 		}
 	}
 	

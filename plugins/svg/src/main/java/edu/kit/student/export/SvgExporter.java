@@ -13,9 +13,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -31,16 +34,28 @@ public class SvgExporter implements Exporter {
 
     private static String rectStyle = "opacity:0.9;display:inline;stroke-width:4;";
     private static String lineStyle = "stroke-width:2;";
+    private static String fileExtension = "svg";
     
     
     @Override
-    public String getSupportedFileEnding() {
-        return "*.svg";
+    public List<String> getSupportedFileEndings() {
+        List<String> endings = new LinkedList<>();
+        endings.add(fileExtension);
+        return endings;
     }
 
     @Override
-    public void exportGraph(SerializedGraph graph, FileOutputStream filestream) throws Exception {
+    public String getFileEndingDescription() {
+        return "SVG";
+    }
+
+    @Override
+    public void exportGraph(SerializedGraph graph, FileOutputStream filestream, String fileExtension) throws Exception {
         
+        if (!fileExtension.equals(SvgExporter.fileExtension)) {
+            throw new IllegalArgumentException("Only accept files with ending \"." + SvgExporter.fileExtension + "\".");
+        }
+
         //Create new DOM document
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder = null;
