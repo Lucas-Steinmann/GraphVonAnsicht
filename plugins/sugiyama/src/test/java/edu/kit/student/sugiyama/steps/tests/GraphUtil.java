@@ -18,7 +18,7 @@ import java.util.Random;
 public class GraphUtil {
 
     public static DefaultDirectedGraph<DefaultVertex, DirectedEdge> generateGraph(int vertexCount, float density, boolean isCyclic) {
-        DefaultDirectedGraph<DefaultVertex, DirectedEdge> graph = new DefaultDirectedGraph<DefaultVertex, DirectedEdge>("randomGraph");
+        DefaultDirectedGraph<DefaultVertex, DirectedEdge> graph = new DefaultDirectedGraph<>();
         density = Math.min(Math.max(density, 0f), 1f);
         int edgeCount = (int) (density * vertexCount * (vertexCount - 1));
         List<DefaultVertex> vertices = new LinkedList<>();
@@ -64,7 +64,7 @@ public class GraphUtil {
     }
 
     public static SugiyamaGraph generateSugiyamaGraph(int vertexCount, int minEdges, int maxEdges, boolean skipsLayers, long seed) {
-        DefaultDirectedGraph<DefaultVertex, DirectedEdge> graph = new DefaultDirectedGraph<>("randomGraph");
+        DefaultDirectedGraph<DefaultVertex, DirectedEdge> graph = new DefaultDirectedGraph<>();
         List<Integer> layerSizes = new LinkedList<>();
         int currentLayerStart = 0;
         int lastLayerStart = 0;
@@ -127,7 +127,7 @@ public class GraphUtil {
             return new SugiyamaGraph(generateGraph(vertexCount, density, isCyclic));
         }
 
-        DefaultDirectedGraph<Vertex, DirectedEdge> graph = new DefaultDirectedGraph<>("randomGraph");
+        DefaultDirectedGraph<Vertex, DirectedEdge> graph = new DefaultDirectedGraph<>();
         density = Math.min(Math.max(density, 0f), 1f);
         int edgeCount = 0;
         int maxEdgeCount = 0;

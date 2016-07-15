@@ -28,7 +28,7 @@ public class LayerAssignerTest {
 
     @Test
     public void assignLayers() throws Exception {
-        DefaultDirectedGraph<DefaultVertex, DirectedEdge> DDGraph = new DefaultDirectedGraph<DefaultVertex, DirectedEdge>("");
+        DefaultDirectedGraph<DefaultVertex, DirectedEdge> DDGraph = new DefaultDirectedGraph<>();
         DefaultVertex v1 = new DefaultVertex("v1", "0"); //use labels to save the desired Layer for Vertex
         DefaultVertex v2 = new DefaultVertex("v2", "0");
         DefaultVertex v3 = new DefaultVertex("v3", "1");
@@ -64,7 +64,7 @@ public class LayerAssignerTest {
     
     @Test
     public void LayerAssignerTest2(){
-    	DefaultDirectedGraph<DefaultVertex, DirectedEdge> DDGraph = new DefaultDirectedGraph<>("");
+    	DefaultDirectedGraph<DefaultVertex, DirectedEdge> DDGraph = new DefaultDirectedGraph<>();
         DefaultVertex v1 = new DefaultVertex("v1", "0");
         DefaultVertex v2 = new DefaultVertex("v2", "0");
         DefaultVertex v3 = new DefaultVertex("v3", "0");

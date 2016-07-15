@@ -27,7 +27,7 @@ public class CrossMinimizerTest {
 
     
     public void minimizeCrossings() throws Exception {
-        DefaultDirectedGraph<DefaultVertex, DirectedEdge> DDGraph = new DefaultDirectedGraph<DefaultVertex, DirectedEdge>("");
+        DefaultDirectedGraph<DefaultVertex, DirectedEdge> DDGraph = new DefaultDirectedGraph<>();
         DefaultVertex v1 = new DefaultVertex("v1", "0");
         DefaultVertex v2 = new DefaultVertex("v2", "0");
         DefaultVertex v3 = new DefaultVertex("v3", "0");

@@ -1,14 +1,6 @@
 package edu.kit.student.export;
 
 
-import edu.kit.student.graphmodel.serialize.SerializedEdge;
-import edu.kit.student.graphmodel.serialize.SerializedGraph;
-import edu.kit.student.graphmodel.serialize.SerializedVertex;
-import edu.kit.student.plugin.Exporter;
-
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -18,7 +10,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -29,6 +20,14 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+
+import edu.kit.student.graphmodel.serialize.SerializedEdge;
+import edu.kit.student.graphmodel.serialize.SerializedGraph;
+import edu.kit.student.graphmodel.serialize.SerializedVertex;
+import edu.kit.student.plugin.Exporter;
 
 public class SvgExporter implements Exporter {
 

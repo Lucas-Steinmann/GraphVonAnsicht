@@ -8,9 +8,7 @@ import java.util.Set;
 
 import edu.kit.student.graphmodel.FastGraphAccessor;
 import edu.kit.student.graphmodel.Vertex;
-import edu.kit.student.objectproperty.GAnsProperty;
 import edu.kit.student.plugin.LayoutOption;
-import edu.kit.student.util.IdGenerator;
 
 /**
  * A {@link DefaultDirectedGraph} is a specific Graph which only contains
@@ -20,8 +18,6 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
 		implements DirectedGraph {
 
 	private static DirectedGraphLayoutRegister register = new DirectedGraphLayoutRegister();
-	private GAnsProperty<String> name;
-	private Integer id;
 	private FastGraphAccessor fga;
 	private HashMap<V, Set<E>> vertexToEdge;
 	private HashMap<V, Set<E>> revVertexToEdge;
@@ -37,26 +33,20 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
 	 * @param id
 	 *            The id of the new graph
 	 */
-    public DefaultDirectedGraph(String name) {
+    public DefaultDirectedGraph(){
         // create Sets
-        this(name, new HashSet<>(), new HashSet<>());
+        this(new HashSet<>(), new HashSet<>());
     }
 
     /**
      * Constructor
      * 
-     * @param name
-     *            of the new graph
-     * @param id
-     *            of the new graph
-     * @param vertices
-     *            of the new graph
-     * @param edges
-     *            of the new graph
+     * @param name of the new graph
+     * @param id of the new graph
+     * @param vertices of the new graph
+     * @param edges of the new graph
      */
-    public DefaultDirectedGraph(String name, Set<V> vertices, Set<E> edges) {
-        this.name = new GAnsProperty<String>("graphName", name);
-        this.id = IdGenerator.getInstance().createId();
+    public DefaultDirectedGraph(Set<V> vertices, Set<E> edges) {
         this.fga = new FastGraphAccessor();
 
         this.idToVertex = new HashMap<>();
@@ -71,16 +61,6 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
             this.addEdge(edge);
         }
     }
-
-	@Override
-	public String getName() {
-		return name.getValue();
-	}
-
-	@Override
-	public Integer getID() {
-		return id;
-	}
 
 	/**
 	 * Adds an edge to the edgeSet

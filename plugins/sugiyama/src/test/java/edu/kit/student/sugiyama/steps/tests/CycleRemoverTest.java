@@ -26,7 +26,7 @@ public class CycleRemoverTest {
 	@Test
 	public void testSimpleCycle(){
 //		MethodGraph MGraph = new MethodGraph("",0);
-		DefaultDirectedGraph<DefaultVertex, DirectedEdge> DDGraph = new DefaultDirectedGraph<DefaultVertex, DirectedEdge>("");
+		DefaultDirectedGraph<DefaultVertex, DirectedEdge> DDGraph = new DefaultDirectedGraph<>();
 		DefaultVertex v1 = new DefaultVertex("v1", "v1");
 		DefaultVertex v2 = new DefaultVertex("v2", "v2");
 		DefaultVertex v3 = new DefaultVertex("v3", "v3");
@@ -56,7 +56,7 @@ public class CycleRemoverTest {
 	
 	@Test
 	public void testDoubleCycle(){
-		DefaultDirectedGraph<DefaultVertex, DirectedEdge> DDGraph = new DefaultDirectedGraph<DefaultVertex, DirectedEdge>("");
+		DefaultDirectedGraph<DefaultVertex, DirectedEdge> DDGraph = new DefaultDirectedGraph<>();
 		DefaultVertex v1 = new DefaultVertex("v1", "");
 		DefaultVertex v2 = new DefaultVertex("v2", "");
 		DefaultVertex v3 = new DefaultVertex("v3", "");

@@ -4,25 +4,19 @@ package edu.kit.student.tests;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.lang.annotation.Target;
-import java.sql.Time;
 import java.text.ParseException;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import java.util.stream.Collector;
 import java.util.stream.Collectors;
-import java.lang.Math;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -30,7 +24,6 @@ import org.junit.Test;
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.directed.DirectedGraph;
 import edu.kit.student.joana.JoanaCollapsedVertex;
-import edu.kit.student.joana.JoanaGraph;
 import edu.kit.student.joana.JoanaGraphModel;
 import edu.kit.student.joana.JoanaGraphModelBuilder;
 import edu.kit.student.joana.JoanaVertex;
@@ -39,7 +32,6 @@ import edu.kit.student.joana.JoanaWorkspace;
 import edu.kit.student.joana.methodgraph.MethodGraph;
 import edu.kit.student.plugin.Importer;
 import edu.kit.student.plugin.PluginManager;
-import org.junit.Assert;
 
 public class JoanaGraphTester {
     

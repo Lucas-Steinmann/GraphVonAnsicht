@@ -33,7 +33,7 @@ public class CallGraph extends JoanaGraph {
     public CallGraph(String name, Set<JoanaCompoundVertex> vertices, Set<JoanaEdge> edges) {
         super(name);
         //TODO: Add MethodGraphs as subgraphs?
-        this.graph = new DefaultDirectedGraph<>("", vertices, edges);
+        this.graph = new DefaultDirectedGraph<>(vertices, edges);
         this.layering = new DefaultGraphLayering<>(vertices);
         
         this.vertexCount = new GAnsProperty<Integer>("Vertex count", vertices.size());

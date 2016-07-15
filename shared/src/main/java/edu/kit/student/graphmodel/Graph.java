@@ -11,19 +11,6 @@ import edu.kit.student.plugin.LayoutOption;
  */
 public interface Graph {
 
-	/**
-	 * Returns the name of the Graph.
-	 * 
-	 * @return The name of the graph.
-	 */
-	public String getName();
-
-	/**
-	 * Returns the ID of the graph.
-	 * 
-	 * @return The id of the graph.
-	 */
-	public Integer getID();
 
 	/**
 	 * Returns all vertices of the graph.

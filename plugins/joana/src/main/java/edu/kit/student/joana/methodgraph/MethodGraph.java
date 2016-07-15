@@ -55,7 +55,7 @@ public class MethodGraph extends JoanaGraph {
         if (entry == null) {
             throw new IllegalArgumentException("Cannot create MethodGraph without entry vertex!");
         }
-        graph = new DefaultDirectedGraph<>(methodName, vertices, edges);
+        graph = new DefaultDirectedGraph<>(vertices, edges);
         //TODO: Search for method calls etc.
         this.fieldAccesses = this.searchFieldAccesses();
         this.collapsedVertices = new LinkedList<>();
@@ -165,7 +165,7 @@ public class MethodGraph extends JoanaGraph {
 	    }
 
 		// Construct collapsed vertex
-		DefaultDirectedGraph<JoanaVertex, JoanaEdge> collapsedGraph = new DefaultDirectedGraph<>("", directedSubset, new HashSet<JoanaEdge>());
+		DefaultDirectedGraph<JoanaVertex, JoanaEdge> collapsedGraph = new DefaultDirectedGraph<>(directedSubset, new HashSet<JoanaEdge>());
 		JoanaCollapsedVertex collapsed = new JoanaCollapsedVertex("Collapsed", "Collapsed (" + collapsedGraph.getVertexSet().size() + ")",
 		        collapsedGraph, new HashMap<>());
 		graph.addVertex(collapsed); 

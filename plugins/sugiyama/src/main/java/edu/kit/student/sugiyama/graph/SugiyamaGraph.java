@@ -63,13 +63,13 @@ public class SugiyamaGraph
 			        tmpVertexMap.get(edge.getTarget().getID()));
 			edges.add(sugiyamaEdge);	//fills edgeset with all wrapped edges
 		}
-		this.graph = new DefaultDirectedGraph<>(getName(), vertices, edges);
+		this.graph = new DefaultDirectedGraph<>(vertices, edges);
 		layerPositions = new LinkedList<>();
 		layerPositions.add(0);
 	}
 
 	public SugiyamaGraph(String name, Set<ISugiyamaVertex> vertices, Set<ISugiyamaEdge> edges) {
-	    this(new DefaultDirectedGraph<>(name, vertices, edges));
+	    this(new DefaultDirectedGraph<>(vertices, edges));
 	}
 
 //	/**
@@ -234,18 +234,6 @@ public class SugiyamaGraph
 	}
 
 	@Override
-	public String getName() {
-		// Is not needed in this graph.
-		return wrappedGraph.getName();
-	}
-
-	@Override
-	public Integer getID() {
-		// Is not needed in this graph.
-		return wrappedGraph.getID();
-	}
-
-	@Override
 	public int getHeight() {
 	    return layering.getHeight();
 	}
@@ -260,38 +248,11 @@ public class SugiyamaGraph
 	    return layering.getLayerWidth(layerN);
 	}
 
-//	@Override
-//	public Set<ISugiyamaEdge> getReplacedEdges() {
-//		// TODO necessary for anything ?
-//		return null;
-//	}
-
-
-//	@Override
-//	public List<LayeredGraph> getSubgraphs() {
-//		return null;
-//		//TODO really null ?
-//	}
-
-	
-
 	@Override
 	public int getLayerFromVertex(Vertex vertex) {
 		return getLayerById(vertex.getID());
 	}
 
-	@Override
-	public List<LayoutOption> getRegisteredLayouts() {
-		// TODO muss weg
-		return null;
-	}
-
-	@Override
-	public LayoutOption getDefaultLayout() {
-		// TODO muss weg
-		return null;
-	}
-	
 	@Override
 	public String toString(){
 		String out = "Vertices: {";
@@ -796,5 +757,15 @@ public class SugiyamaGraph
             this.layering.setPosition(vertex, new IntegerPoint(x, layer));
             x++;
         }
+    }
+
+    @Override
+    public List<LayoutOption> getRegisteredLayouts() {
+        return new LinkedList<>();
+    }
+
+    @Override
+    public LayoutOption getDefaultLayout() {
+        return null;
     }
 }

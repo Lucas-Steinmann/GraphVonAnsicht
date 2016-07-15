@@ -28,7 +28,7 @@ public class SugiyamaLayoutAlgorithmTest {
 	@Test
 	public void testSmallGraph(){
 //		MethodGraph MGraph = new MethodGraph("",0);
-		DefaultDirectedGraph<DefaultVertex, DirectedEdge> DDGraph = new DefaultDirectedGraph<DefaultVertex, DirectedEdge>("");
+		DefaultDirectedGraph<DefaultVertex, DirectedEdge> DDGraph = new DefaultDirectedGraph<>();
 		DefaultVertex v1 = new DefaultVertex("v1", "");
 		DefaultVertex v2 = new DefaultVertex("v2", "");
 		DefaultVertex v3 = new DefaultVertex("v3", "");

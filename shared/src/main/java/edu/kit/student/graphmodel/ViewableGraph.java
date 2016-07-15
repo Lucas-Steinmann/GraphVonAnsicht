@@ -18,4 +18,19 @@ public interface ViewableGraph extends Viewable, Graph {
 	public void addChildGraph(ViewableGraph child);
 	
 	public List<GAnsProperty<?>> getStatistics();
+
+	/**
+	 * Returns the name of the Graph.
+	 * 
+	 * @return The name of the graph.
+	 */
+	public String getName();
+
+	/**
+	 * Returns the ID of the graph.
+	 * 
+	 * @return The id of the graph.
+	 */
+	public Integer getID();
+
 }
