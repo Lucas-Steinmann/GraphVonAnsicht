@@ -168,14 +168,13 @@ public class JoanaGraphTester {
                 collapsed.add(collapse(randomTestGraph, subset));
 
             }
-            Collections.shuffle(collapsed);
             while (!collapsed.isEmpty()) {
+                Collections.shuffle(collapsed);
                 JoanaCollapsedVertex cVertex = collapsed.get(0);
-                collapsed.remove(0);
                 if (!randomTestGraph.getVertexSet().contains(cVertex))
                     continue;
                 randomTestGraph.expand(cVertex);
-                Collections.shuffle(collapsed);
+                collapsed.remove(0);
                 //printAdjList(createAdjacenceList(randomTestGraph));
             }
             
