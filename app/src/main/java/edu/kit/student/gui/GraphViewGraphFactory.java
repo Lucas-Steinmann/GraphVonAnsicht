@@ -31,6 +31,9 @@ import javafx.util.Pair;
  */
 public class GraphViewGraphFactory {
 
+	// lenght of a hex color code
+	private static int colorLength = 7;
+	
 	private ViewableGraph graph;
 	private Map<VertexShape, Vertex> vertices;
 	private Map<EdgeShape, Edge> edges;
@@ -134,9 +137,17 @@ public class GraphViewGraphFactory {
 		Set<SerializedVertex> set = new HashSet<SerializedVertex>();
 		for(VertexShape shape : vertices.keySet()) {
 			Map<String,String> shapeProperties = new HashMap<String,String>();
-			Bounds bounds = shape.getBoundsInParent();
 			shapeProperties.put("label", shape.getText());
 			shapeProperties.put("color", GraphViewGraphFactory.toRGBCode(shape.getColor()));
+			
+			int begin = shape.getVertexStyle().indexOf('#');
+			String borderColor = "";
+			if(begin != -1) {
+				borderColor = shape.getVertexStyle().substring(begin, begin + colorLength);
+			}
+			shapeProperties.put("border-color", borderColor);
+			
+			Bounds bounds = shape.getBoundsInParent();
 			shapeProperties.put("minX", Double.toString(bounds.getMinX()));
 			shapeProperties.put("minY", Double.toString(bounds.getMinY()));
 			shapeProperties.put("maxX", Double.toString(bounds.getMaxX()));

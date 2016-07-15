@@ -37,6 +37,7 @@ public class EdgeShape extends GAnsGraphElement {
 		List<PathElement> elements = new LinkedList<PathElement>();
 		EdgePath edgePath = edge.getPath();
 		
+		// there are a minimum of two nodes per edge, an start and an end node
 		int nodeCount = edgePath.getNodes().size();
 		
 		double startX = edgePath.getNodes().get(0).x;
@@ -44,7 +45,7 @@ public class EdgeShape extends GAnsGraphElement {
 		double endX = edgePath.getNodes().get(nodeCount - 1).x;
 		double endY = edgePath.getNodes().get(nodeCount - 1).y;
 
-		//starting point of the edge
+		// starting point of the edge
 		elements.add(new MoveTo(startX, startY));
 		
 		if(nodeCount%2 == 0) {
@@ -76,7 +77,7 @@ public class EdgeShape extends GAnsGraphElement {
 			elements.add(new LineTo(point.x, point.y));
 		}
 		
-		//line to the ending point of the edge
+		// line to the ending point of the edge
 		elements.add(new LineTo(endX, endY));
 		
 		// TODO: when and where to draw an arrowhead?

@@ -17,7 +17,7 @@ public class VertexShape extends GAnsGraphElement {
 	private Rectangle rectangle;
 	private Text text;
 	private Color color;
-	private String style;
+	private String style = "";
 	private static double mindWidth = 20;
 	private static double mindHeight = 5;
 
