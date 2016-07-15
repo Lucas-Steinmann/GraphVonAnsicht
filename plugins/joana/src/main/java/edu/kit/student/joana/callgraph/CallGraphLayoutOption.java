@@ -1,7 +1,5 @@
 package edu.kit.student.joana.callgraph;
 
-import edu.kit.student.joana.JoanaCompoundVertex;
-import edu.kit.student.joana.JoanaEdge;
 import edu.kit.student.parameter.Settings;
 import edu.kit.student.plugin.LayoutAlgorithm;
 import edu.kit.student.plugin.LayoutOption;

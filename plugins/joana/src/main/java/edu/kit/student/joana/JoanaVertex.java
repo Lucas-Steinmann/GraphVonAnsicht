@@ -4,7 +4,6 @@ import java.util.List;
 
 import edu.kit.student.graphmodel.DefaultVertex;
 import edu.kit.student.objectproperty.GAnsProperty;
-import edu.kit.student.util.Settings;
 import javafx.scene.paint.Color;
 import javafx.util.Pair;
 

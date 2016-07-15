@@ -5,8 +5,6 @@ import edu.kit.student.plugin.LayoutRegister;
 import java.util.ArrayList;
 import java.util.List;
 
-import edu.kit.student.plugin.LayoutRegister;
-
 /**
  * A {@link LayoutRegister} which is specific for
  * {@link DirectedGraphLayoutOption}.

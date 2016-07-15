@@ -4,7 +4,6 @@ import java.util.List;
 
 import edu.kit.student.objectproperty.GAnsProperty;
 import javafx.scene.paint.Color;
-import javafx.util.Pair;
 
 /**
  * This edge interface specifies an edge. An edge contains two vertices, an ID,
@@ -61,8 +60,6 @@ public interface Edge {
 	 * @return 
 	 */
 	public List<GAnsProperty<?>> getProperties();
-	
-	public Pair<Double, Double> getSize();
 	
 	public Color getColor();
 }

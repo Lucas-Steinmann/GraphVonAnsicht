@@ -6,7 +6,6 @@ import java.util.Stack;
 import edu.kit.student.graphmodel.directed.DirectedEdge;
 import edu.kit.student.objectproperty.GAnsProperty;
 import javafx.scene.paint.Color;
-import javafx.util.Pair;
 
 public class DirectedOnionPath<E extends DirectedEdge, V extends CollapsedVertex> implements DirectedEdge {
     
@@ -52,11 +51,6 @@ public class DirectedOnionPath<E extends DirectedEdge, V extends CollapsedVertex
     public List<GAnsProperty<?>> getProperties() {
         return edge.getProperties();
 
-    }
-
-    @Override
-    public Pair<Double, Double> getSize() {
-        return edge.getSize();
     }
 
     @Override

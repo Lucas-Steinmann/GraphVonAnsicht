@@ -467,12 +467,6 @@ public class SugiyamaGraph
 		}
 
 		@Override
-		public Pair<Double, Double> getSize() {
-			// TODO necessary ?
-			return null;
-		}
-
-		@Override
 		public Color getColor() {
 			// TODO necessary ?
 			return null;
@@ -737,11 +731,6 @@ public class SugiyamaGraph
 		@Override
 		public String toString(){
 			return this.getName() + "[" + this.getID() + "](" + this.source.toString() + "->" + this.target.toString() + ")";
-		}
-
-		@Override
-		public Pair<Double, Double> getSize() {
-			return this.wrappedEdge.getSize();
 		}
 
 		@Override

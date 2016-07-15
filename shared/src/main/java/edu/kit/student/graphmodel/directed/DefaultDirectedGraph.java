@@ -1,6 +1,5 @@
 package edu.kit.student.graphmodel.directed;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -8,7 +7,6 @@ import java.util.List;
 import java.util.Set;
 
 import edu.kit.student.graphmodel.FastGraphAccessor;
-import edu.kit.student.graphmodel.Graph;
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.objectproperty.GAnsProperty;
 import edu.kit.student.plugin.LayoutOption;

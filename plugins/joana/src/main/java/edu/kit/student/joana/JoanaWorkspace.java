@@ -1,9 +1,7 @@
 package edu.kit.student.joana;
 
 import java.util.HashMap;
-import java.util.Map;
 
-import edu.kit.student.graphmodel.GraphModel;
 import edu.kit.student.graphmodel.builder.IGraphModelBuilder;
 import edu.kit.student.parameter.Parameter;
 import edu.kit.student.parameter.Settings;
@@ -21,18 +19,13 @@ public class JoanaWorkspace implements Workspace {
 	private JoanaGraphModel model;
 
 	public JoanaWorkspace() {
-		Map<String, Parameter<?,?>> parameters = new HashMap<String, Parameter<?,?>>();
-		//TODO: Welche Parameter werden in den Settings ben�tigt?
-		
-		settings = new Settings(parameters);
+		settings = new Settings( new HashMap<String, Parameter<?,?>>());
 		
 		builder = new JoanaGraphModelBuilder(this);
 	}
 	
 	@Override
-	public void initialize() {
-		//TODO: Setzen der werte aus den Parametern(falls ben�tigt)
-	}
+	public void initialize() { }
 
 	@Override
 	public JoanaGraphModelBuilder getGraphModelBuilder() {

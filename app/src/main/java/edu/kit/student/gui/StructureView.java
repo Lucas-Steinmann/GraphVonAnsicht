@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 
-import edu.kit.student.graphmodel.Graph;
 import edu.kit.student.graphmodel.GraphModel;
 import edu.kit.student.graphmodel.ViewableGraph;
 import javafx.scene.control.TreeItem;

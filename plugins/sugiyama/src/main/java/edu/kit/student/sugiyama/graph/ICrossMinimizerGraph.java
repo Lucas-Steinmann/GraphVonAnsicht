@@ -4,7 +4,6 @@ import edu.kit.student.sugiyama.graph.SugiyamaGraph.DummyVertex;
 import edu.kit.student.sugiyama.graph.SugiyamaGraph.SupplementEdge;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**

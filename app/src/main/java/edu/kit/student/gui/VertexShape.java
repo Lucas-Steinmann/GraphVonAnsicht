@@ -1,7 +1,6 @@
 package edu.kit.student.gui;
 
 import edu.kit.student.graphmodel.Vertex;
-import edu.kit.student.util.Settings;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;

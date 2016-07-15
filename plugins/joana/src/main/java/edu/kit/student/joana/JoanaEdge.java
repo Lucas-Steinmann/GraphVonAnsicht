@@ -5,12 +5,10 @@ import java.util.List;
 
 import edu.kit.student.graphmodel.FastGraphAccessor;
 import edu.kit.student.graphmodel.OrthogonalEdgePath;
-import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.directed.DirectedEdge;
 import edu.kit.student.objectproperty.GAnsProperty;
 import edu.kit.student.util.IdGenerator;
 import javafx.scene.paint.Color;
-import javafx.util.Pair;
 
 /**
  * A Joana specific {@link Edge}. It contains parameters which are only
@@ -56,12 +54,6 @@ public class JoanaEdge implements DirectedEdge {
 		properties.add(label);
 		return properties;
     }
-    
-	@Override
-	public Pair<Double, Double> getSize() {
-		// TODO Auto-generated method stub
-		return null;
-	}
 
 	@Override
 	public Color getColor() {
