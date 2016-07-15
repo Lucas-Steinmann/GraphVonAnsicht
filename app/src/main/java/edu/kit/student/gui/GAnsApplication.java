@@ -157,24 +157,89 @@ public class GAnsApplication extends Application {
 	private void parseCommandLineArguments(Parameters params) {
 	    
 	    Map<String, String> namedParams = params.getNamed();
+	    String filename = "";
+	    String layout = "";
+	    Importer importer = null;
+	    Workspace tempWorkspace = null;
 	    
 	    for (String key : namedParams.keySet()) {
 	        switch (key) {
 	          case "in":
-	              //blabla
+	              filename = namedParams.get(key);
+	              String extension = "*" + filename.substring(filename.lastIndexOf('.'));
+	              List<Importer> importerList = PluginManager.getPluginManager().getImporter();
+	              for (Importer temp : importerList) {
+                      if (extension.equals(temp.getSupportedFileEndings())) {
+                          importer = temp;
+                          break;
+                      }     
+	              }
 	              break;
 	          case "layout":
-	              //blosadf
+	              layout = namedParams.get(key);
 	              break;
 	          case "ws":
-	              //aölkjböoi
+	              String ws = namedParams.get(key);
+	              List<WorkspaceOption> options = PluginManager.getPluginManager().getWorkspaceOptions();
+	              for (WorkspaceOption option : options) {
+	                  if (ws.equals(option.getId())){
+	                      tempWorkspace = option.getInstance();
+	                      break;
+	                  }
+	              }
 	              break;
 	          default:
 	              //TODO: Information not specified
 	        }
 	    }
+	    
+	    //import graph
+	    if (importer != null && !filename.equals("")) {
+	        currentFile = new File(filename);
+	        //check if workspace is in arguments
+	        if (tempWorkspace != null) {
+	            this.workspace = tempWorkspace;
+	        } else {
+	            if(!openWorkspaceDialog()) return;
+	        }
+	        FileInputStream inputStream;
+	        try {
+	            inputStream = new FileInputStream(currentFile);
+	            importer.importGraph(workspace.getGraphModelBuilder(), inputStream);
+	            this.model = workspace.getGraphModel();
+	            ViewableGraph currentGraph = this.model.getRootGraphs().get(0);
+	            createGraphView();
+	            //check if layout is in arguments
+	            if (layout != "") {
+	                //check if layout is valid
+	                List<LayoutOption> options = currentGraph.getRegisteredLayouts();
+	                for (LayoutOption option : options) {
+	                    if (layout.equals(option.getId())) {
+	                        //found valid layout and apply layout
+	                        option.chooseLayout();
+	                        Settings settings = option.getSettings();
+	                        if(ParameterDialogGenerator.showDialog(settings)) {
+	                            currentGraphView.setCurrentLayoutOption(option);
+	                            option.applyLayout();
+	                        }
+	                    }
+	                }
+	            } else {
+	                openLayoutSelectionDialog(currentGraph);
+	            }
+	            //show graph
+	            showGraph(currentGraph);
+	            this.structureView.showGraphModel(this.model);
+	        } catch (ParseException e) {
+	            showErrorDialog(e.getMessage());
+	            return;
+	        } catch (FileNotFoundException e) {
+	            showErrorDialog(e.getMessage());
+	        }
+	    }
 		
 	}
+	
 
 	private void importClicked() {
 		List<Importer> importerList = PluginManager.getPluginManager().getImporter();
