@@ -81,11 +81,12 @@ public class CallGraphBuilder implements IGraphBuilder {
         Set<JoanaEdge> callEdges = new HashSet<>();
         for (JoanaEdgeBuilder builder : callEdgeBuilders) {
             JoanaEdge edge = builder.build(vertexPool);
-            assert (edge.getEdgeKind() == Kind.CL);
             callEdges.add(edge);
         }
         
         for (JoanaEdge callEdge : callEdges) {
+            if (callEdge.getEdgeKind() != Kind.CL)
+                continue;
             int sourceID = 0;
             int targetID = 0;
             // Find which methodgraph contains the target and the source vertex for the callEdge
@@ -101,7 +102,7 @@ public class CallGraphBuilder implements IGraphBuilder {
                 // Second call from this function. Skip.
                 continue;
             }
-            edges.add(new JoanaEdge("CL", "CL", vertices.get(sourceID), vertices.get(targetID), Kind.CL));
+            edges.add(new JoanaEdge(callEdge.getName(), callEdge.getLabel(), vertices.get(sourceID), vertices.get(targetID), Kind.CL));
             connections.get(vertices.get(sourceID)).add(vertices.get(targetID));
         }
        // // Add call edges between vertices.

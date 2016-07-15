@@ -150,6 +150,56 @@ public class JoanaGraphTester {
     }
 
     @Test
+    public void randomMixedCollapseTest() {
+        for (int run = 0; run < 20; run++) {
+           // System.out.print("Run: " + run + " ");
+            JoanaGraphModel model = models.get(randomGenerator.nextInt(models.size()));
+            model.getMethodGraphs().sort((x, y) -> x.getID().compareTo(y.getID()));
+            MethodGraph randomTestGraph = model.getMethodGraphs().get(randomGenerator.nextInt(model.getMethodGraphs().size()));
+            //System.out.println(randomTestGraph.name);
+            Map<Integer, List<Integer>> adjList = createAdjacenceList(randomTestGraph);
+            List<JoanaCollapsedVertex> collapsed = new LinkedList<>();
+            int maxCollapse = randomGenerator.nextInt(randomTestGraph.getVertexSet().size() / 3);
+            int currentlyCollapsed = 0;
+            for (int i = 0; i < maxCollapse && randomTestGraph.getVertexSet().size() > 1;) {
+                Double coinToss = randomGenerator.nextDouble() % 1;
+                
+                // Collapse
+                if (coinToss < 0.5) {
+                    currentlyCollapsed++;
+                    i++;
+                    int vertexCount = randomGenerator.nextInt(randomTestGraph.getVertexSet().size() - 1);
+                    Set<JoanaVertex> toCollapse = randomSample(randomTestGraph.getVertexSet(), vertexCount);
+                    Set<Vertex> subset = toCollapse.stream().collect(Collectors.toSet());
+                    collapsed.add(collapse(randomTestGraph, subset));
+                } else {
+                    if (currentlyCollapsed <= 0)
+                        continue;
+                    Collections.shuffle(collapsed);
+                    JoanaCollapsedVertex cVertex = collapsed.get(0);
+                    if (!randomTestGraph.getVertexSet().contains(cVertex))
+                        continue;
+                    randomTestGraph.expand(cVertex);
+                    collapsed.remove(0);
+                    currentlyCollapsed--;
+                    //printAdjList(createAdjacenceList(randomTestGraph));
+                }
+            }
+            while (currentlyCollapsed > 0) {
+                Collections.shuffle(collapsed);
+                JoanaCollapsedVertex cVertex = collapsed.get(0);
+                if (!randomTestGraph.getVertexSet().contains(cVertex))
+                    continue;
+                randomTestGraph.expand(cVertex);
+                collapsed.remove(0);
+                //printAdjList(createAdjacenceList(randomTestGraph));
+                currentlyCollapsed--;
+            }
+            //printAdjList(createAdjacenceList(randomTestGraph));
+            Assert.assertTrue(compareAdjList(adjList, createAdjacenceList(randomTestGraph)));
+        }
+    }
+    @Test
     public void randomAssymmetricCollapseTest() {
         for (int run = 0; run < 20; run++) {
            // System.out.print("Run: " + run + " ");
