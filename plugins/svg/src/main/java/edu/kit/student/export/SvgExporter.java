@@ -29,7 +29,7 @@ import javax.xml.transform.stream.StreamResult;
 
 public class SvgExporter implements Exporter {
 
-    private static String rectStyle = "opacity:0.5;display:inline;";
+    private static String rectStyle = "opacity:0.9;display:inline;stroke-width:4;";
     private static String lineStyle = "stroke-width:2;";
     
     
@@ -209,6 +209,7 @@ public class SvgExporter implements Exporter {
         //get Properties for this Vertex
         String label = "";  
         String color = "";
+        String borderColor = "";
         double minX = 0.0;
         double maxX = 0.0;
         double minY = 0.0;
@@ -235,6 +236,9 @@ public class SvgExporter implements Exporter {
               case "color":
                   color = shapeProp.get(s).toUpperCase();
                   break;
+              case "border-color":
+                  borderColor = shapeProp.get(s).toUpperCase();
+                  break;
               default:                          
             }
         }
@@ -250,7 +254,7 @@ public class SvgExporter implements Exporter {
         rect.setAttribute("y", Double.toString(minY));
         rect.setAttribute("width", Double.toString(width));
         rect.setAttribute("height", Double.toString(height));
-        rect.setAttribute("style", SvgExporter.rectStyle + "fill:" + color + ";");
+        rect.setAttribute("style", SvgExporter.rectStyle + "fill:" + color + ";stroke:" + borderColor);
         
         //create group
         Element group = document.createElement("g");
