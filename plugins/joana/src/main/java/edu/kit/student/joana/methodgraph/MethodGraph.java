@@ -292,7 +292,7 @@ public class MethodGraph extends JoanaGraph {
 	        throw new IllegalArgumentException("Cannot expand vertex, not collapsed in this graph.");
 	    }
         for (JoanaCollapsedVertex jvertex : collapsedVertices) {
-            if (vertex.getID() == jvertex.getID()) {
+            if (vertex.getID().equals(jvertex.getID())) {
                 return this.expand(jvertex);
             }
         }
