@@ -3,6 +3,7 @@ package edu.kit.student.joana;
 import java.util.List;
 
 import edu.kit.student.graphmodel.DefaultVertex;
+import edu.kit.student.graphmodel.ViewableVertex;
 import edu.kit.student.objectproperty.GAnsProperty;
 import javafx.scene.paint.Color;
 import javafx.util.Pair;
@@ -11,7 +12,7 @@ import javafx.util.Pair;
  * A Joana specific Vertex. It contains parameters which are only used/useful
  * for Joana.
  */
-public class JoanaVertex extends DefaultVertex {
+public class JoanaVertex extends DefaultVertex implements ViewableVertex {
 
     private GAnsProperty<Kind> nodeKind;
     private GAnsProperty<String> nodeSource;
@@ -63,6 +64,7 @@ public class JoanaVertex extends DefaultVertex {
             Integer nodeProc, String nodeOperation, String nodeBcName,
             Integer nodeBcIndex, Integer nodeSr, Integer nodeSc, 
             Integer nodeEr, Integer nodeEc) {
+	    //TODO: Replace setProperties with constructor, as all arguments should not change over time
         this.nodeKind.setValue(nodeKind);
         this.nodeSource.setValue(nodeSource);
         this.nodeProc.setValue(nodeProc);
@@ -220,5 +222,10 @@ public class JoanaVertex extends DefaultVertex {
         	default: return Color.BEIGE;
         	}
         }
+    }
+
+    @Override
+    public int getLink() {
+        return -1;
     }
 }

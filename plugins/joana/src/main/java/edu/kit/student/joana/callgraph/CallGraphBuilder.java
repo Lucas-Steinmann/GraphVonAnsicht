@@ -7,7 +7,7 @@ import java.util.Set;
 import edu.kit.student.graphmodel.builder.IEdgeBuilder;
 import edu.kit.student.graphmodel.builder.IGraphBuilder;
 import edu.kit.student.graphmodel.builder.IVertexBuilder;
-import edu.kit.student.joana.JoanaCompoundVertex;
+import edu.kit.student.joana.CallGraphVertex;
 import edu.kit.student.joana.JoanaEdge;
 import edu.kit.student.joana.JoanaEdge.Kind;
 import edu.kit.student.joana.JoanaEdgeBuilder;
@@ -63,17 +63,17 @@ public class CallGraphBuilder implements IGraphBuilder {
         for (MethodGraphBuilder b : methodGraphBuilders) {
             methodGraphs.add(b.build());
         }
-        HashMap<Integer, JoanaCompoundVertex> vertices = new HashMap<>();
-        HashMap<JoanaCompoundVertex, Set<JoanaCompoundVertex>> connections = new HashMap<>();
+        HashMap<Integer, CallGraphVertex> vertices = new HashMap<>();
+        HashMap<CallGraphVertex, Set<CallGraphVertex>> connections = new HashMap<>();
         Set<JoanaEdge> edges = new HashSet<>();
         Set<JoanaVertex> vertexPool = new HashSet<>();
 
         // Generate Callgraph
         // Generate method vertices.
         for (MethodGraph methodGraph : methodGraphs) {
-            vertices.put(methodGraph.getID(), new JoanaCompoundVertex(methodGraph.getName(), methodGraph.getName(), methodGraph));
+            vertices.put(methodGraph.getID(), new CallGraphVertex(methodGraph.getName(), methodGraph.getName(), methodGraph));
             vertexPool.addAll(methodGraph.getVertexSet());
-            connections.put(vertices.get(methodGraph.getID()), new HashSet<JoanaCompoundVertex>());
+            connections.put(vertices.get(methodGraph.getID()), new HashSet<CallGraphVertex>());
         }
 
         // Build the calledges in the method graphs.
@@ -131,7 +131,7 @@ public class CallGraphBuilder implements IGraphBuilder {
        //     
        // }
         CallGraph graph = new CallGraph(this.name, 
-                new HashSet<JoanaCompoundVertex>(vertices.values()), edges);
+                new HashSet<CallGraphVertex>(vertices.values()), edges);
         
         for(MethodGraph methodGraph : methodGraphs) {
         	graph.addChildGraph(methodGraph);
