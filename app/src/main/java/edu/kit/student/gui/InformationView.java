@@ -32,7 +32,8 @@ public class InformationView extends TableView<GAnsProperty<?>> {
 		propertyNameCol.setCellValueFactory(new PropertyValueFactory<GAnsProperty<?>, String>(GAnsProperty.name));
 		TableColumn<GAnsProperty<?>, String> propertyValueCol = new TableColumn<GAnsProperty<?>, String>("Value");
 		propertyValueCol.setCellValueFactory(new PropertyValueFactory<GAnsProperty<?>, String>(GAnsProperty.valueAsString));
-
+        propertyValueCol.prefWidthProperty().bind(this.widthProperty().divide(2));
+        propertyNameCol.prefWidthProperty().bind(this.widthProperty().divide(2));
 		getColumns().setAll(propertyNameCol, propertyValueCol);
 
 		//refresh();
