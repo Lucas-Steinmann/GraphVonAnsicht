@@ -44,8 +44,7 @@ public class GraphmlImporter implements Importer {
             docBuilder = factory.newDocumentBuilder();
             document = docBuilder.parse(graphmlInputStream);
         } catch (ParserConfigurationException | SAXException | IOException e) {
-            // TODO Write catch
-            e.printStackTrace();
+            throw new ParseException("File is not parseable by XML", 0);
         }
          
         //Normalize the document

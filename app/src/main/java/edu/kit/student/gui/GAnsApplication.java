@@ -212,6 +212,7 @@ public class GAnsApplication extends Application {
 	            ViewableGraph currentGraph = this.model.getRootGraphs().get(0);
 	            createGraphView();
 	            //check if layout is in arguments
+	            // TODO: Is layout always in the String pool when it equals ""?
 	            if (layout != "") {
 	                //check if layout is valid
 	                List<LayoutOption> options = currentGraph.getRegisteredLayouts();

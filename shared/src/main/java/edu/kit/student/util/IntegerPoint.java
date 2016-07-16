@@ -12,10 +12,22 @@ public class IntegerPoint implements Cloneable
         this.x = x;
         this.y = y;
     }
-    
+
+    @Override
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        result = prime * result + x;
+        result = prime * result + y;
+        return result;
+    }
+
     @Override
     public boolean equals(Object obj) {
-        if (obj instanceof IntegerPoint) {
+        if (this == obj) {
+            return true;
+        }
+        if (obj != null && obj instanceof IntegerPoint) {
             if (x == ((IntegerPoint) obj).x && y == ((IntegerPoint) obj).y) {
                 return true;
             }

@@ -36,7 +36,7 @@ import edu.kit.student.plugin.PluginManager;
 public class JoanaGraphTester {
     
     static final int PARSECOUNT = 1;
-    static List<JoanaGraphModel> models;
+    static List<JoanaGraphModel> models = new LinkedList<>();
     static Random randomGenerator;
 
     @BeforeClass
@@ -44,6 +44,9 @@ public class JoanaGraphTester {
         File resources = new File("plugins/joana/src/test/resources");
         List<File> files = Arrays.asList(resources.listFiles()).stream().filter((file) 
                 -> file.getName().endsWith(".graphml")).collect(Collectors.toList());
+        if (files == null) {
+            return;
+        }
 
         List<JoanaWorkspace> ws = new LinkedList<JoanaWorkspace>(); 
         for (int i = 0; i < files.size() && i < PARSECOUNT; i++) {

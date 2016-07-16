@@ -3,7 +3,7 @@ package edu.kit.student.util;
 /**
  * This class is a standard immutable 2D Vector with double values as it's components.
  */
-public class DoublePoint {
+public class DoublePoint implements Cloneable {
 
 	public final double x;
     public final double y;
@@ -14,15 +14,31 @@ public class DoublePoint {
     }
     
     @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof DoublePoint) {
-        	return areEqual(x, ((DoublePoint)obj).x, Math.pow(10, -6)) && areEqual(y, ((DoublePoint)obj).y, Math.pow(10, -6));
-        }
-        return false;
+    public int hashCode() {
+        final int prime = 31;
+        int result = 1;
+        long temp;
+        temp = Double.doubleToLongBits(x);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(y);
+        result = prime * result + (int) (temp ^ (temp >>> 32));
+        return result;
     }
-    
-    private boolean areEqual(double a, double b, double diff){
-    	return Math.abs(a-b) < diff;
+
+    @Override
+    public boolean equals(Object obj) {
+        if (this == obj)
+            return true;
+        if (obj == null)
+            return false;
+        if (getClass() != obj.getClass())
+            return false;
+        DoublePoint other = (DoublePoint) obj;
+        if (Double.doubleToLongBits(x) != Double.doubleToLongBits(other.x))
+            return false;
+        if (Double.doubleToLongBits(y) != Double.doubleToLongBits(other.y))
+            return false;
+        return true;
     }
 
     @Override
