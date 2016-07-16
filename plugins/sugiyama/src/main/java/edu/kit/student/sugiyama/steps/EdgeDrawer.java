@@ -31,7 +31,7 @@ public class EdgeDrawer implements IEdgeDrawer {
 	Set<ISugiyamaVertex> graphVertices;
 	Set<ISugiyamaEdge> graphEdges;
 	Set<ISugiyamaEdge> sugiEdges; //edges that are not supplementEdges
-	int[] spaceBetweenLayers;
+	double[] spaceBetweenLayers;
 	double[] distancePerEdgeInLayer;
 	
 	Map<Integer,int[]> inOutDeg = new HashMap<Integer,int[]>();	//maps vertex id, to an array, containing the indegree on index 0 and outdegree on index 1
@@ -41,28 +41,81 @@ public class EdgeDrawer implements IEdgeDrawer {
 	@Override
 	public void drawEdges(IEdgeDrawerGraph graph) {
 		System.out.println("EdgeDrawer.drawEdges():");
-		if(graph.getEdgeSet() != null && !graph.getEdgeSet().isEmpty()){
-			initialize(graph);	//initializes the graph and it's sets, needed in the whole class!
-			sortLayers();	//sorts the vertices in every layer in ascending order of their X-coordinate
-			fillInOutDeg();	//fills mapping of vertex to degrees
-			fillInOutPoints();	//fills mapping of vertex to points where edges come in or are going out
-			fillInOutVertices();	//fills mapping of vertex to incoming and outgoing vertices
-			sortInOutVertices();	//sorts the lists of in- and out vertices in ascending order of their X-coordinate
-			calcSpaceBetweenLayers();	//fills the array that contains the space between two layers
-			calcDistancePerEdgeInLayer();//fills the array that contains the distance between two kinking edges. (if all edges are kinking, the distance between two adjacency edges is constant)
-			
-			
-			this.graphEdges.forEach(edge->this.drawNormalEdge(edge));
-			this.paths.forEach(path->this.drawSupplementPath(path));
-			this.graphEdges.stream().filter(edge->edge.isReversed()).forEach(edge->this.reverseEdgePath(edge));	//reverses edge paths 
+		if(graph.getEdgeSet() == null || graph.getEdgeSet().isEmpty()){
+			return;
 		}
+		initialize(graph);	//initializes the graph and it's sets, needed in the whole class!
+		sortLayers();	//sorts the vertices in every layer in ascending order of their X-coordinate
+		fillInOutDeg();	//fills mapping of vertex to degrees
+		fillInOutPoints();	//fills mapping of vertex to points where edges come in or are going out
+		fillInOutVertices();	//fills mapping of vertex to incoming and outgoing vertices
+		sortInOutVertices();	//sorts the lists of in- and out vertices in ascending order of their X-coordinate
+		calcSpaceBetweenLayers();	//fills the array that contains the space between two layers
+		calcDistancePerEdgeInLayer();//fills the array that contains the distance between two kinking edges. (if all edges are kinking, the distance between two adjacency edges is constant)
+		test();
 		
+		this.sugiEdges.forEach(edge->this.drawNormalEdge(edge));
+		this.paths.forEach(path->this.drawSupplementPath(path));
+		this.graphEdges.stream().filter(edge->edge.isReversed()).forEach(edge->this.reverseEdgePath(edge));	//reverses edge paths 
+		testEdgePaths();
 	}
 	
-	//just temporary helper method to clear edgePaths before this class sets new ones.
-	private void clearPaths(){
-		this.graphEdges.forEach(edge->edge.getPath().getNodes().clear());
+	
+	private void test(){
+		//layer of source layer must be lower than target vertex
+		for(ISugiyamaEdge e : this.graphEdges){
+			assert(e.getSource().getLayer() < e.getTarget().getLayer());
+		}
+		for(SupplementPath p: this.paths){
+			assert(p.getReplacedEdge().getSource().getLayer() < p.getReplacedEdge().getTarget().getLayer());
+		}
+		
+		//checks if there are vertices overlapping in an layer
+//		for(List<ISugiyamaVertex> list : this.graph.getLayers()){
+//			for(int i =0; i<list.size() - 1;i++){
+//				ISugiyamaVertex first = list.get(i);
+//				ISugiyamaVertex second = list.get(i + 1);
+//				assert(first.getX() + first.getSize().getKey() < second.getX());
+//			}
+//		}
+		
+		//prints vertices with coordinates on every layer
+		for(List<ISugiyamaVertex> list : this.graph.getLayers()){
+			for(ISugiyamaVertex v : list){
+				System.out.print("("+v.getX()+","+v.getY()+")");
+			}
+			System.out.print('\n');
+		}
+		
+		//prints map inOutDeg
+//		for(int i : this.inOutDeg.keySet()){
+//			int[] degs = this.inOutDeg.get(i);
+//			System.out.println("ID: "+i+"; vals: "+degs[0]+","+degs[1]);
+//		}
+		
+		//tests the order of the supplement edges in supplement paths
+//		for(SupplementPath p : this.paths){
+//			for(ISugiyamaEdge e : this.getEdgesFromPath(p)){
+//				System.out.print("("+e.getSource().getX()+","+e.getSource().getY()+")->("+e.getTarget().getX()+","+e.getTarget().getY()+")");
+//			}
+//			System.out.print('\n');
+//		}
 	}
+	
+	//tests every edge if its edgepath describes an orthogonal edge
+	private void testEdgePaths(){
+		for(ISugiyamaEdge e : this.graphEdges){
+			List<DoublePoint> l = e.getPath().getNodes();
+			DoublePoint first = l.get(0);
+			DoublePoint second;
+			for(int i = 1; i < l.size(); i++){
+				second = l.get(i);
+				assert(dEquals(first.x, second.x) ^ dEquals(first.y,second.y));
+				first=second;
+			}
+		}
+	}
+	
 	
 	//just temporary method for testing issues.
 	//later one need the supplement edges of a SupplementPath in it! 
@@ -177,15 +230,14 @@ public class EdgeDrawer implements IEdgeDrawer {
 	 * The first entry in the array spaceBetweenLayers with index 0 describes the space between layer 0 and 1, and so on.
 	 */
 	private void calcSpaceBetweenLayers(){
-		System.out.println("layercount: "+graph.getLayerCount());
 		for(int i = 1; i < graph.getLayerCount(); i++){
 			List<ISugiyamaVertex> upper = graph.getLayer(i - 1);
 			List<ISugiyamaVertex> lower = graph.getLayer(i);
-			int upperLowest = Integer.MIN_VALUE;	//lowest point in upper layer. (point on the bottom of the vertex-box)
-			int lowerHighest = Integer.MAX_VALUE;	//highest point in lower layer. (point on top of the vertex-box)
+			double upperLowest = Integer.MIN_VALUE;	//lowest point in upper layer. (point on the bottom of the vertex-box)
+			double lowerHighest = Integer.MAX_VALUE;	//highest point in lower layer. (point on top of the vertex-box)
 			for(ISugiyamaVertex v : upper){
-				if(v.getY() > upperLowest){
-					upperLowest = v.getY();
+				if(v.getY() + v.getSize().getValue() > upperLowest){	//need the bottom of this vertex box so add its height to y-value
+					upperLowest = v.getY() + v.getSize().getValue();
 				}
 			}
 			for(ISugiyamaVertex v : lower){
@@ -221,7 +273,9 @@ public class EdgeDrawer implements IEdgeDrawer {
 		}
 	}
 	
-	private void drawNormalEdge(ISugiyamaEdge edge){
+	//TODO: better sorting of vertices as targets to the points of source vertex !
+	private void drawNormalEdge(ISugiyamaEdge edge){  //TODO: just a marker!
+		assert(edge.getPath().getNodes().isEmpty());
 		ISugiyamaVertex source = edge.getSource();
 		ISugiyamaVertex target = edge.getTarget();
 		EdgePath path = edge.getPath();
@@ -239,7 +293,8 @@ public class EdgeDrawer implements IEdgeDrawer {
 		assert(found);
 		
 		int pointPosition = pointsBeforeVertex(source) + index +1;	//relative Y-position of this edge if it has to kink horizontally. (multiplied by distancePerEdgeLayer)
-		double edgeKinkY = pointPosition * this.distancePerEdgeInLayer[source.getLayer()]; 
+		double edgeDistances = this.distancePerEdgeInLayer[source.getLayer()];
+		double edgeKinkY = pointPosition * edgeDistances;
 		DoublePoint sPoint = this.inOutPoints.get(source.getID()).get(1).get(index);
 		path.addPoint(sPoint);
 		
@@ -259,7 +314,7 @@ public class EdgeDrawer implements IEdgeDrawer {
 		DoublePoint tPoint = this.inOutPoints.get(target.getID()).get(0).get(index);
 		
 		//now draw edge between sPoint and tPoint!!!!!
-		if(!dEquals(sPoint.x, tPoint.x)){	//need to kind edge
+		if(!dEquals(sPoint.x, tPoint.x)){	//need to kink edge
 			double newY = sPoint.y + edgeKinkY;
 			path.addPoint(new DoublePoint(sPoint.x, newY));
 			path.addPoint(new DoublePoint(tPoint.x, newY));
@@ -268,18 +323,22 @@ public class EdgeDrawer implements IEdgeDrawer {
 		path.addPoint(tPoint);	//finally add the point where the edge goes into the target vertex
 	}
 	
+	//TODO: maybe bugs here with the supplement edges and their edge path
 	private void drawSupplementPath(SupplementPath path){
-		EdgePath replaced = path.getReplacedEdge().getPath();
+		EdgePath replacedEdgePath = path.getReplacedEdge().getPath();
 		List<ISugiyamaEdge> sEdges = getEdgesFromPath(path);
 		List<DoublePoint> points = new LinkedList<DoublePoint>();
 		sEdges.forEach(edge->this.drawNormalEdge(edge));	//sets edgePath for every supplement edge
 		sEdges.forEach(edge->points.addAll(edge.getPath().getNodes()));	//puts together all edge paths
-		points.forEach(point->replaced.addPoint(point));
+		points.forEach(point->replacedEdgePath.addPoint(point));
 	}
 	
 	private int pointsBeforeVertex(ISugiyamaVertex vertex){
 		int num = 0;
 		for(ISugiyamaVertex v : this.graph.getLayer(vertex.getLayer())){
+			if(v.getID() == vertex.getID()){
+				break;
+			}
 			num += this.inOutDeg.get(v.getID())[1];	//#outdeg points exist in this vertex on its bottom
 		}
 		return num;
@@ -295,8 +354,8 @@ public class EdgeDrawer implements IEdgeDrawer {
 		int x = vertex.getX();
 		int y = vertex.getY();
 		int inDeg = this.inOutDeg.get(vertex.getID())[0];
-		for(int i=1; i <= inDeg; i++){
-			points.add(new DoublePoint(x + (i/(inDeg + 1.0))*width, y));
+		for(int i = 1; i <= inDeg; i++){
+			points.add(new DoublePoint(x + (i /( inDeg + 1.0)) * width, y));
 		}
 		return points;
 	}
@@ -312,7 +371,7 @@ public class EdgeDrawer implements IEdgeDrawer {
 		int x = vertex.getX();
 		int y = vertex.getY();
 		int outDeg = this.inOutDeg.get(vertex.getID())[1];
-		for(int i=1; i <= outDeg; i++){
+		for(int i = 1; i <= outDeg; i++){
 			points.add(new DoublePoint(x + (i / (outDeg + 1.0)) * width, y + height));
 		}
 		return points;
@@ -322,38 +381,12 @@ public class EdgeDrawer implements IEdgeDrawer {
 		return Math.abs(a-b) < Math.pow(10, -6);
 	}
 	
-	/**
-	 * Searches for all source vertices in all edges that are going into the vertex argument.
-	 * Also sorts these vertices in ascending order of their X-Coordinate (from left to right in the GUI).
-	 * May not work with a given DummyVertex, and is not necessary to use it for this one. A DummyVertex is instantly replaced by a Point.
-	 */
-	private List<ISugiyamaVertex> getSortedInVertices(ISugiyamaVertex vertex){
-		List<ISugiyamaVertex> inv = new LinkedList<ISugiyamaVertex>();
-		for(ISugiyamaEdge e : this.graphEdges){
-			if(e.getTarget().getID() == vertex.getID()){
-				inv.add(e.getSource());
-			}
-		}
-		assert(inv.size() == this.inOutDeg.get(vertex.getID())[0]);	//indegree of vertex must be the same as set at beginning
-		inv.stream().sorted((v1,v2)->Integer.compare(v1.getX(), v2.getX())); //sorts all vertices in ascending order of their X-coordinate (from left to right)
-		return inv;
-	}
-	
 	
 	/**
 	 * Reverses the EdgePath of this edge.
 	 */
 	private void reverseEdgePath(ISugiyamaEdge edge){
 		Collections.reverse(edge.getPath().getNodes());
-	}
-	
-	/**
-	 * Returns, if this edge was once reversed, so the target layer must be greater than the source layer
-	 * Only works with a reversed edge that have been reversed again.
-	 * Not with a reversed edge that have been reversed through CycleRemover that haven't been reversed again!
-	 */
-	private boolean wasReversed(ISugiyamaEdge edge){
-		return graph.getLayerFromVertex(edge.getSource()) < graph.getLayerFromVertex(edge.getTarget());
 	}
 	
 	/**
@@ -366,7 +399,7 @@ public class EdgeDrawer implements IEdgeDrawer {
 		this.graphVertices = this.graph.getVertexSet();
 		this.graphEdges = this.graph.getEdgeSet();
 		this.sugiEdges = this.graphEdges.stream().filter(edge->!edge.isSupplementEdge()).collect(Collectors.toSet()); //edges that are not supplementEdges
-		this.spaceBetweenLayers = new int[graph.getLayerCount() - 1];
+		this.spaceBetweenLayers = new double[graph.getLayerCount() - 1];
 		this.distancePerEdgeInLayer = new double[graph.getLayerCount() - 1];
 	}
 }
