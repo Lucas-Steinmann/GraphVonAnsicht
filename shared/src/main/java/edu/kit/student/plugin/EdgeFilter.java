@@ -1,17 +1,19 @@
 package edu.kit.student.plugin;
 
 import edu.kit.student.graphmodel.Edge;
-import edu.kit.student.graphmodel.Vertex;
 
 /**
  * This class represents a filter for edges. 
  * To check if an edge passes through this filter, 
  * the client can specify it in {@code matches(Edge edge)}.
  */
-public abstract class EdgeFilter<E extends Edge, V extends Vertex> {
+public abstract class EdgeFilter<E extends Edge> {
 
     private String name;
 
+    public EdgeFilter(String name) {
+        this.name = name;
+    }
     /**
      * Returns the name of the filter.
      * @return the name of the filter

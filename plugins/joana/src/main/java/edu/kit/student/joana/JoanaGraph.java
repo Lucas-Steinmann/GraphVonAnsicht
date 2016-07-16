@@ -172,8 +172,6 @@ public abstract class JoanaGraph
 		graph.addAllVertices(containedVertices);
 		graph.addAllEdges(vertex.getGraph().getEdgeSet());
 
-    //printHierarchy();
-        //printOnionEdges();
 
 		for (JoanaEdge edge : edgesOf(vertex)) {
 		    DirectedOnionPath<JoanaEdge, JoanaCollapsedVertex> onionEdge = this.onionEdges.get(edge);
@@ -244,16 +242,14 @@ public abstract class JoanaGraph
         return null;
 	}
 
-
-    // TODO: Not as described in design. Should return true if vertex is of type collapsed 
-    // and not if it is contained in a collapsed vertex but if first is not needed, then there is no problem.
 	@Override
 	public boolean isCollapsed(Vertex vertex) {
-		for (JoanaCollapsedVertex collapsed : collapsedVertices) {
-			if (collapsed.getGraph().getVertexSet().contains(vertex))
-				return true;
-		}
-		return false;
+	    if (!collapsedVertices.contains(vertex))
+	        return false;
+	    if (!getVertexSet().contains(vertex)) {
+	        return false;
+	    }
+	    return true;
 	}
 
     @Override

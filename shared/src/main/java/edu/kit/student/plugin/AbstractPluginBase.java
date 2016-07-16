@@ -22,7 +22,7 @@ public abstract class AbstractPluginBase implements Plugin {
     }
 
     @Override
-    public List<EdgeFilter<? extends Edge, ? extends Vertex>> getEdgeFilter() {
+    public List<EdgeFilter<? extends Edge>> getEdgeFilter() {
         return new LinkedList<>();
     }
 

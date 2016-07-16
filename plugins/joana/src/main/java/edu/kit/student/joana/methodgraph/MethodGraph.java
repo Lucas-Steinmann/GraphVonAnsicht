@@ -10,6 +10,7 @@ import edu.kit.student.joana.FieldAccess;
 import edu.kit.student.joana.FieldAccessGraph;
 import edu.kit.student.joana.JoanaEdge;
 import edu.kit.student.joana.JoanaGraph;
+import edu.kit.student.joana.JoanaPlugin;
 import edu.kit.student.joana.JoanaVertex;
 import edu.kit.student.joana.JoanaVertex.Kind;
 import edu.kit.student.objectproperty.GAnsProperty;
@@ -22,12 +23,9 @@ import edu.kit.student.plugin.LayoutRegister;
 public class MethodGraph extends JoanaGraph {
 
     private static final String ENTRY_NAME = "Entry";
-    private static LayoutRegister<MethodGraphLayoutOption> register;
-
     private JoanaVertex entry;
     private Set<FieldAccess> fieldAccesses;
     
-    private GAnsProperty<Integer> vertexCount;
     private GAnsProperty<Integer> fieldAccessCount;
 
     public MethodGraph(Set<JoanaVertex> vertices, Set<JoanaEdge> edges, 
@@ -45,7 +43,6 @@ public class MethodGraph extends JoanaGraph {
         //TODO: Search for method calls etc.
         this.fieldAccesses = this.searchFieldAccesses();
         
-        this.vertexCount = new GAnsProperty<Integer>("Vertex count", vertices.size());
         this.fieldAccessCount = new GAnsProperty<Integer>("Field accesses", this.fieldAccesses.size());
     }
     
@@ -90,15 +87,6 @@ public class MethodGraph extends JoanaGraph {
         return null;
     } 
 
-    /**
-     * Sets the {@link LayoutRegister}, which stores the available 
-     * {@link LayoutOption} for all method graphs statically.
-     * @param register The {@link LayoutRegister} that will be set.
-     */
-    public static void setRegister(LayoutRegister<MethodGraphLayoutOption> register) {
-        MethodGraph.register = register;
-    }
-
 //    @Override
 //    public List<LayeredGraph> getSubgraphs() {
 //        List<LayeredGraph faGraphs = new LinkedList<>();
@@ -109,8 +97,8 @@ public class MethodGraph extends JoanaGraph {
     @Override
     public List<LayoutOption> getRegisteredLayouts() {
         List<MethodGraphLayoutOption> methodGraphLayouts = new LinkedList<>();
-        if (MethodGraph.register != null) {
-            methodGraphLayouts.addAll(MethodGraph.register.getLayoutOptions());
+        if (JoanaPlugin.getMethodGraphLayoutRegister().getLayoutOptions() != null) {
+            methodGraphLayouts.addAll(JoanaPlugin.getMethodGraphLayoutRegister().getLayoutOptions());
         }
         for (MethodGraphLayoutOption option : methodGraphLayouts) {
             option.setGraph(this);
@@ -140,7 +128,6 @@ public class MethodGraph extends JoanaGraph {
     @Override
     public List<GAnsProperty<?>> getStatistics() {
     	List<GAnsProperty<?>> statistics = super.getStatistics();
-    	statistics.add(this.vertexCount);
     	statistics.add(this.fieldAccessCount);
     	return statistics;
     }

@@ -220,6 +220,7 @@ public class GraphView extends Pane {
 		    	GraphView.this.getCurrentLayoutOption().chooseLayout();
 		    	GraphView.this.getCurrentLayoutOption().applyLayout();
 		    	GraphView.this.reloadGraph();
+		    	System.out.println("EdgeCount: " + factory.getGraph().getEdgeSet().size());
 		    }
 		});
 		

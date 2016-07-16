@@ -3,10 +3,10 @@ package edu.kit.student.joana.callgraph;
 import edu.kit.student.joana.CallGraphVertex;
 import edu.kit.student.joana.JoanaEdge;
 import edu.kit.student.joana.JoanaGraph;
+import edu.kit.student.joana.JoanaPlugin;
 import edu.kit.student.joana.methodgraph.MethodGraph;
 import edu.kit.student.objectproperty.GAnsProperty;
 import edu.kit.student.plugin.LayoutOption;
-import edu.kit.student.plugin.LayoutRegister;
 
 import java.util.HashSet;
 import java.util.LinkedList;
@@ -19,7 +19,6 @@ import java.util.stream.Collectors;
  */
 public class CallGraph extends JoanaGraph {
 
-    private static LayoutRegister<CallGraphLayoutOption> register;
     private List<MethodGraph> methodGraphs = new LinkedList<>();
     
     public CallGraph(String name, Set<CallGraphVertex> vertices, Set<JoanaEdge> edges) {
@@ -37,17 +36,13 @@ public class CallGraph extends JoanaGraph {
     	return methodGraphs;
     }
 
-    public static void setRegister(LayoutRegister<CallGraphLayoutOption> register) {
-        CallGraph.register = register;
-    }
-
     @Override
     public List<LayoutOption> getRegisteredLayouts() {
 
         // Retrieve callgraphLayouts from register
         List<CallGraphLayoutOption> callGraphLayouts = new LinkedList<>();
-        if (CallGraph.register != null) {
-            callGraphLayouts.addAll(CallGraph.register.getLayoutOptions());
+        if (JoanaPlugin.getCallGraphLayoutRegister().getLayoutOptions() != null) {
+            callGraphLayouts.addAll(JoanaPlugin.getCallGraphLayoutRegister().getLayoutOptions());
         }
         for (CallGraphLayoutOption option : callGraphLayouts) {
             option.setGraph(this);

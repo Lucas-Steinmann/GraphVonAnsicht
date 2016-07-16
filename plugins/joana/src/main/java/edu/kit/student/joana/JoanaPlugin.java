@@ -1,9 +1,10 @@
 package edu.kit.student.joana;
 
-import edu.kit.student.joana.callgraph.CallGraph;
+import java.util.LinkedList;
+import java.util.List;
+
 import edu.kit.student.joana.callgraph.CallGraphLayout;
 import edu.kit.student.joana.callgraph.CallGraphLayoutOption;
-import edu.kit.student.joana.methodgraph.MethodGraph;
 import edu.kit.student.joana.methodgraph.MethodGraphLayout;
 import edu.kit.student.joana.methodgraph.MethodGraphLayoutOption;
 import edu.kit.student.parameter.Settings;
@@ -11,9 +12,6 @@ import edu.kit.student.plugin.AbstractPluginBase;
 import edu.kit.student.plugin.LayoutRegister;
 import edu.kit.student.plugin.Workspace;
 import edu.kit.student.plugin.WorkspaceOption;
-
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * A plugin for GAns that supports the creation and visualization of Joana
@@ -39,8 +37,6 @@ public class JoanaPlugin extends AbstractPluginBase {
 
     @Override
     public void load() { 
-        MethodGraph.setRegister(mRegister);
-        CallGraph.setRegister(cRegister);
         cRegister.addLayoutOption(new CallGraphLayoutOption() {
             {
                 this.setName("Call-Graph-Layout");
@@ -132,5 +128,4 @@ public class JoanaPlugin extends AbstractPluginBase {
             return new LinkedList<>(options);
         }
     }
-
 }
