@@ -23,23 +23,23 @@ public class GAnsProperty<T extends Object> {
 	 * A string with whom, factories or other elements from the GUI, can
 	 * reference to the name/identifier of the value.
 	 */
-	public final static String name = "propertyName";
+	public final static String name = "name";
 
 	/**
 	 * A string with whom, factories or other elements from the GUI, can
 	 * reference to the value.
 	 */
-	public final static String value = "propertyValue";
+	public final static String value = "value";
 
 	/**
 	 * A string with whom, factories or other elements from the GUI, can
 	 * reference to the string-representation of the value.
 	 */
-	public final static String valueAsString = "propertyValueAsString";
+	public final static String valueAsString = "valueAsString";
 
-	private StringProperty propertyName;
-	private GAnsObjectProperty<T> propertyValue;
-	private StringProperty propertyValueAsString;
+	private StringProperty nameProperty;
+	private GAnsObjectProperty<T> valueProperty;
+	private StringProperty valueAsStringProperty;
 
 	/**
 	 * Constructor, setting the name and value of the property.
@@ -62,9 +62,9 @@ public class GAnsProperty<T extends Object> {
 	 *         GAnsProperty.
 	 */
 	public StringProperty propertyNameProperty() {
-		if (propertyName == null)
-			propertyName = new SimpleStringProperty(this, name);
-		return propertyName;
+		if (nameProperty == null)
+			nameProperty = new SimpleStringProperty(this, name);
+		return nameProperty;
 	}
 
 	/**
@@ -74,9 +74,9 @@ public class GAnsProperty<T extends Object> {
 	 * @return The property which contains the value in the GAnsProperty.
 	 */
 	public GAnsObjectProperty<T> propertyValue() {
-		if (propertyValue == null)
-			propertyValue = new GAnsObjectProperty<T>(this, value);
-		return propertyValue;
+		if (valueProperty == null)
+			valueProperty = new GAnsObjectProperty<T>(this, value);
+		return valueProperty;
 	}
 
 	/**
@@ -87,10 +87,9 @@ public class GAnsProperty<T extends Object> {
 	 *         the value of the GAnsProperty.
 	 */
 	public StringProperty propertyValueAsString() {
-		if (propertyValueAsString == null) {
-			propertyValueAsString = new SimpleStringProperty(this, valueAsString);
-		}
-		return propertyValueAsString;
+		if (valueAsStringProperty == null)
+			valueAsStringProperty = new SimpleStringProperty(this, valueAsString);
+		return valueAsStringProperty;
 	}
 
 	/**
@@ -121,6 +120,10 @@ public class GAnsProperty<T extends Object> {
 	public void setValue(T value) {
 		propertyValue().setValue(value);
 		propertyValueAsString().set(value.toString());
+	}
+	
+	public void setValueAsString(String value) {
+		propertyValueAsString().set(value);
 	}
 
 	/**
@@ -159,5 +162,10 @@ public class GAnsProperty<T extends Object> {
 	 */
 	public void removeListenerFromValue(ChangeListener<T> listener) {
 		propertyValue().removeListener(listener);
+	}
+	
+	@Override
+	public String toString() {
+		return "Property: " + this.getName() + ", " + this.getValueAsString(); 
 	}
 }

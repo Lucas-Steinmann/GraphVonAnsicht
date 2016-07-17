@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -14,6 +15,7 @@ import java.util.stream.Collectors;
 
 import edu.kit.student.graphmodel.Graph;
 import edu.kit.student.graphmodel.GraphModel;
+import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.ViewableGraph;
 import edu.kit.student.objectproperty.GAnsProperty;
 import edu.kit.student.parameter.Settings;
@@ -28,6 +30,7 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.ObservableSet;
 import javafx.collections.SetChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
@@ -191,7 +194,10 @@ public class GAnsApplication extends Application {
 	              }
 	              break;
 	          default:
-	              //TODO: Information not specified
+	              // Information not specified
+	              showErrorDialog("Unspecified argument!");
+	        	  System.exit(1);
+	              
 	        }
 	    }
 	    
@@ -349,16 +355,16 @@ public class GAnsApplication extends Application {
 		graphView.getSelectionModel().getSelectedItems().addListener(new SetChangeListener<VertexShape>() {
 			public void onChanged(Change<? extends VertexShape> changedItem) {
 				//TODO: does not work with collapsed vertices
-//				ObservableSet<VertexShape> selectedItems = graphView.getSelectionModel().getSelectedItems();
-//				List<GAnsProperty<?>> tmp = new LinkedList<GAnsProperty<?>>();
-//				for (VertexShape element : selectedItems) {
-//					GraphViewGraphFactory factory = currentGraphView.getFactory();
-//					Vertex vertex = factory.getVertexFromShape(element);
-//					tmp.addAll(vertex.getProperties());
-//				}
-//				
-//				ObservableList<GAnsProperty<?>> properties = FXCollections.observableList(tmp);
-//				informationView.setInformations(properties);
+				ObservableSet<VertexShape> selectedItems = graphView.getSelectionModel().getSelectedItems();
+				List<GAnsProperty<?>> tmp = new LinkedList<GAnsProperty<?>>();
+				for (VertexShape element : selectedItems) {
+					GraphViewGraphFactory factory = currentGraphView.getFactory();
+					Vertex vertex = factory.getVertexFromShape(element);
+					tmp.addAll(vertex.getProperties());
+				}
+				
+				ObservableList<GAnsProperty<?>> properties = FXCollections.observableList(tmp);
+				informationView.setInformations(properties);
 			}
 		});
 	}

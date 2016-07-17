@@ -81,7 +81,7 @@ public class DefaultVertex implements Vertex {
 
 	@Override
 	public List<GAnsProperty<?>> getProperties() {
-		LinkedList<GAnsProperty<?>> properties = new LinkedList<>();
+		List<GAnsProperty<?>> properties = new LinkedList<GAnsProperty<?>>();
 		properties.add(name);
 		properties.add(label);
 		return properties;

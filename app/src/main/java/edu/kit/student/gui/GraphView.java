@@ -31,6 +31,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.stage.WindowEvent;
 
 /**
  * A view used for showing and creating a graph in GAns. It supports zooming and
@@ -190,6 +191,10 @@ public class GraphView extends Pane {
 		    		selectedVertices.add(factory.getVertexFromShape(shape));
 		    	}
 		    	
+		    	//selected vertices will be collapsed and thereby removed from the graph
+		    	//selection must be cleared before collapse(...) is called
+		    	GraphView.this.selectionModel.clear();
+		    	
 		    	factory.getGraph().collapse(selectedVertices);
 		    	GraphView.this.getCurrentLayoutOption().chooseLayout();
 		    	GraphView.this.getCurrentLayoutOption().applyLayout();
@@ -201,22 +206,16 @@ public class GraphView extends Pane {
 		expand.setOnAction(new EventHandler<ActionEvent>() {
 		    public void handle(ActionEvent e) {
 		    	GraphViewGraphFactory factory = GraphView.this.getFactory();
-		    	Set<CollapsedVertex> selectedVertices = new HashSet<CollapsedVertex>();
-		    	for(VertexShape shape : GraphView.this.getSelectionModel().getSelectedItems()) {
-		    		Vertex vertex = factory.getVertexFromShape(shape);
-		    		if(factory.getGraph().isCollapsed(vertex)) {
-		    			selectedVertices.add((CollapsedVertex)vertex);
-		    		} else {
-		    			// only a selection of CollapsedVertex can be expanded
-		    			//(only show menuitem when there are only collapsed selected)
-		    			return;
-		    		}
-		    		
-		    	}
 		    	
-		    	for(CollapsedVertex vertex : selectedVertices) {
-		    		factory.getGraph().expand(vertex);
-		    	}
+		    	//MenuItem is disabled when there are more than one vertex selected
+		    	VertexShape shape = GraphView.this.getSelectionModel().getSelectedItems().iterator().next();
+		    	
+		    	//selected vertices will be expanded and thereby removed from the graph
+		    	//selection must be cleared before expand(...) is called
+		    	GraphView.this.selectionModel.clear();
+		    	
+		    	//MenuItem is disabled when there is no CollapsedVertex selected
+	    		factory.getGraph().expand((CollapsedVertex)factory.getVertexFromShape(shape));
 		    	GraphView.this.getCurrentLayoutOption().chooseLayout();
 		    	GraphView.this.getCurrentLayoutOption().applyLayout();
 		    	GraphView.this.reloadGraph();
@@ -233,6 +232,25 @@ public class GraphView extends Pane {
 		});
 		
 		this.contextMenu.getItems().addAll(collapse, expand, group);
+		this.contextMenu.setOnShowing(new EventHandler<WindowEvent>() {
+			@Override
+			public void handle(WindowEvent e) {
+				if(selectionModel.getSelectedItems().size() < 2) {
+					collapse.setDisable(true);
+					
+					//only one item can be selected 
+					VertexShape shape = GraphView.this.getSelectionModel().getSelectedItems().iterator().next();
+		    		Vertex vertex = GraphView.this.graphFactory.getVertexFromShape(shape);
+		    		//if the selected vertex is collapsed, expanding is enabled
+	    			expand.setDisable(!(GraphView.this.graphFactory.getGraph().isCollapsed(vertex)));
+					
+				} else {
+					collapse.setDisable(false);
+					expand.setDisable(true);
+				}
+				
+			}
+		});
 	}
 	
 	private void openAddGroupDialog() {

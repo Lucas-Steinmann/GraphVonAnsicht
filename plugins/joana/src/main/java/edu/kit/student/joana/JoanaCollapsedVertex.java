@@ -1,5 +1,6 @@
 package edu.kit.student.joana;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
@@ -13,6 +14,8 @@ public class JoanaCollapsedVertex extends JoanaVertex implements CollapsedVertex
 
 	private DefaultDirectedGraph<JoanaVertex, JoanaEdge> graph;
 	
+	private GAnsProperty<String> label;
+	private GAnsProperty<Kind> kind;
 	private GAnsProperty<Integer> vertexCount;
 	private GAnsProperty<Integer> edgeCount;
 
@@ -33,9 +36,12 @@ public class JoanaCollapsedVertex extends JoanaVertex implements CollapsedVertex
 	public JoanaCollapsedVertex(String name, String label, DefaultDirectedGraph<JoanaVertex, JoanaEdge> graph,
 			Map<JoanaEdge, JoanaEdge> newEdgeToOldEdge) {
 		super(name, label, Kind.SUMMARY);
+		super.setProperties(Kind.SUMMARY, "", 0, "", "", 0, 0, 0, 0, 0);
 
 		this.graph = graph;
 		
+		this.label = new GAnsProperty<String>("Label", label);
+		this.kind = new GAnsProperty<Kind>("Kind", Kind.SUMMARY);
 		this.vertexCount = new GAnsProperty<Integer>("Vertices contained", this.graph.getVertexSet().size());
 		this.edgeCount = new GAnsProperty<Integer>("Edges contained", this.graph.getEdgeSet().size());
 	}
@@ -59,13 +65,9 @@ public class JoanaCollapsedVertex extends JoanaVertex implements CollapsedVertex
 	
 	@Override
 	public List<GAnsProperty<?>> getProperties() {
-		List<GAnsProperty<?>> properties = super.getProperties();
-		for(GAnsProperty<?> property : properties) {
-			if(!(property.getName().compareTo("Name") == 0) || !(property.getName().compareTo("Label") == 0)) {
-				properties.remove(property);
-			}
-		}
-		
+		List<GAnsProperty<?>> properties = new LinkedList<GAnsProperty<?>>();
+		properties.add(this.label);
+		properties.add(this.kind);
 		properties.add(this.vertexCount);
 		properties.add(this.edgeCount);
 		return properties;

@@ -15,7 +15,6 @@ import edu.kit.student.joana.JoanaVertex;
 import edu.kit.student.joana.JoanaVertex.Kind;
 import edu.kit.student.objectproperty.GAnsProperty;
 import edu.kit.student.plugin.LayoutOption;
-import edu.kit.student.plugin.LayoutRegister;
 
 /**
  * This is a specific graph representation for a MethodGraph in JOANA .
