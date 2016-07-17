@@ -97,7 +97,7 @@ public class CrossMinimizer implements ICrossMinimizer {
 			int lowerLayer = source.getLayer();
 			int upperLayer = target.getLayer();
 			int diff = upperLayer - lowerLayer;
-			assert(diff >= 1);	//diff must not be lower than one, both vertices must not be on the same layer!
+			assert(diff >= 0);	//diff must not be lower than one, both vertices must not be on the same layer!
 			assert(graph.getLayer(lowerLayer).contains(source));
 			assert(graph.getLayer(upperLayer).contains(target));
 

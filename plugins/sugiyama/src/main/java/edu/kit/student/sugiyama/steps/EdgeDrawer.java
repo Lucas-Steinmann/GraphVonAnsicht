@@ -274,7 +274,7 @@ public class EdgeDrawer implements IEdgeDrawer {
 	}
 	
 	//TODO: better sorting of vertices as targets to the points of source vertex !
-	private void drawNormalEdge(ISugiyamaEdge edge){  //TODO: just a marker!
+	private void drawNormalEdge(ISugiyamaEdge edge){
 		assert(edge.getPath().getNodes().isEmpty());
 		ISugiyamaVertex source = edge.getSource();
 		ISugiyamaVertex target = edge.getTarget();
@@ -323,7 +323,6 @@ public class EdgeDrawer implements IEdgeDrawer {
 		path.addPoint(tPoint);	//finally add the point where the edge goes into the target vertex
 	}
 	
-	//TODO: maybe bugs here with the supplement edges and their edge path
 	private void drawSupplementPath(SupplementPath path){
 		EdgePath replacedEdgePath = path.getReplacedEdge().getPath();
 		List<ISugiyamaEdge> sEdges = getEdgesFromPath(path);
@@ -401,5 +400,6 @@ public class EdgeDrawer implements IEdgeDrawer {
 		this.sugiEdges = this.graphEdges.stream().filter(edge->!edge.isSupplementEdge()).collect(Collectors.toSet()); //edges that are not supplementEdges
 		this.spaceBetweenLayers = new double[graph.getLayerCount()];
 		this.distancePerEdgeInLayer = new double[graph.getLayerCount()];
+		this.graphEdges.forEach(edge->edge.getPath().getNodes().clear());	//deletes all existing points in the edge's edgepath
 	}
 }
