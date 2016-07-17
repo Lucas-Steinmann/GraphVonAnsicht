@@ -51,13 +51,7 @@ public class LayerAssigner implements ILayerAssigner {
 				currentSources = new HashSet<>(DDVertices);
 			}
 
-			System.out.println("removing Sources");
-			System.out.println(currentSources);
-
 			for (ISugiyamaVertex vertex : currentSources) {
-				System.out.println("");
-				System.out.println("    removing Source and adding it to layer " +  layer);
-				System.out.println("    " + vertex);
 				graph.assignToLayer(vertex, layer);
 				DDVertices.remove(vertex);
 				DDEdges.removeAll(graph.outgoingEdgesOf(vertex));
