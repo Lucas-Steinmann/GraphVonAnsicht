@@ -118,7 +118,7 @@ public class SugiyamaLayoutAlgorithm<G extends DirectedGraph & LayeredGraph>
     @Override
     public void layout(DirectedGraph graph) {
 		SugiyamaGraph wrappedGraph = new SugiyamaGraph(graph);
-		assigner.addConstraints(relativeLayerConstraints);
+		assigner.addRelativeConstraints(relativeLayerConstraints);
 
         remover.removeCycles(wrappedGraph);
 		assigner.assignLayers(wrappedGraph);
@@ -130,7 +130,7 @@ public class SugiyamaLayoutAlgorithm<G extends DirectedGraph & LayeredGraph>
     @Override
     public void layoutLayeredGraph(G graph) {
 		SugiyamaGraph wrappedGraph = new SugiyamaGraph(graph);
-		assigner.addConstraints(relativeLayerConstraints);
+		assigner.addRelativeConstraints(relativeLayerConstraints);
 
 		remover.removeCycles(wrappedGraph);
 		assigner.assignLayers(wrappedGraph);
@@ -141,7 +141,7 @@ public class SugiyamaLayoutAlgorithm<G extends DirectedGraph & LayeredGraph>
 
 	public void layout(DefaultDirectedGraph<DefaultVertex, DirectedEdge> graph) {
 		SugiyamaGraph wrappedGraph = new SugiyamaGraph(graph);
-		assigner.addConstraints(relativeLayerConstraints);
+		assigner.addRelativeConstraints(relativeLayerConstraints);
 
 		System.out.println("removing edges");
 		remover.removeCycles(wrappedGraph);

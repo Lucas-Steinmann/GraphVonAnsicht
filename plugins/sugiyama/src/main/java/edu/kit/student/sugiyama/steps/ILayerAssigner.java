@@ -2,6 +2,7 @@ package edu.kit.student.sugiyama.steps;
 
 import java.util.Set;
 
+import edu.kit.student.sugiyama.AbsoluteLayerConstraint;
 import edu.kit.student.sugiyama.RelativeLayerConstraint;
 import edu.kit.student.sugiyama.graph.ILayerAssignerGraph;
 
@@ -20,7 +21,13 @@ public interface ILayerAssigner {
 	 * Defines a set of constraints which should be considered by the algorithm.
 	 * @param constraints relative layer constraints the algorithm should consider
 	 */
-	public void addConstraints(Set<RelativeLayerConstraint> constraints);
+	public void addRelativeConstraints(Set<RelativeLayerConstraint> constraints);
+	
+	/**
+	 * Defines a set of constraints which should be considered by the algorithm
+	 * @param constraints absolute layer constraints the algorithm should consider
+	 */
+	public void addAbsoluteConstraints(Set<AbsoluteLayerConstraint> constraints);
 	
 	/**
 	 * Reassigns the layer of vertices whose layer is greater than the height parameter.

@@ -2,6 +2,7 @@ package edu.kit.student.sugiyama.experimental;
 
 import java.util.Set;
 
+import edu.kit.student.sugiyama.AbsoluteLayerConstraint;
 import edu.kit.student.sugiyama.RelativeLayerConstraint;
 import edu.kit.student.sugiyama.graph.ILayerAssignerGraph;
 import edu.kit.student.sugiyama.steps.ILayerAssigner;
@@ -17,15 +18,6 @@ public class OptimalLayerAssigner implements ILayerAssigner {
 	 */
 	@Override
 	public void assignLayers(ILayerAssignerGraph graph) {
-		// TODO Auto-generated method stub
-
-	}
-
-	/* (non-Javadoc)
-	 * @see sugiyama.ILayerAssigner#addConstraints(java.util.Set)
-	 */
-	@Override
-	public void addConstraints(Set<RelativeLayerConstraint> constraints) {
 		// TODO Auto-generated method stub
 
 	}
@@ -47,5 +39,17 @@ public class OptimalLayerAssigner implements ILayerAssigner {
 		// TODO Auto-generated method stub
 
 	}
+
+    @Override
+    public void addRelativeConstraints(Set<RelativeLayerConstraint> constraints) {
+        // TODO Auto-generated method stub
+        
+    }
+
+    @Override
+    public void addAbsoluteConstraints(Set<AbsoluteLayerConstraint> constraints) {
+        // TODO Auto-generated method stub
+        
+    }
 
 }

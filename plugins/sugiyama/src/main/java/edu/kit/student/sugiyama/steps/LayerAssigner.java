@@ -1,6 +1,7 @@
 package edu.kit.student.sugiyama.steps;
 
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
+import edu.kit.student.sugiyama.AbsoluteLayerConstraint;
 import edu.kit.student.sugiyama.RelativeLayerConstraint;
 import edu.kit.student.sugiyama.graph.ILayerAssignerGraph;
 import edu.kit.student.sugiyama.graph.ISugiyamaEdge;
@@ -17,12 +18,19 @@ public class LayerAssigner implements ILayerAssigner {
 	private DefaultDirectedGraph<ISugiyamaVertex, ISugiyamaEdge> DDGraph;
 	private Set<ISugiyamaVertex> graphVertices;
 	private Set<ISugiyamaEdge> graphEdges;
+	private Set<RelativeLayerConstraint> relativeConstraints;
+	private Set<AbsoluteLayerConstraint> absoluteConstraints;
 
-	@Override
-	public void addConstraints(Set<RelativeLayerConstraint> constraints) {
-		// TODO Auto-generated method stub
-		
-	}
+    @Override
+    public void addRelativeConstraints(Set<RelativeLayerConstraint> constraints) {
+        this.relativeConstraints = constraints;        
+    }
+
+    @Override
+    public void addAbsoluteConstraints(Set<AbsoluteLayerConstraint> constraints) {
+        this.absoluteConstraints = constraints;
+        
+    }
 
 	@Override
 	public void setMaxHeight(int height) {
