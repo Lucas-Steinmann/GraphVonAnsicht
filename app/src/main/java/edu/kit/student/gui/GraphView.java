@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import edu.kit.student.graphmodel.CollapsedVertex;
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.ViewableGraph;
 import edu.kit.student.graphmodel.action.SubGraphAction;
@@ -34,7 +33,6 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
-import javafx.stage.WindowEvent;
 
 /**
  * A view used for showing and creating a graph in GAns. It supports zooming and

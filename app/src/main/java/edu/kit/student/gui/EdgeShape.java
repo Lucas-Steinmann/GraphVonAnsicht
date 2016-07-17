@@ -24,8 +24,8 @@ public class EdgeShape extends GAnsGraphElement {
 	private Text text;
 	private Path path;
 	private Color color;
-	private double middleX;
-	private double middleY;
+//	private double middleX;
+//	private double middleY;
 
 	/**
 	 * Constructs a EdgeShape with the information supplied by edge. The path of the EdgeShape is set by the EdgePath of edge.
