@@ -399,7 +399,7 @@ public class EdgeDrawer implements IEdgeDrawer {
 		this.graphVertices = this.graph.getVertexSet();
 		this.graphEdges = this.graph.getEdgeSet();
 		this.sugiEdges = this.graphEdges.stream().filter(edge->!edge.isSupplementEdge()).collect(Collectors.toSet()); //edges that are not supplementEdges
-		this.spaceBetweenLayers = new double[graph.getLayerCount() - 1];
-		this.distancePerEdgeInLayer = new double[graph.getLayerCount() - 1];
+		this.spaceBetweenLayers = new double[graph.getLayerCount()];
+		this.distancePerEdgeInLayer = new double[graph.getLayerCount()];
 	}
 }

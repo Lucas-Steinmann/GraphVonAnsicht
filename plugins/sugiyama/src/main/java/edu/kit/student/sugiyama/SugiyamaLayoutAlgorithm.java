@@ -5,13 +5,11 @@ import edu.kit.student.graphmodel.LayeredGraph;
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
 import edu.kit.student.graphmodel.directed.DirectedEdge;
 import edu.kit.student.graphmodel.directed.DirectedGraph;
-import edu.kit.student.parameter.Settings;
+import edu.kit.student.parameter.*;
 import edu.kit.student.sugiyama.graph.SugiyamaGraph;
 import edu.kit.student.sugiyama.steps.*;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 
 /**
  * This class supports a customizable implementation of the Sugiyama-framework.
@@ -102,7 +100,13 @@ public class SugiyamaLayoutAlgorithm<G extends DirectedGraph & LayeredGraph>
 
 	@Override
 	public Settings getSettings() {
-	    return new Settings(new HashMap<>());
+		DoubleParameter p1 = new DoubleParameter("Crossminimizer reduction Threshold", 0.01, 0.00000001, 1d);
+		IntegerParameter p2 = new IntegerParameter("Crossminimizer max runs", 10, 1, 999999);
+		HashMap<String, Parameter<?,?>> parameter = new HashMap<String, Parameter<?,?>>();
+		parameter.put(p1.getName(), p1);
+		parameter.put(p2.getName(), p2);
+		Settings  s = new Settings(parameter);
+		return s;
 	}
 
     @Override
