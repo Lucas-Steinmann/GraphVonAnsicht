@@ -46,6 +46,12 @@ public class DirectedOnionPath<E extends DirectedEdge, V extends CollapsedVertex
         // TODO: Adapt should be replaced
         return edge.getPath();
     }
+    
+
+	@Override
+	public EdgeArrow getArrowHead() {
+		return edge.getArrowHead();
+	}
 
     @Override
     public List<GAnsProperty<?>> getProperties() {
@@ -147,5 +153,4 @@ public class DirectedOnionPath<E extends DirectedEdge, V extends CollapsedVertex
         targetB.append("(" + edge.getTarget().getID() + ")");
         return sourceB.toString() + targetB.toString();
     }
-
 }

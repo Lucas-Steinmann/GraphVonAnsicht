@@ -9,6 +9,7 @@ import edu.kit.student.parameter.Settings;
 import edu.kit.student.sugiyama.graph.SugiyamaGraph;
 import edu.kit.student.sugiyama.steps.*;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -33,6 +34,11 @@ public class SugiyamaLayoutAlgorithm<G extends DirectedGraph & LayeredGraph>
 	public SugiyamaLayoutAlgorithm() {
 		relativeLayerConstraints = new HashSet<>();
 		absoluteLayerConstraints = new HashSet<>();
+		setCycleRemover(new CycleRemover());
+		setLayerAssigner(new LayerAssigner());
+		setCrossMinimizer(new CrossMinimizer());
+		setVertexPositioner(new VertexPositioner());
+		setEdgeDrawer(new EdgeDrawer());
 	}
 	//TODO check if it would be wise to set the first steps in the constructor in order to avoid nullpointer exceptions
 	//they can still be replaced in the setter
@@ -96,8 +102,7 @@ public class SugiyamaLayoutAlgorithm<G extends DirectedGraph & LayeredGraph>
 
 	@Override
 	public Settings getSettings() {
-		// TODO Auto-generated method stub
-		return null;
+	    return new Settings(new HashMap<>());
 	}
 
     @Override

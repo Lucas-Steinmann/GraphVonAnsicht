@@ -272,13 +272,19 @@ public class GAnsApplication extends Application {
 			this.model = workspace.getGraphModel();
 			ViewableGraph currentGraph = this.model.getRootGraphs().get(0);
 			createGraphView();
-			openLayoutSelectionDialog(currentGraph);
-			showGraph(currentGraph);
-			this.structureView.showGraphModel(this.model);
+			if(openLayoutSelectionDialog(currentGraph)) {
+				showGraph(currentGraph);
+				this.structureView.showGraphModel(this.model);
+			} else {
+				this.graphViewTabPane.getTabs().clear();
+			}
+			
 		} catch (ParseException e) {
+			this.graphViewTabPane.getTabs().clear();
 			showErrorDialog(e.getMessage());
 			return;
 		} catch (FileNotFoundException e) {
+			this.graphViewTabPane.getTabs().clear();
 			showErrorDialog(e.getMessage());
 		} 
 	}
