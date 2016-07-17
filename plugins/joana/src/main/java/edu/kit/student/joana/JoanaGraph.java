@@ -14,6 +14,8 @@ import edu.kit.student.graphmodel.FastGraphAccessor;
 import edu.kit.student.graphmodel.LayeredGraph;
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.ViewableGraph;
+import edu.kit.student.graphmodel.action.SubGraphAction;
+import edu.kit.student.graphmodel.action.VertexAction;
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
 import edu.kit.student.graphmodel.directed.DirectedGraph;
 import edu.kit.student.objectproperty.GAnsProperty;
@@ -27,6 +29,25 @@ public abstract class JoanaGraph
     implements DirectedGraph, LayeredGraph, ViewableGraph {
     
 	
+    @Override
+    public List<SubGraphAction> getSubGraphActions(Set<Vertex> vertices) {
+        List<SubGraphAction> actions = new LinkedList<>();
+        if (getVertexSet().containsAll(vertices)) {
+            actions.add(newCollapseAction(vertices));
+        }
+
+        return actions;
+    }
+
+    @Override
+    public List<VertexAction> getVertexActions(Vertex vertex) {
+        List<VertexAction> actions = new LinkedList<>();
+        if (this.collapsedVertices.contains(vertex) && this.getVertexSet().contains(vertex)) {
+            actions.add(expandActions.get(vertex));
+        }
+        return actions;
+    }
+
     private ViewableGraph parent;
     private List<ViewableGraph> children = new LinkedList<>();
     private Integer id;
@@ -36,6 +57,7 @@ public abstract class JoanaGraph
     private DefaultGraphLayering<JoanaVertex> layering;
 
     private List<JoanaCollapsedVertex> collapsedVertices;
+    private Map<JoanaCollapsedVertex, VertexAction> expandActions;
     private Map<JoanaEdge, DirectedOnionPath<JoanaEdge, JoanaCollapsedVertex>> onionEdges;
     
     private GAnsProperty<Integer> edgeCount;
@@ -49,6 +71,7 @@ public abstract class JoanaGraph
         this.layering = new DefaultGraphLayering<>(vertices);
         this.collapsedVertices = new LinkedList<>();
         this.onionEdges = new HashMap<>();
+        this.expandActions = new HashMap<>();
         this.edgeCount = new GAnsProperty<Integer>("Edge count", edges.size());
         this.vertexCount = new GAnsProperty<Integer>("Vertex count", vertices.size());
     }
@@ -159,9 +182,10 @@ public abstract class JoanaGraph
 		}
 
 		graph.removeAllVertices(directedSubset);
+		expandActions.put(collapsed, newExpandAction(collapsed));
 		return collapsed;
     }
-
+	
     private Set<JoanaVertex> expand(JoanaCollapsedVertex vertex) {
         
         if (!graph.contains(vertex)) {
@@ -227,7 +251,28 @@ public abstract class JoanaGraph
 	    }
 	    return null;
 	}
+
+	private VertexAction newExpandAction(CollapsedVertex vertex) {
+	    return new VertexAction("Expand", 
+	            "Adds all vertices contained in this Summary-Vertex to the graph and removes the Summary-Vertex.") {
+            
+            @Override
+            public void handle() {
+                expand(vertex);
+            }
+        };
+	}
 	
+	private SubGraphAction newCollapseAction(Set<Vertex> vertices) {
+	    return new SubGraphAction("Collapse", "Collapses all vertices into one Summary-Vertex.") {
+            
+            @Override
+            public void handle() {
+                collapse(vertices);
+            }
+        };
+	}
+
 	@Override
     public Set<JoanaVertex> expand(CollapsedVertex vertex) {
 	    if (!collapsedVertices.contains(vertex)) {
