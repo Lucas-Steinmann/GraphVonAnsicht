@@ -21,6 +21,7 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
 	private FastGraphAccessor fga;
 	private HashMap<V, Set<E>> vertexToEdge;
 	private HashMap<V, Set<E>> revVertexToEdge;
+	private HashMap<V, Set<E>> vertexToSelfLoops;
 
 	// Maybe replace with FGA
 	private HashMap<Integer, V> idToVertex;
@@ -52,10 +53,13 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
         this.idToVertex = new HashMap<>();
         this.vertexToEdge = new HashMap<>();
         this.revVertexToEdge = new HashMap<>();
+		this.vertexToSelfLoops = new HashMap<>();
         for (V vertex : vertices) {
             this.vertexToEdge.put(vertex, new HashSet<>());
             this.revVertexToEdge.put(vertex, new HashSet<>());
+			this.vertexToSelfLoops.put(vertex, new HashSet<>());
             this.idToVertex.put(vertex.getID(), vertex);
+
         }
         for (E edge : edges) {
             this.addEdge(edge);
@@ -71,6 +75,10 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
 	    if (this.getVertexSet().contains(edge.getSource()) && this.getVertexSet().contains(edge.getTarget())) {
 	        vertexToEdge.get(edge.getSource()).add(edge);
 	        revVertexToEdge.get(edge.getTarget()).add(edge);
+
+			if (edge.getSource().getID() == edge.getTarget().getID()) {
+				this.vertexToSelfLoops.get(edge.getSource()).add(edge);
+			}
 	    } else {
 	        throw new IllegalArgumentException("Cannot add edge to a Graph without the Vertex being present");
 	    }
@@ -84,6 +92,7 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
 	public void addVertex(V vertex) {
 		this.vertexToEdge.put(vertex, new HashSet<>());
 		this.revVertexToEdge.put(vertex, new HashSet<>());
+		this.vertexToSelfLoops.put(vertex, new HashSet<>());
 		this.idToVertex.put(vertex.getID(), vertex);
 	}
 
@@ -140,6 +149,11 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
 	}
 
 	@Override
+	public Integer selfLoopNumberOf(Vertex vertex) {
+		return vertexToSelfLoops.get(vertex).size();
+	}
+
+	@Override
 	public Set<E> outgoingEdgesOf(Vertex vertex) {
 		Set<E> result = new HashSet<>();
 		Set<E> original = vertexToEdge.get(vertex);
@@ -155,6 +169,18 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
 	public Set<E> incomingEdgesOf(Vertex vertex) {
 		Set<E> result = new HashSet<>();
 		Set<E> original = revVertexToEdge.get(vertex);
+
+		if (original != null) {
+			result.addAll(original);
+		}
+
+		return result;
+	}
+
+	@Override
+	public Set<E> selfLoopsOf(Vertex vertex) {
+		Set<E> result = new HashSet<>();
+		Set<E> original = vertexToSelfLoops.get(vertex);
 
 		if (original != null) {
 			result.addAll(original);
@@ -192,6 +218,9 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
         for (Set<E> incomingEdges : revVertexToEdge.values()) {
             incomingEdges.remove(edge);
         }
+		for (Set<E> selfLoops : vertexToSelfLoops.values()) {
+			vertexToSelfLoops.remove(edge);
+		}
 
     }
 
@@ -204,6 +233,7 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
         vertexToEdge.remove(vertex);
         revVertexToEdge.remove(vertex);
         idToVertex.remove(vertex.getID());
+		vertexToSelfLoops.remove(vertex);
     }
 
     public void removeAllVertices(Set<V> vertices) {

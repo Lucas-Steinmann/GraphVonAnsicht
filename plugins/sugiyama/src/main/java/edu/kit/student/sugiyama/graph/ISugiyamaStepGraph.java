@@ -1,10 +1,10 @@
 package edu.kit.student.sugiyama.graph;
 
-import java.util.List;
-import java.util.Set;
-
 import edu.kit.student.graphmodel.LayeredGraph;
 import edu.kit.student.graphmodel.Vertex;
+
+import java.util.List;
+import java.util.Set;
 
 public interface ISugiyamaStepGraph extends LayeredGraph {
 
@@ -20,6 +20,9 @@ public interface ISugiyamaStepGraph extends LayeredGraph {
 
     @Override
     public Set<ISugiyamaEdge> incomingEdgesOf(Vertex vertex);
+
+    @Override
+    Set<ISugiyamaEdge> selfLoopsOf(Vertex vertex);
 
     @Override
     public Set<ISugiyamaVertex> getVertexSet();

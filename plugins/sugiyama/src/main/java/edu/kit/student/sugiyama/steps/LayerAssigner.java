@@ -44,10 +44,20 @@ public class LayerAssigner implements ILayerAssigner {
 		Set<ISugiyamaEdge> DDEdges = DDGraph.getEdgeSet();
 		int layer = 0;
 
-		while (!DDVertices.isEmpty()) {
+		while (!DDVertices.isEmpty() && layer <= 100) {
 			Set<ISugiyamaVertex> currentSources = getSources(graph, DDEdges, DDVertices);
 
+			if (currentSources.size() == 0) {
+				currentSources = new HashSet<>(DDVertices);
+			}
+
+			System.out.println("removing Sources");
+			System.out.println(currentSources);
+
 			for (ISugiyamaVertex vertex : currentSources) {
+				System.out.println("");
+				System.out.println("    removing Source and adding it to layer " +  layer);
+				System.out.println("    " + vertex);
 				graph.assignToLayer(vertex, layer);
 				DDVertices.remove(vertex);
 				DDEdges.removeAll(graph.outgoingEdgesOf(vertex));
@@ -83,12 +93,15 @@ public class LayerAssigner implements ILayerAssigner {
 			ISugiyamaVertex vertex
 	) {
 		Set<ISugiyamaEdge> incomingEdges = graph.incomingEdgesOf(vertex);
+		Set<ISugiyamaEdge> selfLoops = graph.selfLoopsOf(vertex);
 		Set<ISugiyamaEdge> tempEdges = new HashSet<ISugiyamaEdge>(); //necessary in order don't to get a
 		tempEdges.addAll(incomingEdges);							//concurrentModificationException
 		
 
 		for (ISugiyamaEdge edge : tempEdges) {
 			if (!edges.contains(edge)) {
+				incomingEdges.remove(edge);
+			} else if (selfLoops.contains(edge)) {
 				incomingEdges.remove(edge);
 			}
 		}

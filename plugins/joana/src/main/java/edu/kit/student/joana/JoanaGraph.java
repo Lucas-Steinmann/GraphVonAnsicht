@@ -1,19 +1,6 @@
 package edu.kit.student.joana;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import edu.kit.student.graphmodel.CollapsedVertex;
-import edu.kit.student.graphmodel.DefaultGraphLayering;
-import edu.kit.student.graphmodel.DirectedOnionPath;
-import edu.kit.student.graphmodel.FastGraphAccessor;
-import edu.kit.student.graphmodel.LayeredGraph;
-import edu.kit.student.graphmodel.Vertex;
-import edu.kit.student.graphmodel.ViewableGraph;
+import edu.kit.student.graphmodel.*;
 import edu.kit.student.graphmodel.action.SubGraphAction;
 import edu.kit.student.graphmodel.action.VertexAction;
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
@@ -21,6 +8,8 @@ import edu.kit.student.graphmodel.directed.DirectedGraph;
 import edu.kit.student.objectproperty.GAnsProperty;
 import edu.kit.student.plugin.LayoutOption;
 import edu.kit.student.util.IdGenerator;
+
+import java.util.*;
 
 /**
  * An abstract superclass for all JOANA specific graphs.
@@ -309,6 +298,11 @@ public abstract class JoanaGraph
     }
 
     @Override
+    public Integer selfLoopNumberOf(Vertex vertex) {
+        return graph.selfLoopNumberOf(vertex);
+    }
+
+    @Override
     public Set<JoanaEdge> outgoingEdgesOf(Vertex vertex) {
         return graph.outgoingEdgesOf(vertex);
     }
@@ -316,6 +310,11 @@ public abstract class JoanaGraph
     @Override
     public Set<JoanaEdge> incomingEdgesOf(Vertex vertex) {
         return graph.incomingEdgesOf(vertex);
+    }
+
+    @Override
+    public Set<JoanaEdge> selfLoopsOf(Vertex vertex) {
+        return graph.selfLoopsOf(vertex);
     }
 
     @Override

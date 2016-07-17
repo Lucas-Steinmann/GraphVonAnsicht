@@ -710,7 +710,12 @@ public class SugiyamaGraph
         return graph.indegreeOf(vertex);
     }
 
-    @Override
+	@Override
+	public Integer selfLoopNumberOf(Vertex vertex) {
+		return graph.selfLoopNumberOf(vertex);
+	}
+
+	@Override
     public FastGraphAccessor getFastGraphAccessor() {
         // TODO Auto-generated method stub
         return null;
@@ -737,7 +742,12 @@ public class SugiyamaGraph
         return graph.incomingEdgesOf(vertex);
     }
 
-    @Override
+	@Override
+	public Set<ISugiyamaEdge> selfLoopsOf(Vertex vertex) {
+		return graph.selfLoopsOf(vertex);
+	}
+
+	@Override
     public Set<ISugiyamaVertex> getVertexSet() {
         return graph.getVertexSet();
     }
