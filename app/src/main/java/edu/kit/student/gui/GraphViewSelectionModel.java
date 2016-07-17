@@ -212,8 +212,7 @@ public class GraphViewSelectionModel {
 								GraphViewSelectionModel.this.clear();
 								GraphViewSelectionModel.this.addAll(selection);
 							}
-							//TODO: Contextmenu is shown in the wrong place
-							menu.show(outerPane, event.getX(),event.getY());
+							menu.show(outerPane, event.getScreenX(),event.getScreenY());
 						} 
 					}
 					
