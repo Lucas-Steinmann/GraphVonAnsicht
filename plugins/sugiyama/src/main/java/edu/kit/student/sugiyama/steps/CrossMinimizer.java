@@ -15,6 +15,17 @@ import java.util.stream.Stream;
  * the amount of edge crossings.
  */ 
 public class CrossMinimizer implements ICrossMinimizer {
+	private final float crossingReductionThreshold;
+	private final int maxRuns;
+
+	public CrossMinimizer() {
+		this(0.001f, 10);
+	}
+
+	public CrossMinimizer(float crossingReductionThreshold, int maxRuns) {
+		this.crossingReductionThreshold = crossingReductionThreshold;
+		this.maxRuns = maxRuns;
+	}
 
 	@Override
 	public void minimizeCrossings(ICrossMinimizerGraph graph) {
@@ -28,7 +39,7 @@ public class CrossMinimizer implements ICrossMinimizer {
 		int oldCrossings = crossings((SugiyamaGraph) graph);
 		int counter = 0;
 
-		while (counter < 10) {
+		while (counter < maxRuns) {
 			List<List<ISugiyamaVertex>> undo = new ArrayList<>();
 
 			for (List<ISugiyamaVertex> layer : graph.getLayers()) {
@@ -57,7 +68,7 @@ public class CrossMinimizer implements ICrossMinimizer {
 				break;
 			}
 
-			if (newCrossings == 0 || oldCrossings - newCrossings < 0.001f * oldCrossings) {
+			if (newCrossings == 0 || oldCrossings - newCrossings < crossingReductionThreshold * oldCrossings) {
 				break;
 			}
 

@@ -25,6 +25,7 @@ public class SugiyamaLayoutAlgorithm<G extends DirectedGraph & LayeredGraph>
 	private IEdgeDrawer drawer;
 	private Set<RelativeLayerConstraint> relativeLayerConstraints;
 	private Set<AbsoluteLayerConstraint> absoluteLayerConstraints;
+	private Settings settings;
 
 	/**
 	 * Creates a SugiyamaLayoutAlgorithm
@@ -100,13 +101,18 @@ public class SugiyamaLayoutAlgorithm<G extends DirectedGraph & LayeredGraph>
 
 	@Override
 	public Settings getSettings() {
+		if (this.settings != null) {
+			return this.settings;
+		}
+
 		DoubleParameter p1 = new DoubleParameter("Crossminimizer reduction Threshold", 0.01, 0.00000001, 1d);
 		IntegerParameter p2 = new IntegerParameter("Crossminimizer max runs", 10, 1, 999999);
 		HashMap<String, Parameter<?,?>> parameter = new HashMap<String, Parameter<?,?>>();
 		parameter.put(p1.getName(), p1);
 		parameter.put(p2.getName(), p2);
-		Settings  s = new Settings(parameter);
-		return s;
+		Settings  settings = new Settings(parameter);
+		this.settings = settings;
+		return settings;
 	}
 
     @Override
