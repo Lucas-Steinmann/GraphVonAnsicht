@@ -32,7 +32,8 @@ public abstract class JoanaGraph
     @Override
     public List<SubGraphAction> getSubGraphActions(Set<Vertex> vertices) {
         List<SubGraphAction> actions = new LinkedList<>();
-        if (getVertexSet().containsAll(vertices)) {
+        if (getVertexSet().containsAll(vertices) && 
+        		vertices.size() > 1) {
             actions.add(newCollapseAction(vertices));
         }
 
