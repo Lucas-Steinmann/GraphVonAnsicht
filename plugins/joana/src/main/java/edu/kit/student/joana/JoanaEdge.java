@@ -3,6 +3,7 @@ package edu.kit.student.joana;
 import java.util.LinkedList;
 import java.util.List;
 
+import edu.kit.student.graphmodel.EdgeArrow;
 import edu.kit.student.graphmodel.FastGraphAccessor;
 import edu.kit.student.graphmodel.OrthogonalEdgePath;
 import edu.kit.student.graphmodel.directed.DirectedEdge;
@@ -149,6 +150,11 @@ public class JoanaEdge implements DirectedEdge {
     public OrthogonalEdgePath getPath() {
         return this.path;
     }
+    
+    @Override
+	public EdgeArrow getArrowHead() {
+		return EdgeArrow.ARROW;
+	}
 
     @Override
     public JoanaVertex getSource() {

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
+import edu.kit.student.graphmodel.EdgeArrow;
 import edu.kit.student.graphmodel.FastGraphAccessor;
 import edu.kit.student.graphmodel.OrthogonalEdgePath;
 import edu.kit.student.graphmodel.Vertex;
@@ -115,6 +116,11 @@ public class DefaultDirectedEdge<V extends Vertex> implements DirectedEdge {
 	@Override
 	public OrthogonalEdgePath getPath() {
 	    return path;
+	}
+	
+	@Override
+	public EdgeArrow getArrowHead() {
+		return EdgeArrow.ARROW;
 	}
 	
 	@Override

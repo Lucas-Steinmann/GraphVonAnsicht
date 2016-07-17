@@ -53,6 +53,8 @@ public interface Edge {
 	 * @return the edge path
 	 */
 	public EdgePath getPath();
+	
+	public EdgeArrow getArrowHead();
 
 	/**
 	 * Returns a set of properties of the edge that should be shown 

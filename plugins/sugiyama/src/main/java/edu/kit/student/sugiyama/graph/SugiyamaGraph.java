@@ -432,6 +432,12 @@ public class SugiyamaGraph
 			// TODO necessary ?
 			return null;
 		}
+
+		@Override
+		public EdgeArrow getArrowHead() {
+			// TODO necessary?
+			return null;
+		}
 	}
 
 	/**
@@ -697,6 +703,11 @@ public class SugiyamaGraph
 		@Override
 		public Color getColor() {
 			return this.wrappedEdge.getColor();
+		}
+
+		@Override
+		public EdgeArrow getArrowHead() {
+			return this.wrappedEdge.getArrowHead();
 		}
 	}
 
