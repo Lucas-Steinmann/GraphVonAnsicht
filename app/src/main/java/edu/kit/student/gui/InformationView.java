@@ -24,6 +24,7 @@ public class InformationView extends TableView<GAnsProperty<?>> {
 	 *            List with {@link GAnsProperty} elements which define the
 	 *            content of the InformationView
 	 */
+	@SuppressWarnings("unchecked")
 	public void setInformations(ObservableList<GAnsProperty<?>> informations) {
 		setItems(informations);
 		// Implementation in diesem Stil: (siehe
