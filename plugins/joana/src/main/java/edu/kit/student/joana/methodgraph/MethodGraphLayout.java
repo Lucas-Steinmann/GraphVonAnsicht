@@ -58,9 +58,14 @@ public class MethodGraphLayout implements LayeredLayoutAlgorithm<MethodGraph> {
 	    
 	  //create absoluteLayerConstraints
         Set<AbsoluteLayerConstraint> absoluteLayerConstraints = new HashSet<AbsoluteLayerConstraint>();
-        Set<Vertex> absoluteVertices = new HashSet<Vertex>();
-        absoluteVertices.add(graph.getEntryVertex());
-        absoluteLayerConstraints.add(new AbsoluteLayerConstraint(absoluteVertices, false, true, 0, 0));
+        
+        //create absoluteLayerConstraint for Entry vertex
+        Set<Vertex> firstLayer = new HashSet<Vertex>();
+        firstLayer.add(graph.getEntryVertex());
+        absoluteLayerConstraints.add(new AbsoluteLayerConstraint(firstLayer, false, true, 0, 0));
+        
+        //create absoluteLayerConstraint for Method Parameters
+        Set<Vertex> secondLayer = new HashSet<Vertex>();
         
         //create relativeLayerConstraints
         Set<RelativeLayerConstraint> relativeLayerConstraints = new HashSet<RelativeLayerConstraint>();
@@ -72,8 +77,13 @@ public class MethodGraphLayout implements LayeredLayoutAlgorithm<MethodGraph> {
                 top.add(v);
                 
                 relativeLayerConstraints.add(new RelativeLayerConstraint(top, bottom, true, 1));
+            } else if (v.getNodeKind().equals(JoanaVertex.Kind.FRMI)
+                    || v.getNodeKind().equals(JoanaVertex.Kind.FRMO)) {
+                secondLayer.add(v);
             }
         }
+        
+        absoluteLayerConstraints.add(new AbsoluteLayerConstraint(secondLayer, false, true, 1, 1));
         
         LayerAssigner assigner = new LayerAssigner();
         assigner.addRelativeConstraints(relativeLayerConstraints);
