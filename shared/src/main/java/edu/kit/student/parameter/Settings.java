@@ -35,6 +35,14 @@ public class Settings {
         return parameters.get(key);
     }
 
+    public static double unpackDouble(Parameter<?, Double> parameter) {
+        return parameter.getValue();
+    }
+
+    public static int unpackInteger(Parameter<?, Integer> parameter) {
+        return parameter.getValue();
+    }
+
     /**
      * Returns all the Parameters in the Settings-Object.
      * @return All the Parameters in the Settings-Object.

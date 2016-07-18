@@ -72,7 +72,7 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
 	 * @param edge
 	 */
 	public void addEdge(E edge) {
-	    if (this.getVertexSet().contains(edge.getSource()) && this.getVertexSet().contains(edge.getTarget())) {
+	    if (this.vertexToEdge.keySet().contains(edge.getSource()) && this.vertexToEdge.keySet().contains(edge.getTarget())) {
 	        vertexToEdge.get(edge.getSource()).add(edge);
 	        revVertexToEdge.get(edge.getTarget()).add(edge);
 
@@ -212,16 +212,16 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
 	}
 	
     public void removeEdge(E edge) {
-        for (Set<E> outgoingEdges : vertexToEdge.values()) {
-            outgoingEdges.remove(edge);
-        }
-        for (Set<E> incomingEdges : revVertexToEdge.values()) {
-            incomingEdges.remove(edge);
-        }
-		for (Set<E> selfLoops : vertexToSelfLoops.values()) {
-			vertexToSelfLoops.remove(edge);
+		V source = (V) edge.getSource();
+		V target = (V) edge.getTarget();
+
+		if (source.getID() == target.getID()) {
+			vertexToSelfLoops.get(source).remove(edge);
+			return;
 		}
 
+		vertexToEdge.get(source).remove(edge);
+		revVertexToEdge.get(target).remove(edge);
     }
 
     public void removeVertex(V vertex) {

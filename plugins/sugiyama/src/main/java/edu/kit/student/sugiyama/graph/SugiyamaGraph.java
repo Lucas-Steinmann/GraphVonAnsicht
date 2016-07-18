@@ -253,6 +253,10 @@ public class SugiyamaGraph
 		return getLayerById(vertex.getID());
 	}
 
+	public IntegerPoint getPosition(Vertex vertex) {
+		return layering.getPosition(vertex);
+	}
+
 	@Override
 	public String toString(){
 		String out = "Vertices: {";

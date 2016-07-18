@@ -24,54 +24,21 @@ public class VertexPositioner implements IVertexPositioner {
 			int j = 0;
 
 			for (ISugiyamaVertex vertex : graph.getLayer(i)) {
-				//if (vertex.isDummy() && j > 0 && vertexMatrix.get(i).get(j-1).get(0).isDummy() && vertexMatrix.get(i).get(j-1).size() < 15) {
-				//	vertexMatrix.get(i).get(j-1).add(vertex);
-				//} else {
+				if (vertex.isDummy() && j > 0 && vertexMatrix.get(i).get(j-1).get(0).isDummy() && vertexMatrix.get(i).get(j-1).size() < 30 ) {
+					vertexMatrix.get(i).get(j-1).add(vertex);
+				} else {
 					vertexMatrix.get(i).add(new ArrayList<>());
 					vertexMatrix.get(i).get(j).add(vertex);
 					vertex.setY(i);
 					vertex.setX(j);
 					j++;
-				//}
+				}
 			}
 		}
 
 		boolean[][] visited = new boolean[graph.getLayerCount()][maxwidth];
 
-		//find lines
-		for (int i = 0; i < vertexMatrix.size(); i++) {
-			for (int j = 0; j < vertexMatrix.get(i).size(); j++) {
-				if (visited[i][j]) {
-					continue;
-				}
 
-				ISugiyamaVertex vertex = vertexMatrix.get(i).get(j).get(0);
-				visited[i][j] = true;
-
-				if (vertex.isDummy()) {
-					VertexLine line = new VertexLine();
-					line.add(new IntegerPoint(i, j));
-
-					ISugiyamaVertex nextVertex = graph.outgoingEdgesOf(vertex).stream().findFirst().get().getTarget();
-					int counter = 1;
-
-					while (nextVertex.isDummy()) {
-						visited[nextVertex.getX()][nextVertex.getY()] = true;
-						line.add(new IntegerPoint(nextVertex.getX(), nextVertex.getY()));
-						counter++;
-					}
-
-					if (line.size() > 1) {
-						vertexLines.add(line);
-					}
-				}
-			}
-		}
-
-		//mergeLines
-		for (VertexLine line: vertexLines) {
-
-		}
 
 		for (int i = 0; i < vertexMatrix.size(); i++) {
 			for (int j = 0; j < vertexMatrix.get(i).size(); j++) {

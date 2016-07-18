@@ -15,6 +15,7 @@ import java.util.Random;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 
@@ -95,13 +96,18 @@ public class CycleRemoverTest {
 	}
 	
 	@Test
-	public void SingleRandomTest(){
-		SugiyamaGraph testGraph = GraphUtil.generateSugiyamaGraph(10, 0.2f, true, false);
+	public void SelfLoopTest(){
+		DefaultDirectedGraph<DefaultVertex, DirectedEdge> DDGraph = new DefaultDirectedGraph<>();
+		DefaultVertex v1 = new DefaultVertex("v1", "v1");
+		DirectedEdge e1 = new DefaultDirectedEdge<DefaultVertex>("e1","",v1, v1);
+		DDGraph.addVertex(v1);
+		DDGraph.addEdge(e1);
+		SugiyamaGraph SGraph = new SugiyamaGraph(DDGraph);
+
 		CycleRemover cr = new CycleRemover();
-//		System.out.println(testGraph.toString());
-		cr.removeCycles(testGraph);
-//		System.out.println(testGraph.toString());
-		assertTrue(isAcyclic(testGraph));
+		cr.removeCycles(SGraph);
+
+		assertEquals(0, numberOfReversedEdges(SGraph));
 	}
 	
 	/**
@@ -140,11 +146,11 @@ public class CycleRemoverTest {
 	}
 
 	private Set<DirectedEdge> getCorrectedOutcomingEdges(Vertex vertex, Set<DirectedEdge> graphEdges, DirectedGraph graph) {
-		return graph.outgoingEdgesOf(vertex).stream().filter(edge -> !graphEdges.contains(edge)).collect(Collectors.toSet());
+		return graph.outgoingEdgesOf(vertex).stream().filter(edge -> !graphEdges.contains(edge)).filter(edge -> !graph.selfLoopsOf(vertex).contains(edge)).collect(Collectors.toSet());
 	}
 
 	private Set<DirectedEdge> getCorrectedIncomingEdges(Vertex vertex, Set<DirectedEdge> graphEdges, DirectedGraph graph) {
-		return graph.incomingEdgesOf(vertex).stream().filter(edge -> !graphEdges.contains(edge)).collect(Collectors.toSet());
+		return graph.incomingEdgesOf(vertex).stream().filter(edge -> !graphEdges.contains(edge)).filter(edge -> !graph.selfLoopsOf(vertex).contains(edge)).collect(Collectors.toSet());
 	}
 
 	private Vertex getRandom(Set<Vertex> vertices) {
@@ -161,5 +167,9 @@ public class CycleRemoverTest {
 		}
 
 		return null;
+	}
+
+	private int numberOfReversedEdges(SugiyamaGraph graph) {
+		return graph.getEdgeSet().stream().mapToInt(edge -> edge.isReversed() ? 1 : 0).sum();
 	}
 }

@@ -1,13 +1,8 @@
 package edu.kit.student.graphmodel;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
 import edu.kit.student.util.IntegerPoint;
+
+import java.util.*;
 
 public class DefaultGraphLayering<V extends Vertex> implements GraphLayering<V> {
     

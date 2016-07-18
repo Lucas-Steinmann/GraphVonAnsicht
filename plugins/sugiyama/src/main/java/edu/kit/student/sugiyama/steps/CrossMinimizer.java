@@ -92,7 +92,6 @@ public class CrossMinimizer implements ICrossMinimizer {
 
 			oldCrossings = newCrossings;
 		}
-		System.out.println("vertices: " + graph.getVertexSet().size()+'\n'+"edges: "+graph.getEdgeSet().size());
 		//for printing the layers after cross minimization
 		graph.getLayers().forEach(iSugiyamaVertices -> System.out.println(iSugiyamaVertices.stream().map(iSugiyamaVertex -> iSugiyamaVertex.getName()).collect(Collectors.joining(", "))));
 	}
@@ -242,13 +241,13 @@ public class CrossMinimizer implements ICrossMinimizer {
 		result = IntStream.range(0, graph.getLayerCount() - 1)
 				.parallel()
 				.map(i -> {
-					return crossingsOfLayers(graph, layers.get(i), layers.get(i + 1));
+					return crossingsOfLayers(graph, layers.get(i), layers.get(i + 1), i + 1);
 				}).sum();
 
 		return result;
 	}
 
-	public static int crossingsOfLayers(SugiyamaGraph graph, List<ISugiyamaVertex> layer1, List<ISugiyamaVertex> layer2) {
+	public static int crossingsOfLayers(SugiyamaGraph graph, List<ISugiyamaVertex> layer1, List<ISugiyamaVertex> layer2, int layer2number) {
 		if (layer1 == null || layer2 == null) {
 			return 0;
 		}
@@ -261,14 +260,14 @@ public class CrossMinimizer implements ICrossMinimizer {
 		for (int i = layer1.size() - 1; --i >= 0;) {
 			int k = i + 1;
 			for (int j = layer1.size() - 1; --j >= k;) {
-				result += crossingsOfVertices(graph, layer1.get(i), layer1.get(j), layer2);
+				result += crossingsOfVertices(graph, layer1.get(i), layer1.get(j), layer2, layer2number);
 			}
 		}
 
 		return result;
 	}
 
-	private static int crossingsOfVertices(SugiyamaGraph graph, ISugiyamaVertex vertex1, ISugiyamaVertex vertex2, List<ISugiyamaVertex> layer) {
+	private static int crossingsOfVertices(SugiyamaGraph graph, ISugiyamaVertex vertex1, ISugiyamaVertex vertex2, List<ISugiyamaVertex> layer, int layer2number) {
 		if (vertex1.getID() == vertex2.getID()) {
 			return 0;
 		}
@@ -280,7 +279,7 @@ public class CrossMinimizer implements ICrossMinimizer {
 		vertex1Edges = vertex1Edges
 				.stream()
 				.parallel()
-				.filter(edge -> layer.contains(edge.getSource()) || layer.contains(edge.getTarget()))
+				.filter(edge -> edge.getSource().getLayer() == layer2number || edge.getTarget().getLayer() == layer2number)
 				.collect(Collectors.toSet());
 
 		List<ISugiyamaVertex> sources = vertex1Edges.stream().parallel().map(sugiyamaEdge -> sugiyamaEdge.getSource()).filter(vertex -> vertex.getID() != vertex2.getID()).collect(Collectors.toList());
@@ -296,7 +295,7 @@ public class CrossMinimizer implements ICrossMinimizer {
 		vertex2Edges = vertex2Edges
 				.stream()
 				.parallel()
-				.filter(edge -> layer.contains(edge.getSource()) || layer.contains(edge.getTarget()))
+				.filter(edge -> edge.getSource().getLayer() == layer2number || edge.getTarget().getLayer() == layer2number)
 				.collect(Collectors.toSet());
 
 		sources = vertex2Edges.stream().parallel().map(sugiyamaEdge -> sugiyamaEdge.getSource()).filter(vertex -> vertex.getID() != vertex2.getID()).collect(Collectors.toList());
@@ -312,7 +311,7 @@ public class CrossMinimizer implements ICrossMinimizer {
 		for (ISugiyamaVertex x1 : neighbors1) {
 			for (ISugiyamaVertex x2 : neighbors2) {
 				//System.out.println("   " + x1.getName() + " ? " + x2.getName());
-				if (layer.indexOf(x1) > layer.indexOf(x2)) {
+				if (graph.getPosition(x1).x > graph.getPosition(x2).x) {
 					//System.out.println("  hit");
 					result++;
 				}
