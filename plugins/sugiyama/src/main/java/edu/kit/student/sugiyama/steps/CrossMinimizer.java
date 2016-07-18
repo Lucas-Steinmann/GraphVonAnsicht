@@ -19,7 +19,7 @@ import java.util.stream.Stream;
  * the amount of edge crossings.
  */ 
 public class CrossMinimizer implements ICrossMinimizer {
-	private float crossingReductionThreshold;
+	private double crossingReductionThreshold;
 	private int maxRuns;
 	private Settings settings;
 
@@ -32,16 +32,21 @@ public class CrossMinimizer implements ICrossMinimizer {
 		setMaxRuns(maxRuns);
 	}
 
-	public void setCrossingReductionThreshold(float crossingReductionThreshold) {
-		this.crossingReductionThreshold = (float) Math.min(Math.max(crossingReductionThreshold, 0.0000000000001d), 1d);
+	private void setCrossingReductionThreshold(double crossingReductionThreshold) {
+		this.crossingReductionThreshold = Math.min(Math.max(crossingReductionThreshold, 0.0000000000001d), 1d);
 	}
 
-	public void setMaxRuns(int maxRuns) {
+	private void setMaxRuns(int maxRuns) {
 		this.maxRuns = Math.min(Math.max(maxRuns, 1), 99999999);
 	}
 
 	@Override
 	public void minimizeCrossings(ICrossMinimizerGraph graph) {
+		if (settings != null) {
+			setCrossingReductionThreshold(Settings.unpackDouble((Parameter<?, Double>) getSettings().get("Crossminimizer reduction Threshold")));
+			setMaxRuns(Settings.unpackInteger((Parameter<?, Integer>) getSettings().get("Crossminimizer max runs")));
+		}
+
 		System.out.println("CrossMinimizer.minimizeCrossings():");
 		int layerCount = graph.getLayerCount();
 
@@ -123,6 +128,11 @@ public class CrossMinimizer implements ICrossMinimizer {
 		for(ISugiyamaEdge edge : edges){
 			ISugiyamaVertex source = edge.getSource();
 			ISugiyamaVertex target = edge.getTarget();
+
+			if (source.getID() == target.getID()) {
+				continue;
+			}
+
 			int lowerLayer = source.getLayer();
 			int upperLayer = target.getLayer();
 			int diff = upperLayer - lowerLayer;

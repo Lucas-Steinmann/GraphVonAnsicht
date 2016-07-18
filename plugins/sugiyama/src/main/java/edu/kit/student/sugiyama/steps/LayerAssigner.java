@@ -52,7 +52,7 @@ public class LayerAssigner implements ILayerAssigner {
 		Set<ISugiyamaEdge> DDEdges = DDGraph.getEdgeSet();
 		int layer = 0;
 
-		while (!DDVertices.isEmpty() && layer <= 100) {
+		while (!DDVertices.isEmpty()) {
 			Set<ISugiyamaVertex> currentSources = getSources(graph, DDEdges, DDVertices);
 
 			if (currentSources.size() == 0) {
