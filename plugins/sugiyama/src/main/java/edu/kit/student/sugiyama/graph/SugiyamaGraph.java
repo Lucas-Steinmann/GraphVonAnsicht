@@ -166,8 +166,8 @@ public class SugiyamaGraph
 		return supplementEdge;
 	}
 
-    public SupplementPath createSupplementPath(ISugiyamaEdge replacedEdge, List<ISugiyamaVertex> dummies) {
-		SupplementPath supplementPath = new SupplementPath(replacedEdge, dummies);
+    public SupplementPath createSupplementPath(ISugiyamaEdge replacedEdge, List<ISugiyamaVertex> dummies, List<ISugiyamaEdge> supplementEdges) {
+		SupplementPath supplementPath = new SupplementPath(replacedEdge, dummies, supplementEdges);
 		this.supplementPaths.add(supplementPath);
 		this.removeEdge(replacedEdge);
 		return supplementPath;
@@ -287,10 +287,12 @@ public class SugiyamaGraph
 	public static class SupplementPath {
 		private final ISugiyamaEdge replacedEdge;
 		private final List<ISugiyamaVertex> dummies;
+		private final List<ISugiyamaEdge> supplementEdges;
 
-		public SupplementPath(ISugiyamaEdge replacedEdge, List<ISugiyamaVertex> dummies) {
+		public SupplementPath(ISugiyamaEdge replacedEdge, List<ISugiyamaVertex> dummies, List<ISugiyamaEdge> supplementEdges) {
 			this.replacedEdge = replacedEdge;
 			this.dummies = dummies;
+			this.supplementEdges = supplementEdges;
 		}
 
 		/**
@@ -307,6 +309,14 @@ public class SugiyamaGraph
 		 */
 		public List<ISugiyamaVertex> getDummyVertices() {
 			return this.dummies;
+		}
+		
+		/**
+		 * Returns the list of supplement edges in the path sorted form source to target.
+		 * @return the list of supplement edges
+		 */
+		public List<ISugiyamaEdge> getSupplementEdges(){
+			return this.supplementEdges;
 		}
 
 		/**

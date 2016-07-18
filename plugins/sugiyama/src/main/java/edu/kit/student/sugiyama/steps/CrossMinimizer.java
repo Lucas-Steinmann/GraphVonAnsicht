@@ -119,9 +119,7 @@ public class CrossMinimizer implements ICrossMinimizer {
 	 * @param graph input graph to add dummy vertices and supplement edges to
 	 */
 	private void addDummyAndEdges(ICrossMinimizerGraph graph) {
-		Set<ISugiyamaVertex> vertices = graph.getVertexSet();
 		Set<ISugiyamaEdge> edges = graph.getEdgeSet();
-		Set<ISugiyamaEdge> newEdges = new HashSet<ISugiyamaEdge>();
 		Set<ISugiyamaEdge> replacedEdges = new HashSet<ISugiyamaEdge>();
 
 		for(ISugiyamaEdge edge : edges){
@@ -141,12 +139,13 @@ public class CrossMinimizer implements ICrossMinimizer {
 
 			if(diff>1){	//need to add #diff dummy vertices
 				List<ISugiyamaVertex> dummies = new LinkedList<>();
+				List<ISugiyamaEdge> supplementEdges  = new LinkedList<>();
 				replacedEdges.add(edge);		// the  distance of both vertices of this edge is greater than 1 so it must be replaced
 				ISugiyamaVertex nv = null;	// through dummy vertices and supplement edges. add it here to remove it later from the original edge set.
 				ISugiyamaEdge ne = null;
 				int c = 0;
 
-				for(int l = lowerLayer + 1; l <= upperLayer;l++){
+				for(int l = lowerLayer + 1; l <= upperLayer; l++){
 					c++;
 					ISugiyamaVertex dummy = null;
 
@@ -168,9 +167,13 @@ public class CrossMinimizer implements ICrossMinimizer {
 					if (dummy != null) {
 						dummies.add(dummy);
 					}
+					
+					if(ne != null){
+						supplementEdges.add(ne);
+					}
 				}
 
-				graph.createSupplementPath(edge, dummies);
+				graph.createSupplementPath(edge, dummies, supplementEdges);
 			}
 		}
 

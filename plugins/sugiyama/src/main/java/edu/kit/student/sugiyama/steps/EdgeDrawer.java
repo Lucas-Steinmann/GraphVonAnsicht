@@ -130,31 +130,6 @@ public class EdgeDrawer implements IEdgeDrawer {
 		}
 	}
 	
-	
-	//just temporary method for testing issues.
-	//later one need the supplement edges of a SupplementPath in it! 
-	private List<ISugiyamaEdge> getEdgesFromPath(SupplementPath path){
-		List<ISugiyamaEdge> list = new LinkedList<ISugiyamaEdge>();
-		List<ISugiyamaVertex> allVertices = new LinkedList<ISugiyamaVertex>();
-		allVertices.addAll(path.getDummyVertices());
-		allVertices.add(path.getReplacedEdge().getTarget());
-		ISugiyamaVertex first = path.getReplacedEdge().getSource();
-		boolean found = false;
-		for(ISugiyamaVertex second: allVertices){
-			found = false;
-			for(ISugiyamaEdge e: this.graphEdges){
-				if(e.getSource().getID() == first.getID() && e.getTarget().getID() == second.getID()){
-					list.add(e);
-					found = true;
-					break;
-				}
-			}
-			assert(found);
-			first = second;
-		}
-		return list;
-	}
-	
 	/**
 	 * Sorts the vertices in every layer in ascending order of their X-coordinate.
 	 */
@@ -205,7 +180,7 @@ public class EdgeDrawer implements IEdgeDrawer {
 	 * Fills mapping of Integer vertex.id to an list that contains two lists of ISUgiyamaVertex.
 	 * The first list contains vertices that are going in this vertex, the second ones going out of this vertex.
 	 */
-	private void fillInOutVertices(){	//TODO: maybe need to adjust the in out vertices in case of an self loop ?
+	private void fillInOutVertices(){
 		for(ISugiyamaEdge e : this.graphEdges){
 			if(!this.inOutVertices.containsKey(e.getSource().getID())){	// add new entry for source id
 				List<List<ISugiyamaVertex>> list = new LinkedList<List<ISugiyamaVertex>>();
@@ -311,6 +286,7 @@ public class EdgeDrawer implements IEdgeDrawer {
 		assert(found);
 		
 		int pointPosition = pointsBeforeVertex(source) + index +1;	//relative Y-position of this edge if it has to kink horizontally. (multiplied by distancePerEdgeLayer)
+		System.out.println("source layer: " + source.getLayer()+"; layer count: " + graph.getLayerCount());
 		double edgeDistances = this.distancePerEdgeInLayer[source.getLayer()];
 		double edgeKinkY = pointPosition * edgeDistances;
 		DoublePoint sPoint = this.inOutPoints.get(source.getID()).get(1).get(index);
@@ -396,7 +372,7 @@ public class EdgeDrawer implements IEdgeDrawer {
 	private void drawSupplementPath(SupplementPath path){
 		assert(this.paths.contains(path));
 		EdgePath replacedEdgePath = path.getReplacedEdge().getPath();
-		List<ISugiyamaEdge> sEdges = getEdgesFromPath(path);
+		List<ISugiyamaEdge> sEdges = path.getSupplementEdges();
 		List<DoublePoint> points = new LinkedList<DoublePoint>();
 		sEdges.forEach(edge->this.drawNormalEdge(edge));	//sets edgePath for every supplement edge
 		sEdges.forEach(edge->points.addAll(edge.getPath().getNodes()));	//puts together all edge paths

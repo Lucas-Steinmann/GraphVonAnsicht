@@ -78,5 +78,5 @@ public interface ICrossMinimizerGraph extends ISugiyamaStepGraph {
 
 	public Set<SugiyamaGraph.SupplementPath> getSupplementPaths();
 
-	public SugiyamaGraph.SupplementPath createSupplementPath(ISugiyamaEdge replacedEdge, List<ISugiyamaVertex> dummies);
+	public SugiyamaGraph.SupplementPath createSupplementPath(ISugiyamaEdge replacedEdge, List<ISugiyamaVertex> dummies, List<ISugiyamaEdge> supplementEdges);
 }
