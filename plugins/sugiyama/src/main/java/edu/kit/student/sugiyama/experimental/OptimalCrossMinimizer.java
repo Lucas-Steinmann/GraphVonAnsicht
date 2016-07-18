@@ -1,5 +1,6 @@
 package edu.kit.student.sugiyama.experimental;
 
+import edu.kit.student.parameter.Settings;
 import edu.kit.student.sugiyama.graph.ICrossMinimizerGraph;
 import edu.kit.student.sugiyama.steps.ICrossMinimizer;
 
@@ -25,6 +26,11 @@ public class OptimalCrossMinimizer implements ICrossMinimizer {
 	public void minimizeCrossings(ICrossMinimizerGraph graph) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public Settings getSettings() {
+		return null;
 	}
 
 }

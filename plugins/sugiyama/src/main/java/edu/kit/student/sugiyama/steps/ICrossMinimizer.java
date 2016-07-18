@@ -1,5 +1,6 @@
 package edu.kit.student.sugiyama.steps;
 
+import edu.kit.student.parameter.Settings;
 import edu.kit.student.sugiyama.graph.ICrossMinimizerGraph;
 
 /**
@@ -15,4 +16,6 @@ public interface ICrossMinimizer {
 	 * @param graph input graph
 	 */
 	public void minimizeCrossings(ICrossMinimizerGraph graph);
+
+	public Settings getSettings();
 }

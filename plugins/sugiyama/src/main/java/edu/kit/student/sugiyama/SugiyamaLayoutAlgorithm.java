@@ -5,11 +5,15 @@ import edu.kit.student.graphmodel.LayeredGraph;
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
 import edu.kit.student.graphmodel.directed.DirectedEdge;
 import edu.kit.student.graphmodel.directed.DirectedGraph;
-import edu.kit.student.parameter.*;
+import edu.kit.student.parameter.Parameter;
+import edu.kit.student.parameter.Settings;
 import edu.kit.student.sugiyama.graph.SugiyamaGraph;
 import edu.kit.student.sugiyama.steps.*;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * This class supports a customizable implementation of the Sugiyama-framework.
@@ -104,12 +108,14 @@ public class SugiyamaLayoutAlgorithm<G extends DirectedGraph & LayeredGraph>
 		if (this.settings != null) {
 			return this.settings;
 		}
-
-		DoubleParameter p1 = new DoubleParameter("Crossminimizer reduction Threshold", 0.01, 0.00000001, 1d);
-		IntegerParameter p2 = new IntegerParameter("Crossminimizer max runs", 10, 1, 999999);
 		HashMap<String, Parameter<?,?>> parameter = new HashMap<String, Parameter<?,?>>();
-		parameter.put(p1.getName(), p1);
-		parameter.put(p2.getName(), p2);
+
+		Set<Map.Entry<String, Parameter<?, ?>>> minimizerSettings = this.minimizer.getSettings().entrySet();
+
+		for (Map.Entry<String, Parameter<?, ?>>minimizerSetting: minimizerSettings) {
+			parameter.put(minimizerSetting.getKey(), minimizerSetting.getValue());
+		}
+
 		Settings  settings = new Settings(parameter);
 		this.settings = settings;
 		return settings;

@@ -1,5 +1,9 @@
 package edu.kit.student.sugiyama.steps;
 
+import edu.kit.student.parameter.DoubleParameter;
+import edu.kit.student.parameter.IntegerParameter;
+import edu.kit.student.parameter.Parameter;
+import edu.kit.student.parameter.Settings;
 import edu.kit.student.sugiyama.graph.ICrossMinimizerGraph;
 import edu.kit.student.sugiyama.graph.ISugiyamaEdge;
 import edu.kit.student.sugiyama.graph.ISugiyamaVertex;
@@ -15,16 +19,25 @@ import java.util.stream.Stream;
  * the amount of edge crossings.
  */ 
 public class CrossMinimizer implements ICrossMinimizer {
-	private final float crossingReductionThreshold;
-	private final int maxRuns;
+	private float crossingReductionThreshold;
+	private int maxRuns;
+	private Settings settings;
 
 	public CrossMinimizer() {
 		this(0.001f, 10);
 	}
 
 	public CrossMinimizer(float crossingReductionThreshold, int maxRuns) {
-		this.crossingReductionThreshold = crossingReductionThreshold;
-		this.maxRuns = maxRuns;
+		setCrossingReductionThreshold(crossingReductionThreshold);
+		setMaxRuns(maxRuns);
+	}
+
+	public void setCrossingReductionThreshold(float crossingReductionThreshold) {
+		this.crossingReductionThreshold = (float) Math.min(Math.max(crossingReductionThreshold, 0.0000000000001d), 1d);
+	}
+
+	public void setMaxRuns(int maxRuns) {
+		this.maxRuns = Math.min(Math.max(maxRuns, 1), 99999999);
 	}
 
 	@Override
@@ -77,6 +90,22 @@ public class CrossMinimizer implements ICrossMinimizer {
 		System.out.println("vertices: " + graph.getVertexSet().size()+'\n'+"edges: "+graph.getEdgeSet().size());
 		//for printing the layers after cross minimization
 		graph.getLayers().forEach(iSugiyamaVertices -> System.out.println(iSugiyamaVertices.stream().map(iSugiyamaVertex -> iSugiyamaVertex.getName()).collect(Collectors.joining(", "))));
+	}
+
+	@Override
+	public Settings getSettings() {
+		if (this.settings != null) {
+			return this.settings;
+		}
+
+		DoubleParameter p1 = new DoubleParameter("Crossminimizer reduction Threshold", 0.01, 0.00000001, 1d);
+		IntegerParameter p2 = new IntegerParameter("Crossminimizer max runs", 10, 1, 999999);
+		HashMap<String, Parameter<?,?>> parameter = new HashMap<String, Parameter<?,?>>();
+		parameter.put(p1.getName(), p1);
+		parameter.put(p2.getName(), p2);
+		Settings  settings = new Settings(parameter);
+		this.settings = settings;
+		return settings;
 	}
 
 	/**

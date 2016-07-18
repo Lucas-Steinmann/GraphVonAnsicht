@@ -113,7 +113,7 @@ public class EdgeDrawer implements IEdgeDrawer {
 	//tests every edge if its edgepath describes an orthogonal edge
 	private void testEdgePaths(){
 		Set<DoublePoint> points = new HashSet<DoublePoint>();
-		for(ISugiyamaEdge e : this.graphEdges.stream().filter(e->!this.selfLoops.contains(e)).collect(Collectors.toList())){
+		for(ISugiyamaEdge e : this.graphEdges.stream().filter(edge -> !this.selfLoops.contains(edge)).collect(Collectors.toList())){
 			List<DoublePoint> l = e.getPath().getNodes();
 			
 			for(DoublePoint p : l){
