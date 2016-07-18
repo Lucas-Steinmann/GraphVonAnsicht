@@ -92,7 +92,7 @@ public class EdgeShape extends GAnsGraphElement {
 		this.path.setManaged(false);
 		this.text.setManaged(false);
 		
-		getChildren().addAll(this.path, this.text);
+		getChildren().addAll(this.path/*, this.text*/);
 		
 		setColor(edge.getColor());
 		setText(edge.getLabel());
