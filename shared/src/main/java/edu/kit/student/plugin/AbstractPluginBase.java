@@ -17,12 +17,12 @@ public abstract class AbstractPluginBase implements Plugin {
     }
 
     @Override
-    public List<VertexFilter<? extends Vertex>> getVertexFilter() {
+    public List<VertexFilter> getVertexFilter() {
         return new LinkedList<>();
     }
 
     @Override
-    public List<EdgeFilter<? extends Edge>> getEdgeFilter() {
+    public List<EdgeFilter> getEdgeFilter() {
         return new LinkedList<>();
     }
 

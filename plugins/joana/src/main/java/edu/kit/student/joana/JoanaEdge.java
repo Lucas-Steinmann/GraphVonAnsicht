@@ -17,12 +17,12 @@ import javafx.scene.paint.Color;
  */
 public class JoanaEdge implements DirectedEdge {
     
-    private GAnsProperty<Kind> edgeKind;
     JoanaVertex source;
     JoanaVertex target;
-	private GAnsProperty<String> name;
 	private Integer id;
+	private GAnsProperty<String> name;
 	private GAnsProperty<String> label;
+    private GAnsProperty<Kind> edgeKind;
 	private OrthogonalEdgePath path;
 
     public JoanaEdge(String name, String label, JoanaVertex source, JoanaVertex target, Kind kind) {
@@ -53,6 +53,7 @@ public class JoanaEdge implements DirectedEdge {
 		LinkedList<GAnsProperty<?>> properties = new LinkedList<>();
 		properties.add(name);
 		properties.add(label);
+		properties.add(edgeKind);
 		return properties;
     }
 

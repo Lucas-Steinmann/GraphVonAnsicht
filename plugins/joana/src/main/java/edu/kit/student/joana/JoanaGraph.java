@@ -1,12 +1,30 @@
 package edu.kit.student.joana;
 
 import edu.kit.student.graphmodel.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import edu.kit.student.graphmodel.CollapsedVertex;
+import edu.kit.student.graphmodel.DefaultGraphLayering;
+import edu.kit.student.graphmodel.DirectedOnionPath;
+import edu.kit.student.graphmodel.FastGraphAccessor;
+import edu.kit.student.graphmodel.LayeredGraph;
+import edu.kit.student.graphmodel.Vertex;
+import edu.kit.student.graphmodel.ViewableGraph;
 import edu.kit.student.graphmodel.action.SubGraphAction;
 import edu.kit.student.graphmodel.action.VertexAction;
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
 import edu.kit.student.graphmodel.directed.DirectedGraph;
 import edu.kit.student.objectproperty.GAnsProperty;
+import edu.kit.student.plugin.EdgeFilter;
 import edu.kit.student.plugin.LayoutOption;
+import edu.kit.student.plugin.PluginManager;
+import edu.kit.student.plugin.VertexFilter;
 import edu.kit.student.util.IdGenerator;
 
 import java.util.*;
@@ -49,6 +67,8 @@ public abstract class JoanaGraph
     private List<JoanaCollapsedVertex> collapsedVertices;
     private Map<JoanaCollapsedVertex, VertexAction> expandActions;
     private Map<JoanaEdge, DirectedOnionPath<JoanaEdge, JoanaCollapsedVertex>> onionEdges;
+    private List<VertexFilter> vertexFilter;
+    private List<EdgeFilter> edgeFilter;
     
     private GAnsProperty<Integer> edgeCount;
     private GAnsProperty<Integer> vertexCount;
@@ -64,6 +84,8 @@ public abstract class JoanaGraph
         this.expandActions = new HashMap<>();
         this.edgeCount = new GAnsProperty<Integer>("Edge count", edges.size());
         this.vertexCount = new GAnsProperty<Integer>("Vertex count", vertices.size());
+        this.vertexFilter = new LinkedList<>();
+        this.edgeFilter = new LinkedList<>();
     }
 
     @Override
@@ -288,13 +310,41 @@ public abstract class JoanaGraph
 	}
 
     @Override
+    public void addVertexFilter(VertexFilter filter) {
+        this.vertexFilter.add(filter);
+    }
+
+    @Override
+    public void addEdgeFilter(EdgeFilter filter) {
+        this.edgeFilter.add(filter);
+    }
+    
+    private Set<JoanaEdge> removeFilteredEdges(Set<JoanaEdge> edges) {
+        return edges.stream().filter(e -> edgeFilter.stream().allMatch(f -> f.getPredicate().negate().test(e))).collect(Collectors.toSet());
+    }
+
+    private Set<JoanaVertex> removeFilteredVertices(Set<JoanaVertex> vertices) {
+        return vertices.stream().filter(v -> vertexFilter.stream().allMatch(f -> f.getPredicate().negate().test(v))).collect(Collectors.toSet());
+    }
+
+    @Override
+    public void removeVertexFilter(VertexFilter filter) {
+        this.vertexFilter.remove(filter);
+    }
+
+    @Override
+    public void removeEdgeFilter(EdgeFilter filter) {
+        this.edgeFilter.remove(filter);
+    }
+
+    @Override
     public Integer outdegreeOf(Vertex vertex) {
-        return graph.outdegreeOf(vertex);
+        return removeFilteredEdges(graph.outgoingEdgesOf(vertex)).size();
     }
 
     @Override
     public Integer indegreeOf(Vertex vertex) {
-        return graph.indegreeOf(vertex);
+        return removeFilteredEdges(graph.incomingEdgesOf(vertex)).size();
     }
 
     @Override
@@ -304,12 +354,12 @@ public abstract class JoanaGraph
 
     @Override
     public Set<JoanaEdge> outgoingEdgesOf(Vertex vertex) {
-        return graph.outgoingEdgesOf(vertex);
+        return removeFilteredEdges(graph.outgoingEdgesOf(vertex));
     }
 
     @Override
     public Set<JoanaEdge> incomingEdgesOf(Vertex vertex) {
-        return graph.incomingEdgesOf(vertex);
+        return removeFilteredEdges(graph.incomingEdgesOf(vertex));
     }
 
     @Override
@@ -319,17 +369,17 @@ public abstract class JoanaGraph
 
     @Override
     public Set<JoanaVertex> getVertexSet() {
-        return graph.getVertexSet();
+        return removeFilteredVertices(graph.getVertexSet());
     }
 
     @Override
     public Set<JoanaEdge> getEdgeSet() {
-        return graph.getEdgeSet();
+        return removeFilteredEdges(graph.getEdgeSet());
     }
 
     @Override
     public Set<JoanaEdge> edgesOf(Vertex vertex) {
-        return graph.edgesOf(vertex);
+        return removeFilteredEdges(graph.edgesOf(vertex));
     }
 
     @Override
@@ -348,13 +398,18 @@ public abstract class JoanaGraph
     }
 
     @Override
-    public List<? extends Vertex> getLayer(int layerNum) {
-        return layering.getLayer(layerNum);
+    public List<JoanaVertex> getLayer(int layerNum) {
+        return layering.getLayer(layerNum).stream().filter(v -> 
+                vertexFilter.stream().allMatch(f -> f.getPredicate().negate().test(v))).collect(Collectors.toList());
     }
 
     @Override
     public List<List<JoanaVertex>> getLayers() {
-        return layering.getLayers();
+        List<List<JoanaVertex>> layers = new LinkedList<>();
+        for (int i = 0; i < this.getLayerCount(); i++) {
+            layers.add(this.getLayer(i));
+        }
+        return layers;
     }
 
     @Override
@@ -364,12 +419,16 @@ public abstract class JoanaGraph
 
     @Override
     public int getLayerWidth(int layerN) {
-        return layering.getLayerWidth(layerN);
+        return this.getLayer(layerN).size();
     }
 
     @Override
     public int getMaxWidth() {
-        return layering.getMaxWidth();
+        int max = 0;
+        for (int i = 0; i < this.getLayerCount(); i++) {
+            max = this.getLayer(i).size() > max ? this.getLayer(i).size() : max;
+        }
+        return max;
     }
 
     @Override

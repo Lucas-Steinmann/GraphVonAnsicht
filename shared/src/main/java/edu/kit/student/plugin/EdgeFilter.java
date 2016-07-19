@@ -1,5 +1,7 @@
 package edu.kit.student.plugin;
 
+import java.util.function.Predicate;
+
 import edu.kit.student.graphmodel.Edge;
 
 /**
@@ -7,7 +9,7 @@ import edu.kit.student.graphmodel.Edge;
  * To check if an edge passes through this filter, 
  * the client can specify it in {@code matches(Edge edge)}.
  */
-public abstract class EdgeFilter<E extends Edge> {
+public abstract class EdgeFilter {
 
     private String name;
 
@@ -31,12 +33,7 @@ public abstract class EdgeFilter<E extends Edge> {
     }
 
     /**
-     * This method checks if an edge matches this Filter.
-     * It will compare specified parameters of the edge with the defined parameters of this filter.
-     * 
-     * @param  toMatch the edge which should be checked
-     * @return true    if the edge matches this Filter, otherwise false
+     * Returns a predicate which tests if a given vertex matches this filter.
      */
-    public abstract boolean matches(E toMatch); 
-
+    public abstract Predicate<Edge> getPredicate();
 }

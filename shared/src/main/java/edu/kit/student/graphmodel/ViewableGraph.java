@@ -6,6 +6,8 @@ import java.util.Set;
 import edu.kit.student.graphmodel.action.SubGraphAction;
 import edu.kit.student.graphmodel.action.VertexAction;
 import edu.kit.student.objectproperty.GAnsProperty;
+import edu.kit.student.plugin.EdgeFilter;
+import edu.kit.student.plugin.VertexFilter;
 
 /**
  * The base graph accessed by the UI.
@@ -43,6 +45,30 @@ public interface ViewableGraph extends Viewable, Graph {
 	 * @return       the list of actions
 	 */
 	public List<VertexAction> getVertexActions(Vertex vertex);
+	
+	/**
+	 * Adds a vertex filter to the list of active filters for this graph.
+	 * @param filter the filter to add
+	 */
+	public void addVertexFilter(VertexFilter filter);
+	
+	/**
+	 * Adds an edge filter to the list of active filters for this graph.
+	 * @param filter the filter to add
+	 */
+	public void addEdgeFilter(EdgeFilter filter);
+	
+	/**
+	 * Removes a vertex filter from the list of active filters
+	 * @param filter the filter to remove
+	 */
+	public void removeVertexFilter(VertexFilter filter);
+	
+	/**
+	 * Removes a edge filter from the list of active filters
+	 * @param filter the filter to remove
+	 */
+	public void removeEdgeFilter(EdgeFilter filter);
 
 	@Override
     public Set<? extends ViewableVertex> getVertexSet();
