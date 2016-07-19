@@ -69,10 +69,12 @@ public class EdgeDrawer implements IEdgeDrawer {
 	
 	private void test(){
 		//layer of source layer must be lower than target vertex
+		System.out.println("isolated vertices: " + (this.graphVertices.size() - this.nonIsolated.size()));
 		for(ISugiyamaEdge e : this.graphEdges.stream().filter(edge->!this.selfLoops.contains(edge)).collect(Collectors.toList())){
 			assert(e.getSource().getLayer() < e.getTarget().getLayer());
 		}
 		for(ISugiyamaEdge e : this.selfLoops){
+			System.out.println("loop: "+e.getSource().getID());
 			assert(e.getSource().getLayer() == e.getTarget().getLayer());
 		}
 		for(SupplementPath p: this.paths){
@@ -283,7 +285,6 @@ public class EdgeDrawer implements IEdgeDrawer {
 		}
 	}
 	
-	//TODO: better sorting of vertices as targets to the points of source vertex !
 	private void drawNormalEdge(ISugiyamaEdge edge){
 		edge.getPath().clear();	//clears edge path before setting it again
 		ISugiyamaVertex source = edge.getSource();
@@ -459,6 +460,7 @@ public class EdgeDrawer implements IEdgeDrawer {
 		this.paths = graph.getSupplementPaths();
 		this.graphVertices = this.graph.getVertexSet();	//all graph edges
 		this.graphEdges = this.graph.getEdgeSet();
+		System.out.println("amount: "+graphVertices.size()+","+graphEdges.size());
 		this.selfLoops = new HashSet<ISugiyamaEdge>();
 		this.graphVertices.stream().filter(vertex->graph.selfLoopNumberOf(vertex)>0).forEach(vertex->this.selfLoops.addAll(graph.selfLoopsOf(vertex)));
 		this.sugiEdges = this.graphEdges.stream().filter(edge->!edge.isSupplementEdge() && !selfLoops.contains(edge)).collect(Collectors.toSet()); //edges that are not supplementEdges and no selfloop
