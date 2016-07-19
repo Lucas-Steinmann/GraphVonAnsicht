@@ -112,9 +112,11 @@ public class CrossMinimizerTest {
         }
     }
 
+    @Test
     public void hugeTest() {
-        SugiyamaGraph sugiyamaGraph = GraphUtil.generateSugiyamaGraph(250, 2, 6, true, (new Random()).nextLong());
+        SugiyamaGraph sugiyamaGraph = GraphUtil.generateSugiyamaGraph(1000, 2, 6, true, (new Random()).nextLong());
         int crossingsBefore = CrossMinimizer.crossings(sugiyamaGraph);
+        minimizer.minimizeCrossings(sugiyamaGraph);
         int crossingAfter = CrossMinimizer.crossings(sugiyamaGraph);
         assertTrue("crossingsBefore should be smaller or equal to crossingsAfter", crossingsBefore <= crossingAfter);
     }

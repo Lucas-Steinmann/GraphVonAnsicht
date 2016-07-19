@@ -59,7 +59,7 @@ public class DefaultGraphLayering<V extends Vertex> implements GraphLayering<V> 
     }
     
     public V getVertex(IntegerPoint point) {
-        List<V> layer = this.getLayer(point.y);
+        List<V> layer = layers.get(point.y);
         if (layer.size() <= point.x) {
             return null;
         }
@@ -70,12 +70,13 @@ public class DefaultGraphLayering<V extends Vertex> implements GraphLayering<V> 
     	IntegerPoint oldPos = getPosition(vertex);
         assert (vertex == getVertex(oldPos));
         // Remove from old position
-        if (oldPos.x >= this.layers.get(oldPos.y).size()) {
+        ArrayList<V> vs = this.layers.get(oldPos.y);
+        if (oldPos.x >=  vs.size()) {
             System.out.println("Error");
         }
-        this.layers.get(oldPos.y).remove(oldPos.x);
-        for (int i = oldPos.x; i < this.layers.get(oldPos.y).size(); i++) {
-            vertexToPoint.put(this.layers.get(oldPos.y).get(i), new IntegerPoint(i, oldPos.y));
+        vs.remove(oldPos.x);
+        for (int i = oldPos.x; i < vs.size(); i++) {
+            vertexToPoint.put(vs.get(i), new IntegerPoint(i, oldPos.y));
         }
 
         // Add enough layers to insert vertex
@@ -102,7 +103,15 @@ public class DefaultGraphLayering<V extends Vertex> implements GraphLayering<V> 
         if (getLayerFromVertex(vertex) == layer) {
             return;
         }
-        setPosition(vertex, new IntegerPoint(this.getLayer(layer).size(), layer));
+        List<V> assignedLayer = null;
+
+        if (getHeight() <= layer) {
+            assignedLayer = new LinkedList<>();
+        } else {
+            assignedLayer = layers.get(layer);
+        }
+
+        setPosition(vertex, new IntegerPoint(assignedLayer.size(), layer));
         assert (vertex == getVertex(getPosition(vertex)));
     }
     

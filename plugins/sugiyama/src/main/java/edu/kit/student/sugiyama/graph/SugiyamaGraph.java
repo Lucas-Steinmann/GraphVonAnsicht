@@ -166,8 +166,8 @@ public class SugiyamaGraph
 		return supplementEdge;
 	}
 
-    public SupplementPath createSupplementPath(ISugiyamaEdge replacedEdge, List<ISugiyamaVertex> dummies) {
-		SupplementPath supplementPath = new SupplementPath(replacedEdge, dummies);
+    public SupplementPath createSupplementPath(ISugiyamaEdge replacedEdge, List<ISugiyamaVertex> dummies, List<ISugiyamaEdge> supplementEdges) {
+		SupplementPath supplementPath = new SupplementPath(replacedEdge, dummies, supplementEdges);
 		this.supplementPaths.add(supplementPath);
 		this.removeEdge(replacedEdge);
 		return supplementPath;
@@ -287,10 +287,12 @@ public class SugiyamaGraph
 	public static class SupplementPath {
 		private final ISugiyamaEdge replacedEdge;
 		private final List<ISugiyamaVertex> dummies;
+		private final List<ISugiyamaEdge> supplementEdges;
 
-		public SupplementPath(ISugiyamaEdge replacedEdge, List<ISugiyamaVertex> dummies) {
+		public SupplementPath(ISugiyamaEdge replacedEdge, List<ISugiyamaVertex> dummies, List<ISugiyamaEdge> supplementEdges) {
 			this.replacedEdge = replacedEdge;
 			this.dummies = dummies;
+			this.supplementEdges = supplementEdges;
 		}
 
 		/**
@@ -316,7 +318,11 @@ public class SugiyamaGraph
 		public ISugiyamaEdge getReplacedEdge() {
 			return this.replacedEdge;
 		}
-		
+
+		public List<ISugiyamaEdge> getSupplementEdges() {
+			return supplementEdges;
+		}
+
 		/**
 		 * Reverses a supplement path by reversing the replaced edge and reversing the order of the dummy vertices on this path.
 		 */

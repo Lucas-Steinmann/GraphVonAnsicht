@@ -130,31 +130,6 @@ public class EdgeDrawer implements IEdgeDrawer {
 		}
 	}
 	
-	
-	//just temporary method for testing issues.
-	//later one need the supplement edges of a SupplementPath in it! 
-	private List<ISugiyamaEdge> getEdgesFromPath(SupplementPath path){
-		List<ISugiyamaEdge> list = new LinkedList<ISugiyamaEdge>();
-		List<ISugiyamaVertex> allVertices = new LinkedList<ISugiyamaVertex>();
-		allVertices.addAll(path.getDummyVertices());
-		allVertices.add(path.getReplacedEdge().getTarget());
-		ISugiyamaVertex first = path.getReplacedEdge().getSource();
-		boolean found = false;
-		for(ISugiyamaVertex second: allVertices){
-			found = false;
-			for(ISugiyamaEdge e: this.graphEdges){
-				if(e.getSource().getID() == first.getID() && e.getTarget().getID() == second.getID()){
-					list.add(e);
-					found = true;
-					break;
-				}
-			}
-			assert(found);
-			first = second;
-		}
-		return list;
-	}
-	
 	/**
 	 * Sorts the vertices in every layer in ascending order of their X-coordinate.
 	 */
@@ -396,7 +371,7 @@ public class EdgeDrawer implements IEdgeDrawer {
 	private void drawSupplementPath(SupplementPath path){
 		assert(this.paths.contains(path));
 		EdgePath replacedEdgePath = path.getReplacedEdge().getPath();
-		List<ISugiyamaEdge> sEdges = getEdgesFromPath(path);
+		List<ISugiyamaEdge> sEdges =  path.getSupplementEdges();
 		List<DoublePoint> points = new LinkedList<DoublePoint>();
 		sEdges.forEach(edge->this.drawNormalEdge(edge));	//sets edgePath for every supplement edge
 		sEdges.forEach(edge->points.addAll(edge.getPath().getNodes()));	//puts together all edge paths
