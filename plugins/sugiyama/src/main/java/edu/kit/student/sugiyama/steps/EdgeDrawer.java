@@ -322,7 +322,6 @@ public class EdgeDrawer implements IEdgeDrawer {
 	
 	//draw self loops on the bottom of the vertex
 	private void drawSelfLoop(ISugiyamaEdge loop){
-		System.out.println("so much self looooooops!!");
 		assert(this.selfLoops.contains(loop));
 		assert(loop.getSource().getID() == loop.getTarget().getID());	//just for being very sure
 		assert(loop.getPath().getNodes().isEmpty());	//must not be set anywhere else before
