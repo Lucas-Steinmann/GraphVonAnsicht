@@ -344,7 +344,16 @@ public abstract class JoanaGraph
     }
     
     private Set<JoanaEdge> removeFilteredEdges(Set<JoanaEdge> edges) {
-        return edges.stream().filter(e -> edgeFilter.stream().allMatch(f -> f.getPredicate().negate().test(e))).collect(Collectors.toSet());
+        Set<JoanaEdge> edgeFiltered = edges.stream().filter(e -> edgeFilter.stream().allMatch(f -> f.getPredicate().negate().test(e))).collect(Collectors.toSet());
+        Set<JoanaEdge> vertexFiltered = new HashSet<>(edgeFiltered);
+        for (JoanaEdge edge : edgeFiltered) {
+            JoanaVertex source = edge.getSource();
+            JoanaVertex target = edge.getTarget();
+            if (vertexFilter.stream().anyMatch(f -> f.getPredicate().test(source) || f.getPredicate().test(target))) {
+                vertexFiltered.remove(edge);
+            }
+        }
+        return vertexFiltered;
     }
 
     private Set<JoanaVertex> removeFilteredVertices(Set<JoanaVertex> vertices) {
