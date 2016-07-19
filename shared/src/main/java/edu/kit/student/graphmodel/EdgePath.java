@@ -1,8 +1,8 @@
 package edu.kit.student.graphmodel;
 
-import java.util.List;
-
 import edu.kit.student.util.DoublePoint;
+
+import java.util.List;
 
 /**
  * An abstract super class for edge paths.
@@ -31,4 +31,5 @@ public abstract class EdgePath {
 	public abstract void addPoint(DoublePoint newPoint);
 
 
+	public abstract void clear();
 }

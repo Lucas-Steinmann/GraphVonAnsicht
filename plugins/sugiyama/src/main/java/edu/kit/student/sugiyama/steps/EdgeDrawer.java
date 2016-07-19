@@ -376,6 +376,7 @@ public class EdgeDrawer implements IEdgeDrawer {
 		List<DoublePoint> points = new LinkedList<DoublePoint>();
 		sEdges.forEach(edge->this.drawNormalEdge(edge));	//sets edgePath for every supplement edge
 		sEdges.forEach(edge->points.addAll(edge.getPath().getNodes()));	//puts together all edge paths
+		replacedEdgePath.clear();
 		points.forEach(point->replacedEdgePath.addPoint(point));
 	}
 	
