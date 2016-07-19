@@ -226,8 +226,8 @@ public class EdgeDrawer implements IEdgeDrawer {
 	 */
 	private void sortInOutVertices(){
 		for(List<List<ISugiyamaVertex>> list : this.inOutVertices.values()){
-			list.get(0).stream().sorted((v1,v2)->Double.compare(v1.getX(),v2.getX()));
-			list.get(1).stream().sorted((v1,v2)->Double.compare(v1.getX(),v2.getX()));
+			list.get(0).sort((v1,v2)->Double.compare(v1.getX(),v2.getX()));
+			list.get(1).sort((v1,v2)->Double.compare(v1.getX(),v2.getX()));
 		}
 	}
 	
@@ -324,7 +324,7 @@ public class EdgeDrawer implements IEdgeDrawer {
 		
 		//now draw edge between sPoint and tPoint!!!!!
 		if(!dEquals(sPoint.x, tPoint.x)){	//need to kink edge
-			double newY = sPoint.y + edgeKinkY;
+			double newY = tPoint.y - edgeKinkY;
 			DoublePoint t1 = new DoublePoint(sPoint.x, newY);
 			DoublePoint t2 = new DoublePoint(tPoint.x, newY);
 			assert(this.points.add(t1));
