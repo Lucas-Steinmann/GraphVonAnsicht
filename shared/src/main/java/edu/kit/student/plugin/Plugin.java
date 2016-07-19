@@ -39,7 +39,7 @@ public interface Plugin {
      * If none are provided returns {@code null} or an empty list.
      * @return the list of provided vertex filter
      */
-    public List<VertexFilter<? extends Vertex>> getVertexFilter();
+    public List<VertexFilter> getVertexFilter();
     
 
     /**
@@ -47,7 +47,7 @@ public interface Plugin {
      * If none are provided returns {@code null} or an empty list.
      * @return the list of provided edge filter
      */
-    public List<EdgeFilter<? extends Edge>> getEdgeFilter();
+    public List<EdgeFilter> getEdgeFilter();
     
     /**
      * Returns all by the plugin provided {@link Exporter}.

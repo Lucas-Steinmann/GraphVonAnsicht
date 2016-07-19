@@ -310,6 +310,14 @@ public class SugiyamaGraph
 		public List<ISugiyamaVertex> getDummyVertices() {
 			return this.dummies;
 		}
+		
+		/**
+		 * Returns the list of supplement edges in the path sorted form source to target.
+		 * @return the list of supplement edges
+		 */
+		public List<ISugiyamaEdge> getSupplementEdges(){
+			return this.supplementEdges;
+		}
 
 		/**
 		 * Returns the edge which is substituted by this path
@@ -317,10 +325,6 @@ public class SugiyamaGraph
 		 */
 		public ISugiyamaEdge getReplacedEdge() {
 			return this.replacedEdge;
-		}
-
-		public List<ISugiyamaEdge> getSupplementEdges() {
-			return supplementEdges;
 		}
 
 		/**

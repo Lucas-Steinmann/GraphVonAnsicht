@@ -1,5 +1,7 @@
 package edu.kit.student.plugin;
 
+import java.util.function.Predicate;
+
 import edu.kit.student.graphmodel.Vertex;
 
 /**
@@ -8,9 +10,13 @@ import edu.kit.student.graphmodel.Vertex;
  * 
  *
  */
-public abstract class VertexFilter<V extends Vertex> {
+public abstract class VertexFilter {
 
     private String name;
+
+    public VertexFilter(String name) {
+        this.name = name;
+    }
 
     /**
      * Getter of name.
@@ -27,13 +33,8 @@ public abstract class VertexFilter<V extends Vertex> {
     }
 
     /**
-     * This method checks if an vertex matches this Filter.
-     * It will compare specified parameters of the vertex 
-     * with the defined parameters of this filter.
-     * 
-     * @param toMatch the vertex which should be checked
-     * @return true if the edge matches this Filter, otherwise false
+     * Returns a predicate which tests if a given vertex matches this filter.
      */
-    public abstract boolean matches(V toMatch);
+    public abstract Predicate<Vertex> getPredicate();
 
 }

@@ -129,7 +129,7 @@ public class EdgeDrawer implements IEdgeDrawer {
 			}
 		}
 	}
-	
+
 	/**
 	 * Sorts the vertices in every layer in ascending order of their X-coordinate.
 	 */
@@ -180,7 +180,7 @@ public class EdgeDrawer implements IEdgeDrawer {
 	 * Fills mapping of Integer vertex.id to an list that contains two lists of ISUgiyamaVertex.
 	 * The first list contains vertices that are going in this vertex, the second ones going out of this vertex.
 	 */
-	private void fillInOutVertices(){	//TODO: maybe need to adjust the in out vertices in case of an self loop ?
+	private void fillInOutVertices(){
 		for(ISugiyamaEdge e : this.graphEdges){
 			if(!this.inOutVertices.containsKey(e.getSource().getID())){	// add new entry for source id
 				List<List<ISugiyamaVertex>> list = new LinkedList<List<ISugiyamaVertex>>();
@@ -286,6 +286,7 @@ public class EdgeDrawer implements IEdgeDrawer {
 		assert(found);
 		
 		int pointPosition = pointsBeforeVertex(source) + index +1;	//relative Y-position of this edge if it has to kink horizontally. (multiplied by distancePerEdgeLayer)
+		System.out.println("source layer: " + source.getLayer()+"; layer count: " + graph.getLayerCount());
 		double edgeDistances = this.distancePerEdgeInLayer[source.getLayer()];
 		double edgeKinkY = pointPosition * edgeDistances;
 		DoublePoint sPoint = this.inOutPoints.get(source.getID()).get(1).get(index);

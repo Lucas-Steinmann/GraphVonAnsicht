@@ -155,7 +155,7 @@ public class CrossMinimizer implements ICrossMinimizer {
 				ISugiyamaEdge ne = null;
 				int c = 0;
 
-				for(int l = lowerLayer + 1; l <= upperLayer;l++){
+				for(int l = lowerLayer + 1; l <= upperLayer; l++){
 					c++;
 					ISugiyamaVertex dummy = null;
 
