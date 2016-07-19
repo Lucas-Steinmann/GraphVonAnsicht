@@ -8,6 +8,7 @@ import java.util.Set;
 
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.ViewableGraph;
+import edu.kit.student.graphmodel.ViewableVertex;
 import edu.kit.student.graphmodel.action.SubGraphAction;
 import edu.kit.student.graphmodel.action.VertexAction;
 import edu.kit.student.plugin.EdgeFilter;
@@ -272,7 +273,8 @@ public class GraphView extends Pane {
                 GraphView.this.contextMenu.getItems().removeAll(dynamicMenuListItems);
                 dynamicMenuListItems.clear();
 
-                Set<Vertex> vertices = new HashSet<>();
+                Set<ViewableVertex> vertices = new HashSet<>();
+                // Display subgraph actions
                 for(VertexShape shape : getSelectionModel().getSelectedItems()) {
                     vertices.add(getFactory().getVertexFromShape(shape));
                 }
@@ -294,20 +296,36 @@ public class GraphView extends Pane {
                     GraphView.this.contextMenu.getItems().add(item);
                 }
                 if (vertices.size() == 1) {
+                    // Display vertex actions;
                     for (VertexAction action : getFactory().getGraph().getVertexActions(vertices.iterator().next())) {
-                    MenuItem item = new MenuItem(action.getName());
-                    dynamicMenuListItems.add(item);
-                    item.setOnAction(new EventHandler<ActionEvent>() {
+                        MenuItem item = new MenuItem(action.getName());
+                        dynamicMenuListItems.add(item);
+                        item.setOnAction(new EventHandler<ActionEvent>() {
 
-                        @Override
-                        public void handle(ActionEvent event) {
-                            action.handle();
-                            GraphView.this.getCurrentLayoutOption().chooseLayout();
-                            GraphView.this.getCurrentLayoutOption().applyLayout();
-                            GraphView.this.reloadGraph();
-                        }
-                    });
-                    GraphView.this.contextMenu.getItems().add(item);
+                            @Override
+                            public void handle(ActionEvent event) {
+                                action.handle();
+                                GraphView.this.getCurrentLayoutOption().chooseLayout();
+                                GraphView.this.getCurrentLayoutOption().applyLayout();
+                                GraphView.this.reloadGraph();
+                            }
+                        });
+                        GraphView.this.contextMenu.getItems().add(item);
+                    }
+                    // Display links
+                    if (vertices.iterator().next().getLink() != -1) {
+                        // TODO: Get name of Graph
+                        MenuItem item = new MenuItem("Open Graph: " + "$GraphName");
+                        dynamicMenuListItems.add(item);
+                        // set action to open new graph
+                        item.setOnAction(new EventHandler<ActionEvent>() {
+
+                            @Override
+                            public void handle(ActionEvent event) {
+                            }
+                        });
+                        GraphView.this.contextMenu.getItems().add(item);
+                        
                     }
                 }
             }

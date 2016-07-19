@@ -123,6 +123,11 @@ public class SugiyamaLayoutAlgorithm<G extends DirectedGraph & LayeredGraph>
 
     @Override
     public void layout(DirectedGraph graph) {
+		setCycleRemover(new CycleRemover());
+		setLayerAssigner(new LayerAssigner());
+		setCrossMinimizer(new CrossMinimizer());
+		setVertexPositioner(new VertexPositioner());
+		setEdgeDrawer(new EdgeDrawer());
 		SugiyamaGraph wrappedGraph = new SugiyamaGraph(graph);
 		assigner.addRelativeConstraints(relativeLayerConstraints);
 

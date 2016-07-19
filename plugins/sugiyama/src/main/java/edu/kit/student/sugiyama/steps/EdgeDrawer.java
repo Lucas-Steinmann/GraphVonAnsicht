@@ -269,7 +269,7 @@ public class EdgeDrawer implements IEdgeDrawer {
 	
 	//TODO: better sorting of vertices as targets to the points of source vertex !
 	private void drawNormalEdge(ISugiyamaEdge edge){
-		assert(edge.getPath().getNodes().isEmpty());
+		edge.getPath().clear();	//clears edge path before setting it again
 		ISugiyamaVertex source = edge.getSource();
 		ISugiyamaVertex target = edge.getTarget();
 		EdgePath path = edge.getPath();
@@ -322,10 +322,9 @@ public class EdgeDrawer implements IEdgeDrawer {
 	
 	//draw self loops on the bottom of the vertex
 	private void drawSelfLoop(ISugiyamaEdge loop){
-		System.out.println("so much self looooooops!!");
+		loop.getPath().clear();//clears edgepath before setting it again
 		assert(this.selfLoops.contains(loop));
 		assert(loop.getSource().getID() == loop.getTarget().getID());	//just for being very sure
-		assert(loop.getPath().getNodes().isEmpty());	//must not be set anywhere else before
 		ISugiyamaVertex vertex = loop.getSource();	//doesn't matter if source or target
 		EdgePath path = loop.getPath();
 		
@@ -371,11 +370,11 @@ public class EdgeDrawer implements IEdgeDrawer {
 	private void drawSupplementPath(SupplementPath path){
 		assert(this.paths.contains(path));
 		EdgePath replacedEdgePath = path.getReplacedEdge().getPath();
+		replacedEdgePath.clear();
 		List<ISugiyamaEdge> sEdges =  path.getSupplementEdges();
 		List<DoublePoint> points = new LinkedList<DoublePoint>();
 		sEdges.forEach(edge->this.drawNormalEdge(edge));	//sets edgePath for every supplement edge
 		sEdges.forEach(edge->points.addAll(edge.getPath().getNodes()));	//puts together all edge paths
-		replacedEdgePath.clear();
 		points.forEach(point->replacedEdgePath.addPoint(point));
 	}
 	
@@ -444,7 +443,6 @@ public class EdgeDrawer implements IEdgeDrawer {
 		this.paths = graph.getSupplementPaths();
 		this.graphVertices = this.graph.getVertexSet();	//all graph edges
 		this.graphEdges = this.graph.getEdgeSet();
-		this.graphEdges.forEach(edge->edge.getPath().getNodes().clear());	//deletes all existing points in the edge's edgepath
 		this.selfLoops = new HashSet<ISugiyamaEdge>();
 		this.graphVertices.stream().filter(vertex->graph.selfLoopNumberOf(vertex)>0).forEach(vertex->this.selfLoops.addAll(graph.selfLoopsOf(vertex)));
 		this.sugiEdges = this.graphEdges.stream().filter(edge->!edge.isSupplementEdge() && !selfLoops.contains(edge)).collect(Collectors.toSet()); //edges that are not supplementEdges and no selfloop

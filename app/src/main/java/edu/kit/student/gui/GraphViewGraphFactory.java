@@ -11,6 +11,7 @@ import edu.kit.student.graphmodel.Edge;
 import edu.kit.student.graphmodel.Graph;
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.ViewableGraph;
+import edu.kit.student.graphmodel.ViewableVertex;
 import edu.kit.student.graphmodel.serialize.SerializedEdge;
 import edu.kit.student.graphmodel.serialize.SerializedGraph;
 import edu.kit.student.graphmodel.serialize.SerializedVertex;
@@ -35,7 +36,7 @@ public class GraphViewGraphFactory {
 	private static int colorLength = 7;
 	
 	private ViewableGraph graph;
-	private Map<VertexShape, Vertex> vertices;
+	private Map<VertexShape, ViewableVertex> vertices;
 	private Map<EdgeShape, Edge> edges;
 
 	/**
@@ -46,7 +47,7 @@ public class GraphViewGraphFactory {
 	 *            The graph data that will be shown.
 	 */
 	public GraphViewGraphFactory(ViewableGraph graph) {
-		vertices = new HashMap<VertexShape, Vertex>();
+		vertices = new HashMap<>();
 		edges = new HashMap<EdgeShape, Edge>();
 		this.graph = graph;
 		
@@ -83,7 +84,7 @@ public class GraphViewGraphFactory {
 	 *            The shape that represents the vertex.
 	 * @return The Vertex being represented by the passed shape.
 	 */
-	public Vertex getVertexFromShape(GAnsGraphElement shape) {
+	public ViewableVertex getVertexFromShape(GAnsGraphElement shape) {
 		return vertices.get(shape);
 	}
 
@@ -113,8 +114,8 @@ public class GraphViewGraphFactory {
 	}
 	
 	private void createVertices() {
-		Set<? extends Vertex> set = graph.getVertexSet();
-		for(Vertex vertex : set) {
+		Set<? extends ViewableVertex> set = graph.getVertexSet();
+		for(ViewableVertex vertex : set) {
 			VertexShape shape = new VertexShape(vertex);
 			vertices.put(shape, vertex);
 		}

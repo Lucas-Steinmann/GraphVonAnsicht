@@ -9,6 +9,7 @@ import edu.kit.student.graphmodel.FastGraphAccessor;
 import edu.kit.student.graphmodel.LayeredGraph;
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.ViewableGraph;
+import edu.kit.student.graphmodel.ViewableVertex;
 import edu.kit.student.graphmodel.action.SubGraphAction;
 import edu.kit.student.graphmodel.action.VertexAction;
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
@@ -16,7 +17,6 @@ import edu.kit.student.graphmodel.directed.DirectedGraph;
 import edu.kit.student.objectproperty.GAnsProperty;
 import edu.kit.student.plugin.EdgeFilter;
 import edu.kit.student.plugin.LayoutOption;
-import edu.kit.student.plugin.PluginManager;
 import edu.kit.student.plugin.VertexFilter;
 import edu.kit.student.util.IdGenerator;
 
@@ -29,16 +29,16 @@ public abstract class JoanaGraph
     implements DirectedGraph, LayeredGraph, ViewableGraph {
     
 	
-    @Override
-    public List<SubGraphAction> getSubGraphActions(Set<Vertex> vertices) {
-        List<SubGraphAction> actions = new LinkedList<>();
-        if (getVertexSet().containsAll(vertices) && 
-        		vertices.size() > 1) {
-            actions.add(newCollapseAction(vertices));
-        }
-
-        return actions;
-    }
+//    @Override
+//	public List<SubGraphAction> getSubGraphActions(Set<ViewableVertex> vertices) {
+//        List<SubGraphAction> actions = new LinkedList<>();
+//        if (getVertexSet().containsAll(vertices) && 
+//        		vertices.size() > 1) {
+//            actions.add(newCollapseAction(vertices));
+//        }
+//
+//        return actions;
+//    }
 
     @Override
     public List<VertexAction> getVertexActions(Vertex vertex) {
@@ -46,6 +46,17 @@ public abstract class JoanaGraph
         if (this.collapsedVertices.contains(vertex) && this.getVertexSet().contains(vertex)) {
             actions.add(expandActions.get(vertex));
         }
+        return actions;
+    }
+
+    @Override
+    public List<SubGraphAction> getSubGraphActions(Set<ViewableVertex> vertices) {
+        List<SubGraphAction> actions = new LinkedList<>();
+        if (getVertexSet().containsAll(vertices) && 
+        		vertices.size() > 1) {
+            actions.add(newCollapseAction(new HashSet<>(vertices)));
+        }
+
         return actions;
     }
 
@@ -333,7 +344,16 @@ public abstract class JoanaGraph
     }
     
     private Set<JoanaEdge> removeFilteredEdges(Set<JoanaEdge> edges) {
-        return edges.stream().filter(e -> edgeFilter.stream().allMatch(f -> f.getPredicate().negate().test(e))).collect(Collectors.toSet());
+        Set<JoanaEdge> edgeFiltered = edges.stream().filter(e -> edgeFilter.stream().allMatch(f -> f.getPredicate().negate().test(e))).collect(Collectors.toSet());
+        Set<JoanaEdge> vertexFiltered = new HashSet<>(edgeFiltered);
+        for (JoanaEdge edge : edgeFiltered) {
+            JoanaVertex source = edge.getSource();
+            JoanaVertex target = edge.getTarget();
+            if (vertexFilter.stream().anyMatch(f -> f.getPredicate().test(source) || f.getPredicate().test(target))) {
+                vertexFiltered.remove(edge);
+            }
+        }
+        return vertexFiltered;
     }
 
     private Set<JoanaVertex> removeFilteredVertices(Set<JoanaVertex> vertices) {
