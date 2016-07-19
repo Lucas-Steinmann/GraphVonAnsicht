@@ -6,7 +6,6 @@ import edu.kit.student.graphmodel.directed.DirectedEdge;
 import edu.kit.student.graphmodel.directed.DirectedGraph;
 import edu.kit.student.objectproperty.GAnsProperty;
 import edu.kit.student.plugin.LayoutOption;
-import edu.kit.student.util.DoublePoint;
 import edu.kit.student.util.IntegerPoint;
 import javafx.scene.paint.Color;
 import javafx.util.Pair;
@@ -50,17 +49,17 @@ public class SugiyamaGraph
 
 		layering = new DefaultGraphLayering<>(new HashSet<>());
 		for (Vertex vertex: graph.getVertexSet()) {
-		    //TODO: Why -1 and not 0? Does -1 mean an illegal state? Why not just put all vertices on layer 0 at start to achieve an consistent state at all time.
-		    //      In the statement after this all vertices are set to the starting layer. Isn't this layer 0?
+			//TODO: Why -1 and not 0? Does -1 mean an illegal state? Why not just put all vertices on layer 0 at start to achieve an consistent state at all time.
+			//      In the statement after this all vertices are set to the starting layer. Isn't this layer 0?
 			//SugiyamaVertex sugiyamaVertex = new SugiyamaVertex(vertex, -1);
 			SugiyamaVertex sugiyamaVertex = new SugiyamaVertex(vertex);
 			vertices.add(sugiyamaVertex);	//fills vertexset with all wrapped vertices
 			tmpVertexMap.put(vertex.getID(), sugiyamaVertex);
 		}
 		for(DirectedEdge edge: graph.getEdgeSet()){
-			SugiyamaEdge sugiyamaEdge = new SugiyamaEdge(edge, 
-			        tmpVertexMap.get(edge.getSource().getID()),
-			        tmpVertexMap.get(edge.getTarget().getID()));
+			SugiyamaEdge sugiyamaEdge = new SugiyamaEdge(edge,
+					tmpVertexMap.get(edge.getSource().getID()),
+					tmpVertexMap.get(edge.getTarget().getID()));
 			edges.add(sugiyamaEdge);	//fills edgeset with all wrapped edges
 		}
 		this.graph = new DefaultDirectedGraph<>(vertices, edges);
@@ -69,7 +68,7 @@ public class SugiyamaGraph
 	}
 
 	public SugiyamaGraph(String name, Set<ISugiyamaVertex> vertices, Set<ISugiyamaEdge> edges) {
-	    this(new DefaultDirectedGraph<>(vertices, edges));
+		this(new DefaultDirectedGraph<>(vertices, edges));
 	}
 
 //	/**
@@ -81,7 +80,7 @@ public class SugiyamaGraph
 //	 * @param length the length of the path which replaces the edge
 //	 */
 //	private void replaceWithSupplementPath(ISugiyamaEdge edge, int length) {
-//		//TODO implement ? or unnecessary ?! edges are yet replaced with createSupplementpath() 
+//		//TODO implement ? or unnecessary ?! edges are yet replaced with createSupplementpath()
 //	}
 
 	public Set<SupplementPath> getSupplementPaths() {
@@ -90,19 +89,19 @@ public class SugiyamaGraph
 
 	@Override
 	public int getLayerCount() {
-	    return layering.getLayerCount();
+		return layering.getLayerCount();
 	}
 
 	@Override
 	public int getVertexCount(int layerNum) {
-	    return layering.getVertexCount(layerNum);
+		return layering.getVertexCount(layerNum);
 	}
 
 	@Override
 	public void reverseEdge(ISugiyamaEdge edge) {
-	    graph.removeEdge(edge);
-	    edge.reverse();
-	    graph.addEdge(edge);
+		graph.removeEdge(edge);
+		edge.reverse();
+		graph.addEdge(edge);
 	}
 
 	@Override
@@ -113,7 +112,7 @@ public class SugiyamaGraph
 	@Override
 	public void swapVertices(ISugiyamaVertex first, ISugiyamaVertex second) {
 		assert (this.getLayer(first)==this.getLayer(second)); //both vertices have to be on the same layer!
-		
+
 		IntegerPoint tmp = layering.getPosition(first);
 		layering.setPosition(first, layering.getPosition(second));
 		layering.setPosition(second, tmp);
@@ -123,42 +122,42 @@ public class SugiyamaGraph
 	public int getLayer(ISugiyamaVertex vertex) {
 		return vertex.getLayer();
 	}
-	
+
 	private int getLayerById(int vertexID) {
-	    ISugiyamaVertex v = this.getVertexByID(vertexID);
-	    if (v == null) {
-	        return -1;
-	    }
-	    return v.getLayer();
+		ISugiyamaVertex v = this.getVertexByID(vertexID);
+		if (v == null) {
+			return -1;
+		}
+		return v.getLayer();
 	}
-	
+
 	private ISugiyamaVertex getVertexByID(int vertexID) {
-	    for (ISugiyamaVertex vertex : this.getVertexSet()) {
-	        if (vertex.getID() == vertexID) {
-	            return vertex;
-	        }
-	    }
-	    return null;
+		for (ISugiyamaVertex vertex : this.getVertexSet()) {
+			if (vertex.getID() == vertexID) {
+				return vertex;
+			}
+		}
+		return null;
 	}
-	
+
 
 	@Override
 	public List<ISugiyamaVertex> getLayer(int layerNum) {
-	    return layering.getLayer(layerNum);
+		return layering.getLayer(layerNum);
 	}
 
 	@Override
 	public List<List<ISugiyamaVertex>> getLayers() {
-	    return layering.getLayers();
+		return layering.getLayers();
 	}
-	
+
 	@Override
 	public DummyVertex createDummy(String name, String label, int layer) {
 		DummyVertex dummyVertex = new DummyVertex(name, label, layer);
 		this.addVertex(dummyVertex);
 		return dummyVertex;
 	}
-	
+
 	@Override
 	public SupplementEdge createSupplementEdge(String name, String label, ISugiyamaVertex source, ISugiyamaVertex target) {
 		SupplementEdge supplementEdge = new SupplementEdge(name, label, source, target);
@@ -166,7 +165,7 @@ public class SugiyamaGraph
 		return supplementEdge;
 	}
 
-    public SupplementPath createSupplementPath(ISugiyamaEdge replacedEdge, List<ISugiyamaVertex> dummies, List<ISugiyamaEdge> supplementEdges) {
+	public SupplementPath createSupplementPath(ISugiyamaEdge replacedEdge, List<ISugiyamaVertex> dummies, List<ISugiyamaEdge> supplementEdges) {
 		SupplementPath supplementPath = new SupplementPath(replacedEdge, dummies, supplementEdges);
 		this.supplementPaths.add(supplementPath);
 		this.removeEdge(replacedEdge);
@@ -174,16 +173,16 @@ public class SugiyamaGraph
 	}
 
 	private void removeEdge(ISugiyamaEdge edge) {
-	    graph.removeEdge(edge);
-    }
+		graph.removeEdge(edge);
+	}
 
 	private void addEdge(ISugiyamaEdge edge) {
-        graph.addEdge(edge);
-    }
+		graph.addEdge(edge);
+	}
 
 	private void addVertex(ISugiyamaVertex edge) {
-        graph.addVertex(edge);
-    }
+		graph.addVertex(edge);
+	}
 
 	@Override
 	public void setLayerY(int layerNum, int y) {
@@ -201,7 +200,7 @@ public class SugiyamaGraph
 
 	@Override
 	public void assignToLayer(ISugiyamaVertex vertex, int layerNum) {
-	    this.layering.setLayer(vertex, layerNum);
+		this.layering.setLayer(vertex, layerNum);
 	}
 
 	@Override
@@ -217,17 +216,17 @@ public class SugiyamaGraph
 
 	@Override
 	public int getHeight() {
-	    return layering.getHeight();
+		return layering.getHeight();
 	}
 
 	@Override
 	public int getMaxWidth() {
-	    return layering.getMaxWidth();
+		return layering.getMaxWidth();
 	}
-	
+
 	@Override
 	public int getLayerWidth(int layerN) {
-	    return layering.getLayerWidth(layerN);
+		return layering.getLayerWidth(layerN);
 	}
 
 	@Override
@@ -261,7 +260,7 @@ public class SugiyamaGraph
 		out=out.substring(0, out.length()-2);
 		return out+="}";
 	}
-	
+
 	/**
 	 * A supplement path for connecting vertices, which are more than one layer apart.
 	 * They are stored in the ISugiyamaEdge along with the substituted edge.
@@ -292,7 +291,7 @@ public class SugiyamaGraph
 		public List<ISugiyamaVertex> getDummyVertices() {
 			return this.dummies;
 		}
-		
+
 		/**
 		 * Returns the list of supplement edges in the path sorted form source to target.
 		 * @return the list of supplement edges
@@ -321,27 +320,27 @@ public class SugiyamaGraph
 	 * A supplement edge which is part of a {@link SupplementPath}.
 	 */
 	public class SupplementEdge implements ISugiyamaEdge {
-		
+
 		private String name;
 		private String label;
 		private ISugiyamaVertex source;
 		private ISugiyamaVertex target;
 		private boolean isReversed;
 		private EdgePath path;
-		
+
 		public SupplementEdge(String name, String label) {
 			this.name=name;
 			this.label=label;
 			this.path = new OrthogonalEdgePath();
 		}
-		
+
 		public SupplementEdge(String name, String label, ISugiyamaVertex source, ISugiyamaVertex target) {
 			this(name,label);
 			this.source=source;
 			this.target=target;
 			this.isReversed=false;
 		}
-				
+
 		// a SupplementEdge is a SupplementEdge
 		public boolean isSupplementEdge(){
 			return true;
@@ -351,6 +350,11 @@ public class SugiyamaGraph
 		public void setVertices(ISugiyamaVertex source, ISugiyamaVertex target) {
 			this.source=source;
 			this.target=target;
+		}
+
+		@Override
+		public DirectedEdge getWrappedEdge() {
+			return null;
 		}
 
 		@Override
@@ -390,7 +394,7 @@ public class SugiyamaGraph
 		@Override
 		public void addToFastGraphAccessor(FastGraphAccessor fga) {
 			// TODO implement!!!
-			
+
 		}
 
 		@Override
@@ -413,11 +417,11 @@ public class SugiyamaGraph
 			return this.isReversed;
 		}
 
-        @Override
-        public List<GAnsProperty<?>> getProperties() {
-            return new LinkedList<>();
-        }
-		
+		@Override
+		public List<GAnsProperty<?>> getProperties() {
+			return new LinkedList<>();
+		}
+
 		@Override
 		public String toString(){
 			return this.name + "[S" + this.getID() + "](" + this.source.toString() + "->" + this.target.toString() + ")";
@@ -440,7 +444,7 @@ public class SugiyamaGraph
 	 * A supplement vertex which is part of a {@link SupplementPath}.
 	 */
 	public class DummyVertex extends DefaultVertex implements ISugiyamaVertex {
-		
+
 		public DummyVertex(String name, String label, int layer) {
 			super(name, label);
 			layering.addVertex(this, layer);
@@ -452,14 +456,14 @@ public class SugiyamaGraph
 
 		@Override
 		public int getLayer() {
-		    return layering.getLayerFromVertex(this);
+			return layering.getLayerFromVertex(this);
 		}
 
 		@Override
 		public void setLayer(int layerNum) {
-		    layering.setLayer(this, layerNum);
+			layering.setLayer(this, layerNum);
 		}
-		
+
 		@Override
 		public String toString(){
 			return this.getName() + "[D" + this.getID() + "]";
@@ -491,57 +495,57 @@ public class SugiyamaGraph
 		}
 
 		public void setLayer(int layer) {
-		    layering.setLayer(this, layer);
+			layering.setLayer(this, layer);
 		}
 
-        @Override
-        public String getName() {
-        	return this.vertex.getName();
-        }
+		@Override
+		public String getName() {
+			return this.vertex.getName();
+		}
 
-        @Override
-        public Integer getID() {
-            return this.vertex.getID();
-        }
+		@Override
+		public Integer getID() {
+			return this.vertex.getID();
+		}
 
-        @Override
-        public String getLabel() {
-            return this.vertex.getLabel();
-        }
+		@Override
+		public String getLabel() {
+			return this.vertex.getLabel();
+		}
 
-        @Override
-        public int getX() {
-            return this.vertex.getX();
-        }
+		@Override
+		public int getX() {
+			return this.vertex.getX();
+		}
 
-        @Override
-        public int getY() {
-            return this.vertex.getY();
-        }
+		@Override
+		public int getY() {
+			return this.vertex.getY();
+		}
 
-        @Override
-        public void setX(int x) {
-            this.vertex.setX(x);
-            
-        }
+		@Override
+		public void setX(int x) {
+			this.vertex.setX(x);
 
-        @Override
-        public void setY(int y) {
-            this.vertex.setY(y);
-            
-        }
+		}
 
-        @Override
-        public void addToFastGraphAccessor(FastGraphAccessor fga) {
-            this.vertex.addToFastGraphAccessor(fga);
-            
-        }
+		@Override
+		public void setY(int y) {
+			this.vertex.setY(y);
+
+		}
+
+		@Override
+		public void addToFastGraphAccessor(FastGraphAccessor fga) {
+			this.vertex.addToFastGraphAccessor(fga);
+
+		}
 
 		@Override
 		public List<GAnsProperty<?>> getProperties() {
 			return this.vertex.getProperties();
 		}
-		
+
 		@Override
 		public String toString(){
 			return this.getName() + "[" + this.getID() + "]";
@@ -598,7 +602,7 @@ public class SugiyamaGraph
 			target = tmp;
 			this.isReversed=!this.isReversed;
 		}
-		
+
 		//a SugiyamaEdge is not a SupplementEdge
 		public boolean isSupplementEdge(){
 			return false;
@@ -624,11 +628,11 @@ public class SugiyamaGraph
 ////			return supplement;
 //		    return null;
 //		}
-//		
+//
 //		private boolean isSupplementPath(){
 //			return this.isSupplement;
 //		}
-//		
+//
 //		private void setSupplementPath(int length){
 //			//this.supplementpath=new SupplementPath(this,length);	//TODO check if it would be wiser to add a constructor to SupplementPath to
 //			//SupplementPath(String, String, ISugiyamaEdge edge, int length)
@@ -683,14 +687,14 @@ public class SugiyamaGraph
 		public List<GAnsProperty<?>> getProperties() {
 			return wrappedEdge.getProperties();
 		}
-		
-        @Override
-        public void setVertices(ISugiyamaVertex source, ISugiyamaVertex nv) {
-            this.source = source;
-            this.target = nv;
-            
-        }
-        
+
+		@Override
+		public void setVertices(ISugiyamaVertex source, ISugiyamaVertex nv) {
+			this.source = source;
+			this.target = nv;
+
+		}
+
 		@Override
 		public String toString(){
 			return this.getName() + "[" + this.getID() + "](" + this.source.toString() + "->" + this.target.toString() + ")";
@@ -705,17 +709,22 @@ public class SugiyamaGraph
 		public EdgeArrow getArrowHead() {
 			return this.wrappedEdge.getArrowHead();
 		}
+
+		@Override
+		public DirectedEdge getWrappedEdge() {
+			return wrappedEdge;
+		}
 	}
 
-    @Override
-    public Integer outdegreeOf(Vertex vertex) {
-        return graph.outdegreeOf(vertex);
-    }
+	@Override
+	public Integer outdegreeOf(Vertex vertex) {
+		return graph.outdegreeOf(vertex);
+	}
 
-    @Override
-    public Integer indegreeOf(Vertex vertex) {
-        return graph.indegreeOf(vertex);
-    }
+	@Override
+	public Integer indegreeOf(Vertex vertex) {
+		return graph.indegreeOf(vertex);
+	}
 
 	@Override
 	public Integer selfLoopNumberOf(Vertex vertex) {
@@ -723,31 +732,31 @@ public class SugiyamaGraph
 	}
 
 	@Override
-    public FastGraphAccessor getFastGraphAccessor() {
-        // TODO Auto-generated method stub
-        return null;
-    }
+	public FastGraphAccessor getFastGraphAccessor() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
-    @Override
-    public void addToFastGraphAccessor(FastGraphAccessor fga) {
-        // TODO Auto-generated method stub
-        
-    }
+	@Override
+	public void addToFastGraphAccessor(FastGraphAccessor fga) {
+		// TODO Auto-generated method stub
 
-    @Override
-    public Set<ISugiyamaEdge> edgesOf(Vertex vertex) {
-        return graph.edgesOf(vertex);
-    }
+	}
 
-    @Override
-    public Set<ISugiyamaEdge> outgoingEdgesOf(Vertex vertex) {
-        return graph.outgoingEdgesOf(vertex);
-    }
+	@Override
+	public Set<ISugiyamaEdge> edgesOf(Vertex vertex) {
+		return graph.edgesOf(vertex);
+	}
 
-    @Override
-    public Set<ISugiyamaEdge> incomingEdgesOf(Vertex vertex) {
-        return graph.incomingEdgesOf(vertex);
-    }
+	@Override
+	public Set<ISugiyamaEdge> outgoingEdgesOf(Vertex vertex) {
+		return graph.outgoingEdgesOf(vertex);
+	}
+
+	@Override
+	public Set<ISugiyamaEdge> incomingEdgesOf(Vertex vertex) {
+		return graph.incomingEdgesOf(vertex);
+	}
 
 	@Override
 	public Set<ISugiyamaEdge> selfLoopsOf(Vertex vertex) {
@@ -755,34 +764,34 @@ public class SugiyamaGraph
 	}
 
 	@Override
-    public Set<ISugiyamaVertex> getVertexSet() {
-        return graph.getVertexSet();
-    }
+	public Set<ISugiyamaVertex> getVertexSet() {
+		return graph.getVertexSet();
+	}
 
-    @Override
-    public Set<ISugiyamaEdge> getEdgeSet() {
-        return graph.getEdgeSet();
-    }
+	@Override
+	public Set<ISugiyamaEdge> getEdgeSet() {
+		return graph.getEdgeSet();
+	}
 
-    @Override
-    public void setPositionsOnLayer(int layer, List<ISugiyamaVertex> newLayer) {
-        int x = 0; 
-        for (ISugiyamaVertex vertex : newLayer) {
-            if (!(this.layering.getLayerFromVertex(vertex) == layer)) {
-                throw new IllegalArgumentException("All vertices have to be on the specified layer, when calling setPositionOnLayer");
-            }
-            this.layering.setPosition(vertex, new IntegerPoint(x, layer));
-            x++;
-        }
-    }
+	@Override
+	public void setPositionsOnLayer(int layer, List<ISugiyamaVertex> newLayer) {
+		int x = 0;
+		for (ISugiyamaVertex vertex : newLayer) {
+			if (!(this.layering.getLayerFromVertex(vertex) == layer)) {
+				throw new IllegalArgumentException("All vertices have to be on the specified layer, when calling setPositionOnLayer");
+			}
+			this.layering.setPosition(vertex, new IntegerPoint(x, layer));
+			x++;
+		}
+	}
 
-    @Override
-    public List<LayoutOption> getRegisteredLayouts() {
-        return new LinkedList<>();
-    }
+	@Override
+	public List<LayoutOption> getRegisteredLayouts() {
+		return new LinkedList<>();
+	}
 
-    @Override
-    public LayoutOption getDefaultLayout() {
-        return null;
-    }
+	@Override
+	public LayoutOption getDefaultLayout() {
+		return null;
+	}
 }

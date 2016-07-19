@@ -1,6 +1,8 @@
 package edu.kit.student.sugiyama.graph;
 
 
+import java.util.Set;
+
 /**
  * A LayeredGraph which additionally defines functions to position vertices in the sugiyama-layout.
  */
@@ -21,6 +23,15 @@ public interface IVertexPositionerGraph extends ISugiyamaStepGraph {
 	 * @param x 	 the x-coordinate
 	 */
 	public void setX(ISugiyamaVertex vertex, int x);
+
+
+	/**
+	 * Returns all SupplementPaths that have been created in CrossMinimizer.
+	 * So these are all paths that contain DummyVertices
+	 *
+	 * @return a set of all SupplementPaths
+	 */
+	public Set<SugiyamaGraph.SupplementPath> getSupplementPaths();
 
 	
 }

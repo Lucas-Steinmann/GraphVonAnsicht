@@ -63,7 +63,7 @@ public class JoanaEdge implements DirectedEdge {
 	}
     
     public enum Kind {
-    	CD, CE, CF, CL, DD, DH, HE, PI, PO, PS, RF, SU, NF, JF, UN, CC, JD, NTSCD,
+    	DEBUG, CD, CE, CF, CL, DD, DH, HE, PI, PO, PS, RF, SU, NF, JF, UN, CC, JD, NTSCD,
     	SD, DA, DL, VD, RD, SH, SF, ID, IW, RY, FORK, FORK_IN, FORK_OUT, JOIN, JOIN_OUT,
     	CONFLICT_DATA, CONFLICT_ORDER, FD, FI;
     	
@@ -74,6 +74,7 @@ public class JoanaEdge implements DirectedEdge {
     	
         public Color color() {
         	switch(this) {
+			case DEBUG: return Color.web("0xFF00FF");
         	case RF:
         	case PO:
         	case CF:
@@ -166,4 +167,8 @@ public class JoanaEdge implements DirectedEdge {
     public JoanaVertex getTarget() {
         return this.target;
     }
+
+	public void setEdgeKind(Kind edgeKind) {
+		this.edgeKind.setValue(edgeKind);
+	}
 }

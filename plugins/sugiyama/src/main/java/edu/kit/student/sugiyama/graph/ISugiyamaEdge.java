@@ -1,9 +1,9 @@
 package edu.kit.student.sugiyama.graph;
 
-import java.util.List;
-
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.directed.DirectedEdge;
+
+import java.util.List;
 
 public interface ISugiyamaEdge extends DirectedEdge {
 
@@ -24,4 +24,5 @@ public interface ISugiyamaEdge extends DirectedEdge {
 
     void setVertices(ISugiyamaVertex source, ISugiyamaVertex nv);
 
+    public DirectedEdge getWrappedEdge();
 }
