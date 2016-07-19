@@ -220,10 +220,8 @@ public class GAnsApplication {
 	                        //found valid layout and apply layout
 	                        option.chooseLayout();
 	                        Settings settings = option.getSettings();
-	                        if(ParameterDialogGenerator.showDialog(settings)) {
-	                            currentGraphView.setCurrentLayoutOption(option);
-	                            option.applyLayout();
-	                        }
+                            currentGraphView.setCurrentLayoutOption(option);
+                            option.applyLayout();
 	                    }
 	                }
 	            } else {
