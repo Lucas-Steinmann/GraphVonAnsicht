@@ -19,21 +19,27 @@ public class VertexPositioner implements IVertexPositioner {
 		int maxwidth = graph.getLayers().stream().mapToInt(layer -> layer.size()).max().getAsInt();
 		List<List<Segment>> segments = new LinkedList<>();
 		List<Segment> allsegments = new LinkedList<>();
+		Map<Integer, List<ISugiyamaVertex>> segmentStarts = new HashMap<>();
 		Map<Vertex, Segment> vertexToSegment = new HashMap<>();
 
 		int[] horizontalPositions = new int[maxwidth];
-		int[] horizontalWidth = new int[maxwidth];
-		int[] horizontalOffset = new int[maxwidth];
+		int[] horizontalWidth = new int[maxwidth*4];
+		int[] horizontalOffset = new int[maxwidth*4];
 		int[] localOffsets = new int[maxwidth];
+		boolean[][] blocked = new boolean[graph.getLayerCount()][maxwidth*4];
 		int horizontalSpacing = 2;
 		HorizontalDirection horizontalDirection = HorizontalDirection.RIGHT;
+
+		for (int i = 0; i < maxwidth*4; i++) {
+			segmentStarts.put(i, new LinkedList<>());
+		}
 
 		for (int i = 0; i < graph.getLayerCount(); i++) {
 			int j = 0;
 
 			for (ISugiyamaVertex vertex : graph.getLayer(i)) {
 				vertex.setX(j);
-				vertex.setY(i*60);
+				vertex.setY(i);
 				++j;
 			}
 		}
@@ -62,6 +68,8 @@ public class VertexPositioner implements IVertexPositioner {
 					allsegments.add(probableNewSegment);
 					runList.add(probableNewSegment);
 					path.getDummyVertices().forEach(vertex -> vertexToSegment.put(vertex, probableNewSegment));
+					segmentStarts.get(path.getDummyVertices().get(0).getX()).add(path.getDummyVertices().get(0));
+
 					//((JoanaEdge) path.getReplacedEdge().getWrappedEdge()).setEdgeKind(JoanaEdge.Kind.DEBUG);
 				} else {
 					nextSupplementPaths.add(path);
@@ -102,12 +110,32 @@ public class VertexPositioner implements IVertexPositioner {
 		}*/
 
 		segments.forEach(segment -> segment.sort((o1, o2) -> (o1.getVertices().stream().mapToInt(vertex -> vertex.getX()).max().getAsInt() - o2.getVertices().stream().mapToInt(vertex -> vertex.getX()).max().getAsInt()) * 10000 + (o1.getVertices().get(0).getY() - o2.getVertices().get(0).getY())));
+		//Collections.reverse(segments);
 
 		for (List<Segment> segmentRun : segments) {
 			for (Segment segment : segmentRun) {
 				int extremePosition = segment.getVertices().get(0).getX();
+				/*for (int i = 0; i < 10; i++) {
+					if (!isBlocked(extremePosition, segment.getVertices().get(0).getY(), segment.getVertices().get(segment.getVertices().size() - 1).getY(), blocked)) {
+						break;
+					}
+
+					extremePosition++;
+				}*/
 
 				correctSegment(segment, extremePosition, graph);
+				segmentStarts.get(extremePosition).remove(segment);
+
+				for (ISugiyamaVertex segmentStart : segmentStarts.get(extremePosition)) {
+					segmentStart.setX(extremePosition + 1);
+				}
+
+				if (!segmentStarts.containsKey(extremePosition + 1)) {
+					segmentStarts.put(extremePosition + 1, new LinkedList<>());
+				}
+
+				segmentStarts.get(extremePosition + 1).addAll(segmentStarts.get(extremePosition));
+				segmentStarts.get(extremePosition).add(segment.getVertices().get(0));
 			}
 		}
 
@@ -123,8 +151,18 @@ public class VertexPositioner implements IVertexPositioner {
 
 		for (Vertex vertex : graph.getVertexSet()) {
 			vertex.setX(horizontalOffset[vertex.getX()]);
-
+			vertex.setY(vertex.getY() * 60);
 		}
+	}
+
+	private boolean isBlocked(int x, int yStart, int yStop, boolean[][] blocked) {
+		for (int i = yStart; i < yStop; i++) {
+			if (blocked[i][x]) {
+				return true;
+			}
+		}
+
+		return false;
 	}
 
 	private void correctSegment(Segment segment, int newX, IVertexPositionerGraph graph) {
