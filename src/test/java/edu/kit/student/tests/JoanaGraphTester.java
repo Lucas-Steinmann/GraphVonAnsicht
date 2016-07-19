@@ -84,7 +84,7 @@ public class JoanaGraphTester {
     }
 
     @Test
-    public void test() {
+    public void callGraphSizeTest() {
         for (JoanaGraphModel model : models) {
             int callGraphVertices = model.getCallGraph().getVertexSet().size();
             Assert.assertEquals(callGraphVertices, model.getMethodGraphs().size());

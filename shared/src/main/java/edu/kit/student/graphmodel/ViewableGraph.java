@@ -38,7 +38,7 @@ public interface ViewableGraph extends Viewable, Graph {
 	 * @param vertices the vertices inducing the subgraph
 	 * @return         the list of actions
 	 */
-	public List<SubGraphAction> getSubGraphActions(Set<Vertex> vertices);
+	public List<SubGraphAction> getSubGraphActions(Set<ViewableVertex> vertices);
 
 	/**
 	 * Returns a list of actions which can be executed on the specified vertex.
