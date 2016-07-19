@@ -36,4 +36,13 @@ public abstract class EdgeFilter {
      * Returns a predicate which tests if a given vertex matches this filter.
      */
     public abstract Predicate<Edge> getPredicate();
+    
+    @Override
+    public boolean equals(Object o) {
+    	if(o instanceof EdgeFilter) {
+    		return (this.getName().compareTo(((EdgeFilter)o).getName()) == 0);
+    	} else {
+    		return super.equals(o);
+    	}
+    }
 }

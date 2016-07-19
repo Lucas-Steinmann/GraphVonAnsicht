@@ -116,7 +116,9 @@ public class GAnsApplication extends Application {
 		structureView.addEventHandler(MouseEvent.MOUSE_CLICKED, new EventHandler<MouseEvent>() {
 			@Override
 			public void handle(MouseEvent mouseEvent) {
-				GAnsApplication.this.currentGraphView.getSelectionModel().clear();
+				if(GAnsApplication.this.currentGraphView != null) {
+					GAnsApplication.this.currentGraphView.getSelectionModel().clear();
+				}
 				if(mouseEvent.getButton() == MouseButton.PRIMARY && mouseEvent.getClickCount() == 2) {
 					openGraph(GAnsApplication.this.structureView.getIdOfSelectedItem());
 				} else {
@@ -124,8 +126,8 @@ public class GAnsApplication extends Application {
 					
 					ObservableList<GAnsProperty<?>> statistics = FXCollections.observableList(graph.getStatistics());
 					informationView.setInformations(statistics);
+					mouseEvent.consume();
 				}
-				mouseEvent.consume();
 			}
 		});
 
@@ -147,8 +149,6 @@ public class GAnsApplication extends Application {
 			}
 		});
 		
-		
-
 		mainViewLayout.getItems().addAll(graphViewTabPane, treeInfoLayout);
 		rootLayout.getChildren().addAll(menuBar, mainViewLayout);
 
@@ -160,7 +160,6 @@ public class GAnsApplication extends Application {
 	}
 	
 	private void parseCommandLineArguments(Parameters params) {
-	    
 	    Map<String, String> namedParams = params.getNamed();
 	    String filename = "";
 	    String layout = "";
@@ -197,7 +196,6 @@ public class GAnsApplication extends Application {
 	              // Information not specified
 	              showErrorDialog("Unspecified argument!");
 	        	  System.exit(1);
-	              
 	        }
 	    }
 	    
@@ -499,6 +497,7 @@ public class GAnsApplication extends Application {
 							public void handle(ActionEvent e) {
 								option.chooseLayout();
 								if(ParameterDialogGenerator.showDialog(option.getSettings())) option.applyLayout();
+								currentGraphView.reloadGraph();
 							}
 						});
 						changeLayoutItem.getItems().add(item);
@@ -507,25 +506,41 @@ public class GAnsApplication extends Application {
 			}
 		});
 		
-		Menu menuGroups = new Menu("Groups");
-		MenuItem groupItem = new MenuItem("Edit");
+		Menu menuOther = new Menu("Other");
+		MenuItem groupItem = new MenuItem("Edit Groups");
 		groupItem.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
 				GAnsApplication.this.currentGraphView.openGroupDialog();
 			}
 		});
-		menuGroups.getItems().add(groupItem);
+		
+		MenuItem filterItem = new MenuItem("Edit Filter");
+		filterItem.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent event) {
+				GAnsApplication.this.currentGraphView.openFilterDialog();
+			}
+		});
+		
+		menuOther.getItems().addAll(groupItem, filterItem);
 		
 		// disabling the groups button if there is no graphView
-		menuGroups.setOnShowing(new EventHandler<Event>() {
+		menuOther.setOnShowing(new EventHandler<Event>() {
 			@Override
 			public void handle(Event e) {
-				groupItem.setDisable(GAnsApplication.this.currentGraphView == null);
+				if(GAnsApplication.this.currentGraphView == null) {
+					groupItem.setDisable(true);
+					filterItem.setDisable(true);
+				} else {
+					groupItem.setDisable(false);
+					filterItem.setDisable(false);
+				}
+				
 			}
 		});
 
-		menuBar.getMenus().addAll(menuFile, menuLayout, menuGroups);
+		menuBar.getMenus().addAll(menuFile, menuLayout, menuOther);
 	}
 	
 	private void setupContextMenu() {

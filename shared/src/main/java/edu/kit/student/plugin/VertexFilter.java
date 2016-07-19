@@ -36,5 +36,14 @@ public abstract class VertexFilter {
      * Returns a predicate which tests if a given vertex matches this filter.
      */
     public abstract Predicate<Vertex> getPredicate();
+    
+    @Override
+    public boolean equals(Object o) {
+    	if(o instanceof VertexFilter) {
+    		return (this.getName().compareTo(((VertexFilter)o).getName()) == 0);
+    	} else {
+    		return super.equals(o);
+    	}
+    }
 
 }
