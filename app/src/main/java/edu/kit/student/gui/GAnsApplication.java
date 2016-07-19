@@ -262,13 +262,8 @@ public class GAnsApplication {
 			importer.importGraph(workspace.getGraphModelBuilder(), inputStream);
 			this.model = workspace.getGraphModel();
 			ViewableGraph currentGraph = this.model.getRootGraphs().get(0);
-			createGraphView();
-			if(openLayoutSelectionDialog(currentGraph)) {
-				showGraph(currentGraph);
-				this.structureView.showGraphModel(this.model);
-			} else {
-				this.graphViewTabPane.getTabs().clear();
-			}
+			openGraph(currentGraph);
+			this.structureView.showGraphModel(this.model);
 			
 		} catch (ParseException e) {
 			this.graphViewTabPane.getTabs().clear();
@@ -567,14 +562,18 @@ public class GAnsApplication {
 				}
 			}
 			if(!found) {
-				createGraphView();
-				LayoutOption defaultOption = graph.getDefaultLayout();
-				defaultOption.chooseLayout();
-				currentGraphView.setCurrentLayoutOption(defaultOption);
-				defaultOption.applyLayout();
-				showGraph(graph);
+				openGraph(graph);
 			}
 		}
+	}
+	
+	private void openGraph(ViewableGraph graph) {
+		createGraphView();
+		LayoutOption defaultOption = graph.getDefaultLayout();
+		defaultOption.chooseLayout();
+		currentGraphView.setCurrentLayoutOption(defaultOption);
+		defaultOption.applyLayout();
+		showGraph(graph);
 	}
 	
 	private void showErrorDialog(String message) {
