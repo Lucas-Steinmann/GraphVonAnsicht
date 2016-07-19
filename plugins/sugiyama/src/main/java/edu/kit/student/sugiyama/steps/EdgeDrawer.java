@@ -33,6 +33,7 @@ public class EdgeDrawer implements IEdgeDrawer {
 	private Set<ISugiyamaEdge> graphEdges;
 	private Set<ISugiyamaEdge> sugiEdges; //edges that are not supplementEdges and no selfloops
 	private Set<ISugiyamaEdge> selfLoops;	//edges with same source and target vertex
+	private Set<ISugiyamaVertex> nonIsolated = new HashSet<>();	//non isolated vertices, set in method filInOutDeg(); !!!!!!!
 	private double[] spaceBetweenLayers;
 	private double[] distancePerEdgeInLayer;
 	
@@ -134,7 +135,8 @@ public class EdgeDrawer implements IEdgeDrawer {
 	 * Sorts the vertices in every layer in ascending order of their X-coordinate.
 	 */
 	private void sortLayers(){
-		this.graph.getLayers().forEach(list->list.stream().sorted((v1,v2)->Integer.compare(v1.getX(),v2.getX())));
+//		this.graph.getLayers().forEach(list->list.stream().sorted((v1,v2)->Double.compare(v1.getX(),v2.getX())));
+		this.graph.getLayers().forEach(list->list.sort((v1,v2)->Double.compare(v1.getX(),v2.getX())));
 	}
 	
 	/**
@@ -145,19 +147,24 @@ public class EdgeDrawer implements IEdgeDrawer {
 		for(ISugiyamaEdge e :this.graphEdges){
 			ISugiyamaVertex source = e.getSource();
 			ISugiyamaVertex target = e.getTarget();
+			if(!this.nonIsolated.contains(source)){
+				this.nonIsolated.add(source);
+			}
+			if(!this.nonIsolated.contains(target)){
+				this.nonIsolated.add(target);
+			}
 			if(!this.inOutDeg.containsKey(source.getID())){	//add source vertex to map, if not contained
 				this.inOutDeg.put(source.getID(), new int[2]);
-
 			}
 			if(!this.inOutDeg.containsKey(target.getID())){	//add target vertex to map, if not contained
 				this.inOutDeg.put(target.getID(), new int[2]);
-
 			}
 			this.inOutDeg.get(source.getID())[1]++;	//source vertex got one outgoing edge more
 			if(!this.selfLoops.contains(e)){	//if edge describes a selfloop just add an outdegree for that vertex, because this edge is drawn under this vertex
 				this.inOutDeg.get(target.getID())[0]++;	//target vertex got one incoming edge more
 			}
 		}
+		this.graphVertices.stream().filter(v->!this.nonIsolated.contains(v)).collect(Collectors.toList()).forEach(v->this.inOutDeg.put(v.getID(), new int[2]));
 	}
 	
 	/**
@@ -167,17 +174,26 @@ public class EdgeDrawer implements IEdgeDrawer {
 	 */
 	private void fillInOutPoints(){
 		for(ISugiyamaVertex v : this.graphVertices){
-			List<DoublePoint> inPoints = this.getInPoints(v);
-			List<DoublePoint> outPoints = this.getOutPoints(v);
-			List<List<DoublePoint>> list = new ArrayList<List<DoublePoint>>(2);
-			list.add(inPoints);
-			list.add(outPoints);
-			this.inOutPoints.put(v.getID(),list);
+			if(!this.nonIsolated.contains(v)){
+				List<DoublePoint> inPoints = new LinkedList<DoublePoint>();
+				List<DoublePoint> outPoints = new LinkedList<DoublePoint>();
+				List<List<DoublePoint>> list = new ArrayList<List<DoublePoint>>(2);
+				list.add(inPoints);
+				list.add(outPoints);
+				this.inOutPoints.put(v.getID(), null);	//an isolated vertex has no incoming or outgoing points
+			}else {
+				List<DoublePoint> inPoints = this.getInPoints(v);
+				List<DoublePoint> outPoints = this.getOutPoints(v);
+				List<List<DoublePoint>> list = new ArrayList<List<DoublePoint>>(2);
+				list.add(inPoints);
+				list.add(outPoints);
+				this.inOutPoints.put(v.getID(),list);
+			}
 		}
 	}
 	
 	/**
-	 * Fills mapping of Integer vertex.id to an list that contains two lists of ISUgiyamaVertex.
+	 * Fills mapping of Integer vertex.id to an list that contains two lists of ISugiyamaVertex.
 	 * The first list contains vertices that are going in this vertex, the second ones going out of this vertex.
 	 */
 	private void fillInOutVertices(){
@@ -210,8 +226,8 @@ public class EdgeDrawer implements IEdgeDrawer {
 	 */
 	private void sortInOutVertices(){
 		for(List<List<ISugiyamaVertex>> list : this.inOutVertices.values()){
-			list.get(0).stream().sorted((v1,v2)->Integer.compare(v1.getX(),v2.getX()));
-			list.get(1).stream().sorted((v1,v2)->Integer.compare(v1.getX(),v2.getX()));
+			list.get(0).stream().sorted((v1,v2)->Double.compare(v1.getX(),v2.getX()));
+			list.get(1).stream().sorted((v1,v2)->Double.compare(v1.getX(),v2.getX()));
 		}
 	}
 	
