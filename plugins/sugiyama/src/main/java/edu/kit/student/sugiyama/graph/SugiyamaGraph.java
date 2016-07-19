@@ -185,24 +185,6 @@ public class SugiyamaGraph
         graph.addVertex(edge);
     }
 
-    @Override
-	public void addEdgeCorner(ISugiyamaEdge edge, int x, int y, int index) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public void removeEdgeCorner(ISugiyamaEdge edge, int index) {
-		// TODO Auto-generated method stub
-
-	}
-
-	@Override
-	public List<DoublePoint> getEdgeCorners(ISugiyamaEdge edge) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
 	@Override
 	public void setLayerY(int layerNum, int y) {
 		if (layerNum >= layerPositions.size()) {

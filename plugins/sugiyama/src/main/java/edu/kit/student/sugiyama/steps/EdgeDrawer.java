@@ -286,7 +286,6 @@ public class EdgeDrawer implements IEdgeDrawer {
 		assert(found);
 		
 		int pointPosition = pointsBeforeVertex(source) + index +1;	//relative Y-position of this edge if it has to kink horizontally. (multiplied by distancePerEdgeLayer)
-		System.out.println("source layer: " + source.getLayer()+"; layer count: " + graph.getLayerCount());
 		double edgeDistances = this.distancePerEdgeInLayer[source.getLayer()];
 		double edgeKinkY = pointPosition * edgeDistances;
 		DoublePoint sPoint = this.inOutPoints.get(source.getID()).get(1).get(index);
