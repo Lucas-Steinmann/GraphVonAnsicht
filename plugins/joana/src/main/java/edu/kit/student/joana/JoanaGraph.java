@@ -1,5 +1,12 @@
 package edu.kit.student.joana;
 
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import edu.kit.student.graphmodel.CollapsedVertex;
@@ -14,13 +21,12 @@ import edu.kit.student.graphmodel.action.SubGraphAction;
 import edu.kit.student.graphmodel.action.VertexAction;
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
 import edu.kit.student.graphmodel.directed.DirectedGraph;
+import edu.kit.student.graphmodel.directed.DirectedGraphLayoutOption;
 import edu.kit.student.objectproperty.GAnsProperty;
 import edu.kit.student.plugin.EdgeFilter;
 import edu.kit.student.plugin.LayoutOption;
 import edu.kit.student.plugin.VertexFilter;
 import edu.kit.student.util.IdGenerator;
-
-import java.util.*;
 
 /**
  * An abstract superclass for all JOANA specific graphs.
@@ -133,7 +139,12 @@ public abstract class JoanaGraph
     }
 
     public List<LayoutOption> getRegisteredLayouts() {
-        return graph.getRegisteredLayouts();
+        List<LayoutOption> options = new LinkedList<>();
+        for (DirectedGraphLayoutOption option : graph.getRegisteredLayouts()) {
+            option.setGraph(this);
+            options.add(option);
+        }
+        return options;
     }
 
 	@Override

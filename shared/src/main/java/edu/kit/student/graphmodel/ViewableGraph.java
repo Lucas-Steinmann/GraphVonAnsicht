@@ -8,6 +8,7 @@ import edu.kit.student.graphmodel.action.SubGraphAction;
 import edu.kit.student.graphmodel.action.VertexAction;
 import edu.kit.student.objectproperty.GAnsProperty;
 import edu.kit.student.plugin.EdgeFilter;
+import edu.kit.student.plugin.LayoutOption;
 import edu.kit.student.plugin.VertexFilter;
 
 /**
@@ -122,4 +123,22 @@ public interface ViewableGraph extends Viewable, Graph {
 	 * @param child the graph to add
 	 */
 	public void addChildGraph(ViewableGraph child);
+
+	/**
+	 * Returns a list of layouts which have been registered at the corresponding
+	 * LayoutRegister for this graph type. The graph implementing this interface
+	 * will be set as target of the LayoutOption.
+	 * 
+	 * @return A list of layouts which have been registered at the corresponding
+	 *         LayoutRegister for this graph type.
+	 */
+	public List<LayoutOption> getRegisteredLayouts();
+
+	/**
+	 * Returns the default layout for this graph.
+	 * This can be called when to quickly get a suiting layout without
+	 * having to decide between multiple options.
+	 * @return the default layout for this graph
+	 */
+	public LayoutOption getDefaultLayout();
 }

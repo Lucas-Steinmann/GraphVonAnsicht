@@ -784,14 +784,4 @@ public class SugiyamaGraph
 			x++;
 		}
 	}
-
-	@Override
-	public List<LayoutOption> getRegisteredLayouts() {
-		return new LinkedList<>();
-	}
-
-	@Override
-	public LayoutOption getDefaultLayout() {
-		return null;
-	}
 }

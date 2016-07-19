@@ -388,7 +388,7 @@ public class GAnsApplication {
 		return false;
 	}
 	
-	private boolean openLayoutSelectionDialog(Graph graph) {
+	private boolean openLayoutSelectionDialog(ViewableGraph graph) {
 		List<String> layoutNames = new ArrayList<String>();
 		List<LayoutOption> options = graph.getRegisteredLayouts();
 		options.forEach((option) -> layoutNames.add(option.getName()));

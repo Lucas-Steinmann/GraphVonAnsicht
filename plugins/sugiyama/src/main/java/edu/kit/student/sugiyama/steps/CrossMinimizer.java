@@ -64,6 +64,7 @@ public class CrossMinimizer implements ICrossMinimizer {
 		}
 
 		while (counter < maxRuns) {
+		    System.out.println(counter);
 			List<List<ISugiyamaVertex>> undo = new ArrayList<>();
 
 			for (List<ISugiyamaVertex> layer : graph.getLayers()) {

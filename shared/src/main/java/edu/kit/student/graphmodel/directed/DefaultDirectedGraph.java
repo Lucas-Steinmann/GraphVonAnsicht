@@ -125,8 +125,7 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
 		return edges;
 	}
 
-	@Override
-	public List<LayoutOption> getRegisteredLayouts() {
+	public List<DirectedGraphLayoutOption> getRegisteredLayouts() {
         List<DirectedGraphLayoutOption> directedLayoutOptions = new LinkedList<>();
         if (DefaultDirectedGraph.register != null) {
             directedLayoutOptions.addAll(DefaultDirectedGraph.register.getLayoutOptions());
@@ -134,7 +133,7 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
         for (DirectedGraphLayoutOption option : directedLayoutOptions) {
             option.setGraph(this);
         }
-        List<LayoutOption> layoutOptions = new LinkedList<>(directedLayoutOptions);
+        List<DirectedGraphLayoutOption> layoutOptions = new LinkedList<>(directedLayoutOptions);
         return layoutOptions;
 	}
 
@@ -264,11 +263,6 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
         return this.getVertexSet().contains(vertex);
     }
 
-	@Override
-	public LayoutOption getDefaultLayout() {
-		return null;
-	}
-	
 	public static DirectedGraphLayoutRegister getDirectedGraphLayoutRegister()
 	{
 	    if (register == null) {
