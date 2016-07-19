@@ -341,7 +341,6 @@ public class GAnsApplication {
 
             @Override
             public void changed(ObservableValue<? extends Bounds> observable, Bounds oldValue, Bounds newValue) {
-                System.out.println(newValue.toString());
                 outerPane.setPrefSize(newValue.getWidth(), newValue.getHeight());
                 
             }
