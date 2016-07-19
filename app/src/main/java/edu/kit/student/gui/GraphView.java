@@ -10,7 +10,10 @@ import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.ViewableGraph;
 import edu.kit.student.graphmodel.action.SubGraphAction;
 import edu.kit.student.graphmodel.action.VertexAction;
+import edu.kit.student.plugin.EdgeFilter;
 import edu.kit.student.plugin.LayoutOption;
+import edu.kit.student.plugin.PluginManager;
+import edu.kit.student.plugin.VertexFilter;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.SetChangeListener;
@@ -21,12 +24,16 @@ import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Dialog;
 import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
@@ -367,8 +374,139 @@ public class GraphView extends Pane {
 		dialog.setTitle("Groups");
 		dialog.setHeaderText(null);
 		dialog.setGraphic(null);
+		dialog.showAndWait();
+	}
+	
+	public void openFilterDialog() {
+		Dialog<ButtonType> dialog = new Dialog<ButtonType>();
+
+		List<VertexFilter> selectedVertexFilter = new LinkedList<VertexFilter>();
+		List<EdgeFilter> selectedEdgeFilter = new LinkedList<EdgeFilter>();
+		
+		TabPane tabPane = new TabPane();
+		
+		Tab vertexFilterTab = new Tab("Vertices");
+		vertexFilterTab.setClosable(false);
+		vertexFilterTab.setContent(setupVertexFilterPane(selectedVertexFilter));
+		
+		Tab edgeFilterTab = new Tab("Edges");
+		edgeFilterTab.setClosable(false);
+		edgeFilterTab.setContent(setupEdgeFilterPane(selectedEdgeFilter));
+		
+		tabPane.getTabs().addAll(vertexFilterTab, edgeFilterTab);
+		
+		dialog.getDialogPane().setContent(tabPane);
+		dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
+		dialog.setTitle("Select Filter");
+		dialog.setHeaderText(null);
+		dialog.setGraphic(null);
 		dialog.setWidth(500);
 		dialog.setHeight(500);
-		dialog.showAndWait();
+		Optional<ButtonType> result = dialog.showAndWait();
+		if(result.get() == ButtonType.OK) { 
+			this.graphFactory.getGraph().setVertexFilter(selectedVertexFilter);
+			this.graphFactory.getGraph().setEdgeFilter(selectedEdgeFilter);
+		}
+	}
+	
+	private GridPane setupVertexFilterPane(List<VertexFilter> selectedVertexFilter) {
+		List<VertexFilter> vertexFilter = PluginManager.getPluginManager().getVertexFilter();
+		List<CheckBox> vertexFilterBoxes = new LinkedList<CheckBox>();
+		int column = 0;
+		int row = 0;
+		GridPane vertexFilterPane = new GridPane();
+		vertexFilterPane.setHgap(10);
+		vertexFilterPane.setVgap(10);
+		vertexFilterPane.setPadding(new Insets(10, 10, 10, 10));
+		ColumnConstraints vertexCol1 = new ColumnConstraints();
+		vertexCol1.setPercentWidth(25);
+	    ColumnConstraints vertexCol2 = new ColumnConstraints();
+	    vertexCol2.setPercentWidth(25);
+	    ColumnConstraints vertexCol3 = new ColumnConstraints();
+	    vertexCol3.setPercentWidth(25);
+	    ColumnConstraints vertexCol4 = new ColumnConstraints();
+	    vertexCol4.setPercentWidth(25);
+	    vertexFilterPane.getColumnConstraints().addAll(vertexCol1,vertexCol2,vertexCol3,vertexCol4);
+		for(VertexFilter filter : vertexFilter) {
+			if(column == 4) {
+				column = 0;
+				row++;
+			}
+			boolean selected = false;
+			if(this.graphFactory.getGraph().getActiveVertexFilter().contains(filter)) {
+				selectedVertexFilter.add(filter);
+				selected = true;
+			}
+			CheckBox box = new CheckBox(filter.getName());
+			box.setSelected(selected);
+			box.setOnAction(new EventHandler<ActionEvent>() {
+				@Override
+				public void handle(ActionEvent event) {
+					CheckBox box = (CheckBox)event.getSource();
+					int filterIndex = vertexFilterBoxes.indexOf(box);
+					if(box.isSelected()) {
+						selectedVertexFilter.add(vertexFilter.get(filterIndex));
+					} else {
+						selectedVertexFilter.remove(vertexFilter.get(filterIndex));
+					}
+					
+				}
+			});
+			vertexFilterBoxes.add(box);
+			vertexFilterPane.add(box, column, row);
+			column++;
+		}
+		return vertexFilterPane;
+	}
+	
+	//Basically a copy of setupVertexFilterPane, since there is no mutual parent class
+	private GridPane setupEdgeFilterPane(List<EdgeFilter> selectedEdgeFilter) {
+		List<EdgeFilter> edgeFilter = PluginManager.getPluginManager().getEdgeFilter();
+		List<CheckBox> edgeFilterBoxes = new LinkedList<CheckBox>();
+		int column = 0;
+		int row = 0;
+		GridPane edgeFilterPane = new GridPane();
+		edgeFilterPane.setHgap(10);
+		edgeFilterPane.setVgap(10);
+		edgeFilterPane.setPadding(new Insets(10, 10, 10, 10));
+		ColumnConstraints edgeCol1 = new ColumnConstraints();
+		edgeCol1.setPercentWidth(25);
+	    ColumnConstraints edgeCol2 = new ColumnConstraints();
+	    edgeCol2.setPercentWidth(25);
+	    ColumnConstraints edgeCol3 = new ColumnConstraints();
+	    edgeCol3.setPercentWidth(25);
+	    ColumnConstraints edgeCol4 = new ColumnConstraints();
+	    edgeCol4.setPercentWidth(25);
+	    edgeFilterPane.getColumnConstraints().addAll(edgeCol1,edgeCol2,edgeCol3,edgeCol4);
+		for(EdgeFilter filter : edgeFilter) {
+			if(column == 4) {
+				column = 0;
+				row++;
+			}
+			boolean selected = false;
+			if(this.graphFactory.getGraph().getActiveEdgeFilter().contains(filter)) {
+				selectedEdgeFilter.add(filter);
+				selected = true;
+			}
+			CheckBox box = new CheckBox(filter.getName());
+			box.setSelected(selected);
+			box.setOnAction(new EventHandler<ActionEvent>() {
+				@Override
+				public void handle(ActionEvent event) {
+					CheckBox box = (CheckBox)event.getSource();
+					int filterIndex = edgeFilterBoxes.indexOf(box);
+					if(box.isSelected()) {
+						selectedEdgeFilter.add(edgeFilter.get(filterIndex));
+					} else {
+						selectedEdgeFilter.remove(edgeFilter.get(filterIndex));
+					}
+					
+				}
+			});
+			edgeFilterBoxes.add(box);
+			edgeFilterPane.add(box, column, row);
+			column++;
+		}
+		return edgeFilterPane;
 	}
 }

@@ -1,12 +1,5 @@
 package edu.kit.student.joana;
 
-import edu.kit.student.graphmodel.*;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import edu.kit.student.graphmodel.CollapsedVertex;
@@ -313,10 +306,30 @@ public abstract class JoanaGraph
     public void addVertexFilter(VertexFilter filter) {
         this.vertexFilter.add(filter);
     }
+    
+    @Override
+    public void setVertexFilter(List<VertexFilter> filter) {
+    	this.vertexFilter = filter;
+    }
 
     @Override
     public void addEdgeFilter(EdgeFilter filter) {
         this.edgeFilter.add(filter);
+    }
+    
+    @Override
+    public void setEdgeFilter(List<EdgeFilter> filter) {
+    	this.edgeFilter = filter;
+    }
+    
+    @Override
+    public List<VertexFilter> getActiveVertexFilter() {
+    	return Collections.unmodifiableList(this.vertexFilter);
+    }
+    
+    @Override
+    public List<EdgeFilter> getActiveEdgeFilter() {
+    	return Collections.unmodifiableList(this.edgeFilter);
     }
     
     private Set<JoanaEdge> removeFilteredEdges(Set<JoanaEdge> edges) {

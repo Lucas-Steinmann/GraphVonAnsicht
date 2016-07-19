@@ -1,5 +1,6 @@
 package edu.kit.student.graphmodel;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -53,10 +54,34 @@ public interface ViewableGraph extends Viewable, Graph {
 	public void addVertexFilter(VertexFilter filter);
 	
 	/**
+	 * Sets  vertex filter from the collection to the list of active filters for this graph.
+	 * @param filter the filter collection to add
+	 */
+	public void setVertexFilter(List<VertexFilter> filter);
+	
+	/**
+	 * Returns a unmodifiable list of all active vertex filters for this graph.
+	 * @return A list of all active vertex filters for this graph.
+	 */
+	public List<VertexFilter> getActiveVertexFilter();
+	
+	/**
 	 * Adds an edge filter to the list of active filters for this graph.
 	 * @param filter the filter to add
 	 */
 	public void addEdgeFilter(EdgeFilter filter);
+	
+	/**
+	 * Adds all edge filter from the collection to the list of active filters for this graph.
+	 * @param filter the filter collection to add
+	 */
+	public void setEdgeFilter(List<EdgeFilter> filter);
+	
+	/**
+	 * Returns a unmodifiable list of all active edge filters for this graph.
+	 * @return A list of all active edge filters for this graph.
+	 */
+	public List<EdgeFilter> getActiveEdgeFilter();
 	
 	/**
 	 * Removes a vertex filter from the list of active filters
