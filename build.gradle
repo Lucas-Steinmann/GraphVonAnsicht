@@ -62,7 +62,7 @@ task allJar(type: Jar, dependsOn: classes) {
     println mergeDir
 
     manifest {
-        attributes 'Main-Class': 'edu.kit.student.gui.GAnsApplication'
+        attributes 'Main-Class': 'edu.kit.student.gui.GAnsMediator'
     }
 
     subprojects.findAll {it.name != "plugins"}.each { subproject -> 

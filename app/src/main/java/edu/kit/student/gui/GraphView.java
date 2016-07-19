@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.ViewableGraph;
 import edu.kit.student.graphmodel.ViewableVertex;
 import edu.kit.student.graphmodel.action.SubGraphAction;
@@ -58,11 +57,14 @@ public class GraphView extends Pane {
 	
 	private ContextMenu contextMenu;
 	private List<VertexGroup> groups = new LinkedList<VertexGroup>();
+	
+	private GAnsMediator mediator;
 
 	/**
 	 * Constructor.
 	 */
-	public GraphView() {
+	public GraphView(GAnsMediator mediator) {
+		this.mediator = mediator;
 		 setPrefSize(600, 600);
 //		 setStyle("-fx-background-color: lightgrey;");
 
@@ -321,15 +323,16 @@ public class GraphView extends Pane {
                         GraphView.this.contextMenu.getItems().add(item);
                     }
                     // Display links
-                    if (vertices.iterator().next().getLink() != -1) {
-                        // TODO: Get name of Graph
-                        MenuItem item = new MenuItem("Open Graph: " + "$GraphName");
+                    int linkId = vertices.iterator().next().getLink();
+                    if (linkId != -1) {
+                        MenuItem item = new MenuItem("Open Graph");
                         dynamicMenuListItems.add(item);
                         // set action to open new graph
                         item.setOnAction(new EventHandler<ActionEvent>() {
 
                             @Override
                             public void handle(ActionEvent event) {
+                            	GraphView.this.mediator.openGraph(linkId);
                             }
                         });
                         GraphView.this.contextMenu.getItems().add(item);

@@ -19,7 +19,7 @@ eclipse {
 
 jar {
     manifest {
-        attributes 'Main-Class': 'edu.kit.student.gui.GAnsApplication'
+        attributes 'Main-Class': 'edu.kit.student.gui.GAnsMediator'
     }
 }
 

@@ -25,7 +25,7 @@ import edu.kit.student.plugin.LayoutOption;
 import edu.kit.student.plugin.PluginManager;
 import edu.kit.student.plugin.Workspace;
 import edu.kit.student.plugin.WorkspaceOption;
-import javafx.application.Application;
+import javafx.application.Application.Parameters;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -64,7 +64,7 @@ import javafx.stage.Stage;
  * 
  * @author Nicolas
  */
-public class GAnsApplication extends Application {
+public class GAnsApplication {
 
 	private StructureView structureView;
 	private InformationView informationView;
@@ -79,19 +79,13 @@ public class GAnsApplication extends Application {
 	private GraphView currentGraphView;
 
 	private File currentFile;
-
-	/**
-	 * Main method.
-	 * 
-	 * @param args
-	 *            Arguments.
-	 */
-	public static void main(String[] args) {
-		launch(args);
+	private GAnsMediator mediator;
+	
+	public GAnsApplication(GAnsMediator mediator) {
+		this.mediator = mediator;
 	}
 
-	@Override
-	public void start(Stage primaryStage) throws Exception {
+	public void start(Stage primaryStage, Parameters parameters) throws Exception {
 		this.primaryStage = primaryStage;
 		primaryStage.setTitle("Graph von Ansicht - Graphviewer");
 
@@ -156,7 +150,7 @@ public class GAnsApplication extends Application {
 		primaryStage.setScene(scene);
 		primaryStage.show();
 		
-		parseCommandLineArguments(this.getParameters());
+		parseCommandLineArguments(parameters);
 		
 	}
 	
@@ -337,7 +331,7 @@ public class GAnsApplication extends Application {
 	
 	private void createGraphView() {
 		Group group = new Group();
-		GraphView graphView = new GraphView();
+		GraphView graphView = new GraphView(this.mediator);
 
 		group.getChildren().add(graphView);
 		//the pane that can be moved with the cursor
@@ -368,7 +362,6 @@ public class GAnsApplication extends Application {
 		
 		graphView.getSelectionModel().getSelectedItems().addListener(new SetChangeListener<VertexShape>() {
 			public void onChanged(Change<? extends VertexShape> changedItem) {
-				//TODO: does not work with collapsed vertices
 				ObservableSet<VertexShape> selectedItems = graphView.getSelectionModel().getSelectedItems();
 				List<GAnsProperty<?>> tmp = new LinkedList<GAnsProperty<?>>();
 				for (VertexShape element : selectedItems) {
@@ -564,7 +557,7 @@ public class GAnsApplication extends Application {
 		this.structureViewContextMenu.getItems().add(openGraph);
 	}
 	
-	private void openGraph(Integer id) {
+	public void openGraph(Integer id) {
 		if(id == -1) return;
 		ViewableGraph graph = this.model.getGraphFromId(id);
 		if(graph != null) {
