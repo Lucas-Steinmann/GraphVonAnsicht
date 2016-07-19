@@ -21,6 +21,7 @@ import javafx.collections.SetChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
+import javafx.scene.Node;
 import javafx.scene.canvas.Canvas;
 import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
@@ -152,6 +153,13 @@ public class GraphView extends Pane {
 
 		getChildren().clear();
 		getChildren().addAll(graphFactory.getGraphicalElements());
+		double maxX = 0;
+		double maxY = 0;
+		for (Node element : getChildren()) {
+		    maxX = maxX > element.getBoundsInParent().getMaxX() ? maxX : element.getBoundsInLocal().getMaxX();
+		    maxY = maxY > element.getBoundsInParent().getMaxY() ? maxY : element.getBoundsInLocal().getMaxY();
+		}
+		setPrefSize(maxX, maxY);
 	}
 
 	/**

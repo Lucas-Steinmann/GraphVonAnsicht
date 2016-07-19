@@ -35,6 +35,7 @@ import javafx.collections.SetChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
+import javafx.geometry.Bounds;
 import javafx.geometry.Orientation;
 import javafx.scene.Group;
 import javafx.scene.Scene;
@@ -342,6 +343,15 @@ public class GAnsApplication extends Application {
 		//the pane that can be moved with the cursor
 		Pane outerPane = new Pane(group);
 		outerPane.setPrefSize(graphViewTabPane.getWidth(), graphViewTabPane.getHeight());
+		graphView.boundsInParentProperty().addListener(new ChangeListener<Bounds>() {
+
+            @Override
+            public void changed(ObservableValue<? extends Bounds> observable, Bounds oldValue, Bounds newValue) {
+                System.out.println(newValue.toString());
+                outerPane.setPrefSize(newValue.getWidth(), newValue.getHeight());
+                
+            }
+        });
 		
 		ScrollPane scrollPane = new ScrollPane(outerPane);
 		scrollPane.setPrefSize(graphViewTabPane.getWidth(), graphViewTabPane.getHeight());
