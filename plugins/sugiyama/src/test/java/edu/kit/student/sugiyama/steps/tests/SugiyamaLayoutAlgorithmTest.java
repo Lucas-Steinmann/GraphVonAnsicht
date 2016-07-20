@@ -10,6 +10,8 @@ import edu.kit.student.sugiyama.steps.*;
 import org.junit.Before;
 import org.junit.Test;
 
+import java.util.Date;
+
 
 public class SugiyamaLayoutAlgorithmTest {
 
@@ -53,8 +55,10 @@ public class SugiyamaLayoutAlgorithmTest {
 	@Test
 	public void testRandomGraph() {
 		for (int i = 0; i < 3; i++) {
-			DefaultDirectedGraph<DefaultVertex, DirectedEdge> DDGraph = GraphUtil.generateGraph(30, 0.1f, true);
+			long timeBefore = (new Date()).getTime();
+			DefaultDirectedGraph<DefaultVertex, DirectedEdge> DDGraph = GraphUtil.generateGraph(1000, 0.004f, true);
 			this.alg.layout(DDGraph);
+			System.out.println("runs in " + ((new Date()).getTime() - timeBefore) + "ms");
 		}
 	}
 }

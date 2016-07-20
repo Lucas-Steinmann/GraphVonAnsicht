@@ -10,10 +10,7 @@ import edu.kit.student.parameter.Settings;
 import edu.kit.student.sugiyama.graph.SugiyamaGraph;
 import edu.kit.student.sugiyama.steps.*;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 /**
  * This class supports a customizable implementation of the Sugiyama-framework.
@@ -123,19 +120,14 @@ public class SugiyamaLayoutAlgorithm<G extends DirectedGraph & LayeredGraph>
 
     @Override
     public void layout(DirectedGraph graph) {
-		setCycleRemover(new CycleRemover());
-		setLayerAssigner(new LayerAssigner());
-		setCrossMinimizer(new CrossMinimizer());
-		setVertexPositioner(new VertexPositioner());
-		setEdgeDrawer(new EdgeDrawer());
 		SugiyamaGraph wrappedGraph = new SugiyamaGraph(graph);
-		assigner.addRelativeConstraints(relativeLayerConstraints);
-
+		long timeBefore = (new Date()).getTime();
         remover.removeCycles(wrappedGraph);
 		assigner.assignLayers(wrappedGraph);
 		minimizer.minimizeCrossings(wrappedGraph);
 		positioner.positionVertices(wrappedGraph);
 		drawer.drawEdges(wrappedGraph);
+		System.out.println("runs in " + ((new Date()).getTime() - timeBefore) + "ms");
     }
 
     @Override
@@ -152,7 +144,6 @@ public class SugiyamaLayoutAlgorithm<G extends DirectedGraph & LayeredGraph>
 
 	public void layout(DefaultDirectedGraph<DefaultVertex, DirectedEdge> graph) {
 		SugiyamaGraph wrappedGraph = new SugiyamaGraph(graph);
-		assigner.addRelativeConstraints(relativeLayerConstraints);
 
 		System.out.println("removing edges");
 		remover.removeCycles(wrappedGraph);

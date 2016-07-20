@@ -5,7 +5,17 @@ package edu.kit.student.sugiyama.graph;
  * A LayeredGraph which additionally defines functions to assign layers in the sugiyama-layout.
  */
 public interface ILayerAssignerGraph extends ISugiyamaStepGraph {
-	
+	/**
+	 * Reverses the direction of a sugiyama edge.
+	 * The underlying edge won't be reversed to avoid
+	 * inconsistencies in the underlying graph
+	 * Instead the reversing will be saved in the SugiyamaEdge.
+	 * If the edge is already reversed it will be reversed again.
+	 *
+	 * @param edge the edge to reverse its direction
+	 */
+	public void reverseEdge(ISugiyamaEdge edge);
+
 	/**
 	 * Assigns a vertex to a certain layer represented by a number.
 	 * 
@@ -30,4 +40,10 @@ public interface ILayerAssignerGraph extends ISugiyamaStepGraph {
 	 * @return         the number of vertices which are on this layer
 	 */
 	public int getVertexCount(int layerNum);
+
+	public void insertLayers(int position, int numberOfLayers);
+
+	public ISugiyamaVertex getVertexByID(int vertexID);
+
+	public void cleanUpEmtpyLayers();
 }

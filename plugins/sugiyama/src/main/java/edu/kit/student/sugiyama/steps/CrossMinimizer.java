@@ -21,12 +21,12 @@ import java.util.stream.Stream;
 public class CrossMinimizer implements ICrossMinimizer {
 	private double crossingReductionThreshold;
 	private int maxRuns;
-	private boolean stopOnThreshold = true;
+	private boolean stopOnThreshold = false;
 	private boolean intelligentThreshold = false;
 	private Settings settings;
 
 	public CrossMinimizer() {
-		this(0.001f, 10);
+		this(0.001f, 1000);
 	}
 
 	public CrossMinimizer(float crossingReductionThreshold, int maxRuns) {
@@ -50,10 +50,11 @@ public class CrossMinimizer implements ICrossMinimizer {
 		}
 
 		System.out.println("CrossMinimizer.minimizeCrossings():");
+
 		int layerCount = graph.getLayerCount();
 
 		addDummyAndEdges(graph);
-
+		System.out.println("crossings: " + crossings((SugiyamaGraph) graph));
 
 		int newCrossings = 0;
 		int oldCrossings = 0;
@@ -64,7 +65,6 @@ public class CrossMinimizer implements ICrossMinimizer {
 		}
 
 		while (counter < maxRuns) {
-		    System.out.println(counter);
 			List<List<ISugiyamaVertex>> undo = new ArrayList<>();
 
 			for (List<ISugiyamaVertex> layer : graph.getLayers()) {
@@ -95,12 +95,14 @@ public class CrossMinimizer implements ICrossMinimizer {
 				break;
 			}
 
-			if (newCrossings == 0 || oldCrossings - newCrossings < crossingReductionThreshold * oldCrossings) {
+			if (stopOnThreshold && newCrossings == 0 || oldCrossings - newCrossings < crossingReductionThreshold * oldCrossings) {
 				break;
 			}
 
 			oldCrossings = newCrossings;
 		}
+
+		System.out.println("crossings: " + crossings((SugiyamaGraph) graph));
 		//for printing the layers after cross minimization
 		graph.getLayers().forEach(iSugiyamaVertices -> System.out.println(iSugiyamaVertices.stream().map(iSugiyamaVertex -> iSugiyamaVertex.getName()).collect(Collectors.joining(", "))));
 	}

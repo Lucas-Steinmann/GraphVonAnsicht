@@ -1,21 +1,15 @@
 package edu.kit.student.sugiyama.steps;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import edu.kit.student.graphmodel.EdgePath;
+import edu.kit.student.joana.JoanaEdge;
 import edu.kit.student.sugiyama.graph.IEdgeDrawerGraph;
 import edu.kit.student.sugiyama.graph.ISugiyamaEdge;
 import edu.kit.student.sugiyama.graph.ISugiyamaVertex;
 import edu.kit.student.sugiyama.graph.SugiyamaGraph.SupplementPath;
 import edu.kit.student.util.DoublePoint;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 /**
  * This class takes a directed graph, as a {@link SugiyamaClass}.
@@ -320,6 +314,10 @@ public class EdgeDrawer implements IEdgeDrawer {
 			}
 		}
 		assert(found);
+
+		if(!found) {
+			((JoanaEdge) edge.getWrappedEdge()).setEdgeKind(JoanaEdge.Kind.DEBUG);
+		}
 		
 		DoublePoint tPoint = this.inOutPoints.get(target.getID()).get(0).get(index);
 		

@@ -5,7 +5,6 @@ import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
 import edu.kit.student.graphmodel.directed.DirectedEdge;
 import edu.kit.student.graphmodel.directed.DirectedGraph;
 import edu.kit.student.objectproperty.GAnsProperty;
-import edu.kit.student.plugin.LayoutOption;
 import edu.kit.student.util.IntegerPoint;
 import javafx.scene.paint.Color;
 import javafx.util.Pair;
@@ -98,6 +97,11 @@ public class SugiyamaGraph
 	}
 
 	@Override
+	public void insertLayers(int position, int numberOfLayers) {
+		this.layering.insertLayers(position, numberOfLayers);
+	}
+
+	@Override
 	public void reverseEdge(ISugiyamaEdge edge) {
 		graph.removeEdge(edge);
 		edge.reverse();
@@ -131,13 +135,19 @@ public class SugiyamaGraph
 		return v.getLayer();
 	}
 
-	private ISugiyamaVertex getVertexByID(int vertexID) {
+	@Override
+	public ISugiyamaVertex getVertexByID(int vertexID) {
 		for (ISugiyamaVertex vertex : this.getVertexSet()) {
 			if (vertex.getID() == vertexID) {
 				return vertex;
 			}
 		}
 		return null;
+	}
+
+	@Override
+	public void cleanUpEmtpyLayers() {
+		this.layering.cleanUpEmptyLayers();
 	}
 
 

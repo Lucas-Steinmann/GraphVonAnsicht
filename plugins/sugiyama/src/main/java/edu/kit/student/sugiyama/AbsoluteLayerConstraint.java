@@ -5,7 +5,6 @@ package edu.kit.student.sugiyama;
 
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.plugin.Constraint;
-import edu.kit.student.sugiyama.graph.SugiyamaGraph.SugiyamaVertex;
 
 import java.util.Set;
 
@@ -35,7 +34,13 @@ public class AbsoluteLayerConstraint implements Constraint {
 	 * @param minLayer lower bound of layer number
 	 * @param maxLayer upper bound of layer number
 	 */
-	public AbsoluteLayerConstraint(Set<Vertex> set, boolean inverted, boolean exclusive, int minLayer, int maxLayer) { }
+	public AbsoluteLayerConstraint(Set<Vertex> set, boolean inverted, boolean exclusive, int minLayer, int maxLayer) {
+		this.vertices = set;
+		this.inverted = inverted;
+		this.exclusive = exclusive;
+		this.minLayer = minLayer;
+		this.maxLayer = maxLayer;
+	}
 
 	/* (non-Javadoc)
 	 * @see plugin.Constraint#getName()
@@ -83,5 +88,17 @@ public class AbsoluteLayerConstraint implements Constraint {
 	 */
 	public int getMaxLayer() {
 		return maxLayer;
+	}
+
+	@Override
+	public String toString() {
+		return "AbsoluteLayerConstraint{" +
+				"inverted=" + inverted +
+				", exclusive=" + exclusive +
+				", vertices=" + vertices +
+				", minLayer=" + minLayer +
+				", maxLayer=" + maxLayer +
+				", name='" + name + '\'' +
+				'}';
 	}
 }

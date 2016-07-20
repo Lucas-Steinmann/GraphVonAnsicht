@@ -30,6 +30,18 @@ public class DefaultGraphLayering<V extends Vertex> implements GraphLayering<V> 
         return maxWidth;
     }
 
+    public void insertLayers(int position, int numberOfLayers) {
+        if (position < 0 || position > layers.size()) {
+            throw new IndexOutOfBoundsException("position must be inside of current Layers");
+        }
+
+        for (int i = layers.size() - 1; --i >= position;) {
+            for (V vertex : layers.get(i)) {
+                setLayer(vertex, getLayerFromVertex(vertex) + numberOfLayers);
+            }
+        }
+    }
+
     @Override
     public int getLayerCount() {
         return layers.size();
@@ -138,5 +150,47 @@ public class DefaultGraphLayering<V extends Vertex> implements GraphLayering<V> 
         }
         return copy;
     }
-    
+
+    public void cleanUpEmptyLayers() {
+        while (true) {
+            int size = layers.size();
+            int start = size;
+            int end = size;
+            boolean lastEmpty = false;
+
+            for (int i = 0; i < size; i++) {
+                if (lastEmpty && layers.get(i).size() != 0) {
+                    end = i;
+                    break;
+                }
+
+                if (!lastEmpty && layers.get(i).size() == 0) {
+                    start = i;
+                    lastEmpty = true;
+                }
+            }
+
+            int diff = end - start;
+            System.out.println("start: " + start + " end: " + end);
+            System.out.println(diff);
+
+            if (diff == 0) {
+                break;
+            }
+
+            System.out.println("moving vertices");
+            for (int i = end; i < size; i++) {
+                List<V> toMove = new ArrayList<>(layers.get(i));
+
+                for (V vertex : toMove) {
+                    setLayer(vertex, i - diff);
+                }
+            }
+
+            for (int i = size - 1; i > size - diff - 1; i--) {
+                System.out.println("removing layer" + i);
+                layers.remove(i);
+            }
+        }
+    }
 }

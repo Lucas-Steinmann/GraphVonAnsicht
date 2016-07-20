@@ -1,10 +1,9 @@
 package edu.kit.student.sugiyama;
 
-import java.util.Set;
-
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.plugin.Constraint;
-import edu.kit.student.sugiyama.graph.SugiyamaGraph.SugiyamaVertex;
+
+import java.util.Set;
 
 /**
  * A relative constraint, regarding layer assignment, between to sets of vertices.
@@ -69,5 +68,15 @@ public class RelativeLayerConstraint implements Constraint
 	public String getName() {
 		return name;
 	}
-	
+
+	@Override
+	public String toString() {
+		return "RelativeLayerConstraint{" +
+				"top=" + top +
+				", bottom=" + bottom +
+				", exact=" + exact +
+				", distance=" + distance +
+				", name='" + name + '\'' +
+				'}';
+	}
 }

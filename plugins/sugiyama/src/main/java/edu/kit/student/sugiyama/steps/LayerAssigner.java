@@ -1,5 +1,6 @@
 package edu.kit.student.sugiyama.steps;
 
+import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
 import edu.kit.student.sugiyama.AbsoluteLayerConstraint;
 import edu.kit.student.sugiyama.RelativeLayerConstraint;
@@ -20,15 +21,26 @@ public class LayerAssigner implements ILayerAssigner {
 	private Set<ISugiyamaEdge> graphEdges;
 	private Set<RelativeLayerConstraint> relativeConstraints;
 	private Set<AbsoluteLayerConstraint> absoluteConstraints;
+	private Set<ISugiyamaVertex> ignoredVertices;
 
-    @Override
+	public LayerAssigner() {
+		relativeConstraints = new HashSet<>();
+		absoluteConstraints = new HashSet<>();
+		ignoredVertices = new HashSet<>();
+	}
+
+	@Override
     public void addRelativeConstraints(Set<RelativeLayerConstraint> constraints) {
-        this.relativeConstraints = constraints;        
-    }
+        this.relativeConstraints.addAll(constraints);
+		System.out.println("relative Layer Constraint added");
+		System.out.println(constraints);
+	}
 
     @Override
     public void addAbsoluteConstraints(Set<AbsoluteLayerConstraint> constraints) {
-        this.absoluteConstraints = constraints;
+        this.absoluteConstraints.addAll(constraints);
+		System.out.println("absolute Layer Constraint added");
+		System.out.println(constraints);
         
     }
 
@@ -67,8 +79,85 @@ public class LayerAssigner implements ILayerAssigner {
 
 			layer++;
 		}
+
+		for (RelativeLayerConstraint currentConstraint : this.relativeConstraints) {
+			int lowestLayer = currentConstraint.topSet().stream().mapToInt(vertex -> graph.getLayer(graph.getVertexByID(vertex.getID()))).min().getAsInt();
+			currentConstraint.topSet().forEach(vertex -> ignoredVertices.add(graph.getVertexByID(vertex.getID())));
+
+			for (Vertex bottomVertex : currentConstraint.bottomSet()) {
+				ISugiyamaVertex wrapper = graph.getVertexByID(bottomVertex.getID());
+				int distance = wrapper.getLayer() - (lowestLayer + currentConstraint.getDistance() - 1);
+
+				if (distance <= 0) {
+					pushDown(wrapper, graph, 1 - distance);
+				}
+			}
+
+			graph.cleanUpEmtpyLayers();
+		}
+
+		for (AbsoluteLayerConstraint absoluteConstraint : this.absoluteConstraints) {
+			absoluteConstraint.getVertices();
+		}
+
+		for (ISugiyamaEdge edge : graph.getEdgeSet()) {
+			int sourceLayer = graph.getLayer(edge.getSource());
+			int targetLayer = graph.getLayer(edge.getTarget());
+
+			if (targetLayer < sourceLayer) {
+				graph.reverseEdge(edge);
+			}
+		}
+
 		//for printing the layers after layer assigning
 		graph.getLayers().forEach(iSugiyamaVertices -> System.out.println(iSugiyamaVertices.stream().map(iSugiyamaVertex -> iSugiyamaVertex.getName()).collect(Collectors.joining(", "))));
+	}
+
+	private void pushUp(ISugiyamaVertex vertex, ILayerAssignerGraph graph, int amount) {
+		if (amount <= 0) {
+			throw new IllegalArgumentException("amount of layers pusht must be greater than 0. Is " + amount);
+		}
+
+		int currentLayer = graph.getLayer(vertex);
+		int targetLayer = currentLayer - amount;
+		Set<ISugiyamaVertex> affectedVertices = graph.incomingEdgesOf(vertex).stream().map(edge -> edge.getSource()).collect(Collectors.toSet());
+		System.out.println("pushing up " + vertex + " by " + amount);
+
+		if (targetLayer < 0) {
+			graph.insertLayers(0, 0 - targetLayer);
+		}
+
+		graph.assignToLayer(vertex, targetLayer);
+		ignoredVertices.add(vertex);
+
+		for (ISugiyamaVertex affectedVertex : affectedVertices) {
+			if (affectedVertex.getLayer() < targetLayer || ignoredVertices.contains(affectedVertex)) {
+				continue;
+			}
+
+			pushUp(affectedVertex, graph, affectedVertex.getLayer() - targetLayer - 1);
+		}
+	}
+
+	private void pushDown(ISugiyamaVertex vertex, ILayerAssignerGraph graph, int amount) {
+		if (amount <= 0) {
+			throw new IllegalArgumentException("amount of layers pusht must be greater than 0. Is " + amount);
+		}
+
+		int currentLayer = graph.getLayer(vertex);
+		int targetLayer = currentLayer + amount;
+		Set<ISugiyamaVertex> affectedVertices = graph.outgoingEdgesOf(vertex).stream().map(edge -> edge.getTarget()).collect(Collectors.toSet());
+		System.out.println("pushing down " + vertex + " by " + amount);
+		graph.assignToLayer(vertex, targetLayer);
+		ignoredVertices.add(vertex);
+
+		for (ISugiyamaVertex affectedVertex : affectedVertices) {
+			if (affectedVertex.getLayer() > targetLayer || ignoredVertices.contains(affectedVertex)) {
+				continue;
+			}
+
+			pushDown(affectedVertex, graph, targetLayer - affectedVertex.getLayer() + 1);
+		}
 	}
 
 	private Set<ISugiyamaVertex> getSources(
