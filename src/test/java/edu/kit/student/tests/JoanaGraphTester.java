@@ -27,7 +27,7 @@ import edu.kit.student.joana.JoanaCollapsedVertex;
 import edu.kit.student.joana.JoanaGraphModel;
 import edu.kit.student.joana.JoanaGraphModelBuilder;
 import edu.kit.student.joana.JoanaVertex;
-import edu.kit.student.joana.JoanaVertex.Kind;
+import edu.kit.student.joana.JoanaVertex.VertexKind;
 import edu.kit.student.joana.JoanaWorkspace;
 import edu.kit.student.joana.methodgraph.MethodGraph;
 import edu.kit.student.plugin.Importer;
@@ -99,7 +99,7 @@ public class JoanaGraphTester {
         Map<Integer, List<Integer>> adjList = createAdjacenceList(testGraph);
         JoanaCollapsedVertex jvertex = collapse(testGraph, 
                 testGraph.getVertexSet().stream().filter((vertex) 
-                -> (vertex.getNodeKind() == Kind.ACTI)).collect(Collectors.toSet()));
+                -> (vertex.getNodeKind() == VertexKind.ACTI)).collect(Collectors.toSet()));
         testGraph.expand(jvertex);
         Assert.assertTrue(compareAdjList(adjList, createAdjacenceList(testGraph)));
     }

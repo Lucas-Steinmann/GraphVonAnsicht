@@ -14,7 +14,7 @@ import javafx.util.Pair;
  */
 public class JoanaVertex extends DefaultVertex implements ViewableVertex {
 
-    private GAnsProperty<Kind> nodeKind;
+    private GAnsProperty<VertexKind> nodeKind;
     private GAnsProperty<String> nodeSource;
     private GAnsProperty<Integer> nodeProc;
     private GAnsProperty<String> nodeOperation;
@@ -32,10 +32,10 @@ public class JoanaVertex extends DefaultVertex implements ViewableVertex {
      * @param label the label
      * @param kind  the kind (type)
      */
-    public JoanaVertex(String name, String label, Kind kind) {
+    public JoanaVertex(String name, String label, VertexKind kind) {
         super(name, label);
         
-        nodeKind = new GAnsProperty<Kind>("nodeKind", kind);
+        nodeKind = new GAnsProperty<VertexKind>("nodeKind", kind);
         nodeSource = new GAnsProperty<String>("nodeSource", "");
         nodeProc = new GAnsProperty<Integer>("nodeProc", 0);
         nodeOperation = new GAnsProperty<String>("nodeOperation", "");
@@ -60,7 +60,7 @@ public class JoanaVertex extends DefaultVertex implements ViewableVertex {
      * @param nodeEr
      * @param nodeEc
      */
-    public void setProperties(Kind nodeKind, String nodeSource, 
+    public void setProperties(VertexKind nodeKind, String nodeSource, 
             Integer nodeProc, String nodeOperation, String nodeBcName,
             Integer nodeBcIndex, Integer nodeSr, Integer nodeSc, 
             Integer nodeEr, Integer nodeEc) {
@@ -98,7 +98,7 @@ public class JoanaVertex extends DefaultVertex implements ViewableVertex {
      * 
      * @return The nodeKind of the JoanaVertex.
      */
-    public Kind getNodeKind() {
+    public VertexKind getNodeKind() {
         return nodeKind.getValue();
     }
 
@@ -194,10 +194,10 @@ public class JoanaVertex extends DefaultVertex implements ViewableVertex {
 		return nodeKind.getValue().color();
 	}
     
-    public enum Kind {
+    public enum VertexKind {
         NORM, CALL, EXIT, ENTR,
         ACTI, ACTO, FRMO, FRMI,
-        EXPR, PRED, SYNC, FOLD, SUMMARY;
+        EXPR, PRED, SYNC, FOLD, SUMMARY, UNKNOWN;
     	
     	@Override
     	public String toString() {

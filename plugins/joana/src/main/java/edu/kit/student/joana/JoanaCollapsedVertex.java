@@ -15,7 +15,7 @@ public class JoanaCollapsedVertex extends JoanaVertex implements CollapsedVertex
 	private DefaultDirectedGraph<JoanaVertex, JoanaEdge> graph;
 	
 	private GAnsProperty<String> label;
-	private GAnsProperty<Kind> kind;
+	private GAnsProperty<VertexKind> kind;
 	private GAnsProperty<Integer> vertexCount;
 	private GAnsProperty<Integer> edgeCount;
 
@@ -35,13 +35,13 @@ public class JoanaCollapsedVertex extends JoanaVertex implements CollapsedVertex
 	 */
 	public JoanaCollapsedVertex(String name, String label, DefaultDirectedGraph<JoanaVertex, JoanaEdge> graph,
 			Map<JoanaEdge, JoanaEdge> newEdgeToOldEdge) {
-		super(name, label, Kind.SUMMARY);
-		super.setProperties(Kind.SUMMARY, "", 0, "", "", 0, 0, 0, 0, 0);
+		super(name, label, VertexKind.SUMMARY);
+		super.setProperties(VertexKind.SUMMARY, "", 0, "", "", 0, 0, 0, 0, 0);
 
 		this.graph = graph;
 		
 		this.label = new GAnsProperty<String>("Label", label);
-		this.kind = new GAnsProperty<Kind>("Kind", Kind.SUMMARY);
+		this.kind = new GAnsProperty<VertexKind>("Kind", VertexKind.SUMMARY);
 		this.vertexCount = new GAnsProperty<Integer>("Vertices contained", this.graph.getVertexSet().size());
 		this.edgeCount = new GAnsProperty<Integer>("Edges contained", this.graph.getEdgeSet().size());
 	}

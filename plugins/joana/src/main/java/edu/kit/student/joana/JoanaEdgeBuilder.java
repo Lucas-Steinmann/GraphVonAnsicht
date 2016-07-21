@@ -1,8 +1,7 @@
 package edu.kit.student.joana;
 
 import edu.kit.student.graphmodel.builder.IEdgeBuilder;
-import edu.kit.student.joana.JoanaEdge.Kind;
-
+import edu.kit.student.joana.JoanaEdge.EdgeKind;
 import java.util.Optional;
 import java.util.Set;
 
@@ -15,7 +14,7 @@ public class JoanaEdgeBuilder implements IEdgeBuilder {
     boolean edgeForCallGraph;
     String source;
     String target;
-    Kind edgeKind;
+    EdgeKind edgeKind;
     String name = "";
     
     public JoanaEdgeBuilder() {
@@ -39,7 +38,7 @@ public class JoanaEdgeBuilder implements IEdgeBuilder {
     @Override
     public void addData(String keyname, String value) {
         if (keyname.equals("edgeKind")) {
-            this.edgeKind = Kind.valueOf(value);
+            this.edgeKind = EdgeKind.valueOf(value);
         }
     }
 

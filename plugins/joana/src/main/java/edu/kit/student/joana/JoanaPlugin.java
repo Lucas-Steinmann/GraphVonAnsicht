@@ -71,7 +71,7 @@ public class JoanaPlugin extends AbstractPluginBase {
     @Override
     public List<VertexFilter> getVertexFilter() {
         List<VertexFilter> filter = new LinkedList<>();
-        for (JoanaVertex.Kind kind : JoanaVertex.Kind.values()) {
+        for (JoanaVertex.VertexKind kind : JoanaVertex.VertexKind.values()) {
             filter.add(new VertexFilter(kind.name()) {
 
                 @Override
@@ -101,7 +101,7 @@ public class JoanaPlugin extends AbstractPluginBase {
     @Override
     public List<EdgeFilter> getEdgeFilter() {
         List<EdgeFilter> filter = new LinkedList<>();
-        for (JoanaEdge.Kind kind : JoanaEdge.Kind.values()) {
+        for (JoanaEdge.EdgeKind kind : JoanaEdge.EdgeKind.values()) {
             filter.add(new EdgeFilter(kind.name()) {
 
                 @Override

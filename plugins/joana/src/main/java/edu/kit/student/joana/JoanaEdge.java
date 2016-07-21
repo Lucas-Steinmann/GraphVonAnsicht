@@ -22,11 +22,11 @@ public class JoanaEdge implements DirectedEdge {
 	private Integer id;
 	private GAnsProperty<String> name;
 	private GAnsProperty<String> label;
-    private GAnsProperty<Kind> edgeKind;
+    private GAnsProperty<EdgeKind> edgeKind;
 	private OrthogonalEdgePath path;
 
-    public JoanaEdge(String name, String label, JoanaVertex source, JoanaVertex target, Kind kind) {
-        this.edgeKind = new GAnsProperty<Kind>("edgeKind", kind);
+    public JoanaEdge(String name, String label, JoanaVertex source, JoanaVertex target, EdgeKind kind) {
+        this.edgeKind = new GAnsProperty<EdgeKind>("edgeKind", kind);
         this.target = target;
         this.source = source;
         this.name = new GAnsProperty<String>("name", name);
@@ -35,7 +35,7 @@ public class JoanaEdge implements DirectedEdge {
         this.path = new OrthogonalEdgePath();
     }
 
-    public void setProperties(Kind edgeKind) {
+    public void setProperties(EdgeKind edgeKind) {
         this.edgeKind.setValue(edgeKind);
     }
 
@@ -44,7 +44,7 @@ public class JoanaEdge implements DirectedEdge {
      * 
      * @return The edgeKind of the JoanaEdge.
      */
-    public Kind getEdgeKind() {
+    public EdgeKind getEdgeKind() {
         return edgeKind.getValue();
     }
     
@@ -62,10 +62,10 @@ public class JoanaEdge implements DirectedEdge {
 		return edgeKind.getValue().color();
 	}
     
-    public enum Kind {
+    public enum EdgeKind {
     	DEBUG, CD, CE, CF, CL, DD, DH, HE, PI, PO, PS, RF, SU, NF, JF, UN, CC, JD, NTSCD,
     	SD, DA, DL, VD, RD, SH, SF, ID, IW, RY, FORK, FORK_IN, FORK_OUT, JOIN, JOIN_OUT,
-    	CONFLICT_DATA, CONFLICT_ORDER, FD, FI;
+    	CONFLICT_DATA, CONFLICT_ORDER, FD, FI, UNKNOWN;
     	
     	@Override
     	public String toString() {
@@ -168,7 +168,7 @@ public class JoanaEdge implements DirectedEdge {
         return this.target;
     }
 
-	public void setEdgeKind(Kind edgeKind) {
+	public void setEdgeKind(EdgeKind edgeKind) {
 		this.edgeKind.setValue(edgeKind);
 	}
 }

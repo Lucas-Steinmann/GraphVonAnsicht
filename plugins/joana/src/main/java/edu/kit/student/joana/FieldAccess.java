@@ -11,6 +11,8 @@ import edu.kit.student.graphmodel.FastGraphAccessor;
 public class FieldAccess extends JoanaVertex 
     implements CompoundVertex {
 
+	private FieldAccessGraph graph;
+	
     /**
      * Constructor.
      * 
@@ -19,7 +21,8 @@ public class FieldAccess extends JoanaVertex
     public FieldAccess(FieldAccessGraph graph, String name, String label) {
         //TODO: Rework hierarchy. FieldAccess can not inherit from JoanaVertex, 
         // because having a kind doesn't make sense.
-        super(name, label, Kind.EXPR);
+        super(name, label, VertexKind.EXPR);
+        this.graph = graph;
     }
 
     @Override
@@ -29,8 +32,7 @@ public class FieldAccess extends JoanaVertex
 
     @Override
     public FieldAccessGraph getGraph() {
-        // TODO Auto-generated method stub
-        return null;
+        return this.graph;
     }
 
     @Override

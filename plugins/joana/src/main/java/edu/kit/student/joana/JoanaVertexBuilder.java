@@ -10,7 +10,7 @@ public class JoanaVertexBuilder implements IVertexBuilder {
     
     String name = "";
     String label = "";
-    JoanaVertex.Kind kind;
+    JoanaVertex.VertexKind kind;
     private String source = "";
     private int proc;
     private String operation = "";
@@ -31,7 +31,7 @@ public class JoanaVertexBuilder implements IVertexBuilder {
     public void addData(String keyname, String value) {
         switch (keyname) {
           case "nodeKind":
-              kind = JoanaVertex.Kind.valueOf(value);
+              kind = JoanaVertex.VertexKind.valueOf(value);
               break;
           case "nodeSource": 
               this.source = value;

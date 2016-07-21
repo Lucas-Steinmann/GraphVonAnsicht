@@ -12,7 +12,7 @@ import edu.kit.student.joana.JoanaEdge;
 import edu.kit.student.joana.JoanaGraph;
 import edu.kit.student.joana.JoanaPlugin;
 import edu.kit.student.joana.JoanaVertex;
-import edu.kit.student.joana.JoanaVertex.Kind;
+import edu.kit.student.joana.JoanaVertex.VertexKind;
 import edu.kit.student.objectproperty.GAnsProperty;
 import edu.kit.student.plugin.LayoutOption;
 
@@ -31,7 +31,7 @@ public class MethodGraph extends JoanaGraph {
             String methodName) {
         super(methodName, vertices, edges);
         for(JoanaVertex vertex : vertices) {
-        	if(vertex.getNodeKind() == Kind.ENTR) {
+        	if(vertex.getNodeKind() == VertexKind.ENTR) {
         	    this.entry = vertex;
         	    break;
             }
@@ -141,7 +141,7 @@ public class MethodGraph extends JoanaGraph {
             if (this.isNormCompoundBase(v1)) {
                 //check for field-gets field-sets and arrays
                 for (JoanaEdge e1 : this.outgoingEdgesOf(v1)) {
-                    if (e1.getEdgeKind() == JoanaEdge.Kind.CF) {
+                    if (e1.getEdgeKind() == JoanaEdge.EdgeKind.CF) {
                         JoanaVertex v2 = e1.getTarget();                     
                         if (this.isNormCompoundField(v2)) {
                             //check for field gets
@@ -186,12 +186,12 @@ public class MethodGraph extends JoanaGraph {
     private FieldAccess findFieldGet(JoanaVertex v1, JoanaVertex v2, JoanaEdge e1) {
         
         for (JoanaEdge e2 : this.outgoingEdgesOf(v2)) {
-            if (e2.getEdgeKind() == JoanaEdge.Kind.CF) {
+            if (e2.getEdgeKind() == JoanaEdge.EdgeKind.CF) {
                 JoanaVertex v3 = e2.getTarget();
                 if (this.isExprReference(v3)) {
                     //check if there is an edge back
                     for (JoanaEdge e3 : this.outgoingEdgesOf(v3)) {
-                        if (e3.getEdgeKind() == JoanaEdge.Kind.CF
+                        if (e3.getEdgeKind() == JoanaEdge.EdgeKind.CF
                                 && e3.getTarget() == v1) {
                             
                             //System.out.println("field-get: " + v1.getName() + " : " + v2.getName() + " : " + v3.getName());
@@ -207,6 +207,7 @@ public class MethodGraph extends JoanaGraph {
                             edges.add(e3);
                             
                             FieldAccessGraph graph = new FieldAccessGraph("field-get", vertices, edges);
+                            graph.setFieldEntry(v1);
                             return new FieldAccess(graph, "field-get", "field-get");
                         }
                     }
@@ -220,12 +221,12 @@ public class MethodGraph extends JoanaGraph {
     //function to search for fieldSet. Gets the first and second vertex of an possible fieldGet
     private FieldAccess findFieldSet(JoanaVertex v1, JoanaVertex v2, JoanaEdge e1) {
         for (JoanaEdge e2 : this.outgoingEdgesOf(v2)) {
-            if (e2.getEdgeKind() == JoanaEdge.Kind.CF) {
+            if (e2.getEdgeKind() == JoanaEdge.EdgeKind.CF) {
                 JoanaVertex v3 = e2.getTarget();
                 if (this.isNormCompoundField(v3)) {
                     //check if there is an edge back
                     for (JoanaEdge e3 : this.outgoingEdgesOf(v3)) {
-                        if (e3.getEdgeKind() == JoanaEdge.Kind.CF
+                        if (e3.getEdgeKind() == JoanaEdge.EdgeKind.CF
                                 && e3.getTarget() == v1) {
                             
                             //System.out.println("field-set: " + v1.getName() + " : " + v2.getName() + " : " + v3.getName());
@@ -241,6 +242,7 @@ public class MethodGraph extends JoanaGraph {
                             edges.add(e3);
                             
                             FieldAccessGraph graph = new FieldAccessGraph("field-set", vertices, edges);
+                            graph.setFieldEntry(v1);
                             return new FieldAccess(graph, "field-set", "field-set");
                         }
                     }
@@ -255,7 +257,7 @@ public class MethodGraph extends JoanaGraph {
     private FieldAccess findStaticFieldGet(JoanaVertex v1) {
       
         for (JoanaEdge e1 : this.outgoingEdgesOf(v1)) {
-            if (e1.getEdgeKind() == JoanaEdge.Kind.CF) {
+            if (e1.getEdgeKind() == JoanaEdge.EdgeKind.CF) {
                 JoanaVertex v2 = e1.getTarget();
                 if (this.isExprReference(v2)) {                 
 
@@ -273,6 +275,7 @@ public class MethodGraph extends JoanaGraph {
                       edges.add(e1);
                       
                       FieldAccessGraph graph = new FieldAccessGraph("static field-get", vertices, edges);
+                      graph.setFieldEntry(v1);
                       return new FieldAccess(graph, "static field-get", "static field-get");
                     }
                 }
@@ -286,7 +289,7 @@ public class MethodGraph extends JoanaGraph {
     private FieldAccess findStaticFieldSet(JoanaVertex v1) {
 
         for (JoanaEdge e1 : this.outgoingEdgesOf(v1)) {
-            if (e1.getEdgeKind() == JoanaEdge.Kind.CF) {
+            if (e1.getEdgeKind() == JoanaEdge.EdgeKind.CF) {
                 JoanaVertex v2 = e1.getTarget();
                 if (this.isNormCompoundField(v2)) {
                     //TODO: check for outgoing and incoming Edges?
@@ -303,6 +306,7 @@ public class MethodGraph extends JoanaGraph {
                       edges.add(e1);
                       
                       FieldAccessGraph graph = new FieldAccessGraph("static field-set", vertices, edges);
+                      graph.setFieldEntry(v1);
                       return new FieldAccess(graph, "static field-set", "static field-set");
                     }
                 }
@@ -316,17 +320,17 @@ public class MethodGraph extends JoanaGraph {
     private FieldAccess findArrayFieldAccess(JoanaVertex v1, JoanaVertex v2, JoanaEdge e1) {
         
         for (JoanaEdge e2 : this.outgoingEdgesOf(v2)) {
-            if (e2.getEdgeKind() == JoanaEdge.Kind.CF) {
+            if (e2.getEdgeKind() == JoanaEdge.EdgeKind.CF) {
                 JoanaVertex v3 = e2.getTarget();
                 //check if array field gets
                 if (this.isNormCompoundField(v3)) {
                     for (JoanaEdge e3 : this.outgoingEdgesOf(v3)) {
-                        if (e3.getEdgeKind() == JoanaEdge.Kind.CF) {
+                        if (e3.getEdgeKind() == JoanaEdge.EdgeKind.CF) {
                             JoanaVertex v4 = e3.getTarget();
                             if (this.isExprReference(v4)) {
                                 //check there is an edge back
                                 for (JoanaEdge e4 : this.outgoingEdgesOf(v4)) {
-                                    if (e4.getEdgeKind() == JoanaEdge.Kind.CF
+                                    if (e4.getEdgeKind() == JoanaEdge.EdgeKind.CF
                                             && e4.getTarget() == v1) {
                                         
                                         //System.out.println("array field-get: " + v1.getName() + " : " + v2.getName() + " : " + v3.getName()+ " : " + v4.getName());
@@ -344,6 +348,7 @@ public class MethodGraph extends JoanaGraph {
                                         edges.add(e4);
                                         
                                         FieldAccessGraph graph = new FieldAccessGraph("array field-get", vertices, edges);
+                                        graph.setFieldEntry(v1);
                                         return new FieldAccess(graph, "array field-get", "array field-get");
                                     }
                                 }
@@ -353,12 +358,12 @@ public class MethodGraph extends JoanaGraph {
                 } else if (this.isExprModify(v3)) {
                     //check if array field sets
                     for (JoanaEdge e3 : this.outgoingEdgesOf(v3)) {
-                        if (e3.getEdgeKind() == JoanaEdge.Kind.CF) {
+                        if (e3.getEdgeKind() == JoanaEdge.EdgeKind.CF) {
                             JoanaVertex v4 = e3.getTarget();
                             if (this.isNormCompoundField(v4)) {
                                 //check there is an edge back
                                 for (JoanaEdge e4 : this.outgoingEdgesOf(v4)) {
-                                    if (e4.getEdgeKind() == JoanaEdge.Kind.CF
+                                    if (e4.getEdgeKind() == JoanaEdge.EdgeKind.CF
                                             && e4.getTarget() == v1) {
                                         
                                         //System.out.println("array field-set: " + v1.getName() + " : " + v2.getName() + " : " + v3.getName()+ " : " + v4.getName());
@@ -376,6 +381,7 @@ public class MethodGraph extends JoanaGraph {
                                         edges.add(e4);
                                         
                                         FieldAccessGraph graph = new FieldAccessGraph("array field-set", vertices, edges);
+                                        graph.setFieldEntry(v1);
                                         return new FieldAccess(graph, "array field-set", "array field-set");
                                     }
                                 }
@@ -393,7 +399,7 @@ public class MethodGraph extends JoanaGraph {
     private boolean isValidStaticField(JoanaVertex v) {
         boolean result = true;
         for (JoanaEdge pred : this.incomingEdgesOf(v)) {
-            if (pred.getEdgeKind() == JoanaEdge.Kind.CF
+            if (pred.getEdgeKind() == JoanaEdge.EdgeKind.CF
                     && (this.isNormCompoundBase(pred.getSource())
                             || this.isNormCompoundIndex(pred.getSource()))) {
                 result = false;
@@ -406,7 +412,7 @@ public class MethodGraph extends JoanaGraph {
     
     //TODO: change names of the checkers and maybe add additional criterions
     private boolean isNormCompoundBase(JoanaVertex vertex) {
-        if (vertex.getNodeKind() == JoanaVertex.Kind.NORM 
+        if (vertex.getNodeKind() == JoanaVertex.VertexKind.NORM 
                 && vertex.getNodeOperation().equals("compound") 
                 && vertex.getLabel().equals("base")) { 
             return true;
@@ -416,7 +422,7 @@ public class MethodGraph extends JoanaGraph {
     }
     
     private boolean isNormCompoundField(JoanaVertex vertex) {
-        if (vertex.getNodeKind() == JoanaVertex.Kind.NORM 
+        if (vertex.getNodeKind() == JoanaVertex.VertexKind.NORM 
                 && vertex.getNodeOperation().equals("compound") 
                 && vertex.getLabel().matches("field\\s.*")) { 
             return true;
@@ -426,7 +432,7 @@ public class MethodGraph extends JoanaGraph {
     }
     
     private boolean isNormCompoundIndex(JoanaVertex vertex) {
-        if (vertex.getNodeKind() == JoanaVertex.Kind.NORM 
+        if (vertex.getNodeKind() == JoanaVertex.VertexKind.NORM 
                 && vertex.getNodeOperation().equals("compound") 
                 && vertex.getLabel().equals("index")) { 
             return true;
@@ -436,7 +442,7 @@ public class MethodGraph extends JoanaGraph {
     }
     
     private boolean isExprReference(JoanaVertex vertex) {
-        if (vertex.getNodeKind() == JoanaVertex.Kind.EXPR
+        if (vertex.getNodeKind() == JoanaVertex.VertexKind.EXPR
                 && vertex.getNodeOperation().equals("reference")) { 
             return true;
         } else {
@@ -445,7 +451,7 @@ public class MethodGraph extends JoanaGraph {
     }
     
     private boolean isExprModify(JoanaVertex vertex) {
-        if (vertex.getNodeKind() == JoanaVertex.Kind.EXPR
+        if (vertex.getNodeKind() == JoanaVertex.VertexKind.EXPR
                 && vertex.getNodeOperation().equals("modify")) { 
             return true;
         } else {

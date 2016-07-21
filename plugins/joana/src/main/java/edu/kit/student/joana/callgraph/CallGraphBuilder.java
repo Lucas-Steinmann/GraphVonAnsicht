@@ -9,7 +9,7 @@ import edu.kit.student.graphmodel.builder.IGraphBuilder;
 import edu.kit.student.graphmodel.builder.IVertexBuilder;
 import edu.kit.student.joana.CallGraphVertex;
 import edu.kit.student.joana.JoanaEdge;
-import edu.kit.student.joana.JoanaEdge.Kind;
+import edu.kit.student.joana.JoanaEdge.EdgeKind;
 import edu.kit.student.joana.JoanaEdgeBuilder;
 import edu.kit.student.joana.JoanaVertex;
 import edu.kit.student.joana.methodgraph.MethodGraph;
@@ -85,7 +85,7 @@ public class CallGraphBuilder implements IGraphBuilder {
         }
         
         for (JoanaEdge callEdge : callEdges) {
-            if (callEdge.getEdgeKind() != Kind.CL)
+            if (callEdge.getEdgeKind() != EdgeKind.CL)
                 continue;
             int sourceID = 0;
             int targetID = 0;
@@ -102,7 +102,7 @@ public class CallGraphBuilder implements IGraphBuilder {
                 // Second call from this function. Skip.
                 continue;
             }
-            edges.add(new JoanaEdge(callEdge.getName(), callEdge.getLabel(), vertices.get(sourceID), vertices.get(targetID), Kind.CL));
+            edges.add(new JoanaEdge(callEdge.getName(), callEdge.getLabel(), vertices.get(sourceID), vertices.get(targetID), EdgeKind.CL));
             connections.get(vertices.get(sourceID)).add(vertices.get(targetID));
         }
        // // Add call edges between vertices.
