@@ -12,7 +12,8 @@ import java.util.Set;
  */
 public class FieldAccessGraph extends JoanaGraph {
 
-
+    private JoanaVertex fieldEntry;
+    
     public FieldAccessGraph(String name, Set<JoanaVertex> vertices, Set<JoanaEdge> edges) {
         //TODO: Check whether the sets build a valid field access
         super(name, vertices, edges);
@@ -39,5 +40,15 @@ public class FieldAccessGraph extends JoanaGraph {
     @Override
     public LayoutOption getDefaultLayout() {
         return null;
+    }
+
+
+    public JoanaVertex getFieldEntry() {
+        return fieldEntry;
+    }
+
+
+    public void setFieldEntry(JoanaVertex fieldEntry) {
+        this.fieldEntry = fieldEntry;
     }
 }

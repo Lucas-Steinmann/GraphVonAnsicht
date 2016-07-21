@@ -207,6 +207,7 @@ public class MethodGraph extends JoanaGraph {
                             edges.add(e3);
                             
                             FieldAccessGraph graph = new FieldAccessGraph("field-get", vertices, edges);
+                            graph.setFieldEntry(v1);
                             return new FieldAccess(graph, "field-get", "field-get");
                         }
                     }
@@ -241,6 +242,7 @@ public class MethodGraph extends JoanaGraph {
                             edges.add(e3);
                             
                             FieldAccessGraph graph = new FieldAccessGraph("field-set", vertices, edges);
+                            graph.setFieldEntry(v1);
                             return new FieldAccess(graph, "field-set", "field-set");
                         }
                     }
@@ -273,6 +275,7 @@ public class MethodGraph extends JoanaGraph {
                       edges.add(e1);
                       
                       FieldAccessGraph graph = new FieldAccessGraph("static field-get", vertices, edges);
+                      graph.setFieldEntry(v1);
                       return new FieldAccess(graph, "static field-get", "static field-get");
                     }
                 }
@@ -303,6 +306,7 @@ public class MethodGraph extends JoanaGraph {
                       edges.add(e1);
                       
                       FieldAccessGraph graph = new FieldAccessGraph("static field-set", vertices, edges);
+                      graph.setFieldEntry(v1);
                       return new FieldAccess(graph, "static field-set", "static field-set");
                     }
                 }
@@ -344,6 +348,7 @@ public class MethodGraph extends JoanaGraph {
                                         edges.add(e4);
                                         
                                         FieldAccessGraph graph = new FieldAccessGraph("array field-get", vertices, edges);
+                                        graph.setFieldEntry(v1);
                                         return new FieldAccess(graph, "array field-get", "array field-get");
                                     }
                                 }
@@ -376,6 +381,7 @@ public class MethodGraph extends JoanaGraph {
                                         edges.add(e4);
                                         
                                         FieldAccessGraph graph = new FieldAccessGraph("array field-set", vertices, edges);
+                                        graph.setFieldEntry(v1);
                                         return new FieldAccess(graph, "array field-set", "array field-set");
                                     }
                                 }
