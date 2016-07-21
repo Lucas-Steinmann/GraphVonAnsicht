@@ -6,7 +6,7 @@ import edu.kit.student.graphmodel.builder.IVertexBuilder;
 import edu.kit.student.joana.JoanaEdge;
 import edu.kit.student.joana.JoanaEdgeBuilder;
 import edu.kit.student.joana.JoanaVertex;
-import edu.kit.student.joana.JoanaVertex.Kind;
+import edu.kit.student.joana.JoanaVertex.VertexKind;
 import edu.kit.student.joana.JoanaVertexBuilder;
 
 import java.util.HashSet;
@@ -73,7 +73,7 @@ public class MethodGraphBuilder implements IGraphBuilder {
 
         String name = "";
         for (JoanaVertex v : vertices) {
-            if (v.getNodeKind() == Kind.ENTR)
+            if (v.getNodeKind() == VertexKind.ENTR)
             {
                 //TODO: maybe some editing to transform the raw classnames 
                 // into something more readable
