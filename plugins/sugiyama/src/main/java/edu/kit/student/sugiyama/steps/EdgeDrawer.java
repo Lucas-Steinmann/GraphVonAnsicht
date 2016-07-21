@@ -321,7 +321,7 @@ public class EdgeDrawer implements IEdgeDrawer {
 		assert(found);
 
 		if(!found) {
-			((JoanaEdge) edge.getWrappedEdge()).setEdgeKind(JoanaEdge.Kind.DEBUG);
+			((JoanaEdge) edge.getWrappedEdge()).setEdgeKind(JoanaEdge.EdgeKind.DEBUG);
 		}
 		
 		DoublePoint tPoint = this.inOutPoints.get(target.getID()).get(0).get(index);

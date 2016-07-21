@@ -12,12 +12,11 @@ import java.util.Set;
  */
 public class RelativeLayerConstraint implements Constraint
 {
-	private Set<Vertex> top;
-	private Set<Vertex> bottom;
-	private boolean exact;
-	private int distance;
-	private String name = "RelativeLayerConstraint";
-	
+	private final Set<Vertex> top;
+	private final Set<Vertex> bottom;
+	private final boolean exact;
+	private final int distance;
+
 	/**
 	 * Constructs a new RelativeLayerConstraint, sets the top and bottom vertices, whether its exact and the distance.
 	 * @param top The top vertices.
@@ -66,7 +65,7 @@ public class RelativeLayerConstraint implements Constraint
 	 * Returns the name of the layout constraint
 	 */
 	public String getName() {
-		return name;
+		return "RelativeLayerConstraint";
 	}
 
 	@Override
@@ -76,7 +75,6 @@ public class RelativeLayerConstraint implements Constraint
 				", bottom=" + bottom +
 				", exact=" + exact +
 				", distance=" + distance +
-				", name='" + name + '\'' +
 				'}';
 	}
 }

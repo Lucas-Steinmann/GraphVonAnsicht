@@ -465,6 +465,11 @@ public class SugiyamaGraph
 		}
 
 		@Override
+		public Vertex getVertex() {
+			return null;
+		}
+
+		@Override
 		public int getLayer() {
 			return layering.getLayerFromVertex(this);
 		}

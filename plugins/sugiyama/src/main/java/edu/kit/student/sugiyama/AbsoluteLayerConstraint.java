@@ -17,29 +17,17 @@ import java.util.Set;
  * Consequently inverted and exclusive means all other vertices have to be placed in this range of layers.
  */
 public class AbsoluteLayerConstraint implements Constraint {
-	
-	private boolean inverted;
-	private boolean exclusive;
-	private Set<Vertex> vertices;
-	private int minLayer;
-	private int maxLayer;
-	private String name = "AbsoluteLayerConstraint";
+	private final Set<Vertex> vertices;
+	private final int layer;
 
 	/**
 	 * Constructs an AbsoluteLayerConstraint.
-	 * 
-	 * @param set set of sugiyama vertices to apply this constraint on
-	 * @param inverted invertes this constraint, if true
-	 * @param exclusive places only this set of vertices in this range of layers
-	 * @param minLayer lower bound of layer number
-	 * @param maxLayer upper bound of layer number
+	 *  @param set set of sugiyama vertices to apply this constraint on
+	 * @param layer layer bound of the vertex set
 	 */
-	public AbsoluteLayerConstraint(Set<Vertex> set, boolean inverted, boolean exclusive, int minLayer, int maxLayer) {
+	public AbsoluteLayerConstraint(Set<Vertex> set, int layer) {
 		this.vertices = set;
-		this.inverted = inverted;
-		this.exclusive = exclusive;
-		this.minLayer = minLayer;
-		this.maxLayer = maxLayer;
+		this.layer = layer;
 	}
 
 	/* (non-Javadoc)
@@ -47,23 +35,7 @@ public class AbsoluteLayerConstraint implements Constraint {
 	 */
 	@Override
 	public String getName() {
-		return this.name;
-	}
-
-	/**
-	 * Returns true if the constraint should be inverted.
-	 * @return true if inverted
-	 */
-	public boolean isInverted() {
-		return inverted;
-	}
-
-	/**
-	 * Returns true if the set of vertices should be affected by the constraint exclusively.
-	 * @return true if exclusive
-	 */
-	public boolean isExclusive() {
-		return exclusive;
+		return "AbsoluteLayerConstraint";
 	}
 
 	/**
@@ -78,27 +50,15 @@ public class AbsoluteLayerConstraint implements Constraint {
 	 * Returns the minimum layer the vertices should be on.
 	 * @return the minimum layer
 	 */
-	public int getMinLayer() {
-		return minLayer;
-	}
-
-	/**
-	 * Returns the maximum layer the vertices should be on.
-	 * @return the maximum layer
-	 */
-	public int getMaxLayer() {
-		return maxLayer;
+	public int getLayer() {
+		return layer;
 	}
 
 	@Override
 	public String toString() {
 		return "AbsoluteLayerConstraint{" +
-				"inverted=" + inverted +
-				", exclusive=" + exclusive +
 				", vertices=" + vertices +
-				", minLayer=" + minLayer +
-				", maxLayer=" + maxLayer +
-				", name='" + name + '\'' +
+				", layer=" + layer +
 				'}';
 	}
 }

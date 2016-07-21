@@ -1,8 +1,5 @@
 package edu.kit.student.joana.methodgraph;
 
-import java.util.HashSet;
-import java.util.Set;
-
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.joana.FieldAccess;
 import edu.kit.student.joana.FieldAccessGraph;
@@ -10,11 +7,11 @@ import edu.kit.student.joana.JoanaEdge;
 import edu.kit.student.joana.JoanaEdge.EdgeKind;
 import edu.kit.student.joana.JoanaVertex;
 import edu.kit.student.parameter.Settings;
-import edu.kit.student.sugiyama.AbsoluteLayerConstraint;
-import edu.kit.student.sugiyama.LayeredLayoutAlgorithm;
-import edu.kit.student.sugiyama.RelativeLayerConstraint;
-import edu.kit.student.sugiyama.SugiyamaLayoutAlgorithm;
+import edu.kit.student.sugiyama.*;
 import edu.kit.student.sugiyama.steps.LayerAssigner;
+
+import java.util.HashSet;
+import java.util.Set;
 
 /**
  * Implements hierarchical layout with layers for {@link MethodGraph}.
@@ -47,11 +44,13 @@ public class MethodGraphLayout implements LayeredLayoutAlgorithm<MethodGraph> {
 	    
 	  //create absoluteLayerConstraints
         Set<AbsoluteLayerConstraint> absoluteLayerConstraints = new HashSet<AbsoluteLayerConstraint>();
+		Set<LayerContainsOnlyConstraint> layerContainsOnlyConstraints = new HashSet<>();
         
         //create absoluteLayerConstraint for Entry vertex
         Set<Vertex> firstLayer = new HashSet<Vertex>();
         firstLayer.add(graph.getEntryVertex());
-        absoluteLayerConstraints.add(new AbsoluteLayerConstraint(firstLayer, false, true, 0, 0));
+        absoluteLayerConstraints.add(new AbsoluteLayerConstraint(firstLayer, 0));
+		layerContainsOnlyConstraints.add(new LayerContainsOnlyConstraint(firstLayer, 0));
         
         //create absoluteLayerConstraint for Method Parameters
         Set<Vertex> secondLayer = new HashSet<Vertex>();
@@ -72,11 +71,13 @@ public class MethodGraphLayout implements LayeredLayoutAlgorithm<MethodGraph> {
             }
         }
         
-        absoluteLayerConstraints.add(new AbsoluteLayerConstraint(secondLayer, false, true, 1, 1));
+        absoluteLayerConstraints.add(new AbsoluteLayerConstraint(secondLayer, 1));
+		layerContainsOnlyConstraints.add(new LayerContainsOnlyConstraint(secondLayer, 1));
         
         LayerAssigner assigner = new LayerAssigner();
         assigner.addRelativeConstraints(relativeLayerConstraints);
         assigner.addAbsoluteConstraints(absoluteLayerConstraints);
+		assigner.addLayerContainsOnlyConstraints(layerContainsOnlyConstraints);
 	    
         sugiyamaLayoutAlgorithm.setLayerAssigner(assigner);
 		sugiyamaLayoutAlgorithm.layout(graph);

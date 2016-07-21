@@ -25,4 +25,6 @@ public interface ISugiyamaVertex extends Vertex{
 	public void setLayer(int layerNum);
 
 	public boolean isDummy();
+
+	public Vertex getVertex();
 }

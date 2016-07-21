@@ -3,12 +3,15 @@ package edu.kit.student.sugiyama.steps;
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
 import edu.kit.student.sugiyama.AbsoluteLayerConstraint;
+import edu.kit.student.sugiyama.LayerContainsOnlyConstraint;
 import edu.kit.student.sugiyama.RelativeLayerConstraint;
 import edu.kit.student.sugiyama.graph.ILayerAssignerGraph;
 import edu.kit.student.sugiyama.graph.ISugiyamaEdge;
 import edu.kit.student.sugiyama.graph.ISugiyamaVertex;
 
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -21,11 +24,13 @@ public class LayerAssigner implements ILayerAssigner {
 	private Set<ISugiyamaEdge> graphEdges;
 	private Set<RelativeLayerConstraint> relativeConstraints;
 	private Set<AbsoluteLayerConstraint> absoluteConstraints;
+	private List<LayerContainsOnlyConstraint> layerContainsOnlyConstraints;
 	private Set<ISugiyamaVertex> ignoredVertices;
 
 	public LayerAssigner() {
 		relativeConstraints = new HashSet<>();
 		absoluteConstraints = new HashSet<>();
+		layerContainsOnlyConstraints = new LinkedList<>();
 		ignoredVertices = new HashSet<>();
 	}
 
@@ -41,8 +46,14 @@ public class LayerAssigner implements ILayerAssigner {
         this.absoluteConstraints.addAll(constraints);
 		System.out.println("absolute Layer Constraint added");
 		System.out.println(constraints);
-        
     }
+
+	@Override
+	public void addLayerContainsOnlyConstraints(Set<LayerContainsOnlyConstraint> constraints) {
+		this.layerContainsOnlyConstraints.addAll(constraints);
+		System.out.println("absolute Layer Constraint added");
+		System.out.println(constraints);
+	}
 
 	@Override
 	public void setMaxHeight(int height) {
@@ -92,13 +103,29 @@ public class LayerAssigner implements ILayerAssigner {
 					pushDown(wrapper, graph, 1 - distance);
 				}
 			}
+			ignoredVertices.clear();
+		}
 
-			graph.cleanUpEmtpyLayers();
+		layerContainsOnlyConstraints.sort(((o1, o2) -> o1.getLayer() - o2.getLayer()));
+
+		for (LayerContainsOnlyConstraint onlyConstraint : this.layerContainsOnlyConstraints) {
+			for (ISugiyamaVertex vertex : graph.getLayer(onlyConstraint.getLayer())) {
+				if (!onlyConstraint.getVertices().contains(vertex.getVertex())) {
+					pushDown(vertex, graph, 1);
+				}
+			}
+
+			ignoredVertices.clear();
 		}
 
 		for (AbsoluteLayerConstraint absoluteConstraint : this.absoluteConstraints) {
-			absoluteConstraint.getVertices();
+			for (Vertex vertex : absoluteConstraint.getVertices()) {
+				ISugiyamaVertex wrapper = graph.getVertexByID(vertex.getID());
+				graph.assignToLayer(wrapper, absoluteConstraint.getLayer());
+			}
 		}
+
+		graph.cleanUpEmtpyLayers();
 
 		for (ISugiyamaEdge edge : graph.getEdgeSet()) {
 			int sourceLayer = graph.getLayer(edge.getSource());

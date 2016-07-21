@@ -1,11 +1,12 @@
 package edu.kit.student.sugiyama.experimental;
 
-import java.util.Set;
-
 import edu.kit.student.sugiyama.AbsoluteLayerConstraint;
+import edu.kit.student.sugiyama.LayerContainsOnlyConstraint;
 import edu.kit.student.sugiyama.RelativeLayerConstraint;
 import edu.kit.student.sugiyama.graph.ILayerAssignerGraph;
 import edu.kit.student.sugiyama.steps.ILayerAssigner;
+
+import java.util.Set;
 
 /**
  * Implements layer assigning for directed acyclic graphs to achieve minimal height with fixed width, set by max width.
@@ -40,7 +41,12 @@ public class OptimalLayerAssigner implements ILayerAssigner {
 
 	}
 
-    @Override
+	@Override
+	public void addLayerContainsOnlyConstraints(Set<LayerContainsOnlyConstraint> constraints) {
+
+	}
+
+	@Override
     public void addRelativeConstraints(Set<RelativeLayerConstraint> constraints) {
         // TODO Auto-generated method stub
         

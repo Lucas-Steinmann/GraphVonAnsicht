@@ -1,10 +1,11 @@
 package edu.kit.student.sugiyama.steps;
 
-import java.util.Set;
-
 import edu.kit.student.sugiyama.AbsoluteLayerConstraint;
+import edu.kit.student.sugiyama.LayerContainsOnlyConstraint;
 import edu.kit.student.sugiyama.RelativeLayerConstraint;
 import edu.kit.student.sugiyama.graph.ILayerAssignerGraph;
+
+import java.util.Set;
 
 /**
  * This interface represents a class that takes a directed graph and assigns every vertex in it a layer.
@@ -40,4 +41,6 @@ public interface ILayerAssigner {
 	 * @param width maximum amount of vertices in one layer
 	 */
 	public void setMaxWidth(int width);
+
+	void addLayerContainsOnlyConstraints(Set<LayerContainsOnlyConstraint> constraints);
 }
