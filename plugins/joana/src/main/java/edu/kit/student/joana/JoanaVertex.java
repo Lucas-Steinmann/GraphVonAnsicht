@@ -233,6 +233,13 @@ public class JoanaVertex extends DefaultVertex implements ViewableVertex {
         	default: return Color.BEIGE;
         	}
         }
+        
+        public VertexPriority priority() {
+        	switch(this) {
+        	case FIELDACCESS: return VertexPriority.LOW;
+        	default: return VertexPriority.HIGH;
+        	}
+        }
     }
 
     @Override
@@ -244,5 +251,10 @@ public class JoanaVertex extends DefaultVertex implements ViewableVertex {
     	this.setSize = newSize;
     	this.sizeSet = true;
     }
+
+	@Override
+	public VertexPriority getPriority() {
+		return this.nodeKind.getValue().priority();
+	}
     
 }
