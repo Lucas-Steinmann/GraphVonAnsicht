@@ -4,6 +4,7 @@ import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.sugiyama.graph.ISugiyamaVertex;
 import edu.kit.student.sugiyama.graph.IVertexPositionerGraph;
 import edu.kit.student.sugiyama.graph.SugiyamaGraph;
+import edu.kit.student.util.IdGenerator;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -86,7 +87,7 @@ public class VertexPositioner implements IVertexPositioner {
 
 		for (Segment segment : allsegments) {
 			for (Segment other : allsegments) {
-				if (segment.equals(other)) {
+				if (segment.getId() == other.getId()) {
 					continue;
 				}
 				if (segment.intersects(other)) {
@@ -163,12 +164,14 @@ public class VertexPositioner implements IVertexPositioner {
 		private boolean corrected;
 		private boolean changed;
 		private BoundingBox boundingBox;
+		private int id;
 
 		public Segment(List<ISugiyamaVertex> vertices) {
 			this.vertices = vertices;
 			this.vertices.sort((o1, o2) -> o1.getLayer() - o2.getLayer());
 			corrected = false;
 			changed = true;
+			id = IdGenerator.getInstance().createId();
 		}
 
 		public List<ISugiyamaVertex> getVertices() {
@@ -249,25 +252,8 @@ public class VertexPositioner implements IVertexPositioner {
 			this.corrected = corrected;
 		}
 
-		@Override
-		public boolean equals(Object o) {
-			if (this == o) return true;
-			if (o == null || getClass() != o.getClass()) return false;
-
-			Segment segment = (Segment) o;
-
-			if (isCorrected() != segment.isCorrected()) return false;
-			if (changed != segment.changed) return false;
-			return getVertices().equals(segment.getVertices());
-
-		}
-
-		@Override
-		public int hashCode() {
-			int result = getVertices().hashCode();
-			result = 31 * result + (isCorrected() ? 1 : 0);
-			result = 31 * result + (changed ? 1 : 0);
-			return result;
+		public int getId() {
+			return id;
 		}
 
 		public BoundingBox getBoundingBox() {
