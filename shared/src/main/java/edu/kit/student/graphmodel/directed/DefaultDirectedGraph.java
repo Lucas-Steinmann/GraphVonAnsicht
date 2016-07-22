@@ -73,6 +73,7 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
 	 */
 	public void addEdge(E edge) {
 //		System.out.println("adds edge: "+edge.getSource().getID()+","+edge.getTarget().getID());
+		
 	    if (this.vertexToEdge.keySet().contains(edge.getSource()) && this.vertexToEdge.keySet().contains(edge.getTarget())) {
 	        vertexToEdge.get(edge.getSource()).add(edge);
 	        revVertexToEdge.get(edge.getTarget()).add(edge);
@@ -81,7 +82,7 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
 				this.vertexToSelfLoops.get(edge.getSource()).add(edge);
 			}
 	    } else {
-	        //throw new IllegalArgumentException("Cannot add edge to a Graph without the Vertex being present");
+	        throw new IllegalArgumentException("Cannot add edge to a Graph without the Vertex being present");
 	    }
 	}
 
