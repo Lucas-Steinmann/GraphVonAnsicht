@@ -12,6 +12,7 @@ import edu.kit.student.graphmodel.Graph;
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.ViewableGraph;
 import edu.kit.student.graphmodel.ViewableVertex;
+import edu.kit.student.graphmodel.ViewableVertex.VertexPriority;
 import edu.kit.student.graphmodel.serialize.SerializedEdge;
 import edu.kit.student.graphmodel.serialize.SerializedGraph;
 import edu.kit.student.graphmodel.serialize.SerializedVertex;
@@ -38,6 +39,7 @@ public class GraphViewGraphFactory {
 	private ViewableGraph graph;
 	private Map<VertexShape, ViewableVertex> vertices;
 	private Map<EdgeShape, Edge> edges;
+	private List<BackgroundShape> background;
 
 	/**
 	 * Constructor. Sets the graph and generates the vertices and edges for
@@ -49,6 +51,7 @@ public class GraphViewGraphFactory {
 	public GraphViewGraphFactory(ViewableGraph graph) {
 		vertices = new HashMap<>();
 		edges = new HashMap<EdgeShape, Edge>();
+		background = new LinkedList<BackgroundShape>();
 		this.graph = graph;
 		
 		createVertices();
@@ -66,6 +69,7 @@ public class GraphViewGraphFactory {
 	 */
 	public List<GAnsGraphElement> getGraphicalElements() {
 		List<GAnsGraphElement> elements = new LinkedList<GAnsGraphElement>();
+		elements.addAll(background);
 		elements.addAll(vertices.keySet());
 		elements.addAll(edges.keySet());
 		
@@ -116,8 +120,16 @@ public class GraphViewGraphFactory {
 	private void createVertices() {
 		Set<? extends ViewableVertex> set = graph.getVertexSet();
 		for(ViewableVertex vertex : set) {
-			VertexShape shape = new VertexShape(vertex);
-			vertices.put(shape, vertex);
+			if(vertex.getPriority() == VertexPriority.HIGH) {
+				VertexShape shape = new VertexShape(vertex);
+				vertices.put(shape, vertex);
+			} else if(vertex.getPriority() == VertexPriority.LOW) {
+				BackgroundShape shape = new BackgroundShape(vertex);
+				background.add(shape);
+			} else { // unknown priorities are interpreted as high.
+				VertexShape shape = new VertexShape(vertex);
+				vertices.put(shape, vertex);
+			}
 		}
 	}
 	
