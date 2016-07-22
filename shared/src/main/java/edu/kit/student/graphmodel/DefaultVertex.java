@@ -71,7 +71,7 @@ public class DefaultVertex implements Vertex {
 
     @Override
     public void setX(int x) {
-        this.x = x;
+		this.x = x;
     }
 
     @Override

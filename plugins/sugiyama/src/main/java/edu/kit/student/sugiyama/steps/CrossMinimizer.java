@@ -26,7 +26,7 @@ public class CrossMinimizer implements ICrossMinimizer {
 	private Settings settings;
 
 	public CrossMinimizer() {
-		this(0.001f, 1000);
+		this(0.001f, 50);
 	}
 
 	public CrossMinimizer(float crossingReductionThreshold, int maxRuns) {
@@ -54,7 +54,7 @@ public class CrossMinimizer implements ICrossMinimizer {
 		int layerCount = graph.getLayerCount();
 
 		addDummyAndEdges(graph);
-		System.out.println("crossings: " + crossings((SugiyamaGraph) graph));
+		//System.out.println("crossings: " + crossings((SugiyamaGraph) graph));
 
 		int newCrossings = 0;
 		int oldCrossings = 0;
@@ -102,7 +102,7 @@ public class CrossMinimizer implements ICrossMinimizer {
 			oldCrossings = newCrossings;
 		}
 
-		System.out.println("crossings: " + crossings((SugiyamaGraph) graph));
+		//System.out.println("crossings: " + crossings((SugiyamaGraph) graph));
 		//for printing the layers after cross minimization
 		graph.getLayers().forEach(iSugiyamaVertices -> System.out.println(iSugiyamaVertices.stream().map(iSugiyamaVertex -> iSugiyamaVertex.getName()).collect(Collectors.joining(", "))));
 	}
