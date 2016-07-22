@@ -131,7 +131,11 @@ public class MethodGraphLayout implements LayeredLayoutAlgorithm<MethodGraph> {
 				assert(fagVertices.contains(e.getSource())&&fagVertices.contains(e.getTarget()));
 			}
 			
-			System.out.println("fagVertices: "+fagVertices.size()+", fagEdges: "+fagEdges.size());
+			String fagV = "";
+			for(JoanaVertex v : fagVertices){
+				fagV += v.getID() + ",";
+			}
+			System.out.println("fagVertices: "+fagVertices.size()+" ["+fagV+"], fagEdges: "+fagEdges.size());
 			
 			fagVertices.forEach(v->graph.removeVertex(v));
 //			vertices.removeAll(fagVertices);	//removes FieldAccess-vertices from the vertex set of the normal graph
@@ -140,9 +144,11 @@ public class MethodGraphLayout implements LayeredLayoutAlgorithm<MethodGraph> {
 			Set<JoanaEdge> outFieldAccess = new HashSet<>();	//edges that go out of this FieldAccess
 			for(JoanaEdge e : edges){
 				if(vertices.contains(e.getSource()) && fagVertices.contains(e.getTarget())){
+					assert(!vertices.contains(e.getTarget()) && !fagVertices.contains(e.getSource()));
 					System.out.println("in: "+e.getSource().getID()+","+e.getTarget().getID()+",entry: "+fag.getFieldEntry().getID());
 					inFieldAccess.add(e);
 				} else if(vertices.contains(e.getTarget()) && fagVertices.contains(e.getSource())){
+					assert(!vertices.contains(e.getSource()) && !fagVertices.contains(e.getTarget()));
 					System.out.println("out: "+e.getSource().getID()+","+e.getTarget().getID());
 					outFieldAccess.add(e);
 				}
@@ -155,7 +161,8 @@ public class MethodGraphLayout implements LayeredLayoutAlgorithm<MethodGraph> {
 			for(JoanaEdge eIn : inFieldAccess){	//add new edge from graph into representing vertex and deletes the old one
 				fag.addInEdge(eIn);	//saves the old edge to insert it later again
 				eIn.setVertices(eIn.getSource(), fag.getRepresentingVertex());
-//				assert(edges.remove(eIn));
+				assert(edges.remove(eIn));
+				assert(edges.add(eIn));
 //				graph.addEdge(new JoanaEdge(graph.getName(), "FieldAccess", eIn.getSource(), fag.getRepresentingVertex(), EdgeKind.UNKNOWN));
 //				edges.add(new JoanaEdge(graph.getName(), "FieldAccess", eIn.getSource(), fag.getRepresentingVertex(), EdgeKind.UNKNOWN));
 			}
@@ -163,11 +170,13 @@ public class MethodGraphLayout implements LayeredLayoutAlgorithm<MethodGraph> {
 			for(JoanaEdge eOut : outFieldAccess){	//add new edge from representing vertex into normal graph and deletes the old one
 				fag.addOutEdge(eOut);	//saves the old edge to insert it later again
 				eOut.setVertices(fag.getRepresentingVertex(), eOut.getTarget());
-//				assert(edges.remove(eOut));
+				
+				assert(edges.remove(eOut));
+				assert(edges.add(eOut));
 //				graph.addEdge(new JoanaEdge(graph.getName(), "FieldAccess",  fag.getRepresentingVertex(), eOut.getTarget(), EdgeKind.UNKNOWN));
 //				edges.add(new JoanaEdge(graph.getName(), "FieldAccess",  fag.getRepresentingVertex(), eOut.getTarget(), EdgeKind.UNKNOWN));
 			}
-//			fagEdges.forEach(e->graph.removeEdge(e));
+			fagEdges.forEach(e->graph.removeEdge(e));
 //			edges.removeAll(fagEdges);
 		}
 	}
@@ -181,6 +190,7 @@ public class MethodGraphLayout implements LayeredLayoutAlgorithm<MethodGraph> {
 			FieldAccessGraph fag = fa.getGraph();
 			this.sugiyamaLayoutAlgorithm.layout(fag);
 			JoanaVertex rep = fa.getGraph().getRepresentingVertex();
+			System.out.println("new fag size: "+fag.getVertexSet().size() + "," +fag.getEdgeSet().size());
 			//now set the size of rep new, according to the layered FieldAccessGraph which he represents
 			Set<JoanaVertex> fagVertices = fag.getVertexSet();
 			int minX, minY, maxX, maxY, newWidth, newHeight;
@@ -260,7 +270,7 @@ public class MethodGraphLayout implements LayeredLayoutAlgorithm<MethodGraph> {
 //			restoredIn.forEach(e->graph.addEdge(e));
 //			restoredOut.forEach(e->graph.addEdge(e));
 			fagVertices.forEach(v->graph.addVertex(v));
-//			fagEdges.forEach(e->graph.addEdge(e));
+			fagEdges.forEach(e->graph.addEdge(e));
 			
 //			graph.removeVertex(fag.getRepresentingVertex());	//TODO: experiment cause of its background that one want to have
 //			vertices.remove(fag.getRepresentingVertex());
