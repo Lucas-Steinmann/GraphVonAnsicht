@@ -25,6 +25,8 @@ public class JoanaVertex extends DefaultVertex implements ViewableVertex {
     private GAnsProperty<Integer> nodeEr;
     private GAnsProperty<Integer> nodeEc;
     
+    private Pair<Double, Double> setSize;
+    
     /**
      * Constructs a new JoanaVertex, giving it a name,
      * label and setting what kind of joana vertex it is.
@@ -45,6 +47,7 @@ public class JoanaVertex extends DefaultVertex implements ViewableVertex {
         nodeSc = new GAnsProperty<Integer>("nodeSc", 0);
         nodeEr = new GAnsProperty<Integer>("nodeEr", 0);
         nodeEc = new GAnsProperty<Integer>("nodeEc", 0);
+        
     }
 
     /**
@@ -186,7 +189,11 @@ public class JoanaVertex extends DefaultVertex implements ViewableVertex {
 	@Override
 	public Pair<Double, Double> getSize() {
 		// TODO: calculating size with different max/min values depending on KIND
+		if(this.setSize == null){
 		return super.getSize();
+		} else{
+			return this.setSize;
+		}
 	}
 
 	@Override
@@ -219,6 +226,7 @@ public class JoanaVertex extends DefaultVertex implements ViewableVertex {
         	case SYNC: return Color.web("0xFFC125");
         	case FOLD: return Color.BROWN;
         	case SUMMARY: return Color.BROWN;
+        	case UNKNOWN: return Color.CYAN;	//TODO: maybe something else
         	default: return Color.BEIGE;
         	}
         }
@@ -228,4 +236,9 @@ public class JoanaVertex extends DefaultVertex implements ViewableVertex {
     public int getLink() {
         return -1;
     }
+    
+    public void setSize(Pair<Double, Double> newSize){
+    	this.setSize = newSize;
+    }
+    
 }

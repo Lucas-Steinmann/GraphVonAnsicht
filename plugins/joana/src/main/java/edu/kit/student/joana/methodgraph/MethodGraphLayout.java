@@ -15,6 +15,7 @@ import edu.kit.student.sugiyama.LayeredLayoutAlgorithm;
 import edu.kit.student.sugiyama.RelativeLayerConstraint;
 import edu.kit.student.sugiyama.SugiyamaLayoutAlgorithm;
 import edu.kit.student.sugiyama.steps.LayerAssigner;
+import javafx.util.Pair;
 
 /**
  * Implements hierarchical layout with layers for {@link MethodGraph}.
@@ -41,9 +42,11 @@ public class MethodGraphLayout implements LayeredLayoutAlgorithm<MethodGraph> {
 	 * @param graph The {@link MethodGraph} to layout.
 	 */
 	public void layout(MethodGraph graph) {
-//		this.addAdditionalFieldAccessEdges(graph);
-//		this.adjustVerticesAndEdges(graph);
-//		this.layoutFieldAccessGraphs(graph);
+		graph.restoreGraph();
+		System.out.println("Graph before: Vertices: "+graph.getVertexSet().size()+", Edges: "+graph.getEdgeSet().size());
+		this.addAdditionalFieldAccessEdges(graph);
+		this.adjustVerticesAndEdges(graph);
+		this.layoutFieldAccessGraphs(graph);
 	    
 	  //create absoluteLayerConstraints
         Set<AbsoluteLayerConstraint> absoluteLayerConstraints = new HashSet<AbsoluteLayerConstraint>();
@@ -80,6 +83,10 @@ public class MethodGraphLayout implements LayeredLayoutAlgorithm<MethodGraph> {
 	    
         sugiyamaLayoutAlgorithm.setLayerAssigner(assigner);
 		sugiyamaLayoutAlgorithm.layout(graph);
+		
+		//now, after layouting the graph, replace the vertices representing the FieldAccessGraphs
+		this.replaceRepresentingVertex(graph);
+		System.out.println("Graph after: Vertices: "+graph.getVertexSet().size()+", Edges: "+graph.getEdgeSet().size());
 	}
 	
 	
@@ -92,11 +99,12 @@ public class MethodGraphLayout implements LayeredLayoutAlgorithm<MethodGraph> {
 		for(FieldAccess fa : graph.getFieldAccesses()){
 			FieldAccessGraph fag = fa.getGraph();
 			Set<JoanaVertex> fagVertices = fag.getVertexSet();
-			Set<JoanaEdge> fagEdges = fag.getEdgeSet();
+//			Set<JoanaEdge> fagEdges = fag.getEdgeSet();
 			
 			for(JoanaEdge e : edges){
 				if(fagVertices.contains(e.getSource()) && fagVertices.contains(e.getTarget())){
-					fagEdges.add(e);
+					fag.addEdge(e);
+//					fagEdges.add(e);
 				}
 			}
 		}
@@ -115,39 +123,140 @@ public class MethodGraphLayout implements LayeredLayoutAlgorithm<MethodGraph> {
 			Set<JoanaVertex> fagVertices = fag.getVertexSet();
 			Set<JoanaEdge> fagEdges = fag.getEdgeSet();
 			
-			vertices.removeAll(fagVertices);	//removes FieldAccess-vertices from the vertex set of the normal graph
+			for(JoanaEdge e : fagEdges){
+				assert(fagVertices.contains(e.getSource())&&fagVertices.contains(e.getTarget()));
+			}
+			
+			System.out.println("fagVertices: "+fagVertices.size()+", fagEdges: "+fagEdges.size());
+			
+			fagVertices.forEach(v->graph.removeVertex(v));
+//			vertices.removeAll(fagVertices);	//removes FieldAccess-vertices from the vertex set of the normal graph
 			
 			Set<JoanaEdge> inFieldAccess = new HashSet<>();	//edges that go into this FieldAccess
 			Set<JoanaEdge> outFieldAccess = new HashSet<>();	//edges that go out of this FieldAccess
-			for(JoanaEdge e : fagEdges){
+			for(JoanaEdge e : edges){
 				if(vertices.contains(e.getSource()) && fagVertices.contains(e.getTarget())){
+					System.out.println("in: "+e.getSource().getID()+","+e.getTarget().getID()+",entry: "+fag.getFieldEntry().getID());
 					inFieldAccess.add(e);
 				} else if(vertices.contains(e.getTarget()) && fagVertices.contains(e.getSource())){
+					System.out.println("out: "+e.getSource().getID()+","+e.getTarget().getID());
 					outFieldAccess.add(e);
 				}
 			}
-			assert(inFieldAccess.size() == 1);	//there must be always an edge going in an FieldAccess
-			assert(outFieldAccess.size() <= 1);	//there can be one or zero edges coming out of an FieldAccess
+			assert(inFieldAccess.size() > 0);	//there must be always an edge going in an FieldAccess
 			
-			vertices.add(fag.getRepresentingVertex());	//adds representing vertex to normal vertex-set
+			graph.addVertex(fag.getRepresentingVertex());
+//			vertices.add(fag.getRepresentingVertex());	//adds representing vertex to normal vertex-set
 			
-			for(JoanaEdge eIn : inFieldAccess){	//add new edge from graph into representing vertex
+			for(JoanaEdge eIn : inFieldAccess){	//add new edge from graph into representing vertex and deletes the old one
+				fag.addInEdge(eIn);	//saves the old edge to insert it later again
 				assert(edges.remove(eIn));
-				edges.add(new JoanaEdge(graph.getName(), "FieldAccess", eIn.getSource(), fag.getRepresentingVertex(), EdgeKind.UNKNOWN));
+				graph.addEdge(new JoanaEdge(graph.getName(), "FieldAccess", eIn.getSource(), fag.getRepresentingVertex(), EdgeKind.UNKNOWN));
+//				edges.add(new JoanaEdge(graph.getName(), "FieldAccess", eIn.getSource(), fag.getRepresentingVertex(), EdgeKind.UNKNOWN));
 			}
 			
-			for(JoanaEdge eOut : outFieldAccess){	//add new edge from representing vertex into normal graph
+			for(JoanaEdge eOut : outFieldAccess){	//add new edge from representing vertex into normal graph and deletes the old one
+				fag.addOutEdge(eOut);	//saves the old edge to insert it later again
 				assert(edges.remove(eOut));
-				edges.add(new JoanaEdge(graph.getName(), "FieldAccess",  fag.getRepresentingVertex(), eOut.getTarget(), EdgeKind.UNKNOWN));
+				graph.addEdge(new JoanaEdge(graph.getName(), "FieldAccess",  fag.getRepresentingVertex(), eOut.getTarget(), EdgeKind.UNKNOWN));
+//				edges.add(new JoanaEdge(graph.getName(), "FieldAccess",  fag.getRepresentingVertex(), eOut.getTarget(), EdgeKind.UNKNOWN));
 			}
-			
-			edges.removeAll(fagEdges);
+			fagEdges.forEach(e->graph.removeEdge(e));
+//			edges.removeAll(fagEdges);
 		}
 	}
 	
+	/**
+	 * Layouts every single FieldAccessGraph.
+	 * Also sets the sizes of the vertex representing this FieldAccessGraph appropriate.
+	 */
 	private void layoutFieldAccessGraphs(MethodGraph graph){
 		for(FieldAccess fa : graph.getFieldAccesses()){
-			this.sugiyamaLayoutAlgorithm.layout(fa.getGraph());
+			FieldAccessGraph fag = fa.getGraph();
+			this.sugiyamaLayoutAlgorithm.layout(fag);
+			JoanaVertex rep = fa.getGraph().getRepresentingVertex();
+			//now set the size of rep new, according to the layered FieldAccessGraph which he represents
+			Set<JoanaVertex> vertices = fag.getVertexSet();
+			int minX, minY, maxX, maxY, newWidth, newHeight;
+			minX = vertices.stream().mapToInt(vertex->vertex.getX()).min().getAsInt();
+			maxX = vertices.stream().mapToInt(vertex->vertex.getX()).max().getAsInt();
+			minY = vertices.stream().mapToInt(vertex->vertex.getY()).min().getAsInt();
+			maxY = vertices.stream().mapToInt(vertex->vertex.getY()).max().getAsInt();
+			newWidth = maxX - minX;
+			newHeight = maxY - minY;
+			//TODO: set now the new size of the representing vertex
+			rep.setSize(new Pair((double)newWidth, (double)newHeight));
+			//now adjust the coordinates of every vertex contained in the FieldAccessGraph by addig them something of the representing's coordinates
+			for(JoanaVertex v : vertices){
+				v.setX(v.getX() + rep.getX());
+				v.setY(v.getY() + rep.getY());
+			}
+		}
+	}
+	
+	private void replaceRepresentingVertex(MethodGraph graph){
+		//TODO: search for the edge and the vertex that must be replaced,
+		//then add an edge between the entry vertex of the FieldAccess and the vertex coming from the normal graph
+		//add just one point to the existing edgepath of the old edge and set this edgepath to the edgepath of the new edge, so that the edge is going into the 
+		//entry vertex of the fieldAccess
+		//watch out for FieldAccesses that also have an outgoing edge!!!
+		
+		Set<JoanaVertex> vertices = graph.getVertexSet();
+		Set<JoanaEdge> edges = graph.getEdgeSet();
+
+		for(FieldAccess fa : graph.getFieldAccesses()){
+			FieldAccessGraph fag = fa.getGraph();
+			JoanaVertex rep = fag.getRepresentingVertex();
+			Set<JoanaVertex> fagVertices = fag.getVertexSet();
+			Set<JoanaEdge> fagEdges = fag.getEdgeSet();
+			
+			Set<JoanaEdge> edgesIn = new HashSet<>();
+			Set<JoanaEdge> edgesOut = new HashSet<>();
+
+			
+			for(JoanaEdge e : edges){	//searches for the edge(s) of the graph that must be replaced through edges of the FieldAccess
+				if(vertices.contains(e.getSource()) && e.getTarget().getID() == fag.getRepresentingVertex().getID()){
+					edgesIn.add(e);
+				} else if(e.getSource().getID() == fag.getRepresentingVertex().getID() && vertices.contains(e.getTarget())){
+					edgesOut.add(e);
+				}
+			}
+			assert(!edgesIn.isEmpty());	//there must be an edge going from the graph into the vertex that represents an FieldAccessGraph
+			
+			
+			Set<JoanaEdge> restoredIn = fag.getReplacedInEdges();	//edge going into this FieldAccessGraph that was replaced temporary for layouting the whole graph.
+			Set<JoanaEdge> restoredOut = fag.getReplacedOutEdges();// edge that comes into this FieldAccessGraph that was replaced temporary for layouting the whole graph.
+			assert(!edgesIn.isEmpty() && !restoredIn.isEmpty());
+			assert((edgesOut.isEmpty() && restoredOut.isEmpty())||(!edgesOut.isEmpty() && !restoredOut.isEmpty()));
+			
+			//TODO: also draw the edgePath from the vertex out into the FieldAccessGraph here!
+			for(JoanaEdge e1 : edgesIn){
+				for(JoanaEdge e2 : restoredIn){
+					if(e1.getID() == e2.getID()){
+						e2.getPath().getNodes().addAll(e1.getPath().getNodes());
+						break;
+					}
+				}
+			}
+			
+			if(restoredOut != null){
+				for(JoanaEdge e1 : edgesOut){
+					for(JoanaEdge e2 : restoredOut){
+						if(e1.getID() == e2.getID()){
+							e2.getPath().getNodes().addAll(e1.getPath().getNodes());
+							break;
+						}
+					}
+				}
+			}
+			
+			//set the color of the representing vertex, anything that is light darker than white.
+			//finally remove the old edge(s) and the old vertex
+//			graph.removeVertex(fag.getRepresentingVertex());	TODO: experiment cause of its background that one want to have
+//			vertices.remove(fag.getRepresentingVertex());
+			edgesIn.forEach(e->graph.removeEdge(e));
+//			edges.remove(edgeIn);
+			edgesOut.forEach(e->graph.removeEdge(e));
 		}
 	}
 

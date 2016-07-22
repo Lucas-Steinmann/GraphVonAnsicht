@@ -26,10 +26,21 @@ public class MethodGraph extends JoanaGraph {
     private Set<FieldAccess> fieldAccesses;
     
     private GAnsProperty<Integer> fieldAccessCount;
+    
+    private Set<JoanaVertex> vertices;
+    private Set<JoanaEdge> edges;
+    private final Set<JoanaVertex> verticesToRestore;
+    private final Set<JoanaEdge> edgesToRestore;
 
     public MethodGraph(Set<JoanaVertex> vertices, Set<JoanaEdge> edges, 
             String methodName) {
         super(methodName, vertices, edges);
+//        this.vertices = vertices;
+//        this.edges = edges;
+        this.vertices = super.getVertexSet();
+        this.edges = super.getEdgeSet();
+        this.verticesToRestore = super.getVertexSet();
+        this.edgesToRestore = super.getEdgeSet();
         for(JoanaVertex vertex : vertices) {
         	if(vertex.getNodeKind() == VertexKind.ENTR) {
         	    this.entry = vertex;
@@ -43,6 +54,40 @@ public class MethodGraph extends JoanaGraph {
         this.fieldAccesses = this.searchFieldAccesses();
         
         this.fieldAccessCount = new GAnsProperty<Integer>("Field accesses", this.fieldAccesses.size());
+    }
+    
+    
+    @Override
+    public Set<JoanaVertex> getVertexSet(){
+    	return this.vertices;
+    }
+    
+    @Override
+    public Set<JoanaEdge> getEdgeSet(){
+    	return this.edges;
+    }
+    
+    public void addVertex(JoanaVertex vertex){
+    	assert(this.vertices.add(vertex));
+    }
+    
+    public void addEdge(JoanaEdge edge){
+    	assert(this.edges.add(edge));
+    }
+    
+    public void removeVertex(JoanaVertex vertex){
+    	assert(this.vertices.remove(vertex));
+    }
+    
+    public void removeEdge(JoanaEdge edge){
+    	assert(this.edges.remove(edge));
+    }
+    
+    public void restoreGraph(){
+    	this.vertices.clear();
+    	this.edges.clear();
+    	this.verticesToRestore.forEach(v->this.vertices.add(v));
+    	this.edgesToRestore.forEach(e->this.edges.add(e));
     }
     
     /**
