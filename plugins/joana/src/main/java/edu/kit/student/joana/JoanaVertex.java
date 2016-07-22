@@ -26,6 +26,7 @@ public class JoanaVertex extends DefaultVertex implements ViewableVertex {
     private GAnsProperty<Integer> nodeEc;
     
     private Pair<Double, Double> setSize;
+    private boolean sizeSet;
     
     /**
      * Constructs a new JoanaVertex, giving it a name,
@@ -48,6 +49,7 @@ public class JoanaVertex extends DefaultVertex implements ViewableVertex {
         nodeEr = new GAnsProperty<Integer>("nodeEr", 0);
         nodeEc = new GAnsProperty<Integer>("nodeEc", 0);
         
+        this.sizeSet = false;
     }
 
     /**
@@ -189,10 +191,10 @@ public class JoanaVertex extends DefaultVertex implements ViewableVertex {
 	@Override
 	public Pair<Double, Double> getSize() {
 		// TODO: calculating size with different max/min values depending on KIND
-		if(this.setSize == null){
-		return super.getSize();
-		} else{
+		if(this.sizeSet){
 			return this.setSize;
+		} else{
+			return super.getSize();
 		}
 	}
 
@@ -240,6 +242,7 @@ public class JoanaVertex extends DefaultVertex implements ViewableVertex {
     
     public void setSize(Pair<Double, Double> newSize){
     	this.setSize = newSize;
+    	this.sizeSet = true;
     }
     
 }
