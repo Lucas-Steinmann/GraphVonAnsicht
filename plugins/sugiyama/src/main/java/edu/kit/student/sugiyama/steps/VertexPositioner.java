@@ -47,9 +47,7 @@ public class VertexPositioner implements IVertexPositioner {
 		//add all paths to segments
 		List<SugiyamaGraph.SupplementPath> paths = new LinkedList<>();
 		paths.addAll(graph.getSupplementPaths());
-		System.out.println(paths.size());
 		paths.sort((o1, o2) -> o1.getLength() - o2.getLength());
-		System.out.println(paths.size());
 		int counter = 0;
 
 		for (SugiyamaGraph.SupplementPath path : paths) {
@@ -70,7 +68,6 @@ public class VertexPositioner implements IVertexPositioner {
 		//add all other vertices as segments
 		for (ISugiyamaVertex vertex : graph.getVertexSet()) {
 			if (!vertex.isDummy()) {
-				System.out.println();
 				List<ISugiyamaVertex> list = new LinkedList<ISugiyamaVertex>();
 				list.add(vertex);
 				Segment newSegment = new Segment(list);
@@ -99,12 +96,12 @@ public class VertexPositioner implements IVertexPositioner {
 		}
 
 		for (ISugiyamaVertex vertex : graph.getVertexSet()) {
-			System.out.println(vertex.getX());
 		}
 
 		for (Vertex vertex : graph.getVertexSet()) {
+			System.out.println(vertex.getSize());
 			horizontalWidth[vertex.getX()] = Math.max(horizontalWidth[vertex.getX()], Math.round(vertex.getSize().getKey().floatValue()));
-			verticalHeight[vertex.getY()] = Math.max(horizontalWidth[vertex.getY()], Math.round(vertex.getSize().getValue().floatValue()));
+			verticalHeight[vertex.getY()] = Math.max(verticalHeight[vertex.getY()], Math.round(vertex.getSize().getValue().floatValue()));
 		}
 
 		horizontalOffset[0] = 0;
@@ -116,6 +113,10 @@ public class VertexPositioner implements IVertexPositioner {
 
 		for (int i = 1; i < verticalHeight.length; i++) {
 			verticalOffset[i] = verticalOffset[i - 1] + verticalHeight[i - 1] + verticalSpacing;
+		}
+
+		for (int i : verticalHeight) {
+			System.out.println(i);
 		}
 
 		for (Vertex vertex : graph.getVertexSet()) {
@@ -310,10 +311,10 @@ public class VertexPositioner implements IVertexPositioner {
 			}
 
 			public boolean intersects(BoundingBox other) {
-				return !(other.left > this.right
-						|| other.right < this.left
-						|| other.top > this.bottom
-						|| other.bottom < this.top);
+				return !(other.left >= this.right
+						|| other.right <= this.left
+						|| other.top >= this.bottom
+						|| other.bottom <= this.top);
 			}
 
 			@Override
