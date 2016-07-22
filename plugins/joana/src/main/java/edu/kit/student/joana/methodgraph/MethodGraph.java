@@ -68,19 +68,23 @@ public class MethodGraph extends JoanaGraph {
     }
     
     public void addVertex(JoanaVertex vertex){
-    	assert(this.vertices.add(vertex));
+//    	assert(this.vertices.add(vertex));
+    	this.vertices.add(vertex);
     }
     
     public void addEdge(JoanaEdge edge){
-    	assert(this.edges.add(edge));
+//    	assert(this.edges.add(edge));
+    	this.edges.add(edge);
     }
     
     public void removeVertex(JoanaVertex vertex){
-    	assert(this.vertices.remove(vertex));
+//    	assert(this.vertices.remove(vertex));
+    	this.vertices.remove(vertex);
     }
     
     public void removeEdge(JoanaEdge edge){
-    	assert(this.edges.remove(edge));
+//    	assert(this.edges.remove(edge));
+    	this.edges.remove(edge);
     }
     
     public void restoreGraph(){

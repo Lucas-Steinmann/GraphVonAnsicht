@@ -161,8 +161,10 @@ public class MethodGraphLayout implements LayeredLayoutAlgorithm<MethodGraph> {
 			for(JoanaEdge eIn : inFieldAccess){	//add new edge from graph into representing vertex and deletes the old one
 				fag.addInEdge(eIn);	//saves the old edge to insert it later again
 				eIn.setVertices(eIn.getSource(), fag.getRepresentingVertex());
-				assert(edges.remove(eIn));
-				assert(edges.add(eIn));
+//				assert(edges.remove(eIn));
+//				assert(edges.add(eIn));
+				edges.remove(eIn);
+				edges.add(eIn);
 //				graph.addEdge(new JoanaEdge(graph.getName(), "FieldAccess", eIn.getSource(), fag.getRepresentingVertex(), EdgeKind.UNKNOWN));
 //				edges.add(new JoanaEdge(graph.getName(), "FieldAccess", eIn.getSource(), fag.getRepresentingVertex(), EdgeKind.UNKNOWN));
 			}
@@ -171,8 +173,10 @@ public class MethodGraphLayout implements LayeredLayoutAlgorithm<MethodGraph> {
 				fag.addOutEdge(eOut);	//saves the old edge to insert it later again
 				eOut.setVertices(fag.getRepresentingVertex(), eOut.getTarget());
 				
-				assert(edges.remove(eOut));
-				assert(edges.add(eOut));
+//				assert(edges.remove(eOut));
+//				assert(edges.add(eOut));
+				edges.remove(eOut);
+				edges.add(eOut);
 //				graph.addEdge(new JoanaEdge(graph.getName(), "FieldAccess",  fag.getRepresentingVertex(), eOut.getTarget(), EdgeKind.UNKNOWN));
 //				edges.add(new JoanaEdge(graph.getName(), "FieldAccess",  fag.getRepresentingVertex(), eOut.getTarget(), EdgeKind.UNKNOWN));
 			}
