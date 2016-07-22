@@ -22,7 +22,7 @@ public class FieldAccessGraph extends JoanaGraph {
     public FieldAccessGraph(String name, Set<JoanaVertex> vertices, Set<JoanaEdge> edges) {
         //TODO: Check whether the sets build a valid field access
         super(name, vertices, edges);
-        this.representingVertex = new JoanaVertex(name,"",VertexKind.UNKNOWN);
+        this.representingVertex = new JoanaVertex(name,"",VertexKind.FIELDACCESS);
         this.inEdges = new HashSet<>();
         this.outEdges = new HashSet<>();
         this.edges = edges;

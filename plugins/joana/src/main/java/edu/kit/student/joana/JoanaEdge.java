@@ -17,8 +17,10 @@ import javafx.scene.paint.Color;
  */
 public class JoanaEdge implements DirectedEdge {
     
-    JoanaVertex source;
-    JoanaVertex target;
+    private JoanaVertex source;
+    private JoanaVertex target;
+    private JoanaVertex lastSource;
+    private JoanaVertex lastTarget;
 	private Integer id;
 	private GAnsProperty<String> name;
 	private GAnsProperty<String> label;
@@ -29,10 +31,41 @@ public class JoanaEdge implements DirectedEdge {
         this.edgeKind = new GAnsProperty<EdgeKind>("edgeKind", kind);
         this.target = target;
         this.source = source;
+        this.lastSource = source;
+        this.lastTarget = target;
         this.name = new GAnsProperty<String>("name", name);
         this.label = new GAnsProperty<String>("label", label);
         this.id = IdGenerator.getInstance().createId();
         this.path = new OrthogonalEdgePath();
+    }
+    
+    public void setVertices(JoanaVertex source, JoanaVertex target){
+    	this.lastSource=this.source;
+    	this.lastTarget=this.target;
+    	this.source=source;
+    	this.target=target;
+    }
+    
+    /**
+     * Returns the value of the source of this edge before it was changed.
+     * Always has the value of the last change.
+     * If there were no changes, returns the normal source of this.
+     * 
+     * @return the source of this edge before one call of setVertices
+     */
+    public JoanaVertex getLastSource(){
+    	return this.lastSource;
+    }
+    
+    /**
+     * Returns the value of the target of this edge before it was changed.
+     * Always has the value of the last change.
+     * If there were no changes, returns the normal target of this.
+     * 
+     * @return the target of this edge before one call of setVertices
+     */
+    public JoanaVertex getLastTarget(){
+    	return this.lastTarget;
     }
 
     public void setProperties(EdgeKind edgeKind) {

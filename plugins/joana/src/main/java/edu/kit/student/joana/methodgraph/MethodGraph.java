@@ -86,8 +86,10 @@ public class MethodGraph extends JoanaGraph {
     public void restoreGraph(){
     	this.vertices.clear();
     	this.edges.clear();
-    	this.verticesToRestore.forEach(v->this.vertices.add(v));
-    	this.edgesToRestore.forEach(e->this.edges.add(e));
+    	this.verticesToRestore.stream().filter(v->super.getVertexSet().contains(v)).forEach(v->this.vertices.add(v));
+    	this.edgesToRestore.stream().filter(e->super.getEdgeSet().contains(e)).forEach(e->this.edges.add(e));
+//    	this.verticesToRestore.forEach(v->this.vertices.add(v));
+//    	this.edgesToRestore.forEach(e->this.edges.add(e));
     }
     
     /**
