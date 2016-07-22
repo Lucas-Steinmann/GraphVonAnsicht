@@ -1,7 +1,7 @@
 package edu.kit.student.sugiyama.steps;
 
 import edu.kit.student.graphmodel.EdgePath;
-import edu.kit.student.joana.JoanaEdge;
+//import edu.kit.student.joana.JoanaEdge;
 import edu.kit.student.sugiyama.graph.IEdgeDrawerGraph;
 import edu.kit.student.sugiyama.graph.ISugiyamaEdge;
 import edu.kit.student.sugiyama.graph.ISugiyamaVertex;
@@ -320,9 +320,9 @@ public class EdgeDrawer implements IEdgeDrawer {
 		System.out.println("target index: "+index + "| " +this.inOutPoints.get(target.getID()).get(0).get(index));
 		assert(found);
 
-		if(!found) {
-			((JoanaEdge) edge.getWrappedEdge()).setEdgeKind(JoanaEdge.EdgeKind.DEBUG);
-		}
+//		if(!found) {
+//			((JoanaEdge) edge.getWrappedEdge()).setEdgeKind(JoanaEdge.EdgeKind.DEBUG);
+//		}
 		
 		DoublePoint tPoint = this.inOutPoints.get(target.getID()).get(0).get(index);
 		
