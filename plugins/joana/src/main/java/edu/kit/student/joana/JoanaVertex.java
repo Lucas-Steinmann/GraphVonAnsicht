@@ -204,7 +204,8 @@ public class JoanaVertex extends DefaultVertex implements ViewableVertex {
     public enum VertexKind {
         NORM, CALL, EXIT, ENTR,
         ACTI, ACTO, FRMO, FRMI,
-        EXPR, PRED, SYNC, FOLD, SUMMARY, UNKNOWN;
+        EXPR, PRED, SYNC, FOLD,
+        SUMMARY, FIELDACCESS, UNKNOWN;
     	
     	@Override
     	public String toString() {
@@ -226,7 +227,7 @@ public class JoanaVertex extends DefaultVertex implements ViewableVertex {
         	case SYNC: return Color.web("0xFFC125");
         	case FOLD: return Color.BROWN;
         	case SUMMARY: return Color.BROWN;
-        	case UNKNOWN: return Color.CYAN;	//TODO: maybe something else
+        	case FIELDACCESS: return Color.CYAN;	//TODO: maybe something else
         	default: return Color.BEIGE;
         	}
         }

@@ -9,9 +9,12 @@ import edu.kit.student.joana.JoanaVertex;
 import edu.kit.student.parameter.Settings;
 import edu.kit.student.sugiyama.*;
 import edu.kit.student.sugiyama.steps.LayerAssigner;
+import edu.kit.student.util.DoublePoint;
 import javafx.util.Pair;
 
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -151,15 +154,17 @@ public class MethodGraphLayout implements LayeredLayoutAlgorithm<MethodGraph> {
 			
 			for(JoanaEdge eIn : inFieldAccess){	//add new edge from graph into representing vertex and deletes the old one
 				fag.addInEdge(eIn);	//saves the old edge to insert it later again
-				assert(edges.remove(eIn));
-				graph.addEdge(new JoanaEdge(graph.getName(), "FieldAccess", eIn.getSource(), fag.getRepresentingVertex(), EdgeKind.UNKNOWN));
+				eIn.setVertices(eIn.getSource(), fag.getRepresentingVertex());
+//				assert(edges.remove(eIn));
+//				graph.addEdge(new JoanaEdge(graph.getName(), "FieldAccess", eIn.getSource(), fag.getRepresentingVertex(), EdgeKind.UNKNOWN));
 //				edges.add(new JoanaEdge(graph.getName(), "FieldAccess", eIn.getSource(), fag.getRepresentingVertex(), EdgeKind.UNKNOWN));
 			}
 			
 			for(JoanaEdge eOut : outFieldAccess){	//add new edge from representing vertex into normal graph and deletes the old one
 				fag.addOutEdge(eOut);	//saves the old edge to insert it later again
-				assert(edges.remove(eOut));
-				graph.addEdge(new JoanaEdge(graph.getName(), "FieldAccess",  fag.getRepresentingVertex(), eOut.getTarget(), EdgeKind.UNKNOWN));
+				eOut.setVertices(fag.getRepresentingVertex(), eOut.getTarget());
+//				assert(edges.remove(eOut));
+//				graph.addEdge(new JoanaEdge(graph.getName(), "FieldAccess",  fag.getRepresentingVertex(), eOut.getTarget(), EdgeKind.UNKNOWN));
 //				edges.add(new JoanaEdge(graph.getName(), "FieldAccess",  fag.getRepresentingVertex(), eOut.getTarget(), EdgeKind.UNKNOWN));
 			}
 			fagEdges.forEach(e->graph.removeEdge(e));
@@ -177,21 +182,17 @@ public class MethodGraphLayout implements LayeredLayoutAlgorithm<MethodGraph> {
 			this.sugiyamaLayoutAlgorithm.layout(fag);
 			JoanaVertex rep = fa.getGraph().getRepresentingVertex();
 			//now set the size of rep new, according to the layered FieldAccessGraph which he represents
-			Set<JoanaVertex> vertices = fag.getVertexSet();
+			Set<JoanaVertex> fagVertices = fag.getVertexSet();
 			int minX, minY, maxX, maxY, newWidth, newHeight;
-			minX = vertices.stream().mapToInt(vertex->vertex.getX()).min().getAsInt();
-			maxX = vertices.stream().mapToInt(vertex->vertex.getX()).max().getAsInt();
-			minY = vertices.stream().mapToInt(vertex->vertex.getY()).min().getAsInt();
-			maxY = vertices.stream().mapToInt(vertex->vertex.getY()).max().getAsInt();
-			newWidth = maxX - minX;
-			newHeight = maxY - minY;
-			//TODO: set now the new size of the representing vertex
-			rep.setSize(new Pair((double)newWidth, (double)newHeight));
-			//now adjust the coordinates of every vertex contained in the FieldAccessGraph by addig them something of the representing's coordinates
-			for(JoanaVertex v : vertices){
-				v.setX(v.getX() + rep.getX());
-				v.setY(v.getY() + rep.getY());
-			}
+			minX = fagVertices.stream().mapToInt(vertex->vertex.getX()).min().getAsInt();
+			maxX = fagVertices.stream().mapToInt(vertex->(int)Math.round(vertex.getX() + vertex.getSize().getKey())).max().getAsInt();
+			minY = fagVertices.stream().mapToInt(vertex->vertex.getY()).min().getAsInt();
+			maxY = fagVertices.stream().mapToInt(vertex->(int)Math.round(vertex.getY() + vertex.getSize().getValue())).max().getAsInt();
+			newWidth = maxX - minX + 10;
+			newHeight = maxY - minY + 10;
+			
+			// set now the new size of the representing vertex appropriated to the layouted FieldAccessGraphs
+			rep.setSize(new Pair((double)newWidth, (double)newHeight));	
 		}
 	}
 	
@@ -206,53 +207,66 @@ public class MethodGraphLayout implements LayeredLayoutAlgorithm<MethodGraph> {
 			Set<JoanaVertex> fagVertices = fag.getVertexSet();
 			Set<JoanaEdge> fagEdges = fag.getEdgeSet();
 			
-			Set<JoanaEdge> edgesIn = new HashSet<>();
-			Set<JoanaEdge> edgesOut = new HashSet<>();
+			//now, after layouting the normal graph adjust the coordinates of every vertex contained in the FieldAccessGraph by addig them something of the representing's coordinates
+			for(JoanaVertex v : fagVertices){
+				v.setX(v.getX() + rep.getX() + 5);
+				v.setY(v.getY() + rep.getY() + 5);
+			}
+			
+			for(JoanaEdge e : fagEdges){
+				List<DoublePoint> points = e.getPath().getNodes();
+				List<DoublePoint> newPoints = new LinkedList<>();
+				assert(!points.isEmpty());
+				points.forEach(p->newPoints.add(new DoublePoint(p.x + rep.getX() + 5, p.y + rep.getY() + 5)));
+				points.clear();
+				points.addAll(newPoints);
+			}
+			
+			//TODO: also adjust Points in the EdgePaths of vertices in the FieldAccessGraph
+			
+//			Set<JoanaEdge> edgesIn = new HashSet<>();
+//			Set<JoanaEdge> edgesOut = new HashSet<>();
 
 			
-			for(JoanaEdge e : edges){	//searches for the edge(s) of the graph that must be replaced through edges of the FieldAccess
-				if(vertices.contains(e.getSource()) && e.getTarget().getID() == fag.getRepresentingVertex().getID()){
-					edgesIn.add(e);
-				} else if(e.getSource().getID() == fag.getRepresentingVertex().getID() && vertices.contains(e.getTarget())){
-					edgesOut.add(e);
-				}
-			}
-			assert(!edgesIn.isEmpty());	//there must be an edge going from the graph into the vertex that represents an FieldAccessGraph
+//			for(JoanaEdge e : edges){	//searches for the edge(s) of the graph that must be replaced through edges of the FieldAccess
+//				if(vertices.contains(e.getSource()) && e.getTarget().getID() == fag.getRepresentingVertex().getID()){
+//					edgesIn.add(e);
+//				} else if(e.getSource().getID() == fag.getRepresentingVertex().getID() && vertices.contains(e.getTarget())){
+//					edgesOut.add(e);
+//				}
+//			}
+//			assert(!edgesIn.isEmpty());	//there must be an edge going from the graph into the vertex that represents an FieldAccessGraph
 			
 			
 			Set<JoanaEdge> restoredIn = fag.getReplacedInEdges();	//edge going into this FieldAccessGraph that was replaced temporary for layouting the whole graph.
 			Set<JoanaEdge> restoredOut = fag.getReplacedOutEdges();// edge that comes into this FieldAccessGraph that was replaced temporary for layouting the whole graph.
-			assert(!edgesIn.isEmpty() && !restoredIn.isEmpty());
-			assert((edgesOut.isEmpty() && restoredOut.isEmpty())||(!edgesOut.isEmpty() && !restoredOut.isEmpty()));
+//			assert(!edgesIn.isEmpty() && !restoredIn.isEmpty() && edgesIn.size() == restoredIn.size());
+//			assert((edgesOut.isEmpty() && restoredOut.isEmpty())||(!edgesOut.isEmpty() && !restoredOut.isEmpty() && edgesOut.size() == restoredOut.size()));
 			
 			//TODO: also draw the edgePath from the vertex out into the FieldAccessGraph here!
-			for(JoanaEdge e1 : edgesIn){
-				for(JoanaEdge e2 : restoredIn){
-					if(e1.getID() == e2.getID()){
-						e2.getPath().getNodes().addAll(e1.getPath().getNodes());
-						break;
-					}
-				}
+			//or just from the entry point in the box to the vertices in it ?
+			restoredIn.forEach(e->e.setVertices(e.getLastSource(), e.getLastTarget()));
+			restoredOut.forEach(e->e.setVertices(e.getLastSource(), e.getLastTarget()));
+			
+			for(JoanaEdge e1: restoredIn){
+				assert(!e1.getPath().getNodes().isEmpty());
+			}
+			for(JoanaEdge e2 : restoredOut){
+				assert(!e2.getPath().getNodes().isEmpty());
 			}
 			
-			if(restoredOut != null){
-				for(JoanaEdge e1 : edgesOut){
-					for(JoanaEdge e2 : restoredOut){
-						if(e1.getID() == e2.getID()){
-							e2.getPath().getNodes().addAll(e1.getPath().getNodes());
-							break;
-						}
-					}
-				}
-			}
+			//all Edgepaths have been set, now add the restoredEdges and FieldAccess-vertices to the original graph
 			
-			//set the color of the representing vertex, anything that is light darker than white.
-			//finally remove the old edge(s) and the old vertex
-//			graph.removeVertex(fag.getRepresentingVertex());	TODO: experiment cause of its background that one want to have
+//			restoredIn.forEach(e->graph.addEdge(e));
+//			restoredOut.forEach(e->graph.addEdge(e));
+			fagVertices.forEach(v->graph.addVertex(v));
+			fagEdges.forEach(e->graph.addEdge(e));
+			
+			graph.removeVertex(fag.getRepresentingVertex());	//TODO: experiment cause of its background that one want to have
 //			vertices.remove(fag.getRepresentingVertex());
-			edgesIn.forEach(e->graph.removeEdge(e));
+//			edgesIn.forEach(e->graph.removeEdge(e));
 //			edges.remove(edgeIn);
-			edgesOut.forEach(e->graph.removeEdge(e));
+//			edgesOut.forEach(e->graph.removeEdge(e));
 		}
 	}
 
