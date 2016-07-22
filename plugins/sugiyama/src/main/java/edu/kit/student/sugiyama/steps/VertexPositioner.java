@@ -179,6 +179,8 @@ public class VertexPositioner implements IVertexPositioner {
 			for (ISugiyamaVertex vertex : this.vertices) {
 				graph.setX(vertex, vertex.getX() + amount);
 			}
+
+			this.changed = true;
 		}
 
 		public void align(IVertexPositionerGraph graph) {
