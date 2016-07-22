@@ -196,11 +196,6 @@ public class MethodGraphLayout implements LayeredLayoutAlgorithm<MethodGraph> {
 	}
 	
 	private void replaceRepresentingVertex(MethodGraph graph){
-		//TODO: search for the edge and the vertex that must be replaced,
-		//then add an edge between the entry vertex of the FieldAccess and the vertex coming from the normal graph
-		//add just one point to the existing edgepath of the old edge and set this edgepath to the edgepath of the new edge, so that the edge is going into the 
-		//entry vertex of the fieldAccess
-		//watch out for FieldAccesses that also have an outgoing edge!!!
 		
 		Set<JoanaVertex> vertices = graph.getVertexSet();
 		Set<JoanaEdge> edges = graph.getEdgeSet();
