@@ -435,9 +435,9 @@ public class GraphView extends Pane {
 		if(result.get() == ButtonType.OK) { 
 			this.graphFactory.getGraph().setVertexFilter(selectedVertexFilter);
 			this.graphFactory.getGraph().setEdgeFilter(selectedEdgeFilter);
+            getCurrentLayoutOption().applyLayout();
+            reloadGraph();
 		}
-		reloadGraph();
-		getCurrentLayoutOption().applyLayout();
 	}
 	
 	private GridPane setupVertexFilterPane(List<VertexFilter> selectedVertexFilter) {
