@@ -8,7 +8,6 @@ import java.util.Set;
 
 import edu.kit.student.graphmodel.FastGraphAccessor;
 import edu.kit.student.graphmodel.Vertex;
-import edu.kit.student.plugin.LayoutOption;
 
 /**
  * A {@link DefaultDirectedGraph} is a specific Graph which only contains
@@ -213,8 +212,8 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
 	}
 	
     public void removeEdge(E edge) {
-		V source = (V) edge.getSource();
-		V target = (V) edge.getTarget();
+		Vertex source = edge.getSource();
+		Vertex target = edge.getTarget();
 
 		if (source.getID().equals(target.getID())) {
 			vertexToSelfLoops.get(source).remove(edge);

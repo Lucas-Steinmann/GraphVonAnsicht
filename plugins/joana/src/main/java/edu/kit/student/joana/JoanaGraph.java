@@ -252,6 +252,7 @@ public abstract class JoanaGraph
         }
     }
     
+    @SuppressWarnings("unused")
     private void printOnionEdges() {
         for (JoanaEdge edge : onionEdges.keySet()) {
             System.out.println(onionEdges.get(edge));
@@ -270,7 +271,8 @@ public abstract class JoanaGraph
     }
 
 
-	private JoanaCollapsedVertex getCollapsedVertexByID(int id)  {
+	@SuppressWarnings("unused")
+    private JoanaCollapsedVertex getCollapsedVertexByID(int id)  {
 	    for (JoanaCollapsedVertex cVertex : collapsedVertices) {
 	        if (id == cVertex.getID()) {
 	            return cVertex;

@@ -206,15 +206,12 @@ public class MethodGraphLayout implements LayeredLayoutAlgorithm<MethodGraph> {
 			newHeight = maxY - minY + 10;
 			
 			// set now the new size of the representing vertex appropriated to the layouted FieldAccessGraphs
-			rep.setSize(new Pair((double)newWidth, (double)newHeight));	
+			rep.setSize(new Pair<Double, Double>((double)newWidth, (double)newHeight));	
 		}
 	}
 	
 	private void replaceRepresentingVertex(MethodGraph graph){
 		
-		Set<JoanaVertex> vertices = graph.getVertexSet();
-		Set<JoanaEdge> edges = graph.getEdgeSet();
-
 		for(FieldAccess fa : graph.getFieldAccesses()){
 			FieldAccessGraph fag = fa.getGraph();
 			JoanaVertex rep = fag.getRepresentingVertex();

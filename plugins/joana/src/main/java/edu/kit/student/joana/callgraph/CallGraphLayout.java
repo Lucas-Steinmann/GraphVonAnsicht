@@ -9,10 +9,10 @@ import edu.kit.student.sugiyama.SugiyamaLayoutAlgorithm;
  * Groups vertices representing the same Java-Method together.
  */
 public class CallGraphLayout implements LayeredLayoutAlgorithm<CallGraph> {
-	private SugiyamaLayoutAlgorithm sugiyamaLayoutAlgorithm;
+	private SugiyamaLayoutAlgorithm<CallGraph> sugiyamaLayoutAlgorithm;
 
 	public CallGraphLayout() {
-		this.sugiyamaLayoutAlgorithm = new SugiyamaLayoutAlgorithm();
+		this.sugiyamaLayoutAlgorithm = new SugiyamaLayoutAlgorithm<>();
 	}
 
 	@Override

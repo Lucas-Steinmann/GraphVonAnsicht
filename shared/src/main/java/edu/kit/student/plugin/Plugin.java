@@ -1,8 +1,5 @@
 package edu.kit.student.plugin;
 
-import edu.kit.student.graphmodel.Edge;
-import edu.kit.student.graphmodel.Vertex;
-
 import java.util.List;
 
 /**

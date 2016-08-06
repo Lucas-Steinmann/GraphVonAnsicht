@@ -13,7 +13,6 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import edu.kit.student.graphmodel.Graph;
 import edu.kit.student.graphmodel.GraphModel;
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.ViewableGraph;
