@@ -467,8 +467,8 @@ public class EdgeDrawer implements IEdgeDrawer {
 		this.selfLoops = new HashSet<ISugiyamaEdge>();
 		this.graphVertices.stream().filter(vertex->graph.selfLoopNumberOf(vertex)>0).forEach(vertex->this.selfLoops.addAll(graph.selfLoopsOf(vertex)));
 		this.sugiEdges = this.graphEdges.stream().filter(edge->!edge.isSupplementEdge() && !selfLoops.contains(edge)).collect(Collectors.toSet()); //edges that are not supplementEdges and no selfloop
-		this.spaceBetweenLayers = new double[graph.getLayerCount() - 1];
-		this.distancePerEdgeInLayer = new double[graph.getLayerCount() - 1];
+		this.spaceBetweenLayers = new double[graph.getLayerCount()];
+		this.distancePerEdgeInLayer = new double[graph.getLayerCount()];
 		this.points.clear();	//necessary ?
 	}
 }

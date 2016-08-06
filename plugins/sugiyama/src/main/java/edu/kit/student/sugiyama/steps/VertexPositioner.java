@@ -299,10 +299,10 @@ public class VertexPositioner implements IVertexPositioner {
 			}
 
 			public boolean intersects(BoundingBox other) {
-				return !(other.left >= this.right
-						|| other.right <= this.left
-						|| other.top >= this.bottom
-						|| other.bottom <= this.top);
+				return !(other.left > this.right
+						|| other.right < this.left
+						|| other.top > this.bottom
+						|| other.bottom < this.top);
 			}
 
 			@Override
