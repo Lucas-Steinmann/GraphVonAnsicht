@@ -78,7 +78,7 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
 	        vertexToEdge.get(edge.getSource()).add(edge);
 	        revVertexToEdge.get(edge.getTarget()).add(edge);
 
-			if (edge.getSource().getID() == edge.getTarget().getID()) {
+			if (edge.getSource().getID().equals(edge.getTarget().getID())) {
 				this.vertexToSelfLoops.get(edge.getSource()).add(edge);
 			}
 	    } else {
@@ -216,7 +216,7 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
 		V source = (V) edge.getSource();
 		V target = (V) edge.getTarget();
 
-		if (source.getID() == target.getID()) {
+		if (source.getID().equals(target.getID())) {
 			vertexToSelfLoops.get(source).remove(edge);
 			return;
 		}
