@@ -147,7 +147,6 @@ public abstract class JoanaGraph
         return options;
     }
 
-	@Override
 	public JoanaCollapsedVertex collapse(Set<Vertex> subset) {
 	    Set<JoanaVertex> directedSubset = new HashSet<JoanaVertex>();
 	    for (Vertex v : subset) {
@@ -302,7 +301,6 @@ public abstract class JoanaGraph
         };
 	}
 
-	@Override
     public Set<JoanaVertex> expand(CollapsedVertex vertex) {
 	    if (!collapsedVertices.contains(vertex)) {
 	        throw new IllegalArgumentException("Cannot expand vertex, not collapsed in this graph.");
@@ -316,8 +314,7 @@ public abstract class JoanaGraph
         return null;
 	}
 
-	@Override
-	public boolean isCollapsed(Vertex vertex) {
+	private boolean isCollapsed(Vertex vertex) {
 	    if (!collapsedVertices.contains(vertex))
 	        return false;
 	    if (!getVertexSet().contains(vertex)) {
