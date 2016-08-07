@@ -114,6 +114,32 @@ public class MethodGraphLayout implements LayeredLayoutAlgorithm<MethodGraph> {
 		}
 	}
 	
+	
+	/**
+	 * Layouts every single FieldAccessGraph.
+	 * Also sets the sizes of the vertex representing this FieldAccessGraph appropriate.
+	 */
+	private void layoutFieldAccessGraphs(MethodGraph graph){
+		for(FieldAccess fa : graph.getFieldAccesses()){
+			FieldAccessGraph fag = fa.getGraph();
+			this.sugiyamaLayoutAlgorithm.layout(fag);
+			JoanaVertex rep = fa.getGraph().getRepresentingVertex();
+			System.out.println("new fag size: "+fag.getVertexSet().size() + "," +fag.getEdgeSet().size());
+			//now set the size of rep new, according to the layered FieldAccessGraph which he represents
+			Set<JoanaVertex> fagVertices = fag.getVertexSet();
+			int minX, minY, maxX, maxY, newWidth, newHeight;
+			minX = fagVertices.stream().mapToInt(vertex->vertex.getX()).min().getAsInt();
+			maxX = fagVertices.stream().mapToInt(vertex->(int)Math.round(vertex.getX() + vertex.getSize().getKey())).max().getAsInt();
+			minY = fagVertices.stream().mapToInt(vertex->vertex.getY()).min().getAsInt();
+			maxY = fagVertices.stream().mapToInt(vertex->(int)Math.round(vertex.getY() + vertex.getSize().getValue())).max().getAsInt();
+			newWidth = maxX - minX + 10;
+			newHeight = maxY - minY + 10;
+			
+			// set now the new size of the representing vertex appropriated to the layouted FieldAccessGraphs
+			rep.setSize(new Pair<Double, Double>((double)newWidth, (double)newHeight));	
+		}
+	}
+	
 	/**
 	 * Removes all vertices and edges that are part in a FieldAccessGraph form the graphs vertex- and edge-set.
 	 * Additionally adds an vertex to the graphs vertex-set that represents this FieldAccessGraph in later layouting.
@@ -153,18 +179,18 @@ public class MethodGraphLayout implements LayeredLayoutAlgorithm<MethodGraph> {
 					outFieldAccess.add(e);
 				}
 			}
-			assert(inFieldAccess.size() > 0);	//there must be always an edge going in an FieldAccess
+			assert(inFieldAccess.size() > 0);	//there must be at least one edge going in an FieldAccess
 			
-			graph.addVertex(fag.getRepresentingVertex());
-//			vertices.add(fag.getRepresentingVertex());	//adds representing vertex to normal vertex-set
+			graph.addVertex(fag.getRepresentingVertex()); //adds representing vertex to normal vertex-set
+//			vertices.add(fag.getRepresentingVertex());	
 			
 			for(JoanaEdge eIn : inFieldAccess){	//add new edge from graph into representing vertex and deletes the old one
 				fag.addInEdge(eIn);	//saves the old edge to insert it later again
 				eIn.setVertices(eIn.getSource(), fag.getRepresentingVertex());
 //				assert(edges.remove(eIn));
 //				assert(edges.add(eIn));
-				edges.remove(eIn);
-				edges.add(eIn);
+				edges.remove(eIn);	//cause setting edges vertices is not transferred to the edgelist of the graph so
+				edges.add(eIn);		//remove it and add the edge with new set vertices
 //				graph.addEdge(new JoanaEdge(graph.getName(), "FieldAccess", eIn.getSource(), fag.getRepresentingVertex(), EdgeKind.UNKNOWN));
 //				edges.add(new JoanaEdge(graph.getName(), "FieldAccess", eIn.getSource(), fag.getRepresentingVertex(), EdgeKind.UNKNOWN));
 			}
@@ -182,31 +208,6 @@ public class MethodGraphLayout implements LayeredLayoutAlgorithm<MethodGraph> {
 			}
 			fagEdges.forEach(e->graph.removeEdge(e));
 //			edges.removeAll(fagEdges);
-		}
-	}
-	
-	/**
-	 * Layouts every single FieldAccessGraph.
-	 * Also sets the sizes of the vertex representing this FieldAccessGraph appropriate.
-	 */
-	private void layoutFieldAccessGraphs(MethodGraph graph){
-		for(FieldAccess fa : graph.getFieldAccesses()){
-			FieldAccessGraph fag = fa.getGraph();
-			this.sugiyamaLayoutAlgorithm.layout(fag);
-			JoanaVertex rep = fa.getGraph().getRepresentingVertex();
-			System.out.println("new fag size: "+fag.getVertexSet().size() + "," +fag.getEdgeSet().size());
-			//now set the size of rep new, according to the layered FieldAccessGraph which he represents
-			Set<JoanaVertex> fagVertices = fag.getVertexSet();
-			int minX, minY, maxX, maxY, newWidth, newHeight;
-			minX = fagVertices.stream().mapToInt(vertex->vertex.getX()).min().getAsInt();
-			maxX = fagVertices.stream().mapToInt(vertex->(int)Math.round(vertex.getX() + vertex.getSize().getKey())).max().getAsInt();
-			minY = fagVertices.stream().mapToInt(vertex->vertex.getY()).min().getAsInt();
-			maxY = fagVertices.stream().mapToInt(vertex->(int)Math.round(vertex.getY() + vertex.getSize().getValue())).max().getAsInt();
-			newWidth = maxX - minX + 10;
-			newHeight = maxY - minY + 10;
-			
-			// set now the new size of the representing vertex appropriated to the layouted FieldAccessGraphs
-			rep.setSize(new Pair<Double, Double>((double)newWidth, (double)newHeight));	
 		}
 	}
 	
@@ -233,7 +234,6 @@ public class MethodGraphLayout implements LayeredLayoutAlgorithm<MethodGraph> {
 				points.addAll(newPoints);
 			}
 			
-			//TODO: also adjust Points in the EdgePaths of vertices in the FieldAccessGraph
 			
 //			Set<JoanaEdge> edgesIn = new HashSet<>();
 //			Set<JoanaEdge> edgesOut = new HashSet<>();
