@@ -6,6 +6,7 @@ import edu.kit.student.joana.FieldAccessGraph;
 import edu.kit.student.joana.JoanaEdge;
 import edu.kit.student.joana.JoanaVertex;
 import edu.kit.student.parameter.Settings;
+import edu.kit.student.plugin.LayoutAlgorithm;
 import edu.kit.student.sugiyama.*;
 import edu.kit.student.sugiyama.steps.LayerAssigner;
 import edu.kit.student.util.DoublePoint;
@@ -20,7 +21,7 @@ import java.util.Set;
  * Implements hierarchical layout with layers for {@link MethodGraph}.
  * This graph contains field access subgraphs.
  */
-public class MethodGraphLayout implements LayeredLayoutAlgorithm<MethodGraph> {
+public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 	
 	private SugiyamaLayoutAlgorithm<MethodGraph> sugiyamaLayoutAlgorithm;
 
@@ -279,12 +280,6 @@ public class MethodGraphLayout implements LayeredLayoutAlgorithm<MethodGraph> {
 //			edges.remove(edgeIn);
 //			edgesOut.forEach(e->graph.removeEdge(e));
 		}
-	}
-
-	@Override
-	public void layoutLayeredGraph(MethodGraph graph) {
-		// TODO Auto-generated method stub
-		
 	}
 	
 	//private Method to get all param vertices of a joana call vertex
