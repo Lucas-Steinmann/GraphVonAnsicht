@@ -1,9 +1,6 @@
 package edu.kit.student.sugiyama.steps;
 
-import edu.kit.student.parameter.DoubleParameter;
-import edu.kit.student.parameter.IntegerParameter;
-import edu.kit.student.parameter.Parameter;
-import edu.kit.student.parameter.Settings;
+import edu.kit.student.parameter.*;
 import edu.kit.student.sugiyama.graph.ICrossMinimizerGraph;
 import edu.kit.student.sugiyama.graph.ISugiyamaEdge;
 import edu.kit.student.sugiyama.graph.ISugiyamaVertex;
@@ -21,7 +18,7 @@ import java.util.stream.Stream;
 public class CrossMinimizer implements ICrossMinimizer {
 	private double crossingReductionThreshold;
 	private int maxRuns;
-	private boolean stopOnThreshold = false;
+	private boolean stopOnThreshold = true;
 	private boolean intelligentThreshold = false;
 	private Settings settings;
 
@@ -42,9 +39,14 @@ public class CrossMinimizer implements ICrossMinimizer {
 		this.maxRuns = Math.min(Math.max(maxRuns, 1), 99999999);
 	}
 
+	public void setStopOnThreshold(boolean stopOnThreshold) {
+		this.stopOnThreshold = stopOnThreshold;
+	}
+
 	@Override
 	public void minimizeCrossings(ICrossMinimizerGraph graph) {
 		if (settings != null) {
+			setStopOnThreshold(Settings.unpackBoolean((Parameter<?, Boolean>) getSettings().get("Use Threshold")));
 			setCrossingReductionThreshold(Settings.unpackDouble((Parameter<?, Double>) getSettings().get("Crossminimizer reduction Threshold")));
 			setMaxRuns(Settings.unpackInteger((Parameter<?, Integer>) getSettings().get("Crossminimizer max runs")));
 		}
@@ -113,11 +115,14 @@ public class CrossMinimizer implements ICrossMinimizer {
 			return this.settings;
 		}
 
-		DoubleParameter p1 = new DoubleParameter("Crossminimizer reduction Threshold", 0.01, 0.00000001, 1d);
-		IntegerParameter p2 = new IntegerParameter("Crossminimizer max runs", 10, 1, 999999);
+		BooleanParameter p1 = new BooleanParameter("Use Threshold", true);
+		DoubleParameter p2 = new DoubleParameter("Crossminimizer reduction Threshold", 0.01, 0.00000001, 1d);
+		IntegerParameter p3 = new IntegerParameter("Crossminimizer max runs", 10, 1, 999999);
+
 		HashMap<String, Parameter<?,?>> parameter = new HashMap<String, Parameter<?,?>>();
 		parameter.put(p1.getName(), p1);
 		parameter.put(p2.getName(), p2);
+		parameter.put(p3.getName(), p3);
 		Settings  settings = new Settings(parameter);
 		this.settings = settings;
 		return settings;

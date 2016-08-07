@@ -43,6 +43,10 @@ public class Settings {
         return parameter.getValue();
     }
 
+    public static boolean unpackBoolean(Parameter<?, Boolean> parameter) {
+        return parameter.getValue();
+    }
+
     /**
      * Returns all the Parameters in the Settings-Object.
      * @return All the Parameters in the Settings-Object.
