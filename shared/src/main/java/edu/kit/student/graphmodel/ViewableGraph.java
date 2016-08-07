@@ -13,7 +13,7 @@ import edu.kit.student.plugin.VertexFilter;
 /**
  * The base graph accessed by the UI.
  */
-public interface ViewableGraph extends Viewable, Graph {
+public interface ViewableGraph extends Graph {
 
 	/**
 	 * Returns the name of the Graph.
