@@ -10,10 +10,8 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import edu.kit.student.graphmodel.CollapsedVertex;
-import edu.kit.student.graphmodel.DefaultGraphLayering;
 import edu.kit.student.graphmodel.DirectedOnionPath;
 import edu.kit.student.graphmodel.FastGraphAccessor;
-import edu.kit.student.graphmodel.LayeredGraph;
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.ViewableGraph;
 import edu.kit.student.graphmodel.ViewableVertex;
@@ -32,7 +30,7 @@ import edu.kit.student.util.IdGenerator;
  * An abstract superclass for all JOANA specific graphs.
  */
 public abstract class JoanaGraph
-    implements DirectedGraph, LayeredGraph, ViewableGraph {
+    implements DirectedGraph, ViewableGraph {
     
 	
 //    @Override
@@ -72,7 +70,6 @@ public abstract class JoanaGraph
     private GAnsProperty<String> name;
 
     private DefaultDirectedGraph<JoanaVertex, JoanaEdge> graph;
-    private DefaultGraphLayering<JoanaVertex> layering;
 
     private List<JoanaCollapsedVertex> collapsedVertices;
     private Map<JoanaCollapsedVertex, VertexAction> expandActions;
@@ -88,7 +85,6 @@ public abstract class JoanaGraph
         this.name = new GAnsProperty<String>("Name", name);
         this.id = IdGenerator.getInstance().createId();    
         this.graph = new DefaultDirectedGraph<>(vertices, edges);
-        this.layering = new DefaultGraphLayering<>(vertices);
         this.collapsedVertices = new LinkedList<>();
         this.onionEdges = new HashMap<>();
         this.expandActions = new HashMap<>();
@@ -423,55 +419,6 @@ public abstract class JoanaGraph
     @Override
     public Set<JoanaEdge> edgesOf(Vertex vertex) {
         return removeFilteredEdges(graph.edgesOf(vertex));
-    }
-
-    @Override
-    public int getLayerCount() {
-        return this.layering.getLayerCount();
-    }
-
-    @Override
-    public int getVertexCount(int layerNum) {
-        return layering.getVertexCount(layerNum);
-    }
-
-    @Override
-    public int getLayerFromVertex(Vertex vertex) {
-        return layering.getLayerFromVertex(vertex);
-    }
-
-    @Override
-    public List<JoanaVertex> getLayer(int layerNum) {
-        return layering.getLayer(layerNum).stream().filter(v -> 
-                vertexFilter.stream().allMatch(f -> f.getPredicate().negate().test(v))).collect(Collectors.toList());
-    }
-
-    @Override
-    public List<List<JoanaVertex>> getLayers() {
-        List<List<JoanaVertex>> layers = new LinkedList<>();
-        for (int i = 0; i < this.getLayerCount(); i++) {
-            layers.add(this.getLayer(i));
-        }
-        return layers;
-    }
-
-    @Override
-    public int getHeight() {
-        return layering.getHeight();
-    }
-
-    @Override
-    public int getLayerWidth(int layerN) {
-        return this.getLayer(layerN).size();
-    }
-
-    @Override
-    public int getMaxWidth() {
-        int max = 0;
-        for (int i = 0; i < this.getLayerCount(); i++) {
-            max = this.getLayer(i).size() > max ? this.getLayer(i).size() : max;
-        }
-        return max;
     }
 
     @Override

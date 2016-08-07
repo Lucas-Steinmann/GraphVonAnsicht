@@ -1,14 +1,14 @@
 package edu.kit.student.joana.callgraph;
 
 import edu.kit.student.parameter.Settings;
-import edu.kit.student.sugiyama.LayeredLayoutAlgorithm;
+import edu.kit.student.plugin.LayoutAlgorithm;
 import edu.kit.student.sugiyama.SugiyamaLayoutAlgorithm;
 
 /**
  * Offers a layout for {@link CallGraph}.
  * Groups vertices representing the same Java-Method together.
  */
-public class CallGraphLayout implements LayeredLayoutAlgorithm<CallGraph> {
+public class CallGraphLayout implements LayoutAlgorithm<CallGraph> {
 	private SugiyamaLayoutAlgorithm<CallGraph> sugiyamaLayoutAlgorithm;
 
 	public CallGraphLayout() {
@@ -26,11 +26,4 @@ public class CallGraphLayout implements LayeredLayoutAlgorithm<CallGraph> {
 		sugiyamaLayoutAlgorithm.layout(graph);
 		
 	}
-
-	@Override
-	public void layoutLayeredGraph(CallGraph graph) {
-		// TODO Auto-generated method stub
-		
-	}
-
 }
