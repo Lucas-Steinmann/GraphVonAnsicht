@@ -64,8 +64,6 @@ public abstract class JoanaGraph
         return actions;
     }
 
-    private ViewableGraph parent;
-    private List<ViewableGraph> children = new LinkedList<>();
     private Integer id;
     private GAnsProperty<String> name;
 
@@ -102,27 +100,6 @@ public abstract class JoanaGraph
     @Override
     public Integer getID() {
         return this.id;
-    }
-
-    @Override
-    public ViewableGraph getParentGraph() {
-        return this.parent;
-    }
-
-    @Override
-    public void setParentGraph(ViewableGraph parent) {
-        this.parent = parent;
-        
-    }
-
-    @Override
-    public List<ViewableGraph> getChildGraphs() {
-        return this.children;
-    }
-
-    @Override
-    public void addChildGraph(ViewableGraph child) {
-        this.children.add(child);
     }
     
     @Override

@@ -132,11 +132,6 @@ public class CallGraphBuilder implements IGraphBuilder {
        // }
         CallGraph graph = new CallGraph(this.name, 
                 new HashSet<CallGraphVertex>(vertices.values()), edges);
-        
-        for(MethodGraph methodGraph : methodGraphs) {
-        	graph.addChildGraph(methodGraph);
-        	methodGraph.setParentGraph(graph);
-        }
 
         return graph;
     }

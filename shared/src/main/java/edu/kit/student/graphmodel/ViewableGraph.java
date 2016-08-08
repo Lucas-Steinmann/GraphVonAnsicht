@@ -98,30 +98,6 @@ public interface ViewableGraph extends Graph {
 	@Override
     public Set<? extends ViewableVertex> getVertexSet();
 
-	// TODO: Maybe move methods below this to GraphModel, which should be in power of the inter-graph structure
-	/**
-	 * Returns the parent graph of this graph
-	 * @return the parent graph
-	 */
-    public ViewableGraph getParentGraph();
-	
-    /**
-     * Sets the parent graph for this graph
-     * @param parent the parent graph
-     */
-	public void setParentGraph(ViewableGraph parent);
-	
-	/**
-	 * Returns a list of child graphs of this graph
-	 * @return the child graphs
-	 */
-	public List<ViewableGraph> getChildGraphs();
-	
-	/**
-	 * Adds a child graph to the children of this graph
-	 * @param child the graph to add
-	 */
-	public void addChildGraph(ViewableGraph child);
 
 	/**
 	 * Returns a list of layouts which have been registered at the corresponding

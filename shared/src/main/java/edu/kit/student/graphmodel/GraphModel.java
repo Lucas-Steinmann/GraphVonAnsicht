@@ -17,4 +17,18 @@ public abstract class GraphModel {
 	
 	public abstract ViewableGraph getGraphFromId(Integer id);
 
+	/**
+	 * Returns the parent graph of the graph
+	 * @param graph the graph to get the parent of
+	 * @return the parent graph
+	 */
+    public abstract ViewableGraph getParentGraph(ViewableGraph graph);
+	
+	
+	/**
+	 * Returns a list of child graphs of the graph
+	 * @param graph the graph to get the children of
+	 * @return the child graphs
+	 */
+	public abstract List<? extends ViewableGraph> getChildGraphs(ViewableGraph graph);
 }
