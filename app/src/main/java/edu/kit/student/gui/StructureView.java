@@ -37,18 +37,18 @@ public class StructureView extends TreeView<String> {
 	 */
 	public void showGraphModel(GraphModel graphModel) {
 		TreeItem<String> root = new TreeItem<String>();
-		addGraphsToItem(graphModel.getRootGraphs(), root);
+		addGraphsToItem(graphModel, graphModel.getRootGraphs(), root);
 		setRoot(root);
 	}
 	
-	private void addGraphsToItem(List<? extends ViewableGraph> graphs, TreeItem<String> item) {
+	private void addGraphsToItem(GraphModel model, List<? extends ViewableGraph> graphs, TreeItem<String> item) {
 		List<TreeItem<String>> items = new LinkedList<TreeItem<String>>();
 		for(ViewableGraph graph : graphs) {
 			TreeItem<String> graphItem = new TreeItem<String>(graph.getName());
 			graphItem.setExpanded(true);
 			itemMap.put(graphItem, graph.getID());
 			items.add(graphItem);
-			addGraphsToItem(graph.getChildGraphs(), graphItem);
+			addGraphsToItem(model, model.getChildGraphs(graph), graphItem);
 		}
 		item.getChildren().addAll(items);
 	}

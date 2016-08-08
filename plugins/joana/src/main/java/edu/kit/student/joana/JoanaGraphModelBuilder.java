@@ -36,10 +36,8 @@ public class JoanaGraphModelBuilder implements IGraphModelBuilder {
 
     @Override
     public GraphModel build() {
-        JoanaGraphModel model = new JoanaGraphModel();
         CallGraph callGraph = callBuilder.build();
-        model.setCallGraph(callGraph);
-        model.setMethodGraphs(callGraph.getMethodgraphs());
+        JoanaGraphModel model = new JoanaGraphModel(callGraph);
         workspace.setGraphModel(model);
         return model;
     }
