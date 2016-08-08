@@ -166,6 +166,10 @@ public class GAnsApplication {
 	        switch (key) {
 	          case "in":
 	              filename = namedParams.get(key);
+	              if (!filename.contains(".")) {
+	                  showErrorDialog("Error! The filename " + filename + " is invalid.");
+	                  return;
+	              }
 	              String extension = "*" + filename.substring(filename.lastIndexOf('.'));
 	              List<Importer> importerList = PluginManager.getPluginManager().getImporter();
 	              for (Importer temp : importerList) {
