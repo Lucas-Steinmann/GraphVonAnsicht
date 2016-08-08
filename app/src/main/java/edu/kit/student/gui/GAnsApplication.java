@@ -155,8 +155,10 @@ public class GAnsApplication {
 	
 	private void parseCommandLineArguments(Parameters params) {
 	    Map<String, String> namedParams = params.getNamed();
+	    if (namedParams.isEmpty()) return;
 	    String filename = "";
 	    String layout = "";
+	    String ws = "";
 	    Importer importer = null;
 	    Workspace tempWorkspace = null;
 	    
@@ -177,7 +179,7 @@ public class GAnsApplication {
 	              layout = namedParams.get(key);
 	              break;
 	          case "ws":
-	              String ws = namedParams.get(key);
+	              ws = namedParams.get(key);
 	              List<WorkspaceOption> options = PluginManager.getPluginManager().getWorkspaceOptions();
 	              for (WorkspaceOption option : options) {
 	                  if (ws.equals(option.getId())){
@@ -188,54 +190,73 @@ public class GAnsApplication {
 	              break;
 	          default:
 	              // Information not specified
-	              showErrorDialog("Unspecified argument!");
-	        	  System.exit(1);
+	              showErrorDialog("Warning! The argument \"--" + key + "=" + namedParams.get(key) + 
+	                      "\" is unspecified and will be ignored.");
 	        }
 	    }
 	    
+        if (filename.equals("")) {
+            showErrorDialog("Error! Please specify filename with \"--in=<filename>\"");
+            return;
+        } else if (importer == null) {
+            String extension = "*" + filename.substring(filename.lastIndexOf('.'));
+            showErrorDialog("Error! The extension " + extension + " is not supported. Please use an other file format.");
+            return;
+        }
+	    
 	    //import graph
-	    if (importer != null && !filename.equals("")) {
-	        currentFile = new File(filename);
-	        //check if workspace is in arguments
-	        if (tempWorkspace != null) {
-	            this.workspace = tempWorkspace;
-	        } else {
-	            if(!openWorkspaceDialog()) return;
-	        }
-	        FileInputStream inputStream;
-	        try {
-	            inputStream = new FileInputStream(currentFile);
-	            importer.importGraph(workspace.getGraphModelBuilder(), inputStream);
-	            this.model = workspace.getGraphModel();
-	            ViewableGraph currentGraph = this.model.getRootGraphs().get(0);
-	            createGraphView();
-	            //check if layout is in arguments
-	            // TODO: Is layout always in the String pool when it equals ""?
-	            if (layout != "") {
-	                //check if layout is valid
-	                List<LayoutOption> options = currentGraph.getRegisteredLayouts();
-	                for (LayoutOption option : options) {
-	                    if (layout.equals(option.getId())) {
-	                        //found valid layout and apply layout
-	                        option.chooseLayout();
-	                        Settings settings = option.getSettings();
-                            currentGraphView.setCurrentLayoutOption(option);
-                            option.applyLayout();
-	                    }
-	                }
-	            } else {
-	                openLayoutSelectionDialog(currentGraph);
-	            }
-	            //show graph
-	            showGraph(currentGraph);
-	            this.structureView.showGraphModel(this.model);
-	        } catch (ParseException e) {
-	            showErrorDialog(e.getMessage());
-	            return;
-	        } catch (FileNotFoundException e) {
-	            showErrorDialog(e.getMessage());
-	        }
-	    }
+        currentFile = new File(filename);
+        //check if workspace is in arguments
+        if (tempWorkspace != null) {
+            this.workspace = tempWorkspace;
+        } else {
+            if (!ws.equals("")) {
+                showErrorDialog("Warning! " + ws + " is not a valid workspace. Please select a Workspace.");
+            }
+            if(!openWorkspaceDialog()) return;
+        }
+        FileInputStream inputStream;
+        try {
+            inputStream = new FileInputStream(currentFile);
+            importer.importGraph(workspace.getGraphModelBuilder(), inputStream);
+            this.model = workspace.getGraphModel();
+            ViewableGraph currentGraph = this.model.getRootGraphs().get(0);
+            createGraphView();
+            
+            //check if layout is valid
+            boolean validLayout = false;
+
+            List<LayoutOption> options = currentGraph.getRegisteredLayouts();
+            for (LayoutOption option : options) {
+                if (layout.equals(option.getId())) {
+                    //found valid layout and apply layout
+                    validLayout = true;
+                    option.chooseLayout();
+                    currentGraphView.setCurrentLayoutOption(option);
+                    option.applyLayout();
+                }
+            }  
+
+            if (!validLayout) {
+                if (layout != "") {
+                    showErrorDialog("Warning! The layout " + layout + 
+                            " is not a valid layout. The default layout will be selected.");
+                }
+                LayoutOption defaultOption = currentGraph.getDefaultLayout();
+                defaultOption.chooseLayout();
+                currentGraphView.setCurrentLayoutOption(defaultOption);
+                defaultOption.applyLayout();
+            }
+            //open graph
+            showGraph(currentGraph);
+            
+            this.structureView.showGraphModel(this.model);
+        } catch (ParseException e) {
+            showErrorDialog(e.getMessage());
+            return;
+        } catch (FileNotFoundException e) {
+            showErrorDialog(e.getMessage());
+        }
 		
 	}
 	
@@ -579,6 +600,6 @@ public class GAnsApplication {
 		Alert alert = new Alert(AlertType.ERROR);
 		alert.setHeaderText(null);
 		alert.setContentText(message);
-		alert.show();
+		alert.showAndWait();
 	}
 }
