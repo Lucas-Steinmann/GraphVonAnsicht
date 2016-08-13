@@ -32,6 +32,7 @@ import edu.kit.student.plugin.Exporter;
 public class SvgExporter implements Exporter {
 
     private static String rectStyle = "opacity:0.9;display:inline;stroke-width:4;";
+    private static String textStyle = "font-size:12pt;";
     private static String lineStyle = "stroke-width:2;";
     private static String fileExtension = "svg";
     
@@ -278,6 +279,7 @@ public class SvgExporter implements Exporter {
         Element text = document.createElement("text");
         text.setAttribute("x", Double.toString(minX + 5.0));
         text.setAttribute("y", Double.toString(minY + 15.0));
+        text.setAttribute("style", SvgExporter.textStyle);
         text.appendChild(document.createTextNode(label));
         
         group.appendChild(text);
