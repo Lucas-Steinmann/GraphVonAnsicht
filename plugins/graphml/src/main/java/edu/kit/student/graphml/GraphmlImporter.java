@@ -51,6 +51,12 @@ public class GraphmlImporter implements Importer {
         document.getDocumentElement().normalize();
         //get root node
         Element root = document.getDocumentElement();
+        
+        //check if graphml syntax
+        if (!root.getNodeName().equals("graphml")) {
+            throw new ParseException("Selected file has wrong syntax!", 0);
+        }
+        
         //get all childnodes of root
         NodeList childs = root.getChildNodes();
         
@@ -67,6 +73,12 @@ public class GraphmlImporter implements Importer {
                     //get GraphBuilder and parse graph
                     String graphId = element.getAttribute("id");
                     IGraphBuilder graphBuilder = builder.getGraphBuilder(graphId);
+                    
+                    //check if graphbuilder null
+                    if (graphBuilder == null){
+                        throw new ParseException("This Workspace can't parse the Syntax", 0);
+                    }
+                    
                     parseGraph(graphBuilder, element);                
                 } else {
                 	throw new ParseException("Selected file has wrong syntax!", 0);
