@@ -18,10 +18,10 @@ import edu.kit.student.joana.graphmodel.JoanaCompoundVertex;
 public class FieldAccessCollapser {
     // TODO: Remove code duplication and split into two classes
     
-    public List<JoanaCollapsedVertex> collapsedVertices;
-    public List<FieldAccess> collapsedFA;
-    public Map<JoanaEdge, DirectedOnionPath<JoanaEdge, JoanaCompoundVertex>> onionEdges;
-    public DefaultDirectedGraph<JoanaVertex, JoanaEdge> graph;
+    private List<JoanaCollapsedVertex> collapsedVertices;
+    private List<FieldAccess> collapsedFA;
+    private Map<JoanaEdge, DirectedOnionPath<JoanaEdge, JoanaCompoundVertex>> onionEdges;
+    private DefaultDirectedGraph<JoanaVertex, JoanaEdge> graph;
     
     public FieldAccessCollapser(DefaultDirectedGraph<JoanaVertex, JoanaEdge> graph) {
         this.collapsedVertices = new LinkedList<>();
@@ -227,5 +227,9 @@ public class FieldAccessCollapser {
 
 		graph.removeAllVertices(vertices);
 		return collapsed;
+    }
+
+    public List<JoanaCollapsedVertex> getCollapsedVertices() {
+        return collapsedVertices;
     }
 }

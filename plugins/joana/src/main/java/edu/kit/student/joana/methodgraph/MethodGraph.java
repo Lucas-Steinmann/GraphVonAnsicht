@@ -8,7 +8,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-import edu.kit.student.graphmodel.Edge;
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.ViewableVertex;
 import edu.kit.student.graphmodel.action.SubGraphAction;
@@ -107,7 +106,7 @@ public class MethodGraph extends JoanaGraph {
     @Override
     public List<VertexAction> getVertexActions(Vertex vertex) {
         List<VertexAction> actions = new LinkedList<>();
-        if (this.collapser.collapsedVertices.contains(vertex) && this.getVertexSet().contains(vertex)) {
+        if (this.collapser.getCollapsedVertices().contains(vertex) && this.getVertexSet().contains(vertex)) {
             actions.add(expandActions.get(vertex));
         }
         return actions;
