@@ -3,6 +3,7 @@ package edu.kit.student.joana;
 import java.util.LinkedList;
 import java.util.List;
 
+import edu.kit.student.graphmodel.Edge;
 import edu.kit.student.graphmodel.EdgeArrow;
 import edu.kit.student.graphmodel.FastGraphAccessor;
 import edu.kit.student.graphmodel.OrthogonalEdgePath;
@@ -27,7 +28,7 @@ public class JoanaEdge implements DirectedEdge {
     private GAnsProperty<EdgeKind> edgeKind;
 	private OrthogonalEdgePath path;
 
-    public JoanaEdge(String name, String label, JoanaVertex source, JoanaVertex target, EdgeKind kind) {
+    public JoanaEdge(String name, String label, Integer id, JoanaVertex source, JoanaVertex target, EdgeKind kind) {
         this.edgeKind = new GAnsProperty<EdgeKind>("edgeKind", kind);
         this.target = target;
         this.source = source;
@@ -35,8 +36,12 @@ public class JoanaEdge implements DirectedEdge {
         this.lastTarget = target;
         this.name = new GAnsProperty<String>("name", name);
         this.label = new GAnsProperty<String>("label", label);
-        this.id = IdGenerator.getInstance().createId();
+        this.id = id.intValue();
         this.path = new OrthogonalEdgePath();
+    }
+    
+    public JoanaEdge(String name, String label, JoanaVertex source, JoanaVertex target, EdgeKind kind) {
+        this(name, label, IdGenerator.getInstance().createId(), source, target, kind);
     }
     
     public void setVertices(JoanaVertex source, JoanaVertex target){

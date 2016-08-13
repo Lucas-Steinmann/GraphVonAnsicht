@@ -1,6 +1,7 @@
 package edu.kit.student.joana;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import edu.kit.student.graphmodel.GraphModel;
@@ -92,6 +93,6 @@ public class JoanaGraphModel extends GraphModel {
         if (graph.equals(callgraph)) {
             return this.getMethodGraphs();
         }
-        return null;
+        return new LinkedList<>();
     }
 }

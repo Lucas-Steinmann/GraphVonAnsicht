@@ -1,14 +1,14 @@
 package edu.kit.student.joana;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import edu.kit.student.graphmodel.GraphModel;
 import edu.kit.student.graphmodel.builder.IGraphBuilder;
 import edu.kit.student.graphmodel.builder.IGraphModelBuilder;
 import edu.kit.student.joana.callgraph.CallGraph;
 import edu.kit.student.joana.callgraph.CallGraphBuilder;
 import edu.kit.student.joana.methodgraph.MethodGraphBuilder;
-
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * The JoanaGraphModelBuilder implements the {@link IGraphModelBuilder} and

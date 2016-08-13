@@ -1,9 +1,10 @@
 package edu.kit.student.joana;
 
-import edu.kit.student.graphmodel.builder.IEdgeBuilder;
-import edu.kit.student.joana.JoanaEdge.EdgeKind;
 import java.util.Optional;
 import java.util.Set;
+
+import edu.kit.student.graphmodel.builder.IEdgeBuilder;
+import edu.kit.student.joana.JoanaEdge.EdgeKind;
 
 /**
  * The JoanaEdgeBuilder is a {@link IEdgeBuilder}, specifically for building

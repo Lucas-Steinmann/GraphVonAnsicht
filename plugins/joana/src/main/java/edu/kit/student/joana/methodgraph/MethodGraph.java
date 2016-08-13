@@ -1,13 +1,23 @@
 package edu.kit.student.joana.methodgraph;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
+import edu.kit.student.graphmodel.Edge;
+import edu.kit.student.graphmodel.Vertex;
+import edu.kit.student.graphmodel.ViewableVertex;
+import edu.kit.student.graphmodel.action.SubGraphAction;
+import edu.kit.student.graphmodel.action.VertexAction;
+import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
 import edu.kit.student.joana.FieldAccess;
+import edu.kit.student.joana.FieldAccessCollapser;
 import edu.kit.student.joana.FieldAccessGraph;
+import edu.kit.student.joana.JoanaCollapsedVertex;
 import edu.kit.student.joana.JoanaEdge;
 import edu.kit.student.joana.JoanaGraph;
 import edu.kit.student.joana.JoanaPlugin;
@@ -24,23 +34,17 @@ public class MethodGraph extends JoanaGraph {
     private static final String ENTRY_NAME = "Entry";
     private JoanaVertex entry;
     private Set<FieldAccess> fieldAccesses;
+    private DefaultDirectedGraph<JoanaVertex, JoanaEdge> graph;
     
     private GAnsProperty<Integer> fieldAccessCount;
+    private Map<JoanaCollapsedVertex, VertexAction> expandActions;
     
-    private Set<JoanaVertex> vertices;
-    private Set<JoanaEdge> edges;
-    private final Set<JoanaVertex> verticesToRestore;
-    private final Set<JoanaEdge> edgesToRestore;
+    private FieldAccessCollapser collapser;
 
     public MethodGraph(Set<JoanaVertex> vertices, Set<JoanaEdge> edges, 
             String methodName) {
         super(methodName, vertices, edges);
-//        this.vertices = vertices;
-//        this.edges = edges;
-        this.vertices = super.getVertexSet();
-        this.edges = super.getEdgeSet();
-        this.verticesToRestore = super.getVertexSet();
-        this.edgesToRestore = super.getEdgeSet();
+        this.graph = new DefaultDirectedGraph<>(vertices, edges);
         for(JoanaVertex vertex : vertices) {
         	if(vertex.getNodeKind() == VertexKind.ENTR) {
         	    this.entry = vertex;
@@ -52,49 +56,12 @@ public class MethodGraph extends JoanaGraph {
         }
         //TODO: Search for method calls etc.
         this.fieldAccesses = this.searchFieldAccesses();
-        
         this.fieldAccessCount = new GAnsProperty<Integer>("Field accesses", this.fieldAccesses.size());
+
+        this.collapser = new FieldAccessCollapser(graph);
+        this.expandActions = new HashMap<>();
     }
-    
-    
-    @Override
-    public Set<JoanaVertex> getVertexSet(){
-    	return this.vertices;
-    }
-    
-    @Override
-    public Set<JoanaEdge> getEdgeSet(){
-    	return this.edges;
-    }
-    
-    public void addVertex(JoanaVertex vertex){
-//    	assert(this.vertices.add(vertex));
-    	this.vertices.add(vertex);
-    }
-    
-    public void addEdge(JoanaEdge edge){
-//    	assert(this.edges.add(edge));
-    	this.edges.add(edge);
-    }
-    
-    public void removeVertex(JoanaVertex vertex){
-//    	assert(this.vertices.remove(vertex));
-    	this.vertices.remove(vertex);
-    }
-    
-    public void removeEdge(JoanaEdge edge){
-//    	assert(this.edges.remove(edge));
-    	this.edges.remove(edge);
-    }
-    
-    public void restoreGraph(){
-    	this.vertices.clear();
-    	this.edges.clear();
-    	this.verticesToRestore.stream().filter(v->super.getVertexSet().contains(v)).forEach(v->this.vertices.add(v));
-    	this.edgesToRestore.stream().filter(e->super.getEdgeSet().contains(e)).forEach(e->this.edges.add(e));
-//    	this.verticesToRestore.forEach(v->this.vertices.add(v));
-//    	this.edgesToRestore.forEach(e->this.edges.add(e));
-    }
+
     
     /**
      * Returns the entry vertex of a method.
@@ -137,12 +104,143 @@ public class MethodGraph extends JoanaGraph {
         return null;
     } 
 
-//    @Override
-//    public List<LayeredGraph> getSubgraphs() {
-//        List<LayeredGraph faGraphs = new LinkedList<>();
-//        this.getFieldAccesses().forEach((fa) -> faGraphs.add(fa.getGraph()));
-//        return faGraphs;
-//    }
+    @Override
+    public List<VertexAction> getVertexActions(Vertex vertex) {
+        List<VertexAction> actions = new LinkedList<>();
+        if (this.collapser.collapsedVertices.contains(vertex) && this.getVertexSet().contains(vertex)) {
+            actions.add(expandActions.get(vertex));
+        }
+        return actions;
+    }
+
+    @Override
+    public List<SubGraphAction> getSubGraphActions(Set<ViewableVertex> vertices) {
+        List<SubGraphAction> actions = new LinkedList<>();
+        if (getVertexSet().containsAll(vertices) && 
+        		vertices.size() > 1) {
+            actions.add(newCollapseAction(vertices));
+        }
+
+        return actions;
+    }
+
+	private VertexAction newExpandAction(JoanaCollapsedVertex vertex) {
+	    return new VertexAction("Expand", 
+	            "Adds all vertices contained in this Summary-Vertex to the graph and removes the Summary-Vertex.") {
+            
+            @Override
+            public void handle() {
+                expand(vertex);
+            }
+        };
+	}
+	
+	private SubGraphAction newCollapseAction(Set<ViewableVertex> vertices) {
+	    return new SubGraphAction("Collapse", "Collapses all vertices into one Summary-Vertex.") {
+            
+            @Override
+            public void handle() {
+                collapse(vertices);
+            }
+        };
+	}
+	
+	/**
+	 * Collapses all visible field access.
+	 * This will result in the set of vertices which build up the field access being replaced by one representative vertex.
+	 * Field Access are not visible if they are (partially) contained in a collapsed vertex.
+	 */
+	public void collapseFieldAccesses() {
+	    for (FieldAccess fa : fieldAccesses) {
+	        // If all vertices are contained in the graph replace the fieldAccess
+	        if (fa.getGraph().getVertexSet().stream().allMatch((v) -> graph.contains(v))) {
+	            collapser.collapseFieldAccess(graph, fa);
+	        }
+	    }
+	    for (FieldAccess fa : fieldAccesses) {
+	        for (JoanaEdge e : graph.outgoingEdgesOf(fa)) {
+	            assert (e.getTarget() != fa);
+	        }
+	    }
+	}
+	
+	/**
+	 * Expands all visible field access, which have been collapsed earlier.
+	 * This will result in the field access being represented by single field access vertices instead of one representing vertex.
+	 * Field Access are not visible if they are contained in a collapsed vertex.
+	 */
+	public void expandFieldAccesses() {
+	    for (FieldAccess fa : fieldAccesses) {
+	        // If field access is contained in the graph (and not collapsed for example) it is expanded
+	        if (graph.contains(fa)) {
+	            collapser.expandFieldAccess(graph, fa);
+	        }
+	    }
+	}
+
+	public JoanaCollapsedVertex collapse(Set<ViewableVertex> subset) {
+        Set<JoanaVertex> directedSubset = new HashSet<JoanaVertex>();
+	    for (Vertex v : subset) {
+	        if (!graph.contains(v)) {
+                throw new IllegalArgumentException("Cannot collapse vertices, not contained in this graph.");
+	        } else {
+	            directedSubset.add(graph.getVertexById(v.getID()));
+	        }
+	    }
+	    JoanaCollapsedVertex collapsed = collapser.collapse(graph, directedSubset);
+		expandActions.put(collapsed, newExpandAction(collapsed));
+		return collapsed;
+	}
+	
+    public Set<JoanaVertex> expand(JoanaCollapsedVertex vertex) {
+        return collapser.expand(graph, vertex);
+    }
+
+
+    @Override
+    public Integer outdegreeOf(Vertex vertex) {
+        return removeFilteredEdges(graph.outgoingEdgesOf(vertex)).size();
+    }
+
+    @Override
+    public Integer indegreeOf(Vertex vertex) {
+        return removeFilteredEdges(graph.incomingEdgesOf(vertex)).size();
+    }
+
+    @Override
+    public Integer selfLoopNumberOf(Vertex vertex) {
+        return graph.selfLoopNumberOf(vertex);
+    }
+
+    @Override
+    public Set<JoanaEdge> outgoingEdgesOf(Vertex vertex) {
+        return removeFilteredEdges(graph.outgoingEdgesOf(vertex));
+    }
+
+    @Override
+    public Set<JoanaEdge> incomingEdgesOf(Vertex vertex) {
+        return removeFilteredEdges(graph.incomingEdgesOf(vertex));
+    }
+
+    @Override
+    public Set<JoanaEdge> selfLoopsOf(Vertex vertex) {
+        return graph.selfLoopsOf(vertex);
+    }
+
+    @Override
+    public Set<JoanaVertex> getVertexSet() {
+        return removeFilteredVertices(graph.getVertexSet());
+    }
+
+    @Override
+    public Set<JoanaEdge> getEdgeSet() {
+        return removeFilteredEdges(graph.getEdgeSet());
+    }
+
+    @Override
+    public Set<JoanaEdge> edgesOf(Vertex vertex) {
+        return removeFilteredEdges(graph.edgesOf(vertex));
+    }
 
     @Override
     public List<LayoutOption> getRegisteredLayouts() {
@@ -256,6 +354,7 @@ public class MethodGraph extends JoanaGraph {
                             edges.add(e1);
                             edges.add(e2);
                             edges.add(e3);
+                            addAdditionalFieldAccessEdges(vertices, edges);
                             
                             FieldAccessGraph graph = new FieldAccessGraph("field-get", vertices, edges);
                             graph.setFieldEntry(v1);
@@ -291,6 +390,7 @@ public class MethodGraph extends JoanaGraph {
                             edges.add(e1);
                             edges.add(e2);
                             edges.add(e3);
+                            addAdditionalFieldAccessEdges(vertices, edges);
                             
                             FieldAccessGraph graph = new FieldAccessGraph("field-set", vertices, edges);
                             graph.setFieldEntry(v1);
@@ -324,6 +424,7 @@ public class MethodGraph extends JoanaGraph {
                       vertices.add(v1);
                       vertices.add(v2);
                       edges.add(e1);
+                      addAdditionalFieldAccessEdges(vertices, edges);
                       
                       FieldAccessGraph graph = new FieldAccessGraph("static field-get", vertices, edges);
                       graph.setFieldEntry(v1);
@@ -355,6 +456,7 @@ public class MethodGraph extends JoanaGraph {
                       vertices.add(v1);
                       vertices.add(v2);
                       edges.add(e1);
+                      addAdditionalFieldAccessEdges(vertices, edges);
                       
                       FieldAccessGraph graph = new FieldAccessGraph("static field-set", vertices, edges);
                       graph.setFieldEntry(v1);
@@ -397,6 +499,7 @@ public class MethodGraph extends JoanaGraph {
                                         edges.add(e2);
                                         edges.add(e3);
                                         edges.add(e4);
+                                        addAdditionalFieldAccessEdges(vertices, edges);
                                         
                                         FieldAccessGraph graph = new FieldAccessGraph("array field-get", vertices, edges);
                                         graph.setFieldEntry(v1);
@@ -430,6 +533,7 @@ public class MethodGraph extends JoanaGraph {
                                         edges.add(e2);
                                         edges.add(e3);
                                         edges.add(e4);
+                                        addAdditionalFieldAccessEdges(vertices, edges);
                                         
                                         FieldAccessGraph graph = new FieldAccessGraph("array field-set", vertices, edges);
                                         graph.setFieldEntry(v1);
@@ -509,4 +613,20 @@ public class MethodGraph extends JoanaGraph {
             return false;
         }
     }
+
+	/**
+	 * Adds all edges between two vertices of the set of vertices to the set of edges to make (vertices, faEdges) the
+	 * vertex induced subgraph
+	 * @param vertices the vertices 
+	 * @param faEdges the set of edges which should contain all edges between two vertices of param vertices
+	 */
+	private void addAdditionalFieldAccessEdges(Set<JoanaVertex> vertices, Set<JoanaEdge> faEdges){
+        for (JoanaVertex v : vertices) {
+            for(JoanaEdge e : graph.outgoingEdgesOf(v)){
+                if(vertices.contains(e.getTarget())){
+                    faEdges.add(e);
+                }
+            }
+		}
+	}
 }
