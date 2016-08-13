@@ -27,4 +27,7 @@ public interface ISugiyamaVertex extends Vertex{
 	public boolean isDummy();
 
 	public Vertex getVertex();
+	
+	@Override
+	public boolean equals(Object o);
 }

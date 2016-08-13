@@ -478,6 +478,21 @@ public class SugiyamaGraph
 		public void setLayer(int layerNum) {
 			layering.setLayer(this, layerNum);
 		}
+		
+		@Override
+		public boolean equals(Object o){
+		    if (o==null) {
+		         return false;
+		    }
+			if (this==o) {
+		         return true;
+		    }
+		    if(!(o instanceof ISugiyamaVertex)){
+		    	return false;
+		    }
+		    
+		    return ((ISugiyamaVertex) o).getID() == this.getID();
+		}
 
 		@Override
 		public String toString(){
@@ -574,6 +589,21 @@ public class SugiyamaGraph
 		@Override
 		public Color getColor() {
 			return this.vertex.getColor();
+		}
+		
+		@Override
+		public boolean equals(Object o){
+		    if (o==null) {
+		         return false;
+		    }
+			if (this==o) {
+		         return true;
+		    }
+		    if(!(o instanceof ISugiyamaVertex)){
+		    	return false;
+		    }
+		    
+		    return ((ISugiyamaVertex) o).getID() == this.getID();
 		}
 	}
 

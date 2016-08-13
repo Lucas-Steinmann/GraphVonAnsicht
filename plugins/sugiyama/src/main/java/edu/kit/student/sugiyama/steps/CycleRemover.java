@@ -1,13 +1,16 @@
 package edu.kit.student.sugiyama.steps;
 
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
 import edu.kit.student.sugiyama.graph.ICycleRemoverGraph;
 import edu.kit.student.sugiyama.graph.ISugiyamaEdge;
 import edu.kit.student.sugiyama.graph.ISugiyamaVertex;
-
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * This class takes a directed Graph G = (V, E) and removes a set of edges E_ 
@@ -16,10 +19,11 @@ import java.util.stream.Collectors;
 public class CycleRemover implements ICycleRemover {
 	private DefaultDirectedGraph<ISugiyamaVertex, ISugiyamaEdge> DDGraph;
 	
+    final Logger logger = LoggerFactory.getLogger(CycleRemover.class);
 	
 	@Override
 	public void removeCycles(ICycleRemoverGraph graph) {
-		System.out.println("CycleRemover.removeCycles():");
+		logger.info("CycleRemover.removeCycles():");
 		initialize(graph);
 
 		Set<ISugiyamaEdge> DAGEdges = new HashSet<ISugiyamaEdge>();
@@ -193,7 +197,7 @@ public class CycleRemover implements ICycleRemover {
 		for(ISugiyamaEdge e: (Set<ISugiyamaEdge>)DDGraph.getEdgeSet()){
 			out+=e.getName()+",";
 		}
-		System.out.println(out);
+		logger.debug(out);
 	}
 	
 	/**
@@ -208,7 +212,7 @@ public class CycleRemover implements ICycleRemover {
 			out+=v.toString()+",";
 		}
 		out=out.substring(0,out.length()-1) + "}";
-		System.out.println(out);
+		logger.debug(out);
 	}
 	
 	/**
@@ -223,6 +227,6 @@ public class CycleRemover implements ICycleRemover {
 			out+=e.toString()+",";
 		}
 		out=out.substring(0,out.length()-1) + "}";
-		System.out.println(out);
+		logger.debug(out);
 	}
 }

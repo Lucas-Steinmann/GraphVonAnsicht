@@ -52,7 +52,6 @@ public class SugiyamaLayoutAlgorithmTest {
 //		this.alg.layout(DDGraph);  does not work with DefalltDirectedGraph, just with DirectedGraph
 	}
 
-	@Test
 	public void testRandomGraph() {
 		for (int i = 0; i < 3; i++) {
 			long timeBefore = (new Date()).getTime();

@@ -83,9 +83,8 @@ public class DefaultGraphLayering<V extends Vertex> implements GraphLayering<V> 
         assert (vertex == getVertex(oldPos));
         // Remove from old position
         ArrayList<V> vs = this.layers.get(oldPos.y);
-        if (oldPos.x >=  vs.size()) {
-            System.out.println("Error");
-        }
+        assert (oldPos.x <  vs.size());
+
         vs.remove(oldPos.x);
         for (int i = oldPos.x; i < vs.size(); i++) {
             vertexToPoint.put(vs.get(i), new IntegerPoint(i, oldPos.y));
@@ -105,9 +104,6 @@ public class DefaultGraphLayering<V extends Vertex> implements GraphLayering<V> 
             vertexToPoint.put(layer.get(i), new IntegerPoint(i, point.y));
         }
 
-        if (vertex != getVertex(getPosition(vertex))) {
-            System.out.println("Error");
-        }
         assert (vertex == getVertex(getPosition(vertex)));
     }
     
@@ -171,14 +167,10 @@ public class DefaultGraphLayering<V extends Vertex> implements GraphLayering<V> 
             }
 
             int diff = end - start;
-            System.out.println("start: " + start + " end: " + end);
-            System.out.println(diff);
-
             if (diff == 0) {
                 break;
             }
 
-            System.out.println("moving vertices");
             for (int i = end; i < size; i++) {
                 List<V> toMove = new ArrayList<>(layers.get(i));
 
@@ -188,7 +180,6 @@ public class DefaultGraphLayering<V extends Vertex> implements GraphLayering<V> 
             }
 
             for (int i = size - 1; i > size - diff - 1; i--) {
-                System.out.println("removing layer" + i);
                 layers.remove(i);
             }
         }

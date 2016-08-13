@@ -23,12 +23,16 @@ import edu.kit.student.sugiyama.steps.LayerAssigner;
 import edu.kit.student.util.DoublePoint;
 import javafx.util.Pair;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Implements hierarchical layout with layers for {@link MethodGraph}.
  * This graph contains field access subgraphs.
  */
 public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 	
+    final Logger logger = LoggerFactory.getLogger(MethodGraphLayout.class);
 	private SugiyamaLayoutAlgorithm<MethodGraph> sugiyamaLayoutAlgorithm;
 
 	
@@ -48,7 +52,7 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 	 * @param graph The {@link MethodGraph} to layout.
 	 */
 	public void layout(MethodGraph graph) {
-		System.out.println("Graph before: Vertices: "+graph.getVertexSet().size()+", Edges: "+graph.getEdgeSet().size());
+		logger.info("Graph before: Vertices: "+graph.getVertexSet().size()+", Edges: "+graph.getEdgeSet().size());
 		this.layoutFieldAccessGraphs(graph);
 		graph.collapseFieldAccesses();
 
@@ -93,7 +97,7 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
         sugiyamaLayoutAlgorithm.setLayerAssigner(assigner);
 		sugiyamaLayoutAlgorithm.layout(graph);
 		
-		System.out.println("Graph after: Vertices: "+graph.getVertexSet().size()+", Edges: "+graph.getEdgeSet().size());
+		logger.info("Graph after: Vertices: "+graph.getVertexSet().size()+", Edges: "+graph.getEdgeSet().size());
 		expandFieldAccesses(graph);
 	}
 	
@@ -107,7 +111,7 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 			FieldAccessGraph fag = fa.getGraph();
 			fieldAccessSugAlgo.layout(fag);
 			JoanaVertex rep = fa;
-			System.out.println("new fag size: "+fag.getVertexSet().size() + "," +fag.getEdgeSet().size());
+			logger.info("new fag size: "+fag.getVertexSet().size() + "," +fag.getEdgeSet().size());
 
 			//now set the size of rep new, according to the layered FieldAccessGraph which he represents
 			Set<JoanaVertex> fagVertices = fag.getVertexSet();

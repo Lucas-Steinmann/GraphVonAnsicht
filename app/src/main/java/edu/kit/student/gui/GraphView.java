@@ -202,46 +202,6 @@ public class GraphView extends Pane {
 	}
 	
 	private void setupContextMenu() {
-//		MenuItem collapse = new MenuItem("Collapse");
-//		collapse.setOnAction(new EventHandler<ActionEvent>() {
-//		    public void handle(ActionEvent e) {
-//		    	GraphViewGraphFactory factory = GraphView.this.getFactory();
-//		    	Set<Vertex> selectedVertices = new HashSet<Vertex>();
-//		    	for(VertexShape shape : GraphView.this.getSelectionModel().getSelectedItems()) {
-//		    		selectedVertices.add(factory.getVertexFromShape(shape));
-//		    	}
-//		    	
-//		    	//selected vertices will be collapsed and thereby removed from the graph
-//		    	//selection must be cleared before collapse(...) is called
-//		    	GraphView.this.selectionModel.clear();
-//		    	
-//		    	factory.getGraph().collapse(selectedVertices);
-//		    	GraphView.this.getCurrentLayoutOption().chooseLayout();
-//		    	GraphView.this.getCurrentLayoutOption().applyLayout();
-//		    	GraphView.this.reloadGraph();
-//		    }
-//		});
-//		
-//		MenuItem expand = new MenuItem("Expand");
-//		expand.setOnAction(new EventHandler<ActionEvent>() {
-//		    public void handle(ActionEvent e) {
-//		    	GraphViewGraphFactory factory = GraphView.this.getFactory();
-//		    	
-//		    	//MenuItem is disabled when there are more than one vertex selected
-//		    	VertexShape shape = GraphView.this.getSelectionModel().getSelectedItems().iterator().next();
-//		    	
-//		    	//selected vertices will be expanded and thereby removed from the graph
-//		    	//selection must be cleared before expand(...) is called
-//		    	GraphView.this.selectionModel.clear();
-//		    	
-//		    	//MenuItem is disabled when there is no CollapsedVertex selected
-//	    		factory.getGraph().expand((CollapsedVertex)factory.getVertexFromShape(shape));
-//		    	GraphView.this.getCurrentLayoutOption().chooseLayout();
-//		    	GraphView.this.getCurrentLayoutOption().applyLayout();
-//		    	GraphView.this.reloadGraph();
-//		    	System.out.println("EdgeCount: " + factory.getGraph().getEdgeSet().size());
-//		    }
-//		});
 		
 		MenuItem group = new MenuItem("Add to group");
 		group.setOnAction(new EventHandler<ActionEvent>() {
@@ -251,26 +211,7 @@ public class GraphView extends Pane {
 		    }
 		});
 		
-		this.contextMenu.getItems().addAll(/*collapse, expand,*/ group);
-//		this.contextMenu.setOnShowing(new EventHandler<WindowEvent>() {
-//			@Override
-//			public void handle(WindowEvent e) {
-//				if(selectionModel.getSelectedItems().size() < 2) {
-//					collapse.setDisable(true);
-//					
-//					//only one item can be selected 
-//					VertexShape shape = GraphView.this.getSelectionModel().getSelectedItems().iterator().next();
-//		    		Vertex vertex = GraphView.this.graphFactory.getVertexFromShape(shape);
-//		    		//if the selected vertex is collapsed, expanding is enabled
-//	    			expand.setDisable(!(GraphView.this.graphFactory.getGraph().isCollapsed(vertex)));
-//					
-//				} else {
-//					collapse.setDisable(false);
-//					expand.setDisable(true);
-//				}
-//				
-//			}
-//		});
+		this.contextMenu.getItems().addAll(group);
 	}
 	
     private List<MenuItem> dynamicMenuListItems = new LinkedList<>();
