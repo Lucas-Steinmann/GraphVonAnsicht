@@ -150,28 +150,36 @@ public class MethodGraph extends JoanaGraph {
 	 * Collapses all visible field access.
 	 * This will result in the set of vertices which build up the field access being replaced by one representative vertex.
 	 * Field Access are not visible if they are (partially) contained in a collapsed vertex.
+	 * @return all collapsed field access
 	 */
-	public void collapseFieldAccesses() {
+	public List<FieldAccess> collapseFieldAccesses() {
+	    List<FieldAccess> collapsedFas = new LinkedList<>();
 	    for (FieldAccess fa : fieldAccesses) {
 	        // If all vertices are contained in the graph replace the fieldAccess
 	        if (fa.getGraph().getVertexSet().stream().allMatch((v) -> graph.contains(v))) {
 	            collapser.collapseFieldAccess(graph, fa);
+	            collapsedFas.add(fa);
 	        }
 	    }
+	    return collapsedFas;
 	}
 	
 	/**
 	 * Expands all visible field access, which have been collapsed earlier.
 	 * This will result in the field access being represented by single field access vertices instead of one representing vertex.
 	 * Field Access are not visible if they are contained in a collapsed vertex.
+	 * @return all expanded field access
 	 */
-	public void expandFieldAccesses() {
+	public List<FieldAccess> expandFieldAccesses() {
+	    List<FieldAccess> collapsedFas = new LinkedList<>();
 	    for (FieldAccess fa : fieldAccesses) {
 	        // If field access is contained in the graph (and not collapsed for example) it is expanded
 	        if (graph.contains(fa)) {
 	            collapser.expandFieldAccess(graph, fa);
+	            collapsedFas.add(fa);
 	        }
 	    }
+	    return collapsedFas;
 	}
 
 	public JoanaCollapsedVertex collapse(Set<ViewableVertex> subset) {

@@ -135,10 +135,10 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 		    }
 		}
 
-		graph.expandFieldAccesses();
+		List<FieldAccess> fas = graph.expandFieldAccesses();
 		Set<JoanaEdge> copied = new HashSet<>();
 
-		for (FieldAccess fa : graph.getFieldAccesses()) {
+		for (FieldAccess fa : fas) {
 
 		    // Offset vertices contained in field access
             for(JoanaVertex v : fa.getGraph().getVertexSet()){
