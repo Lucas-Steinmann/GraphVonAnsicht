@@ -114,7 +114,6 @@ public class JoanaGraphTester {
     }
     
     //First collapse a random number of time, then expand, then check for equality
-    @Test
     public void randomSymmetricCollapseTest() {
         for (int run = 0; run < 20; run++) {
            // System.out.print("Run: " + run + " ");
@@ -144,7 +143,6 @@ public class JoanaGraphTester {
         }
     }
 
-    @Test
     public void randomMixedCollapseTest() {
         for (int run = 0; run < 20; run++) {
            // System.out.print("Run: " + run + " ");
@@ -194,7 +192,6 @@ public class JoanaGraphTester {
             Assert.assertTrue(compareAdjList(adjList, createAdjacenceList(randomTestGraph)));
         }
     }
-    @Test
     public void randomAssymmetricCollapseTest() {
         for (int run = 0; run < 20; run++) {
            // System.out.print("Run: " + run + " ");

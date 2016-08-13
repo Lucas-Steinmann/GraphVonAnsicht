@@ -1,5 +1,14 @@
 package edu.kit.student.sugiyama;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import edu.kit.student.graphmodel.DefaultVertex;
 import edu.kit.student.graphmodel.LayeredGraph;
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
@@ -8,9 +17,16 @@ import edu.kit.student.graphmodel.directed.DirectedGraph;
 import edu.kit.student.parameter.Parameter;
 import edu.kit.student.parameter.Settings;
 import edu.kit.student.sugiyama.graph.SugiyamaGraph;
-import edu.kit.student.sugiyama.steps.*;
-
-import java.util.*;
+import edu.kit.student.sugiyama.steps.CrossMinimizer;
+import edu.kit.student.sugiyama.steps.CycleRemover;
+import edu.kit.student.sugiyama.steps.EdgeDrawer;
+import edu.kit.student.sugiyama.steps.ICrossMinimizer;
+import edu.kit.student.sugiyama.steps.ICycleRemover;
+import edu.kit.student.sugiyama.steps.IEdgeDrawer;
+import edu.kit.student.sugiyama.steps.ILayerAssigner;
+import edu.kit.student.sugiyama.steps.IVertexPositioner;
+import edu.kit.student.sugiyama.steps.LayerAssigner;
+import edu.kit.student.sugiyama.steps.VertexPositioner;
 
 /**
  * This class supports a customizable implementation of the Sugiyama-framework.
@@ -27,6 +43,8 @@ public class SugiyamaLayoutAlgorithm<G extends DirectedGraph & LayeredGraph>
 	private Set<RelativeLayerConstraint> relativeLayerConstraints;
 	private Set<AbsoluteLayerConstraint> absoluteLayerConstraints;
 	private Settings settings;
+	
+    final Logger logger = LoggerFactory.getLogger(SugiyamaLayoutAlgorithm.class);
 
 	/**
 	 * Creates a SugiyamaLayoutAlgorithm
@@ -127,7 +145,7 @@ public class SugiyamaLayoutAlgorithm<G extends DirectedGraph & LayeredGraph>
 		minimizer.minimizeCrossings(wrappedGraph);
 		positioner.positionVertices(wrappedGraph);
 		drawer.drawEdges(wrappedGraph);
-		System.out.println("runs in " + ((new Date()).getTime() - timeBefore) + "ms");
+		logger.info("runs in " + ((new Date()).getTime() - timeBefore) + "ms");
     }
 
     @Override
@@ -145,15 +163,15 @@ public class SugiyamaLayoutAlgorithm<G extends DirectedGraph & LayeredGraph>
 	public void layout(DefaultDirectedGraph<DefaultVertex, DirectedEdge> graph) {
 		SugiyamaGraph wrappedGraph = new SugiyamaGraph(graph);
 
-		System.out.println("removing edges");
+		logger.info("removing edges");
 		remover.removeCycles(wrappedGraph);
-		System.out.println("assigning layers");
+		logger.info("assigning layers");
 		assigner.assignLayers(wrappedGraph);
-		System.out.println("minimizing crossings");
+		logger.info("minimizing crossings");
 		minimizer.minimizeCrossings(wrappedGraph);
-		System.out.println("positioning vertices");
+		logger.info("positioning vertices");
 		positioner.positionVertices(wrappedGraph);
-		System.out.println("drawing edges");
+		logger.info("drawing edges");
 		drawer.drawEdges(wrappedGraph);
 	}
 }

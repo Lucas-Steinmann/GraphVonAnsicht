@@ -9,6 +9,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import edu.kit.student.graphmodel.CollapsedVertex;
 import edu.kit.student.graphmodel.DefaultGraphLayering;
 import edu.kit.student.graphmodel.DirectedOnionPath;
@@ -34,6 +37,7 @@ import edu.kit.student.util.IdGenerator;
 public abstract class JoanaGraph
     implements DirectedGraph, LayeredGraph, ViewableGraph {
     
+    final Logger logger = LoggerFactory.getLogger(JoanaGraph.class);
 	
 //    @Override
 //	public List<SubGraphAction> getSubGraphActions(Set<ViewableVertex> vertices) {
@@ -231,8 +235,6 @@ public abstract class JoanaGraph
 		    JoanaVertex newTarget = onionEdge.getTarget() == null ? onionEdge.getEdge().getTarget() : onionEdge.getTarget();
 		    JoanaEdge newEdge = new JoanaEdge(onionEdge.getName(), onionEdge.getLabel(), newSource, newTarget, onionEdge.getEdge().getEdgeKind());
 		    if (onionEdge.getSource() == vertex || onionEdge.getTarget() == vertex) {
-		        System.out.println(onionEdge);
-                printHierarchy();
 		    }
 		    onionEdges.remove(edge);
 		    onionEdges.put(newEdge, onionEdge);
@@ -244,6 +246,8 @@ public abstract class JoanaGraph
 		
 		return containedVertices;
     }
+
+    @SuppressWarnings("unused")
     private void printHierarchy() {
         for (JoanaCollapsedVertex v : this.collapsedVertices) {
             if (this.graph.contains(v)) {
@@ -255,14 +259,15 @@ public abstract class JoanaGraph
     @SuppressWarnings("unused")
     private void printOnionEdges() {
         for (JoanaEdge edge : onionEdges.keySet()) {
-            System.out.println(onionEdges.get(edge));
+            logger.debug(onionEdges.get(edge).toString());
         }
     }
     
     private void printChilds(JoanaCollapsedVertex vertex, int indent) {
+        StringBuilder sb = new StringBuilder();
         for (int i = 0; i < indent; i++)
-            System.out.print(" ");
-        System.out.println(vertex.getID());
+            sb.append(" ");
+        logger.debug(sb.append(vertex.getID()).toString());
         for (JoanaVertex v : vertex.getGraph().getVertexSet()) {
             if (this.collapsedVertices.contains(v)) {
                 printChilds((JoanaCollapsedVertex) v, indent+2);

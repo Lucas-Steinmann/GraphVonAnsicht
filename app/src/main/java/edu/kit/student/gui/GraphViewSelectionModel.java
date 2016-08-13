@@ -5,6 +5,9 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
 import javafx.event.EventHandler;
@@ -30,6 +33,7 @@ public class GraphViewSelectionModel {
 	private static final double MAX_SCALE = 10.0d;
 	private static final double MIN_SCALE = .1d;
 
+    final Logger logger = LoggerFactory.getLogger(GraphViewSelectionModel.class);
 	private ObservableSet<VertexShape> selection;
 	private RubberBandSelection rubberband;
 
@@ -69,7 +73,7 @@ public class GraphViewSelectionModel {
 	}
 
 	public void log() {
-		System.out.println("Items in model: " + Arrays.asList(selection.toArray()));
+        logger.debug("Items in model: " + Arrays.asList(selection.toArray()));
 	}
 
 	public ObservableSet<VertexShape> getSelectedItems() {

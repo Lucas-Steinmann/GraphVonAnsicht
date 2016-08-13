@@ -16,12 +16,16 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Implements hierarchical layout with layers for {@link MethodGraph}.
  * This graph contains field access subgraphs.
  */
 public class MethodGraphLayout implements LayeredLayoutAlgorithm<MethodGraph> {
 	
+    final Logger logger = LoggerFactory.getLogger(MethodGraphLayout.class);
 	private SugiyamaLayoutAlgorithm<MethodGraph> sugiyamaLayoutAlgorithm;
 
 	
@@ -42,7 +46,7 @@ public class MethodGraphLayout implements LayeredLayoutAlgorithm<MethodGraph> {
 	 */
 	public void layout(MethodGraph graph) {
 		graph.restoreGraph();
-		System.out.println("Graph before: Vertices: "+graph.getVertexSet().size()+", Edges: "+graph.getEdgeSet().size());
+		logger.info("Graph before: Vertices: "+graph.getVertexSet().size()+", Edges: "+graph.getEdgeSet().size());
 		this.addAdditionalFieldAccessEdges(graph);
 		this.layoutFieldAccessGraphs(graph);
 		this.adjustVerticesAndEdges(graph);
@@ -90,7 +94,7 @@ public class MethodGraphLayout implements LayeredLayoutAlgorithm<MethodGraph> {
 		
 		//now, after layouting the graph, replace the vertices representing the FieldAccessGraphs
 		this.replaceRepresentingVertex(graph);
-		System.out.println("Graph after: Vertices: "+graph.getVertexSet().size()+", Edges: "+graph.getEdgeSet().size());
+		logger.info("Graph after: Vertices: "+graph.getVertexSet().size()+", Edges: "+graph.getEdgeSet().size());
 	}
 	
 	
@@ -124,7 +128,7 @@ public class MethodGraphLayout implements LayeredLayoutAlgorithm<MethodGraph> {
 			FieldAccessGraph fag = fa.getGraph();
 			this.sugiyamaLayoutAlgorithm.layout(fag);
 			JoanaVertex rep = fa.getGraph().getRepresentingVertex();
-			System.out.println("new fag size: "+fag.getVertexSet().size() + "," +fag.getEdgeSet().size());
+			logger.info("new fag size: "+fag.getVertexSet().size() + "," +fag.getEdgeSet().size());
 			//now set the size of rep new, according to the layered FieldAccessGraph which he represents
 			Set<JoanaVertex> fagVertices = fag.getVertexSet();
 			int minX, minY, maxX, maxY, newWidth, newHeight;
@@ -161,7 +165,7 @@ public class MethodGraphLayout implements LayeredLayoutAlgorithm<MethodGraph> {
 			for(JoanaVertex v : fagVertices){
 				fagV += v.getID() + ",";
 			}
-			System.out.println("fagVertices: "+fagVertices.size()+" ["+fagV+"], fagEdges: "+fagEdges.size());
+			logger.info("fagVertices: "+fagVertices.size()+" ["+fagV+"], fagEdges: "+fagEdges.size());
 			
 			fagVertices.forEach(v->graph.removeVertex(v));
 //			vertices.removeAll(fagVertices);	//removes FieldAccess-vertices from the vertex set of the normal graph
@@ -171,11 +175,11 @@ public class MethodGraphLayout implements LayeredLayoutAlgorithm<MethodGraph> {
 			for(JoanaEdge e : edges){
 				if(vertices.contains(e.getSource()) && fagVertices.contains(e.getTarget())){
 					assert(!vertices.contains(e.getTarget()) && !fagVertices.contains(e.getSource()));
-					System.out.println("in: "+e.getSource().getID()+","+e.getTarget().getID()+",entry: "+fag.getFieldEntry().getID());
+					logger.info("in: "+e.getSource().getID()+","+e.getTarget().getID()+",entry: "+fag.getFieldEntry().getID());
 					inFieldAccess.add(e);
 				} else if(vertices.contains(e.getTarget()) && fagVertices.contains(e.getSource())){
 					assert(!vertices.contains(e.getSource()) && !fagVertices.contains(e.getTarget()));
-					System.out.println("out: "+e.getSource().getID()+","+e.getTarget().getID());
+					logger.info("out: "+e.getSource().getID()+","+e.getTarget().getID());
 					outFieldAccess.add(e);
 				}
 			}

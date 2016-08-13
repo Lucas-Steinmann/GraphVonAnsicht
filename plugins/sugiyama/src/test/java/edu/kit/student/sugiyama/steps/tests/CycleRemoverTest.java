@@ -1,5 +1,17 @@
 package edu.kit.student.sugiyama.steps.tests;
 
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.util.HashSet;
+import java.util.Random;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import edu.kit.student.graphmodel.DefaultVertex;
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.directed.DefaultDirectedEdge;
@@ -8,21 +20,14 @@ import edu.kit.student.graphmodel.directed.DirectedEdge;
 import edu.kit.student.graphmodel.directed.DirectedGraph;
 import edu.kit.student.sugiyama.graph.SugiyamaGraph;
 import edu.kit.student.sugiyama.steps.CycleRemover;
-import org.junit.Test;
-
-import java.util.HashSet;
-import java.util.Random;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
 
 
 /**
  * A test class for cycle removing, first step in sugiyama framework
  */
 public class CycleRemoverTest {
+
+    final Logger logger = LoggerFactory.getLogger(CycleRemoverTest.class);
 
 	@Test
 	public void testSimpleCycle(){
@@ -46,7 +51,7 @@ public class CycleRemoverTest {
 		cr.removeCycles(SGraph);
 		
 		for (DirectedEdge e : SGraph.getEdgeSet()) {
-		    System.out.println(graphicPrint(e));
+		    logger.info(graphicPrint(e));
 		}
 
 		assertTrue(isAcyclic(SGraph));
@@ -123,7 +128,7 @@ public class CycleRemoverTest {
 
 		Set<DirectedEdge> edges = new HashSet<>();
 		for (Vertex v : graph.getVertexSet()) {
-		    System.out.println(graph.incomingEdgesOf(v).size());
+		    logger.info(Integer.toString(graph.incomingEdgesOf(v).size()));
 		}
 		Set<Vertex> vertices = graph.getVertexSet().stream().filter(vertex -> graph.incomingEdgesOf(vertex).size() == 0).collect(Collectors.toSet());
 

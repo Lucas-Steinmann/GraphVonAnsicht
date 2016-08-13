@@ -1,24 +1,29 @@
 package edu.kit.student.sugiyama.steps;
 
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.sugiyama.graph.ISugiyamaVertex;
 import edu.kit.student.sugiyama.graph.IVertexPositionerGraph;
 import edu.kit.student.sugiyama.graph.SugiyamaGraph;
 import edu.kit.student.util.IdGenerator;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
 /**
  * This class takes a directed graph and position its vertices in order to look more clearly. (e.g. position vertices in a row or column)
  */
 public class VertexPositioner implements IVertexPositioner {
 
+    final Logger logger = LoggerFactory.getLogger(VertexPositioner.class);
+
 	@Override
 	public void positionVertices(IVertexPositionerGraph graph) {
-		System.out.println("VertexPositioner.positionVertices():");
+		logger.info("VertexPositioner.positionVertices():");
 		int maxwidth = graph.getLayers().stream().mapToInt(layer -> layer.size()).max().getAsInt();
 		List<Segment> allsegments = new LinkedList<>();
 		Map<Integer, List<ISugiyamaVertex>> segmentStarts = new HashMap<>();
@@ -100,7 +105,7 @@ public class VertexPositioner implements IVertexPositioner {
 		}
 
 		for (Vertex vertex : graph.getVertexSet()) {
-			System.out.println(vertex.getSize());
+			logger.debug(vertex.getSize().toString());
 			horizontalWidth[vertex.getX()] = Math.max(horizontalWidth[vertex.getX()], Math.round(vertex.getSize().getKey().floatValue()));
 			verticalHeight[vertex.getY()] = Math.max(verticalHeight[vertex.getY()], Math.round(vertex.getSize().getValue().floatValue()));
 		}
@@ -117,7 +122,7 @@ public class VertexPositioner implements IVertexPositioner {
 		}
 
 		for (int i : verticalHeight) {
-			System.out.println(i);
+			logger.debug(Integer.toString(i));
 		}
 
 		for (Vertex vertex : graph.getVertexSet()) {

@@ -1,15 +1,29 @@
 package edu.kit.student.sugiyama.steps;
 
-import edu.kit.student.parameter.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.OptionalDouble;
+import java.util.Set;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import edu.kit.student.parameter.BooleanParameter;
+import edu.kit.student.parameter.DoubleParameter;
+import edu.kit.student.parameter.IntegerParameter;
+import edu.kit.student.parameter.Parameter;
+import edu.kit.student.parameter.Settings;
 import edu.kit.student.sugiyama.graph.ICrossMinimizerGraph;
 import edu.kit.student.sugiyama.graph.ISugiyamaEdge;
 import edu.kit.student.sugiyama.graph.ISugiyamaVertex;
 import edu.kit.student.sugiyama.graph.SugiyamaGraph;
-
-import java.util.*;
-import java.util.stream.Collectors;
-import java.util.stream.IntStream;
-import java.util.stream.Stream;
 
 /**
  * This class takes a Sugiyama Graph and rearranges its vertices on each layer to minimize
@@ -21,6 +35,8 @@ public class CrossMinimizer implements ICrossMinimizer {
 	private boolean stopOnThreshold = true;
 	private boolean intelligentThreshold = false;
 	private Settings settings;
+
+    final Logger logger = LoggerFactory.getLogger(CrossMinimizer.class);
 
 	public CrossMinimizer() {
 		this(0.001f, 50);
@@ -51,7 +67,7 @@ public class CrossMinimizer implements ICrossMinimizer {
 			setMaxRuns(Settings.unpackInteger((Parameter<?, Integer>) getSettings().get("Crossminimizer max runs")));
 		}
 
-		System.out.println("CrossMinimizer.minimizeCrossings():");
+		logger.info("CrossMinimizer.minimizeCrossings():");
 
 		int layerCount = graph.getLayerCount();
 
@@ -106,7 +122,7 @@ public class CrossMinimizer implements ICrossMinimizer {
 
 		//System.out.println("crossings: " + crossings((SugiyamaGraph) graph));
 		//for printing the layers after cross minimization
-		graph.getLayers().forEach(iSugiyamaVertices -> System.out.println(iSugiyamaVertices.stream().map(iSugiyamaVertex -> iSugiyamaVertex.getName()).collect(Collectors.joining(", "))));
+		graph.getLayers().forEach(iSugiyamaVertices -> logger.debug(iSugiyamaVertices.stream().map(iSugiyamaVertex -> iSugiyamaVertex.getName()).collect(Collectors.joining(", "))));
 	}
 
 	@Override

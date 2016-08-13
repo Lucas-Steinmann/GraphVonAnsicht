@@ -321,7 +321,6 @@ public class GAnsApplication {
 
 		if (saveFile != null) {
             String fileExtension = saveFile.getName().substring(saveFile.getName().lastIndexOf('.') + 1);
-            System.out.println(fileExtension);
             try {
                 FileOutputStream outputStream = new FileOutputStream(saveFile);
                 Exporter exporter = supportedFileExtensions.get(fileChooser.getSelectedExtensionFilter());

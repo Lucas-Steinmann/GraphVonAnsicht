@@ -1,5 +1,14 @@
 package edu.kit.student.sugiyama.steps;
 
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
 import edu.kit.student.sugiyama.AbsoluteLayerConstraint;
@@ -8,12 +17,6 @@ import edu.kit.student.sugiyama.RelativeLayerConstraint;
 import edu.kit.student.sugiyama.graph.ILayerAssignerGraph;
 import edu.kit.student.sugiyama.graph.ISugiyamaEdge;
 import edu.kit.student.sugiyama.graph.ISugiyamaVertex;
-
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * This class takes a directed graph and assigns every vertex in it a layer.
@@ -27,6 +30,8 @@ public class LayerAssigner implements ILayerAssigner {
 	private List<LayerContainsOnlyConstraint> layerContainsOnlyConstraints;
 	private Set<ISugiyamaVertex> ignoredVertices;
 
+    final Logger logger = LoggerFactory.getLogger(LayerAssigner.class);
+
 	public LayerAssigner() {
 		relativeConstraints = new HashSet<>();
 		absoluteConstraints = new HashSet<>();
@@ -37,22 +42,22 @@ public class LayerAssigner implements ILayerAssigner {
 	@Override
     public void addRelativeConstraints(Set<RelativeLayerConstraint> constraints) {
         this.relativeConstraints.addAll(constraints);
-		System.out.println("relative Layer Constraint added");
-		System.out.println(constraints);
+		logger.info("relative Layer Constraint added");
+		logger.info(constraints.toString());
 	}
 
     @Override
     public void addAbsoluteConstraints(Set<AbsoluteLayerConstraint> constraints) {
         this.absoluteConstraints.addAll(constraints);
-		System.out.println("absolute Layer Constraint added");
-		System.out.println(constraints);
+		logger.info("absolute Layer Constraint added");
+		logger.info(constraints.toString());
     }
 
 	@Override
 	public void addLayerContainsOnlyConstraints(Set<LayerContainsOnlyConstraint> constraints) {
 		this.layerContainsOnlyConstraints.addAll(constraints);
-		System.out.println("absolute Layer Constraint added");
-		System.out.println(constraints);
+		logger.info("absolute Layer Constraint added");
+		logger.info(constraints.toString());
 	}
 
 	@Override
@@ -69,7 +74,7 @@ public class LayerAssigner implements ILayerAssigner {
 
 	@Override
 	public void assignLayers(ILayerAssignerGraph graph) {
-		System.out.println("LayerAssigner.assignLayers():");
+		logger.info("LayerAssigner.assignLayers():");
 		initialize(graph);
 		Set<ISugiyamaVertex> DDVertices = DDGraph.getVertexSet();
 		Set<ISugiyamaEdge> DDEdges = DDGraph.getEdgeSet();
@@ -137,7 +142,7 @@ public class LayerAssigner implements ILayerAssigner {
 		}
 
 		//for printing the layers after layer assigning
-		graph.getLayers().forEach(iSugiyamaVertices -> System.out.println(iSugiyamaVertices.stream().map(iSugiyamaVertex -> iSugiyamaVertex.getName()).collect(Collectors.joining(", "))));
+		graph.getLayers().forEach(iSugiyamaVertices -> logger.debug(iSugiyamaVertices.stream().map(iSugiyamaVertex -> iSugiyamaVertex.getName()).collect(Collectors.joining(", "))));
 	}
 
 	private void pushUp(ISugiyamaVertex vertex, ILayerAssignerGraph graph, int amount) {
@@ -148,7 +153,7 @@ public class LayerAssigner implements ILayerAssigner {
 		int currentLayer = graph.getLayer(vertex);
 		int targetLayer = currentLayer - amount;
 		Set<ISugiyamaVertex> affectedVertices = graph.incomingEdgesOf(vertex).stream().map(edge -> edge.getSource()).collect(Collectors.toSet());
-		System.out.println("pushing up " + vertex + " by " + amount);
+		logger.debug("pushing up " + vertex + " by " + amount);
 
 		if (targetLayer < 0) {
 			graph.insertLayers(0, 0 - targetLayer);
@@ -174,7 +179,7 @@ public class LayerAssigner implements ILayerAssigner {
 		int currentLayer = graph.getLayer(vertex);
 		int targetLayer = currentLayer + amount;
 		Set<ISugiyamaVertex> affectedVertices = graph.outgoingEdgesOf(vertex).stream().map(edge -> edge.getTarget()).collect(Collectors.toSet());
-		System.out.println("pushing down " + vertex + " by " + amount);
+		logger.debug("pushing down " + vertex + " by " + amount);
 		graph.assignToLayer(vertex, targetLayer);
 		ignoredVertices.add(vertex);
 
