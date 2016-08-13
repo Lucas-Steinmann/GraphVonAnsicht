@@ -1,13 +1,18 @@
-package edu.kit.student.graphmodel;
+package edu.kit.student.joana.graphmodel;
 
 import java.util.List;
 import java.util.Stack;
 
+import edu.kit.student.graphmodel.CompoundVertex;
+import edu.kit.student.graphmodel.EdgeArrow;
+import edu.kit.student.graphmodel.EdgePath;
+import edu.kit.student.graphmodel.FastGraphAccessor;
+import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.directed.DirectedEdge;
 import edu.kit.student.objectproperty.GAnsProperty;
 import javafx.scene.paint.Color;
 
-public class DirectedOnionPath<E extends DirectedEdge, V extends CollapsedVertex> implements DirectedEdge {
+public class DirectedOnionPath<E extends DirectedEdge, V extends CompoundVertex> implements DirectedEdge {
     
     private Stack<V> target = new Stack<>();
     private Stack<V> source = new Stack<>();

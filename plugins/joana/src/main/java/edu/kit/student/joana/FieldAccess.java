@@ -1,21 +1,22 @@
 package edu.kit.student.joana;
 
-import edu.kit.student.graphmodel.CompoundVertex;
 import edu.kit.student.graphmodel.Edge;
 import edu.kit.student.graphmodel.FastGraphAccessor;
+import edu.kit.student.joana.graphmodel.JoanaCompoundVertex;
+import javafx.util.Pair;
 
 /**
  * This specifies the vertex representation of FieldAccesses in a MethodGraph It
  * contains a {@code FieldAccessGraph}.
  */
-public class FieldAccess extends JoanaVertex 
-    implements CompoundVertex {
+public class FieldAccess extends JoanaCompoundVertex {
 
 	private FieldAccessGraph graph;
+	public static double padding = 10;
 	
     /**
      * Constructor.
-     * 
+     *
      * @param graph The FieldAccessGraph that will be set in the FieldAccess.
      */
     public FieldAccess(FieldAccessGraph graph, String name, String label) {
@@ -37,7 +38,21 @@ public class FieldAccess extends JoanaVertex
 
     @Override
     public JoanaVertex getConnectedVertex(Edge edge) {
-        // TODO Auto-generated method stub
         return null;
     }
+
+    @Override
+    public Pair<Double, Double> getSize() {
+        if (graph.getVertexSet().isEmpty()) {
+            return super.getSize();
+        }
+        Double maxX = 0.0;
+        Double maxY = 0.0;
+        for (JoanaVertex vertex : this.graph.getVertexSet()) {
+            maxX = vertex.getX() + vertex.getSize().getKey() < maxX ? maxX : vertex.getX() + vertex.getSize().getKey();
+            maxY = vertex.getY() + vertex.getSize().getValue() < maxY ? maxY : vertex.getY() + vertex.getSize().getValue();
+        }
+        return new Pair<Double, Double>(maxX + padding, maxY + padding);
+    }
+    
 }

@@ -4,13 +4,13 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 
-import edu.kit.student.graphmodel.CollapsedVertex;
 import edu.kit.student.graphmodel.Edge;
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
+import edu.kit.student.joana.graphmodel.JoanaCompoundVertex;
 import edu.kit.student.objectproperty.GAnsProperty;
 
-public class JoanaCollapsedVertex extends JoanaVertex implements CollapsedVertex {
+public class JoanaCollapsedVertex extends JoanaCompoundVertex {
 
 	private DefaultDirectedGraph<JoanaVertex, JoanaEdge> graph;
 	
