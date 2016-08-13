@@ -157,11 +157,6 @@ public class MethodGraph extends JoanaGraph {
 	            collapser.collapseFieldAccess(graph, fa);
 	        }
 	    }
-	    for (FieldAccess fa : fieldAccesses) {
-	        for (JoanaEdge e : graph.outgoingEdgesOf(fa)) {
-	            assert (e.getTarget() != fa);
-	        }
-	    }
 	}
 	
 	/**
