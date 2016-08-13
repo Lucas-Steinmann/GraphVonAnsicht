@@ -23,7 +23,9 @@ import edu.kit.student.joana.JoanaPlugin;
 import edu.kit.student.joana.JoanaVertex;
 import edu.kit.student.joana.JoanaVertex.VertexKind;
 import edu.kit.student.objectproperty.GAnsProperty;
+import edu.kit.student.plugin.EdgeFilter;
 import edu.kit.student.plugin.LayoutOption;
+import edu.kit.student.plugin.VertexFilter;
 
 /**
  * This is a specific graph representation for a MethodGraph in JOANA .
@@ -44,7 +46,7 @@ public class MethodGraph extends JoanaGraph {
             String methodName) {
         super(methodName, vertices, edges);
         this.graph = new DefaultDirectedGraph<>(vertices, edges);
-        for(JoanaVertex vertex : vertices) {
+        for (JoanaVertex vertex : vertices) {
         	if(vertex.getNodeKind() == VertexKind.ENTR) {
         	    this.entry = vertex;
         	    break;
@@ -61,7 +63,7 @@ public class MethodGraph extends JoanaGraph {
         this.expandActions = new HashMap<>();
     }
 
-    
+
     /**
      * Returns the entry vertex of a method.
      * 
@@ -234,6 +236,48 @@ public class MethodGraph extends JoanaGraph {
     @Override
     public Set<JoanaEdge> edgesOf(Vertex vertex) {
         return removeFilteredEdges(graph.edgesOf(vertex));
+    }
+
+    
+    @Override
+    public void addVertexFilter(VertexFilter filter) {
+        super.addVertexFilter(filter);
+        fieldAccesses.forEach((fa) -> fa.getGraph().addVertexFilter(filter));
+    }
+
+
+    @Override
+    public void setVertexFilter(List<VertexFilter> filter) {
+        super.setVertexFilter(filter);
+        fieldAccesses.forEach((fa) -> fa.getGraph().setVertexFilter(filter));
+    }
+
+
+    @Override
+    public void addEdgeFilter(EdgeFilter filter) {
+        super.addEdgeFilter(filter);
+        fieldAccesses.forEach((fa) -> fa.getGraph().addEdgeFilter(filter));
+    }
+
+
+    @Override
+    public void setEdgeFilter(List<EdgeFilter> filter) {
+        super.setEdgeFilter(filter);
+        fieldAccesses.forEach((fa) -> fa.getGraph().setEdgeFilter(filter));
+    }
+
+
+    @Override
+    public void removeVertexFilter(VertexFilter filter) {
+        super.removeVertexFilter(filter);
+        fieldAccesses.forEach((fa) -> fa.getGraph().removeVertexFilter(filter));
+    }
+
+
+    @Override
+    public void removeEdgeFilter(EdgeFilter filter) {
+        super.removeEdgeFilter(filter);
+        fieldAccesses.forEach((fa) -> fa.getGraph().removeEdgeFilter(filter));
     }
 
     @Override

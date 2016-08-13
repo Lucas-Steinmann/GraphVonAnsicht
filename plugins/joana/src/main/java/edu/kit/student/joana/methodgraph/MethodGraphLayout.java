@@ -102,9 +102,10 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 	 * Also sets the sizes of the vertex representing this FieldAccessGraph appropriate.
 	 */
 	private void layoutFieldAccessGraphs(MethodGraph graph){
+	    SugiyamaLayoutAlgorithm<FieldAccessGraph> fieldAccessSugAlgo = new SugiyamaLayoutAlgorithm<>();
 		for(FieldAccess fa : graph.getFieldAccesses()){
 			FieldAccessGraph fag = fa.getGraph();
-			this.sugiyamaLayoutAlgorithm.layout(fag);
+			fieldAccessSugAlgo.layout(fag);
 			JoanaVertex rep = fa;
 			System.out.println("new fag size: "+fag.getVertexSet().size() + "," +fag.getEdgeSet().size());
 

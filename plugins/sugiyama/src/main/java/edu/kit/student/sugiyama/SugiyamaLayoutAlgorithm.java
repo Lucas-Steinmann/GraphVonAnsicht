@@ -1,7 +1,12 @@
 package edu.kit.student.sugiyama;
 
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Map;
+import java.util.Set;
+
 import edu.kit.student.graphmodel.DefaultVertex;
-import edu.kit.student.graphmodel.LayeredGraph;
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
 import edu.kit.student.graphmodel.directed.DirectedEdge;
 import edu.kit.student.graphmodel.directed.DirectedGraph;
@@ -9,9 +14,16 @@ import edu.kit.student.parameter.Parameter;
 import edu.kit.student.parameter.Settings;
 import edu.kit.student.plugin.LayoutAlgorithm;
 import edu.kit.student.sugiyama.graph.SugiyamaGraph;
-import edu.kit.student.sugiyama.steps.*;
-
-import java.util.*;
+import edu.kit.student.sugiyama.steps.CrossMinimizer;
+import edu.kit.student.sugiyama.steps.CycleRemover;
+import edu.kit.student.sugiyama.steps.EdgeDrawer;
+import edu.kit.student.sugiyama.steps.ICrossMinimizer;
+import edu.kit.student.sugiyama.steps.ICycleRemover;
+import edu.kit.student.sugiyama.steps.IEdgeDrawer;
+import edu.kit.student.sugiyama.steps.ILayerAssigner;
+import edu.kit.student.sugiyama.steps.IVertexPositioner;
+import edu.kit.student.sugiyama.steps.LayerAssigner;
+import edu.kit.student.sugiyama.steps.VertexPositioner;
 
 /**
  * This class supports a customizable implementation of the Sugiyama-framework.
