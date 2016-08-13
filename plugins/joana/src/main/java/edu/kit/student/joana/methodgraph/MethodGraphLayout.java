@@ -117,8 +117,7 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 			maxX = fagVertices.stream().mapToInt(vertex->(int)Math.round(vertex.getX() + vertex.getSize().getKey())).max().getAsInt();
 			minY = fagVertices.stream().mapToInt(vertex->vertex.getY()).min().getAsInt();
 			maxY = fagVertices.stream().mapToInt(vertex->(int)Math.round(vertex.getY() + vertex.getSize().getValue())).max().getAsInt();
-			for(JoanaEdge e : fagEdges){	//TODO: doesn't work yet!
-				System.out.println("new max, min calculating !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
+			for(JoanaEdge e : fagEdges){	//look if there are some edges more right or left than a vertex.
 				minX = Math.min(e.getPath().getNodes().stream().mapToInt(point->((int)Math.ceil(point.x))).min().getAsInt(), minX);
 				maxX = Math.max(e.getPath().getNodes().stream().mapToInt(point->((int)Math.ceil(point.x))).max().getAsInt(), maxX);
 				minY = Math.min(e.getPath().getNodes().stream().mapToInt(point->((int)Math.ceil(point.y))).min().getAsInt(), minY);
