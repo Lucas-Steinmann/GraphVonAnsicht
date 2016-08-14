@@ -1,13 +1,13 @@
 package edu.kit.student.graphmodel;
 
+import java.util.LinkedList;
+import java.util.List;
+
 import edu.kit.student.objectproperty.GAnsProperty;
+import edu.kit.student.util.DoublePoint;
 import edu.kit.student.util.IdGenerator;
 import edu.kit.student.util.Settings;
 import javafx.scene.paint.Color;
-import javafx.util.Pair;
-
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * This is an DefaultVertex, which has basic functions and is provided by the
@@ -93,7 +93,7 @@ public class DefaultVertex implements Vertex {
 	}
 
 	@Override
-	public Pair<Double, Double> getSize() {
+	public DoublePoint getSize() {
 		return Settings.getSize(this.getLabel(), true);
 	}
 

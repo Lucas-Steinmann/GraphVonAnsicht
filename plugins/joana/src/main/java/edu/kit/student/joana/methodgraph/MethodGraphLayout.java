@@ -1,6 +1,5 @@
 package edu.kit.student.joana.methodgraph;
 
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -246,7 +245,7 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 		EdgePath path = e.getPath();
 		List<DoublePoint> points = path.getNodes();
 		double boxYtop = fa.getY();
-		double boxYbottom = fa.getY() + fa.getSize().getValue();
+		double boxYbottom = fa.getY() + fa.getSize().y;
 		assert(dEquals(points.get(0).y, boxYbottom) ^ dEquals(points.get(points.size() - 1).y, boxYtop));
 		List<DoublePoint> temp = new LinkedList<>();	//new points, always from top to bottom. Inserting to original edgepath later in if-else-statement!
 
@@ -281,7 +280,11 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 				fromOutEdges.add(e);
 			}
 		}
-		System.out.println("faVertices: "+faVertices.size()+", faEdges: "+fa.getGraph().getEdgeSet().size()+", from out edges: "+fromOutEdges.size());
+		System.out.println("from out edges: "+fromOutEdges.size());
+		System.out.println("box pos: "+fa.getX()+","+fa.getY()+" size: "+fa.getSize().x+","+fa.getSize().y);
+		for(JoanaVertex v : faVertices){
+			System.out.println("vertex pos: "+v.getX()+","+v.getY()+" size: "+v.getSize().x+","+v.getSize().y);
+		}
 		return fromOutEdges;
 	}
 	
@@ -292,7 +295,7 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 	private Set<JoanaEdge> getTurnedEdges(FieldAccess fa, Set<JoanaEdge> fromOut){
 		Set<JoanaEdge> turnedEdges = new HashSet<JoanaEdge>();
 		double boxYtop = fa.getY();
-		double boxYbottom = fa.getY() + fa.getSize().getValue();
+		double boxYbottom = fa.getY() + fa.getSize().y;
 		for(JoanaEdge e : fromOut){
 			List<DoublePoint> points = e.getPath().getNodes();
 			if(dEquals(points.get(0).y, boxYtop) ^ dEquals(points.get(points.size() - 1).y, boxYbottom)){
@@ -384,6 +387,7 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
     }
     
     private boolean dEquals(double a, double b){
+    	System.out.println("comparing "+a+" with "+b);
 		return Math.abs(a-b) < Math.pow(10, -6);
 	}
 

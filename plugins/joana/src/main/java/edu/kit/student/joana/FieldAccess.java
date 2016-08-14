@@ -5,7 +5,7 @@ import java.util.Set;
 import edu.kit.student.graphmodel.Edge;
 import edu.kit.student.graphmodel.FastGraphAccessor;
 import edu.kit.student.joana.graphmodel.JoanaCompoundVertex;
-import javafx.util.Pair;
+import edu.kit.student.util.DoublePoint;
 
 /**
  * This specifies the vertex representation of FieldAccesses in a MethodGraph It
@@ -44,7 +44,7 @@ public class FieldAccess extends JoanaCompoundVertex {
     }
 
     @Override
-    public Pair<Double, Double> getSize() {
+    public DoublePoint getSize() {
         if (graph.getVertexSet().isEmpty()) {
             return super.getSize();
         }
@@ -53,9 +53,9 @@ public class FieldAccess extends JoanaCompoundVertex {
         
         double minX, minY, maxX, maxY;
 		minX = fagVertices.stream().mapToDouble(vertex->vertex.getX()).min().getAsDouble();
-		maxX = fagVertices.stream().mapToDouble(vertex->vertex.getX() + vertex.getSize().getKey()).max().getAsDouble();
+		maxX = fagVertices.stream().mapToDouble(vertex->vertex.getX() + vertex.getSize().x).max().getAsDouble();
 		minY = fagVertices.stream().mapToDouble(vertex->vertex.getY()).min().getAsDouble();
-		maxY = fagVertices.stream().mapToDouble(vertex->vertex.getY() + vertex.getSize().getValue()).max().getAsDouble();
+		maxY = fagVertices.stream().mapToDouble(vertex->vertex.getY() + vertex.getSize().y).max().getAsDouble();
 		for(JoanaEdge e : fagEdges){	//look if there are some edges more right or left than a vertex.
 			minX = Math.min(e.getPath().getNodes().stream().mapToDouble(point->(point.x)).min().getAsDouble(), minX);
 			maxX = Math.max(e.getPath().getNodes().stream().mapToDouble(point->(point.x)).max().getAsDouble(), maxX);
@@ -65,7 +65,7 @@ public class FieldAccess extends JoanaCompoundVertex {
 		
 		
 		// set now the new size of the representing vertex appropriated to the layouted FieldAccessGraphs
-		return new Pair<Double, Double>(maxX - minX + padding, maxY - minY + padding);	
+		return new DoublePoint(maxX - minX + padding, maxY - minY + padding);	
     }
     
 }
