@@ -115,11 +115,19 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 
 			//now set the size of rep new, according to the layered FieldAccessGraph which he represents
 			Set<JoanaVertex> fagVertices = fag.getVertexSet();
+			Set<JoanaEdge> fagEdges = fag.getEdgeSet();
 			int minX, minY, maxX, maxY, newWidth, newHeight;
 			minX = fagVertices.stream().mapToInt(vertex->vertex.getX()).min().getAsInt();
 			maxX = fagVertices.stream().mapToInt(vertex->(int)Math.round(vertex.getX() + vertex.getSize().getKey())).max().getAsInt();
 			minY = fagVertices.stream().mapToInt(vertex->vertex.getY()).min().getAsInt();
 			maxY = fagVertices.stream().mapToInt(vertex->(int)Math.round(vertex.getY() + vertex.getSize().getValue())).max().getAsInt();
+			for(JoanaEdge e : fagEdges){	//look if there are some edges more right or left than a vertex.
+				minX = Math.min(e.getPath().getNodes().stream().mapToInt(point->((int)Math.ceil(point.x))).min().getAsInt(), minX);
+				maxX = Math.max(e.getPath().getNodes().stream().mapToInt(point->((int)Math.ceil(point.x))).max().getAsInt(), maxX);
+				minY = Math.min(e.getPath().getNodes().stream().mapToInt(point->((int)Math.ceil(point.y))).min().getAsInt(), minY);
+				maxY = Math.max(e.getPath().getNodes().stream().mapToInt(point->((int)Math.ceil(point.y))).max().getAsInt(), maxY);
+			}
+			
 			newWidth = maxX - minX + 10;
 			newHeight = maxY - minY + 10;
 			
