@@ -170,10 +170,10 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 				fromOutEdges.add(e);
 			}
 		}
-		System.out.println("from out edges: "+fromOutEdges.size());
-		System.out.println("box pos: "+fa.getX()+","+fa.getY()+" size: "+fa.getSize().x+","+fa.getSize().y);
+		logger.debug("from out edges: "+fromOutEdges.size());
+		logger.debug("box pos: "+fa.getX()+","+fa.getY()+" size: "+fa.getSize().x+","+fa.getSize().y);
 		for(JoanaVertex v : faVertices){
-			System.out.println("vertex pos: "+v.getX()+","+v.getY()+" size: "+v.getSize().x+","+v.getSize().y);
+			logger.debug("vertex pos: "+v.getX()+","+v.getY()+" size: "+v.getSize().x+","+v.getSize().y);
 		}
 		return fromOutEdges;
 	}
@@ -277,7 +277,7 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
     }
     
     private boolean dEquals(double a, double b){
-    	System.out.println("comparing "+a+" with "+b);
+    	logger.debug("comparing "+a+" with "+b);
 		return Math.abs(a-b) < Math.pow(10, -6);
 	}
 
