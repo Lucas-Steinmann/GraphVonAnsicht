@@ -1,5 +1,7 @@
 package edu.kit.student.joana;
 
+import java.util.Set;
+
 import edu.kit.student.graphmodel.Edge;
 import edu.kit.student.graphmodel.FastGraphAccessor;
 import edu.kit.student.joana.graphmodel.JoanaCompoundVertex;
@@ -46,13 +48,24 @@ public class FieldAccess extends JoanaCompoundVertex {
         if (graph.getVertexSet().isEmpty()) {
             return super.getSize();
         }
-        Double maxX = 0.0;
-        Double maxY = 0.0;
-        for (JoanaVertex vertex : this.graph.getVertexSet()) {
-            maxX = vertex.getX() + vertex.getSize().getKey() < maxX ? maxX : vertex.getX() + vertex.getSize().getKey();
-            maxY = vertex.getY() + vertex.getSize().getValue() < maxY ? maxY : vertex.getY() + vertex.getSize().getValue();
-        }
-        return new Pair<Double, Double>(maxX + padding, maxY + padding);
+        Set<JoanaVertex> fagVertices = this.graph.getVertexSet();
+        Set<JoanaEdge> fagEdges = this.graph.getEdgeSet();
+        
+        double minX, minY, maxX, maxY;
+		minX = fagVertices.stream().mapToDouble(vertex->vertex.getX()).min().getAsDouble();
+		maxX = fagVertices.stream().mapToDouble(vertex->vertex.getX() + vertex.getSize().getKey()).max().getAsDouble();
+		minY = fagVertices.stream().mapToDouble(vertex->vertex.getY()).min().getAsDouble();
+		maxY = fagVertices.stream().mapToDouble(vertex->vertex.getY() + vertex.getSize().getValue()).max().getAsDouble();
+		for(JoanaEdge e : fagEdges){	//look if there are some edges more right or left than a vertex.
+			minX = Math.min(e.getPath().getNodes().stream().mapToDouble(point->(point.x)).min().getAsDouble(), minX);
+			maxX = Math.max(e.getPath().getNodes().stream().mapToDouble(point->(point.x)).max().getAsDouble(), maxX);
+			minY = Math.min(e.getPath().getNodes().stream().mapToDouble(point->(point.y)).min().getAsDouble(), minY);
+			maxY = Math.max(e.getPath().getNodes().stream().mapToDouble(point->(point.y)).max().getAsDouble(), maxY);
+		}
+		
+		
+		// set now the new size of the representing vertex appropriated to the layouted FieldAccessGraphs
+		return new Pair<Double, Double>(maxX - minX + padding, maxY - minY + padding);	
     }
     
 }

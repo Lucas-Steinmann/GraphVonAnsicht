@@ -21,8 +21,6 @@ import edu.kit.student.plugin.LayoutOption;
 public class FieldAccessGraph extends JoanaGraph {
 
     private DefaultDirectedGraph<JoanaVertex, JoanaEdge> graph;
-	private Set<JoanaEdge> inEdges;
-	private Set<JoanaEdge> outEdges;
     private JoanaVertex fieldEntry;
     
     public FieldAccessGraph(String name, Set<JoanaVertex> vertices, Set<JoanaEdge> edges) {
@@ -30,28 +28,8 @@ public class FieldAccessGraph extends JoanaGraph {
         super(name, vertices, edges);
         Set<JoanaEdge> innerEdges = edges.stream().filter((e) -> vertices.contains(e.getSource()) && vertices.contains(e.getTarget())).collect(Collectors.toSet());
         graph = new DefaultDirectedGraph<>(vertices, innerEdges);
-        this.inEdges = new HashSet<>();
-        this.outEdges = new HashSet<>();
     }
     
-    /**
-     * Returns the edge which is going into the entry vertex of this FieldAccessGraph.
-     * 
-     * @return the edge going into this FieldAccessGraph
-     */
-    public Set<JoanaEdge> getReplacedInEdges(){
-    	return this.inEdges;
-    }
-    
-    /**
-     * Returns the edge which is coming out of this FieldAccessGraph. 
-     * If there is no such edge, returns null.
-     * 
-     * @return the edge going out of this FieldAccessGraph, or null if not present
-     */
-    public Set<JoanaEdge> getReplacedOutEdges(){
-    	return this.outEdges;
-    }
 
     @Override
     public FastGraphAccessor getFastGraphAccessor() {

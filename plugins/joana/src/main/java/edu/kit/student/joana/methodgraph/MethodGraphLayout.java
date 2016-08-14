@@ -1,5 +1,6 @@
 package edu.kit.student.joana.methodgraph;
 
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -7,7 +8,9 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import edu.kit.student.graphmodel.EdgePath;
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.joana.FieldAccess;
 import edu.kit.student.joana.FieldAccessGraph;
@@ -99,6 +102,7 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 		
 		logger.info("Graph after: Vertices: "+graph.getVertexSet().size()+", Edges: "+graph.getEdgeSet().size());
 		expandFieldAccesses(graph);
+		graph.getFieldAccesses().forEach(fa->drawFieldAccessEdges(graph,fa));
 	}
 	
 	/**
@@ -110,35 +114,91 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 		for(FieldAccess fa : graph.getFieldAccesses()){
 			FieldAccessGraph fag = fa.getGraph();
 			fieldAccessSugAlgo.layout(fag);
-			JoanaVertex rep = fa;
-			logger.info("new fag size: "+fag.getVertexSet().size() + "," +fag.getEdgeSet().size());
-
-			//now set the size of rep new, according to the layered FieldAccessGraph which he represents
-			Set<JoanaVertex> fagVertices = fag.getVertexSet();
-			Set<JoanaEdge> fagEdges = fag.getEdgeSet();
-			int minX, minY, maxX, maxY, newWidth, newHeight;
-			minX = fagVertices.stream().mapToInt(vertex->vertex.getX()).min().getAsInt();
-			maxX = fagVertices.stream().mapToInt(vertex->(int)Math.round(vertex.getX() + vertex.getSize().getKey())).max().getAsInt();
-			minY = fagVertices.stream().mapToInt(vertex->vertex.getY()).min().getAsInt();
-			maxY = fagVertices.stream().mapToInt(vertex->(int)Math.round(vertex.getY() + vertex.getSize().getValue())).max().getAsInt();
-			for(JoanaEdge e : fagEdges){	//look if there are some edges more right or left than a vertex.
-				minX = Math.min(e.getPath().getNodes().stream().mapToInt(point->((int)Math.ceil(point.x))).min().getAsInt(), minX);
-				maxX = Math.max(e.getPath().getNodes().stream().mapToInt(point->((int)Math.ceil(point.x))).max().getAsInt(), maxX);
-				minY = Math.min(e.getPath().getNodes().stream().mapToInt(point->((int)Math.ceil(point.y))).min().getAsInt(), minY);
-				maxY = Math.max(e.getPath().getNodes().stream().mapToInt(point->((int)Math.ceil(point.y))).max().getAsInt(), maxY);
-			}
-			
-			newWidth = maxX - minX + 10;
-			newHeight = maxY - minY + 10;
-			
-			// set now the new size of the representing vertex appropriated to the layouted FieldAccessGraphs
-			rep.setSize(new Pair<Double, Double>((double)newWidth, (double)newHeight));	
 		}
 	}
 	
-	private void drawFieldAccessEdges(FieldAccess fa){
+	//method responsible for drawing every edge from out or inside the fieldAccess new
+	//calls other private methods 
+	private void drawFieldAccessEdges(MethodGraph graph, FieldAccess fa){
 		//TODO: draw here every! edge in the FieldAccess new. beginning from the point going to the top or bottom of the representing vertex
+		Set<JoanaEdge> fromOutEdges = this.getEdgesFromOut(graph, fa);	//edges from out in representing vertex
+		Set<JoanaEdge> turnedEdges = this.getTurnedEdges(fa, fromOutEdges);	//turned edges so on top are just incoming and on bottom just outgoing
+		Set<JoanaEdge> notTurned = fromOutEdges.stream().filter(e->!turnedEdges.contains(e)).collect(Collectors.toSet());	//not turned edges
+		
+		turnedEdges.forEach(edge->drawEdge(fa,edge));
+		notTurned.forEach(edge->drawEdge(fa,edge));
+		turnedEdges.forEach(edge->Collections.reverse(edge.getPath().getNodes()));
 	}
+	
+	private void drawEdge(FieldAccess fa, JoanaEdge e){
+		Set<JoanaEdge> faEdges = fa.getGraph().getEdgeSet();
+		Set<JoanaVertex> faVertices = fa.getGraph().getVertexSet();
+		EdgePath path = e.getPath();
+		List<DoublePoint> points = path.getNodes();
+		double boxYtop = fa.getY();
+		double boxYbottom = fa.getY() + fa.getSize().getValue();
+		assert(dEquals(points.get(0).y, boxYbottom) ^ dEquals(points.get(points.size() - 1).y, boxYtop));
+		List<DoublePoint> temp = new LinkedList<>();	//new points, always from top to bottom. Inserting to original edgepath later in if-else-statement!
+
+		//TODO: both cases for the moment just rudimentary implemented
+		if(dEquals(points.get(points.size() - 1).y, boxYtop)){	//draw from top of box down to the target vertex
+			DoublePoint start = points.get(points.size() - 1);
+			JoanaVertex target = e.getTarget().getY() > e.getSource().getY() ? e.getTarget() : e.getSource();
+			DoublePoint end = new DoublePoint(target.getX(), target.getY());
+			temp.add(end);
+			temp.addAll(0, points);	//from here possible idea
+			path.clear();
+			temp.forEach(point->path.addPoint(point));
+		} else{	//draw from target vertex to bottom 
+			JoanaVertex source = e.getSource().getY() < e.getTarget().getY() ? e.getSource() : e.getTarget();
+			DoublePoint start = new DoublePoint(source.getX(), source.getY());
+			DoublePoint end = points.get(0);
+			temp.add(start);
+			temp.addAll(points);
+			path.clear();
+			temp.forEach(point->path.addPoint(point));
+		}
+	}
+	
+	private Set<JoanaEdge> getEdgesFromOut(MethodGraph graph, FieldAccess fa){
+		Set<JoanaEdge> fromOutEdges = new HashSet<>();
+		Set<JoanaEdge> graphEdges = graph.getEdgeSet();
+		Set<JoanaVertex> graphVertices = graph.getVertexSet();
+		Set<JoanaVertex> faVertices = fa.getGraph().getVertexSet();
+		for(JoanaEdge e : graphEdges){
+			if((graphVertices.contains(e.getSource()) && faVertices.contains(e.getTarget()) && !faVertices.contains(e.getSource()))
+					|| (graphVertices.contains(e.getTarget()) && faVertices.contains(e.getSource()) && !faVertices.contains(e.getTarget()))){
+				fromOutEdges.add(e);
+			}
+		}
+		System.out.println("from out edges: "+fromOutEdges.size());
+		System.out.println("box pos: "+fa.getX()+","+fa.getY()+" size: "+fa.getSize().getKey()+","+fa.getSize().getValue());
+		for(JoanaVertex v : faVertices){
+			System.out.println("vertex pos: "+v.getX()+","+v.getY()+" size: "+v.getSize().getKey()+","+v.getSize().getValue());
+		}
+		return fromOutEdges;
+	}
+	
+	/**
+	 * turns edges coming from out into the representing vertex box so that:
+	 * out edges going into the representing vertex in the top, and going out at the bottom.
+	 */
+	private Set<JoanaEdge> getTurnedEdges(FieldAccess fa, Set<JoanaEdge> fromOut){
+		Set<JoanaEdge> turnedEdges = new HashSet<JoanaEdge>();
+		double boxYtop = fa.getY();
+		double boxYbottom = fa.getY() + fa.getSize().getValue();
+		for(JoanaEdge e : fromOut){
+			List<DoublePoint> points = e.getPath().getNodes();
+			if(dEquals(points.get(0).y, boxYtop) ^ dEquals(points.get(points.size() - 1).y, boxYbottom)){
+				Collections.reverse(points);	//reverse edgepath
+				turnedEdges.add(e);
+			}else{
+				assert(dEquals(points.get(0).y, boxYbottom) ^ dEquals(points.get(points.size() - 1).y, boxYtop));	//normal edgePath
+			}
+		}
+		return turnedEdges;
+	}
+	
 	
 	private void expandFieldAccesses(MethodGraph graph) {
 
@@ -216,5 +276,10 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
         }
         return result;
     }
+    
+    private boolean dEquals(double a, double b){
+    	System.out.println("comparing "+a+" with "+b);
+		return Math.abs(a-b) < Math.pow(10, -6);
+	}
 
 }
