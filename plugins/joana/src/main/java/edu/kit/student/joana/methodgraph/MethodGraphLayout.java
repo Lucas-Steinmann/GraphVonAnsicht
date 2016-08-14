@@ -64,10 +64,12 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 		Set<LayerContainsOnlyConstraint> layerContainsOnlyConstraints = new HashSet<>();
         
         //create absoluteLayerConstraint for Entry vertex
-        Set<Vertex> firstLayer = new HashSet<Vertex>();
-        firstLayer.add(graph.getEntryVertex());
-        absoluteLayerConstraints.add(new AbsoluteLayerConstraint(firstLayer, 0));
-		layerContainsOnlyConstraints.add(new LayerContainsOnlyConstraint(firstLayer, 0));
+        if (graph.getVertexSet().contains(graph.getEntryVertex())) {
+            Set<Vertex> firstLayer = new HashSet<Vertex>();
+            firstLayer.add(graph.getEntryVertex());
+            absoluteLayerConstraints.add(new AbsoluteLayerConstraint(firstLayer, 0));
+            layerContainsOnlyConstraints.add(new LayerContainsOnlyConstraint(firstLayer, 0));
+        }
         
         //create absoluteLayerConstraint for Method Parameters
         Set<Vertex> secondLayer = new HashSet<Vertex>();
