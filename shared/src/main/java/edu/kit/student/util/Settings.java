@@ -1,7 +1,6 @@
 package edu.kit.student.util;
 
 import javafx.scene.text.Text;
-import javafx.util.Pair;
 
 public class Settings {
 	// predefined values, that will be used if nothing else is specified
@@ -14,22 +13,22 @@ public class Settings {
 	public static double leftRightMargin = 8;
 	public static double topBottomMargin = 4;
 	
-	public static Pair<Double,Double> getSize(String text, boolean alignToText) {
+	public static DoublePoint getSize(String text, boolean alignToText) {
 		if(alignToText) {
 			Text textShape = new Text(text);
 			double width = textShape.getLayoutBounds().getWidth() + leftRightMargin;
 			double height = textShape.getLayoutBounds().getHeight() + topBottomMargin;
-			return new Pair<Double,Double>(width,height);
+			return new DoublePoint(width,height);
 		} else {
 			return getSize(text, minWidth, minHeight, maxWidth, maxHeight);
 		}
 	}
 	
-	public static Pair<Double,Double> getSize(String text, double maxWidth, double maxHeight) {
+	public static DoublePoint getSize(String text, double maxWidth, double maxHeight) {
 		return getSize(text, minWidth, minHeight, maxWidth, maxHeight);
 	}
 	
-	public static Pair<Double,Double> getSize(String text, double minWidth, double minHeight, double maxWidth, double maxHeight) {
+	public static DoublePoint getSize(String text, double minWidth, double minHeight, double maxWidth, double maxHeight) {
 		Text textShape = new Text(text);
 		double width = textShape.getLayoutBounds().getWidth() + leftRightMargin;
 		double height = textShape.getLayoutBounds().getHeight() + topBottomMargin;
@@ -43,6 +42,6 @@ public class Settings {
 		else if(height > maxHeight)
 			height = maxHeight;
 		
-		return new Pair<Double,Double>(width,height);
+		return new DoublePoint(width,height);
 	}
 }

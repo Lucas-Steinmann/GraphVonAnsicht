@@ -255,8 +255,8 @@ public class EdgeDrawer implements IEdgeDrawer {
 			double upperLowest = Integer.MIN_VALUE;	//lowest point in upper layer. (point on the bottom of the vertex-box)
 			double lowerHighest = Integer.MAX_VALUE;	//highest point in lower layer. (point on top of the vertex-box)
 			for(ISugiyamaVertex v : upper){
-				if(v.getY() + v.getSize().getValue() > upperLowest){	//need the bottom of this vertex box so add its height to y-value
-					upperLowest = v.getY() + v.getSize().getValue();
+				if(v.getY() + v.getSize().y > upperLowest){	//need the bottom of this vertex box so add its height to y-value
+					upperLowest = v.getY() + v.getSize().y;
 				}
 			}
 			for(ISugiyamaVertex v : lower){
@@ -376,7 +376,7 @@ public class EdgeDrawer implements IEdgeDrawer {
 		if(index + 1 < this.inOutPoints.get(vertex.getID()).get(1).size()){	//in point is not the point rightmost
 			dist = (this.inOutPoints.get(vertex.getID()).get(1).get(index + 1).x - out.x) / 2;
 		} else{	//he is the point rightmost
-			dist = vertex.getX() + vertex.getSize().getKey() - out.x;
+			dist = vertex.getX() + vertex.getSize().x - out.x;
 		}
 		
 		int pointPosition = pointsBeforeVertex(vertex) + index +1;	//relative Y-position of this edge if it has to kink horizontally. (multiplied by distancePerEdgeLayer)
@@ -441,7 +441,7 @@ public class EdgeDrawer implements IEdgeDrawer {
 
 		
 		DoublePoint tPoint = this.inOutPoints.get(target.getID()).get(0).get(index);
-		DoublePoint projected = new DoublePoint(tPoint.x, tPoint.y + target.getSize().getValue());	//!!!!! set project target point down on bottom of target vertex !!!!!!!
+		DoublePoint projected = new DoublePoint(tPoint.x, tPoint.y + target.getSize().y);	//!!!!! set project target point down on bottom of target vertex !!!!!!!
 		
 		//now draw edge between sPoint and projected!!!!!
 		//TODO: search for the y-coordinate one layer below
@@ -454,14 +454,14 @@ public class EdgeDrawer implements IEdgeDrawer {
 				if(i + 1 < targetOut.size()){
 					dist = (targetOut.get(i + 1).x - p.x) / 2.0;
 				} else{
-					dist = target.getX() + target.getSize().getKey() - p.x;
+					dist = target.getX() + target.getSize().x - p.x;
 				}
 				projected = new DoublePoint(projected.x + dist, projected.y);
 				break;
 			}
 		}
 		
-		double newY = target.getLayer() < graph.getLayerCount() ? this.graph.getLayers().get(target.getLayer() + 1).get(0).getY() - edgeKinkY : projected.y + target.getSize().getValue() + edgeKinkY;
+		double newY = target.getLayer() + 1 < graph.getLayerCount() ? this.graph.getLayers().get(target.getLayer() + 1).get(0).getY() - edgeKinkY : projected.y + target.getSize().y + edgeKinkY;
 		DoublePoint t1 = new DoublePoint(sPoint.x, newY);
 		DoublePoint t2 = new DoublePoint(projected.x, newY);
 //		assert(this.points.add(t1));
@@ -500,7 +500,7 @@ public class EdgeDrawer implements IEdgeDrawer {
 	 */
 	private List<DoublePoint> getInPoints(ISugiyamaVertex vertex){
 		List<DoublePoint> points = new LinkedList<DoublePoint>();
-		double width = vertex.getSize().getKey();
+		double width = vertex.getSize().x;
 		int x = vertex.getX();
 		int y = vertex.getY();
 		int inDeg = this.inOutDeg.get(vertex.getID())[0];
@@ -516,8 +516,8 @@ public class EdgeDrawer implements IEdgeDrawer {
 	 */
 	private List<DoublePoint> getOutPoints(ISugiyamaVertex vertex){
 		List<DoublePoint> points = new LinkedList<DoublePoint>();
-		double width = vertex.getSize().getKey();
-		double height = vertex.getSize().getValue();
+		double width = vertex.getSize().x;
+		double height = vertex.getSize().y;
 		int x = vertex.getX();
 		int y = vertex.getY();
 		int outDeg = this.inOutDeg.get(vertex.getID())[1];

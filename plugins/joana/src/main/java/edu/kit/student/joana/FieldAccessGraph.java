@@ -1,82 +1,35 @@
 package edu.kit.student.joana;
 
-import edu.kit.student.graphmodel.FastGraphAccessor;
-import edu.kit.student.joana.JoanaVertex.VertexKind;
-import edu.kit.student.plugin.LayoutOption;
-
 import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
+
+import edu.kit.student.graphmodel.FastGraphAccessor;
+import edu.kit.student.graphmodel.Vertex;
+import edu.kit.student.graphmodel.ViewableVertex;
+import edu.kit.student.graphmodel.action.SubGraphAction;
+import edu.kit.student.graphmodel.action.VertexAction;
+import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
+import edu.kit.student.plugin.LayoutOption;
 
 
 /**
  * A {@link JoanaGraph} which specifies a {@link FieldAccess} in a {@link JoanaGraph}.
  */
 public class FieldAccessGraph extends JoanaGraph {
-	private JoanaVertex representingVertex;	//the vertex that represents this FieldAccessGraph for later layouting.
-	private Set<JoanaEdge> inEdges;
-	private Set<JoanaEdge> outEdges;
+
+    private DefaultDirectedGraph<JoanaVertex, JoanaEdge> graph;
     private JoanaVertex fieldEntry;
-    private Set<JoanaEdge> edges;
     
     public FieldAccessGraph(String name, Set<JoanaVertex> vertices, Set<JoanaEdge> edges) {
         //TODO: Check whether the sets build a valid field access
         super(name, vertices, edges);
-        this.representingVertex = new JoanaVertex(name,"",VertexKind.FIELDACCESS);
-        this.inEdges = new HashSet<>();
-        this.outEdges = new HashSet<>();
-        this.edges = edges;
+        Set<JoanaEdge> innerEdges = edges.stream().filter((e) -> vertices.contains(e.getSource()) && vertices.contains(e.getTarget())).collect(Collectors.toSet());
+        graph = new DefaultDirectedGraph<>(vertices, innerEdges);
     }
     
-    public void addEdge(JoanaEdge edge){
-    	this.edges.add(edge);
-    }
-    
-    @Override
-    public Set<JoanaEdge> getEdgeSet(){
-    	return this.edges;
-    }
-    
-    /**
-     * Returns the edge which is going into the entry vertex of this FieldAccessGraph.
-     * 
-     * @return the edge going into this FieldAccessGraph
-     */
-    public Set<JoanaEdge> getReplacedInEdges(){
-    	return this.inEdges;
-    }
-    
-    /**
-     * Returns the edge which is coming out of this FieldAccessGraph. 
-     * If there is no such edge, returns null.
-     * 
-     * @return the edge going out of this FieldAccessGraph, or null if not present
-     */
-    public Set<JoanaEdge> getReplacedOutEdges(){
-    	return this.outEdges;
-    }
-    
-    /**
-     * For the moment sets first the edge coming into this FieldAccessGraph, later being set without this method.
-     */
-    public void addInEdge(JoanaEdge e){
-    	this.inEdges.add(e);
-    }
-    
-    /**
-     * For the moment sets the edge going out of this FieldAccessGraph, later being set without this method.
-     */
-    public void addOutEdge(JoanaEdge e){
-    	this.outEdges.add(e);
-    }
-
-    /**
-     * Returns the vertex that represents this FieldAccessGraph for later layouting and will then be replaced by the layered FieldAccessGraph.
-     * @return the vertex that represents this FieldAccessGraph
-     */
-    public JoanaVertex getRepresentingVertex(){
-    	return this.representingVertex;
-    }
 
     @Override
     public FastGraphAccessor getFastGraphAccessor() {
@@ -87,7 +40,6 @@ public class FieldAccessGraph extends JoanaGraph {
     @Override
     public void addToFastGraphAccessor(FastGraphAccessor fga) {
         // TODO Auto-generated method stub
-        
     }
 
     @Override
@@ -100,13 +52,67 @@ public class FieldAccessGraph extends JoanaGraph {
         return null;
     }
 
-
     public JoanaVertex getFieldEntry() {
         return fieldEntry;
     }
 
-
     public void setFieldEntry(JoanaVertex fieldEntry) {
         this.fieldEntry = fieldEntry;
     }
+
+   @Override
+    public Integer outdegreeOf(Vertex vertex) {
+        return removeFilteredEdges(graph.outgoingEdgesOf(vertex)).size();
+    }
+
+    @Override
+    public Integer indegreeOf(Vertex vertex) {
+        return removeFilteredEdges(graph.incomingEdgesOf(vertex)).size();
+    }
+
+    @Override
+    public Integer selfLoopNumberOf(Vertex vertex) {
+        return this.selfLoopsOf(vertex).size();
+    }
+
+    @Override
+    public Set<JoanaEdge> outgoingEdgesOf(Vertex vertex) {
+        return removeFilteredEdges(graph.outgoingEdgesOf(vertex));
+    }
+
+    @Override
+    public Set<JoanaEdge> incomingEdgesOf(Vertex vertex) {
+        return removeFilteredEdges(graph.incomingEdgesOf(vertex));
+    }
+
+    @Override
+    public Set<JoanaEdge> selfLoopsOf(Vertex vertex) {
+        return removeFilteredEdges(graph.selfLoopsOf(vertex));
+    }
+
+    @Override
+    public Set<JoanaVertex> getVertexSet() {
+        return removeFilteredVertices(graph.getVertexSet());
+    }
+
+    @Override
+    public Set<JoanaEdge> getEdgeSet() {
+        return removeFilteredEdges(graph.getEdgeSet());
+    }
+
+    @Override
+    public Set<JoanaEdge> edgesOf(Vertex vertex) {
+        return removeFilteredEdges(graph.edgesOf(vertex));
+    }
+    
+    @Override
+    public List<SubGraphAction> getSubGraphActions(Set<ViewableVertex> vertices) {
+        return new LinkedList<>();
+    }
+
+    @Override
+    public List<VertexAction> getVertexActions(Vertex vertex) {
+        return new LinkedList<>();
+    }
+
 }

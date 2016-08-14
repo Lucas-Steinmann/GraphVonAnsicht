@@ -22,6 +22,7 @@ import org.junit.BeforeClass;
 import org.junit.Test;
 
 import edu.kit.student.graphmodel.Vertex;
+import edu.kit.student.graphmodel.ViewableVertex;
 import edu.kit.student.graphmodel.directed.DirectedGraph;
 import edu.kit.student.joana.JoanaCollapsedVertex;
 import edu.kit.student.joana.JoanaGraphModel;
@@ -104,7 +105,7 @@ public class JoanaGraphTester {
         Assert.assertTrue(compareAdjList(adjList, createAdjacenceList(testGraph)));
     }
     
-    private JoanaCollapsedVertex collapse(MethodGraph graph, Set<Vertex> subgraph) {
+    private JoanaCollapsedVertex collapse(MethodGraph graph, Set<ViewableVertex> subgraph) {
  //       System.out.println("Collapsing : ");
         List<Vertex> vertexList = subgraph.stream().collect(Collectors.toList());
  //       vertexList.sort((x, y) -> x.getID().compareTo(y.getID()));
@@ -128,7 +129,7 @@ public class JoanaGraphTester {
             for (int i = 0; i < maxCollapse && randomTestGraph.getVertexSet().size() > 1; i++) {
                 int vertexCount = randomGenerator.nextInt(randomTestGraph.getVertexSet().size() - 1);
                 Set<JoanaVertex> toCollapse = randomSample(randomTestGraph.getVertexSet(), vertexCount);
-                Set<Vertex> subset = toCollapse.stream().collect(Collectors.toSet());
+                Set<ViewableVertex> subset = toCollapse.stream().collect(Collectors.toSet());
                 collapsed.add(collapse(randomTestGraph, subset));
 
             }
@@ -163,7 +164,7 @@ public class JoanaGraphTester {
                     i++;
                     int vertexCount = randomGenerator.nextInt(randomTestGraph.getVertexSet().size() - 1);
                     Set<JoanaVertex> toCollapse = randomSample(randomTestGraph.getVertexSet(), vertexCount);
-                    Set<Vertex> subset = toCollapse.stream().collect(Collectors.toSet());
+                    Set<ViewableVertex> subset = toCollapse.stream().collect(Collectors.toSet());
                     collapsed.add(collapse(randomTestGraph, subset));
                 } else {
                     if (currentlyCollapsed <= 0)
@@ -206,7 +207,7 @@ public class JoanaGraphTester {
             for (int i = 0; i < maxCollapse && randomTestGraph.getVertexSet().size() > 1; i++) {
                 int vertexCount = randomGenerator.nextInt(randomTestGraph.getVertexSet().size() - 1);
                 Set<JoanaVertex> toCollapse = randomSample(randomTestGraph.getVertexSet(), vertexCount);
-                Set<Vertex> subset = toCollapse.stream().collect(Collectors.toSet());
+                Set<ViewableVertex> subset = toCollapse.stream().collect(Collectors.toSet());
                 collapsed.add(collapse(randomTestGraph, subset));
 
             }

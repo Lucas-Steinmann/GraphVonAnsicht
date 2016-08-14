@@ -10,12 +10,12 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import edu.kit.student.graphmodel.DefaultVertex;
-import edu.kit.student.graphmodel.LayeredGraph;
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
 import edu.kit.student.graphmodel.directed.DirectedEdge;
 import edu.kit.student.graphmodel.directed.DirectedGraph;
 import edu.kit.student.parameter.Parameter;
 import edu.kit.student.parameter.Settings;
+import edu.kit.student.plugin.LayoutAlgorithm;
 import edu.kit.student.sugiyama.graph.SugiyamaGraph;
 import edu.kit.student.sugiyama.steps.CrossMinimizer;
 import edu.kit.student.sugiyama.steps.CycleRemover;
@@ -33,8 +33,8 @@ import edu.kit.student.sugiyama.steps.VertexPositioner;
  * The single stages of the framework can be chosen individually.
  * Additionally this class tries to follow the given constraints, if possible.
  */
-public class SugiyamaLayoutAlgorithm<G extends DirectedGraph & LayeredGraph> 
-	implements LayeredLayoutAlgorithm<G> {
+public class SugiyamaLayoutAlgorithm<G extends DirectedGraph> 
+	implements LayoutAlgorithm<G> {
 	private ICycleRemover remover;
 	private ILayerAssigner assigner;
 	private ICrossMinimizer minimizer;
@@ -146,18 +146,6 @@ public class SugiyamaLayoutAlgorithm<G extends DirectedGraph & LayeredGraph>
 		positioner.positionVertices(wrappedGraph);
 		drawer.drawEdges(wrappedGraph);
 		logger.info("runs in " + ((new Date()).getTime() - timeBefore) + "ms");
-    }
-
-    @Override
-    public void layoutLayeredGraph(G graph) {
-		SugiyamaGraph wrappedGraph = new SugiyamaGraph(graph);
-		assigner.addRelativeConstraints(relativeLayerConstraints);
-
-		remover.removeCycles(wrappedGraph);
-		assigner.assignLayers(wrappedGraph);
-		minimizer.minimizeCrossings(wrappedGraph);
-		positioner.positionVertices(wrappedGraph);
-		drawer.drawEdges(wrappedGraph);
     }
 
 	public void layout(DefaultDirectedGraph<DefaultVertex, DirectedEdge> graph) {

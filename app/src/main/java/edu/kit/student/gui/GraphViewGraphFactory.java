@@ -17,13 +17,13 @@ import edu.kit.student.graphmodel.serialize.SerializedEdge;
 import edu.kit.student.graphmodel.serialize.SerializedGraph;
 import edu.kit.student.graphmodel.serialize.SerializedVertex;
 import edu.kit.student.objectproperty.GAnsProperty;
+import edu.kit.student.util.DoublePoint;
 import javafx.geometry.Bounds;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.PathElement;
-import javafx.util.Pair;
 
 /**
  * The GraphViewGraphFactory generates the visual representation of a given
@@ -110,10 +110,10 @@ public class GraphViewGraphFactory {
 	 * @param text The text which size the vertex depends on.
 	 * @return A Pair of width and height of the vertex.
 	 */
-	public static Pair<Double, Double> getSizeOfVertex(String text) {
+	public static DoublePoint getSizeOfVertex(String text) {
 		VertexShape shape = new VertexShape();
 		shape.setText(text);
-		Pair<Double, Double> pair = new Pair<Double, Double>(shape.getWidth(), shape.getHeight());
+		DoublePoint pair = new DoublePoint(shape.getWidth(), shape.getHeight());
 		return pair;
 	}
 	

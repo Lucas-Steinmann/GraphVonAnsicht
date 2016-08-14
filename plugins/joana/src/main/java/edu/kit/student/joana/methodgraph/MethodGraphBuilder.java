@@ -1,5 +1,8 @@
 package edu.kit.student.joana.methodgraph;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import edu.kit.student.graphmodel.builder.IEdgeBuilder;
 import edu.kit.student.graphmodel.builder.IGraphBuilder;
 import edu.kit.student.graphmodel.builder.IVertexBuilder;
@@ -8,9 +11,6 @@ import edu.kit.student.joana.JoanaEdgeBuilder;
 import edu.kit.student.joana.JoanaVertex;
 import edu.kit.student.joana.JoanaVertex.VertexKind;
 import edu.kit.student.joana.JoanaVertexBuilder;
-
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * The MethodGraphBuilder is a {@link IGraphBuilder}, specifically for building

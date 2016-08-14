@@ -1,6 +1,7 @@
 package edu.kit.student.joana;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import edu.kit.student.graphmodel.GraphModel;
@@ -14,8 +15,19 @@ import edu.kit.student.joana.methodgraph.MethodGraph;
  */
 public class JoanaGraphModel extends GraphModel {
 
-	private List<MethodGraph> methodgraphs;
+    /**
+     * The CallGraph of this GraphModel. All further information can be retrieved from this Graph (e.g. MethodGraphs).
+     */
 	private CallGraph callgraph;
+	
+	/**
+	 * Constructs a new JoanaGraphModel with the specified callgraph and the specified MethodGraphs
+	 * @param callgraph
+	 * @param methdoGraphs
+	 */
+	public JoanaGraphModel(CallGraph callgraph) {
+	    this.setCallGraph(callgraph);
+	}
 
 	/**
 	 * Returns all {@link MethodGraph} contained in the JoanaGraphModel.
@@ -24,18 +36,7 @@ public class JoanaGraphModel extends GraphModel {
 	 *         JoanaGraphModel.
 	 */
 	public List<MethodGraph> getMethodGraphs() {
-		return methodgraphs;
-	}
-
-	/**
-	 * Sets the {@link MethodGraph} objects in the JoanaGraphModel.
-	 * 
-	 * @param methodgraphs
-	 *            The {@link MethodGraph} objects that will be set in the
-	 *            JoanaGraphModel.
-	 */
-	public void setMethodGraphs(List<MethodGraph> methodgraphs) {
-		this.methodgraphs = methodgraphs;
+		return callgraph.getMethodgraphs();
 	}
 
 	/**
@@ -54,7 +55,7 @@ public class JoanaGraphModel extends GraphModel {
 	 * @param callgraph
 	 *            The {@link CallGraph} that will be set in the JoanaGraphModel.
 	 */
-	public void setCallGraph(CallGraph callgraph) {
+	private void setCallGraph(CallGraph callgraph) {
 		this.callgraph = callgraph;
 	}
 
@@ -64,24 +65,34 @@ public class JoanaGraphModel extends GraphModel {
 		root.add(this.callgraph);
 		return root;
 	}
-
+	
 	@Override
 	public ViewableGraph getGraphFromId(Integer id) {
-		return this.getGraphFromId(getRootGraphs(), id);
-	}
-	
-	private ViewableGraph getGraphFromId(List<? extends ViewableGraph> graphs, Integer id) {
-		for (ViewableGraph graph : graphs) {
+	    if (id.equals(getCallGraph().getID())) {
+	        return this.getCallGraph();
+	    }
+		for (ViewableGraph graph : this.getMethodGraphs()) {
 			if (graph.getID().compareTo(id) == 0) {
 				return graph;
 			}
-
-			ViewableGraph tmp = getGraphFromId(graph.getChildGraphs(), id);
-			if (tmp != null) {
-				return tmp;
-			}
 		}
-
 		return null;
 	}
+
+    @Override
+    public ViewableGraph getParentGraph(ViewableGraph graph) {
+        if (getMethodGraphs().contains(graph)) {
+            return callgraph;
+        } else {
+            return null;
+        }
+    }
+
+    @Override
+    public List<MethodGraph> getChildGraphs(ViewableGraph graph) {
+        if (graph.equals(callgraph)) {
+            return this.getMethodGraphs();
+        }
+        return new LinkedList<>();
+    }
 }

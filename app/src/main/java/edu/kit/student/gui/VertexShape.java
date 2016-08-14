@@ -1,10 +1,10 @@
 package edu.kit.student.gui;
 
 import edu.kit.student.graphmodel.Vertex;
+import edu.kit.student.util.DoublePoint;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
-import javafx.util.Pair;
 
 /**
  * A visual representation of a vertex with a text inside of it.
@@ -36,9 +36,9 @@ public class VertexShape extends GAnsGraphElement {
 	 * @param vertex The vertex that will be represented.
 	 */
 	public VertexShape(Vertex vertex) {
-		Pair<Double,Double> size = vertex.getSize();
+		DoublePoint size = vertex.getSize();
 		
-		this.rectangle = new Rectangle(size.getKey(), size.getValue());
+		this.rectangle = new Rectangle(size.x, size.y);
 		
 //		Text tmp = new Text(vertex.getLabel());
 //		if(tmp.getLayoutBounds().getWidth() + Settings.leftRightMargin > size.getKey()) {

@@ -1,10 +1,10 @@
 package edu.kit.student.gui;
 
 import edu.kit.student.graphmodel.ViewableVertex;
+import edu.kit.student.util.DoublePoint;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
-import javafx.util.Pair;
 
 public class BackgroundShape extends GAnsGraphElement {
 	
@@ -13,8 +13,8 @@ public class BackgroundShape extends GAnsGraphElement {
 	private Color color;
 	
 	public BackgroundShape(ViewableVertex vertex) {
-		Pair<Double,Double> size = vertex.getSize();
-		this.rectangle = new Rectangle(size.getKey(),size.getValue(), vertex.getColor());
+		DoublePoint size = vertex.getSize();
+		this.rectangle = new Rectangle(size.x, size.y, vertex.getColor());
 		this.text = new Text(vertex.getLabel());
 		this.color = vertex.getColor();
 	}

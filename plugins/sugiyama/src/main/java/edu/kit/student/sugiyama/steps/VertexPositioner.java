@@ -106,8 +106,8 @@ public class VertexPositioner implements IVertexPositioner {
 
 		for (Vertex vertex : graph.getVertexSet()) {
 			logger.debug(vertex.getSize().toString());
-			horizontalWidth[vertex.getX()] = Math.max(horizontalWidth[vertex.getX()], Math.round(vertex.getSize().getKey().floatValue()));
-			verticalHeight[vertex.getY()] = Math.max(verticalHeight[vertex.getY()], Math.round(vertex.getSize().getValue().floatValue()));
+			horizontalWidth[vertex.getX()] = Math.max(horizontalWidth[vertex.getX()], Math.round((float) vertex.getSize().x));
+			verticalHeight[vertex.getY()] = Math.max(verticalHeight[vertex.getY()], Math.round((float) vertex.getSize().y));
 		}
 
 		horizontalOffset[0] = 0;
