@@ -10,6 +10,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import edu.kit.student.graphmodel.EdgePath;
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.joana.FieldAccess;
@@ -24,10 +27,6 @@ import edu.kit.student.sugiyama.RelativeLayerConstraint;
 import edu.kit.student.sugiyama.SugiyamaLayoutAlgorithm;
 import edu.kit.student.sugiyama.steps.LayerAssigner;
 import edu.kit.student.util.DoublePoint;
-import javafx.util.Pair;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Implements hierarchical layout with layers for {@link MethodGraph}.
@@ -136,7 +135,7 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 		EdgePath path = e.getPath();
 		List<DoublePoint> points = path.getNodes();
 		double boxYtop = fa.getY();
-		double boxYbottom = fa.getY() + fa.getSize().getValue();
+		double boxYbottom = fa.getY() + fa.getSize().y;
 		assert(dEquals(points.get(0).y, boxYbottom) ^ dEquals(points.get(points.size() - 1).y, boxYtop));
 		List<DoublePoint> temp = new LinkedList<>();	//new points, always from top to bottom. Inserting to original edgepath later in if-else-statement!
 
@@ -172,9 +171,9 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 			}
 		}
 		System.out.println("from out edges: "+fromOutEdges.size());
-		System.out.println("box pos: "+fa.getX()+","+fa.getY()+" size: "+fa.getSize().getKey()+","+fa.getSize().getValue());
+		System.out.println("box pos: "+fa.getX()+","+fa.getY()+" size: "+fa.getSize().x+","+fa.getSize().y);
 		for(JoanaVertex v : faVertices){
-			System.out.println("vertex pos: "+v.getX()+","+v.getY()+" size: "+v.getSize().getKey()+","+v.getSize().getValue());
+			System.out.println("vertex pos: "+v.getX()+","+v.getY()+" size: "+v.getSize().x+","+v.getSize().y);
 		}
 		return fromOutEdges;
 	}
@@ -186,7 +185,7 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 	private Set<JoanaEdge> getTurnedEdges(FieldAccess fa, Set<JoanaEdge> fromOut){
 		Set<JoanaEdge> turnedEdges = new HashSet<JoanaEdge>();
 		double boxYtop = fa.getY();
-		double boxYbottom = fa.getY() + fa.getSize().getValue();
+		double boxYbottom = fa.getY() + fa.getSize().y;
 		for(JoanaEdge e : fromOut){
 			List<DoublePoint> points = e.getPath().getNodes();
 			if(dEquals(points.get(0).y, boxYtop) ^ dEquals(points.get(points.size() - 1).y, boxYbottom)){

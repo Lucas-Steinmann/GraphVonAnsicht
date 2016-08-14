@@ -1,15 +1,28 @@
 package edu.kit.student.sugiyama.graph;
 
-import edu.kit.student.graphmodel.*;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Vector;
+
+import edu.kit.student.graphmodel.DefaultGraphLayering;
+import edu.kit.student.graphmodel.DefaultVertex;
+import edu.kit.student.graphmodel.EdgeArrow;
+import edu.kit.student.graphmodel.EdgePath;
+import edu.kit.student.graphmodel.FastGraphAccessor;
+import edu.kit.student.graphmodel.OrthogonalEdgePath;
+import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
 import edu.kit.student.graphmodel.directed.DirectedEdge;
 import edu.kit.student.graphmodel.directed.DirectedGraph;
 import edu.kit.student.objectproperty.GAnsProperty;
+import edu.kit.student.util.DoublePoint;
 import edu.kit.student.util.IntegerPoint;
 import javafx.scene.paint.Color;
-import javafx.util.Pair;
-
-import java.util.*;
 
 
 /**
@@ -582,7 +595,7 @@ public class SugiyamaGraph
 		}
 
 		@Override
-		public Pair<Double, Double> getSize() {
+		public DoublePoint getSize() {
 			return this.vertex.getSize();
 		}
 

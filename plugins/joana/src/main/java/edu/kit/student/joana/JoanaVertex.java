@@ -5,8 +5,8 @@ import java.util.List;
 import edu.kit.student.graphmodel.DefaultVertex;
 import edu.kit.student.graphmodel.ViewableVertex;
 import edu.kit.student.objectproperty.GAnsProperty;
+import edu.kit.student.util.DoublePoint;
 import javafx.scene.paint.Color;
-import javafx.util.Pair;
 
 /**
  * A Joana specific Vertex. It contains parameters which are only used/useful
@@ -25,7 +25,7 @@ public class JoanaVertex extends DefaultVertex implements ViewableVertex {
     private GAnsProperty<Integer> nodeEr;
     private GAnsProperty<Integer> nodeEc;
     
-    private Pair<Double, Double> setSize;
+    private DoublePoint setSize;
     private boolean sizeSet;
     
     /**
@@ -189,7 +189,7 @@ public class JoanaVertex extends DefaultVertex implements ViewableVertex {
     }
     
 	@Override
-	public Pair<Double, Double> getSize() {
+	public DoublePoint getSize() {
 		// TODO: calculating size with different max/min values depending on KIND
 		if(this.sizeSet){
 			return this.setSize;
@@ -247,7 +247,7 @@ public class JoanaVertex extends DefaultVertex implements ViewableVertex {
         return -1;
     }
     
-    public void setSize(Pair<Double, Double> newSize){
+    public void setSize(DoublePoint newSize){
     	this.setSize = newSize;
     	this.sizeSet = true;
     }
