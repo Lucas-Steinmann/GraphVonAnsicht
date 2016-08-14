@@ -229,7 +229,7 @@ public class JoanaVertex extends DefaultVertex implements ViewableVertex {
         	case SYNC: return Color.web("0xFFC125");
         	case FOLD: return Color.BROWN;
         	case SUMMARY: return Color.BROWN;
-        	case FIELDACCESS: return Color.CYAN;	//TODO: maybe something else
+        	case FIELDACCESS: return Color.LIGHTGREEN;
         	default: return Color.BEIGE;
         	}
         }

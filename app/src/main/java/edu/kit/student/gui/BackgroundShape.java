@@ -17,6 +17,10 @@ public class BackgroundShape extends GAnsGraphElement {
 		this.rectangle = new Rectangle(size.x, size.y, vertex.getColor());
 		this.text = new Text(vertex.getLabel());
 		this.color = vertex.getColor();
+		
+		getChildren().addAll(rectangle, text);
+		
+		relocate(vertex.getX(), vertex.getY());
 	}
 
 	@Override
