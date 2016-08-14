@@ -1,5 +1,6 @@
 package edu.kit.student.joana.methodgraph;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -24,8 +25,6 @@ import edu.kit.student.sugiyama.RelativeLayerConstraint;
 import edu.kit.student.sugiyama.SugiyamaLayoutAlgorithm;
 import edu.kit.student.sugiyama.steps.LayerAssigner;
 import edu.kit.student.util.DoublePoint;
-import javafx.util.Pair;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -146,8 +145,8 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 			JoanaVertex source = e.getSource();
 			JoanaVertex target = e.getTarget();
 			// find correct points and correct positions of points (top or bottom) and add them to mapping!
-			assert(dEquals(source.getY(), points.get(0).y) || dEquals(source.getY() + source.getSize().getKey(), points.get(0).y));
-			assert(dEquals(target.getY(), points.get(points.size() - 1).y) || dEquals(target.getY() + target.getSize().getKey(), points.get(points.size() - 1).y));
+			assert(dEquals(source.getY(), points.get(0).y) || dEquals(source.getY() + source.getSize().x, points.get(0).y));
+			assert(dEquals(target.getY(), points.get(points.size() - 1).y) || dEquals(target.getY() + target.getSize().x, points.get(points.size() - 1).y));
 			if(dEquals(source.getY(), points.get(0).y)){
 				idToLists.get(source.getID()).get(0).add(points.get(0));
 			}else{
@@ -167,10 +166,10 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 		//count differernt layers (not where vertices are, between them!)
 		List<Double> temp = new LinkedList<>();
 		temp.add((double)fa.getY());
-		temp.add(fa.getY() + fa.getSize().getValue());
+		temp.add(fa.getY() + fa.getSize().y);
 		for(JoanaVertex v : fa.getGraph().getVertexSet()){
 			temp.add((double)v.getY());
-			temp.add(v.getY() + v.getSize().getValue());
+			temp.add(v.getY() + v.getSize().y);
 		}
 		double[] result = new double[temp.size()/2];
 		for(int i = 0; i < temp.size()/2; i++){
@@ -182,13 +181,13 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 	//amount of layers is the amount of spaces between two vertices with a different y-coordinate and laying nearby each other
 	private int[] getNewEdgesPerLayer(FieldAccess fa, Set<JoanaEdge> fromOutEdges){
 		double boxYtop = fa.getY();
-		double boxYbottom = fa.getY() + fa.getSize().getValue();
+		double boxYbottom = fa.getY() + fa.getSize().y;
 		List<Double> temp = new LinkedList<>();
 		temp.add((double)fa.getY());
-		temp.add(fa.getY() + fa.getSize().getValue());
+		temp.add(fa.getY() + fa.getSize().y);
 		for(JoanaVertex v : fa.getGraph().getVertexSet()){
 			temp.add((double)v.getY());
-			temp.add(v.getY() + v.getSize().getValue());
+			temp.add(v.getY() + v.getSize().y);
 		}
 		int[] result = new int[temp.size()/2];
 		temp.sort((p1,p2)->Double.compare(p1,p2));
@@ -208,7 +207,7 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 					}
 				}
 			}else if(dEquals(points.get(0).y, boxYbottom)){
-				start = (double) (e.getSource().getY() < e.getTarget().getY() ? e.getSource().getY() + e.getSource().getSize().getValue() : e.getTarget().getY() + e.getTarget().getSize().getValue());
+				start = (double) (e.getSource().getY() < e.getTarget().getY() ? e.getSource().getY() + e.getSource().getSize().y : e.getTarget().getY() + e.getTarget().getSize().y);
 				end = points.get(0).y;
 				int i =0;
 				for(Double d : temp){	//count amount of edges on layer between start and end. start is in the FieldAccess, end at the bottom of the box.
