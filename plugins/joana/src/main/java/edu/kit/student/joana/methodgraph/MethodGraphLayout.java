@@ -1,5 +1,6 @@
 package edu.kit.student.joana.methodgraph;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -120,14 +121,123 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 	//method responsible for drawing every edge from out or inside the fieldAccess new
 	//calls other private methods 
 	private void drawFieldAccessEdges(MethodGraph graph, FieldAccess fa){
-		//TODO: draw here every! edge in the FieldAccess new. beginning from the point going to the top or bottom of the representing vertex
-		Set<JoanaEdge> fromOutEdges = this.getEdgesFromOut(graph, fa);	//edges from out in representing vertex
+		//TODO: draw here every? edge in the FieldAccess new. beginning from the point going to the top or bottom of the representing vertex
+		Set<JoanaEdge> fromOutEdges = this.getEdgesFromOutside(graph, fa);	//edges from out in representing vertex
 		Set<JoanaEdge> turnedEdges = this.getTurnedEdges(fa, fromOutEdges);	//turned edges so on top are just incoming and on bottom just outgoing
 		Set<JoanaEdge> notTurned = fromOutEdges.stream().filter(e->!turnedEdges.contains(e)).collect(Collectors.toSet());	//not turned edges
 		
 		turnedEdges.forEach(edge->drawEdge(fa,edge));
 		notTurned.forEach(edge->drawEdge(fa,edge));
 		turnedEdges.forEach(edge->Collections.reverse(edge.getPath().getNodes()));
+	}
+	
+	//first list points on top of vertex, second list on its bottom. (lists are sorted from left to right)
+	private Map<Integer, List<List<DoublePoint>>> getIdToInOutPoints(FieldAccess fa){
+		Map<Integer, List<List<DoublePoint>>> idToLists = new HashMap<>();
+		for(JoanaVertex v : fa.getGraph().getVertexSet()){
+				List<DoublePoint> in = new LinkedList<>();
+				List<DoublePoint> out = new LinkedList<>();
+				List<List<DoublePoint>> listlist = new ArrayList<>(2);
+				listlist.add(in);
+				listlist.add(out);
+				idToLists.put(v.getID(), listlist);
+		}
+		for(JoanaEdge e : fa.getGraph().getEdgeSet()){
+			List<DoublePoint> points = e.getPath().getNodes();
+			JoanaVertex source = e.getSource();
+			JoanaVertex target = e.getTarget();
+			// find correct points and correct positions of points (top or bottom) and add them to mapping!
+			assert(dEquals(source.getY(), points.get(0).y) || dEquals(source.getY() + source.getSize().getKey(), points.get(0).y));
+			assert(dEquals(target.getY(), points.get(points.size() - 1).y) || dEquals(target.getY() + target.getSize().getKey(), points.get(points.size() - 1).y));
+			if(dEquals(source.getY(), points.get(0).y)){
+				idToLists.get(source.getID()).get(0).add(points.get(0));
+			}else{
+				idToLists.get(source.getID()).get(1).add(points.get(0));
+			}
+			if(dEquals(target.getY(), points.get(points.size() - 1).y)){
+				idToLists.get(target.getID()).get(0).add(points.get(points.size() - 1));
+			}else{
+				idToLists.get(target.getID()).get(1).add(points.get(points.size() - 1));
+			}
+			
+		}
+		return idToLists;
+	}
+
+	private double[] getSpaceBetweenLayers(FieldAccess fa){
+		//count differernt layers (not where vertices are, between them!)
+		List<Double> temp = new LinkedList<>();
+		temp.add((double)fa.getY());
+		temp.add(fa.getY() + fa.getSize().getValue());
+		for(JoanaVertex v : fa.getGraph().getVertexSet()){
+			temp.add((double)v.getY());
+			temp.add(v.getY() + v.getSize().getValue());
+		}
+		double[] result = new double[temp.size()/2];
+		for(int i = 0; i < temp.size()/2; i++){
+			result[i] = temp.get(2*i + 1) - temp.get(2*i);
+		}
+		return result;
+	}
+	
+	//amount of layers is the amount of spaces between two vertices with a different y-coordinate and laying nearby each other
+	private int[] getNewEdgesPerLayer(FieldAccess fa, Set<JoanaEdge> fromOutEdges){
+		double boxYtop = fa.getY();
+		double boxYbottom = fa.getY() + fa.getSize().getValue();
+		List<Double> temp = new LinkedList<>();
+		temp.add((double)fa.getY());
+		temp.add(fa.getY() + fa.getSize().getValue());
+		for(JoanaVertex v : fa.getGraph().getVertexSet()){
+			temp.add((double)v.getY());
+			temp.add(v.getY() + v.getSize().getValue());
+		}
+		int[] result = new int[temp.size()/2];
+		temp.sort((p1,p2)->Double.compare(p1,p2));
+		for(JoanaEdge e : fromOutEdges){
+			List<DoublePoint> points = e.getPath().getNodes();
+			Double start = null, end = null;
+			if(dEquals(points.get(points.size() - 1).y, boxYtop)){
+				start = points.get(points.size() - 1).y;
+				end = (double) (e.getTarget().getY() > e.getSource().getY() ? e.getTarget().getY() : e.getSource().getY());
+				int i =0;
+				for(Double d : temp){	//count amount of edges on layer between start and end. start is on top of the box, end in the FieldAccess.
+					if(d < end || dEquals(end, d)){
+						i++;
+					} else{break;}
+					if(i % 2 == 0){
+						result[i/2 - 1]++;
+					}
+				}
+			}else if(dEquals(points.get(0).y, boxYbottom)){
+				start = (double) (e.getSource().getY() < e.getTarget().getY() ? e.getSource().getY() + e.getSource().getSize().getValue() : e.getTarget().getY() + e.getTarget().getSize().getValue());
+				end = points.get(0).y;
+				int i =0;
+				for(Double d : temp){	//count amount of edges on layer between start and end. start is in the FieldAccess, end at the bottom of the box.
+					if(d < start){
+						i++;
+						continue;
+					}
+					if(d < end || dEquals(end, d)){
+						i++;
+					} else{break;}
+					if(i % 2 == 0){
+						result[i/2 - 1]++;
+					}
+				}
+			}else {assert(false);}
+			
+		}
+		return result;
+	}
+	
+	private double[] getDistancePerEdgeInLayer(double[] spaceBetweenLayers, int[] newEdgesPerLayer){
+		assert(spaceBetweenLayers.length == newEdgesPerLayer.length);
+		int length = spaceBetweenLayers.length;
+		double[] result = new double[length];
+		for(int i = 0; i < length; i++){
+			result[i] = spaceBetweenLayers[i] / newEdgesPerLayer[i];
+		}
+		return result;
 	}
 	
 	private void drawEdge(FieldAccess fa, JoanaEdge e){
@@ -160,7 +270,7 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 		}
 	}
 	
-	private Set<JoanaEdge> getEdgesFromOut(MethodGraph graph, FieldAccess fa){
+	private Set<JoanaEdge> getEdgesFromOutside(MethodGraph graph, FieldAccess fa){
 		Set<JoanaEdge> fromOutEdges = new HashSet<>();
 		Set<JoanaEdge> graphEdges = graph.getEdgeSet();
 		Set<JoanaVertex> graphVertices = graph.getVertexSet();
@@ -171,11 +281,7 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 				fromOutEdges.add(e);
 			}
 		}
-		System.out.println("from out edges: "+fromOutEdges.size());
-		System.out.println("box pos: "+fa.getX()+","+fa.getY()+" size: "+fa.getSize().getKey()+","+fa.getSize().getValue());
-		for(JoanaVertex v : faVertices){
-			System.out.println("vertex pos: "+v.getX()+","+v.getY()+" size: "+v.getSize().getKey()+","+v.getSize().getValue());
-		}
+		System.out.println("faVertices: "+faVertices.size()+", faEdges: "+fa.getGraph().getEdgeSet().size()+", from out edges: "+fromOutEdges.size());
 		return fromOutEdges;
 	}
 	
@@ -278,7 +384,6 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
     }
     
     private boolean dEquals(double a, double b){
-    	System.out.println("comparing "+a+" with "+b);
 		return Math.abs(a-b) < Math.pow(10, -6);
 	}
 
