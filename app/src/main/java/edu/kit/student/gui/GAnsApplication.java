@@ -34,9 +34,7 @@ import javafx.collections.SetChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
-import javafx.geometry.Bounds;
 import javafx.geometry.Orientation;
-import javafx.scene.Group;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
@@ -45,14 +43,12 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
-import javafx.scene.control.ScrollPane;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
-import javafx.scene.layout.Pane;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -131,14 +127,10 @@ public class GAnsApplication {
 		graphViewTabPane.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>() {
 			@Override
 			public void changed(ObservableValue<? extends Tab> observable, Tab oldValue, Tab newValue) {
-				//TODO: Bad :D
 				if(newValue == null) {
 					GAnsApplication.this.currentGraphView = null;
 				} else {
-					ScrollPane scrollPane = ((ScrollPane) newValue.getContent());
-					Pane pane = (Pane) scrollPane.getContent();
-					Group group = ((Group) pane.getChildren().get(pane.getChildren().size() - 1));
-					GAnsApplication.this.currentGraphView = ((GraphView) group.getChildren().get(group.getChildren().size() - 1));
+					GAnsApplication.this.currentGraphView = ((GraphViewTab) newValue).getGraphViewPanes().getGraphView();
 				}
 			}
 		});
@@ -346,30 +338,14 @@ public class GAnsApplication {
 	}
 	
 	private void createGraphView() {
-		Group group = new Group();
 		GraphView graphView = new GraphView(this.mediator);
-
-		group.getChildren().add(graphView);
-		//the pane that can be moved with the cursor
-		Pane outerPane = new Pane(group);
-		outerPane.setPrefSize(graphViewTabPane.getWidth(), graphViewTabPane.getHeight());
-		graphView.boundsInParentProperty().addListener(new ChangeListener<Bounds>() {
-
-            @Override
-            public void changed(ObservableValue<? extends Bounds> observable, Bounds oldValue, Bounds newValue) {
-                outerPane.setPrefSize(newValue.getWidth(), newValue.getHeight());
-                
-            }
-        });
 		
-		ScrollPane scrollPane = new ScrollPane(outerPane);
-		scrollPane.setPrefSize(graphViewTabPane.getWidth(), graphViewTabPane.getHeight());
+		GraphViewPanes graphViewPanes = new GraphViewPanes(graphView);
 		
-		GraphViewSelectionModel selectionModel = new GraphViewSelectionModel(outerPane, graphView);
+		GraphViewSelectionModel selectionModel = new GraphViewSelectionModel(graphViewPanes);
 		graphView.setSelectionModel(selectionModel);
 
-		Tab tab = new Tab();
-		tab.setContent(scrollPane);
+		GraphViewTab tab = new GraphViewTab(graphViewPanes);
 		graphViewTabPane.getTabs().add(tab);
 		graphViewTabPane.getSelectionModel().select(tab);
 		

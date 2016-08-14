@@ -35,11 +35,11 @@ public class GraphViewSelectionModel {
 
     final Logger logger = LoggerFactory.getLogger(GraphViewSelectionModel.class);
 	private ObservableSet<VertexShape> selection;
-	private RubberBandSelection rubberband;
+	private SceneGesturesAndSelection rubberband;
 
-	public GraphViewSelectionModel(Pane outerPane, GraphView view) {
+	public GraphViewSelectionModel(GraphViewPanes viewPanes) {
 		selection = FXCollections.observableSet(new HashSet<VertexShape>());
-		rubberband = new RubberBandSelection(outerPane, view);
+		rubberband = new SceneGesturesAndSelection(viewPanes);
 	}
 
 	public void add(VertexShape node) {
@@ -84,16 +84,18 @@ public class GraphViewSelectionModel {
 		rubberband.setContextMenu(menu);
 	}
 
-	private class RubberBandSelection {
+	private class SceneGesturesAndSelection {
 		final DragContext dragContext = new DragContext();
-		Rectangle rect;
-		Pane outerPane;
-		GraphView view;
-		ContextMenu menu;
+		private Rectangle rect;
+		private GraphViewPanes viewPanes;
+		private Pane outerPane;
+		private GraphView view;
+		private ContextMenu menu;
 
-		public RubberBandSelection(Pane outerPane, GraphView view) {
-			this.outerPane = outerPane;
-			this.view = view;
+		public SceneGesturesAndSelection(GraphViewPanes viewPanes) {
+			this.viewPanes = viewPanes;
+			this.outerPane = viewPanes.getOuterPane();
+			this.view = viewPanes.getGraphView();
 
 			rect = new Rectangle(0, 0, 0, 0);
 			rect.setStroke(Color.BLUE);
@@ -127,8 +129,8 @@ public class GraphViewSelectionModel {
 					outerPane.getChildren().add(rect);
 				} else if(event.getButton() == MouseButton.SECONDARY) {
 					if(event.isControlDown()) {
-						dragContext.translateAnchorX = view.getTranslateX();
-						dragContext.translateAnchorY = view.getTranslateY();
+						dragContext.translateAnchorX = viewPanes.getInnerPane().getTranslateX();
+						dragContext.translateAnchorY = viewPanes.getInnerPane().getTranslateY();
 					}
 				}
 
@@ -160,8 +162,8 @@ public class GraphViewSelectionModel {
 				//Moving the view
 				} else if(event.getButton() == MouseButton.SECONDARY) { 
 					if(event.isControlDown()) {
-						view.setTranslateX(dragContext.translateAnchorX + event.getX() - dragContext.mouseAnchorX);
-						view.setTranslateY(dragContext.translateAnchorY + event.getY() - dragContext.mouseAnchorY);
+						viewPanes.getInnerPane().setTranslateX(dragContext.translateAnchorX + event.getX() - dragContext.mouseAnchorX);
+						viewPanes.getInnerPane().setTranslateY(dragContext.translateAnchorY + event.getY() - dragContext.mouseAnchorY);
 					}
 				}
 
@@ -216,7 +218,7 @@ public class GraphViewSelectionModel {
 								GraphViewSelectionModel.this.clear();
 								GraphViewSelectionModel.this.addAll(selection);
 							}
-							menu.show(outerPane, event.getScreenX(),event.getScreenY());
+							menu.show(viewPanes.getInnerPane(), event.getScreenX(),event.getScreenY());
 						} 
 					}
 					
@@ -231,30 +233,37 @@ public class GraphViewSelectionModel {
 		EventHandler<ScrollEvent> onScrollEventHandler = new EventHandler<ScrollEvent>() {
 			@Override
 			public void handle(ScrollEvent event) {
-				//Enable Scrolling
 				if(event.isControlDown()) { 
+					//Enable Zooming
 					menu.hide();
-					double delta = 1.2;
-					double scale = view.getScale(); // currently we only use Y, same
-														// value is used for X
-					double oldScale = scale;
+					double delta = 1.2d;
 
-					if (event.getDeltaY() < 0)
-						scale /= delta;
-					else
-						scale *= delta;
+	                double scale = viewPanes.getScale(); // currently we only use Y, same value is used for X
+	                double oldScale = scale;
 
-					scale = clamp(scale, MIN_SCALE, MAX_SCALE);
+	                viewPanes.setDeltaY(event.getDeltaY()); 
+	                if (viewPanes.getDeltaY() < 0) {
+	                    scale /= delta;
+	                } else {
+	                    scale *= delta;
+	                }
 
-					double f = (scale / oldScale) - 1;
-					double dx = (event.getSceneX()
-							- (view.getBoundsInParent().getWidth() / 2 + view.getBoundsInParent().getMinX()));
-					double dy = (event.getSceneY()
-							- (view.getBoundsInParent().getHeight() / 2 + view.getBoundsInParent().getMinY()));
+	                scale = clamp(scale, MIN_SCALE, MAX_SCALE);
+	                
+	                double f = (scale / oldScale) - 1;
 
-					view.setScale(scale);
-					// note: pivot value must be untransformed, i. e. without scaling
-					view.setPivot(f * dx, f * dy);
+	                double dx = (event.getX() - (viewPanes.getInnerPane().getBoundsInParent().getWidth() / 2 + 
+	                		viewPanes.getInnerPane().getBoundsInParent().getMinX()));
+	                double dy = (event.getY() - (viewPanes.getInnerPane().getBoundsInParent().getHeight() / 2 + 
+	                		viewPanes.getInnerPane().getBoundsInParent().getMinY()));
+
+	                viewPanes.setPivot(f * dx, f * dy, scale);
+				} else { 
+					//Scrolling the scrollpane if ctrl is not pressed
+					if (event.getDeltaY() > 0)
+						viewPanes.getScrollPane().setVvalue(viewPanes.getScrollPane().getVvalue() - 0.1);
+	                else
+	                	viewPanes.getScrollPane().setVvalue(viewPanes.getScrollPane().getVvalue() + 0.1);
 				}
 				
 				event.consume();
@@ -266,10 +275,12 @@ public class GraphViewSelectionModel {
 			Set<VertexShape> shapes = new HashSet<VertexShape>();
 			for(VertexShape shape : view.getFactory().getVertexShapes()) {
 				//mapping the position inside of the graphView to the relative position in the outerPane
-				double x = (shape.getBoundsInParent().getMinX() * view.getScale()) + view.getBoundsInParent().getMinX();
-				double y = (shape.getBoundsInParent().getMinY() * view.getScale()) + view.getBoundsInParent().getMinY();
-				double w = shape.getBoundsInParent().getWidth() * view.getScale();
-				double h = shape.getBoundsInParent().getHeight() * view.getScale();
+				double x = (shape.getBoundsInParent().getMinX() * viewPanes.getScale()) + 
+						viewPanes.getInnerPane().getBoundsInParent().getMinX();
+				double y = (shape.getBoundsInParent().getMinY() * viewPanes.getScale()) + 
+						viewPanes.getInnerPane().getBoundsInParent().getMinY();
+				double w = shape.getBoundsInParent().getWidth() * viewPanes.getScale();
+				double h = shape.getBoundsInParent().getHeight() * viewPanes.getScale();
 				BoundingBox shapeBounds = new BoundingBox(x,y,w,h);
 				
 				if(shapeBounds.intersects(bound)) {
