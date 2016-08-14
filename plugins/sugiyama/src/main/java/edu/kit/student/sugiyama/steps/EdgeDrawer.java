@@ -461,7 +461,7 @@ public class EdgeDrawer implements IEdgeDrawer {
 			}
 		}
 		
-		double newY = target.getLayer() < graph.getLayerCount() - 1 ? this.graph.getLayers().get(target.getLayer() + 1).get(0).getY() - edgeKinkY : projected.y + target.getSize().getValue() + edgeKinkY;
+		double newY = target.getLayer() + 1 < graph.getLayerCount() ? this.graph.getLayers().get(target.getLayer() + 1).get(0).getY() - edgeKinkY : projected.y + target.getSize().getValue() + edgeKinkY;
 		DoublePoint t1 = new DoublePoint(sPoint.x, newY);
 		DoublePoint t2 = new DoublePoint(projected.x, newY);
 //		assert(this.points.add(t1));
