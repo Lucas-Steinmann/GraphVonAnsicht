@@ -136,6 +136,10 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 		}
 	}
 	
+	private void drawFieldAccessEdges(FieldAccess fa){
+		//TODO: draw here every! edge in the FieldAccess new. beginning from the point going to the top or bottom of the representing vertex
+	}
+	
 	private void expandFieldAccesses(MethodGraph graph) {
 
 		// Fill a map from id to edge for all outgoing edges of field accesses to match them later
