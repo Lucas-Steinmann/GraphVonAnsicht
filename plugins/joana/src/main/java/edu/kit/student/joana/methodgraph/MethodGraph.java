@@ -35,9 +35,8 @@ public class MethodGraph extends JoanaGraph {
 
     private static final String ENTRY_NAME = "Entry";
     private JoanaVertex entry;
-    private Set<FieldAccess> fieldAccesses;
+    private Set<FieldAccess> fieldAccesses = new HashSet<>();
     private DefaultDirectedGraph<JoanaVertex, JoanaEdge> graph;
-    private Map<FieldAccess, BackGroundVertex> backGroundVertices;
     
     private GAnsProperty<Integer> fieldAccessCount;
     private Map<JoanaCollapsedVertex, VertexAction> expandActions;
@@ -48,7 +47,6 @@ public class MethodGraph extends JoanaGraph {
             String methodName) {
         super(methodName, vertices, edges);
         this.graph = new DefaultDirectedGraph<>(vertices, edges);
-        this.backGroundVertices = new HashMap<>();
         for (JoanaVertex vertex : vertices) {
         	if(vertex.getNodeKind() == VertexKind.ENTR) {
         	    this.entry = vertex;
@@ -61,7 +59,6 @@ public class MethodGraph extends JoanaGraph {
         //TODO: Search for method calls etc.
         this.fieldAccesses = this.searchFieldAccesses();
         this.fieldAccessCount = new GAnsProperty<Integer>("Field accesses", this.fieldAccesses.size());
-        fieldAccesses.forEach(fa -> backGroundVertices.put(fa, new BackGroundVertex(fa)));
 
         this.collapser = new FieldAccessCollapser(graph);
         this.expandActions = new HashMap<>();
@@ -163,7 +160,6 @@ public class MethodGraph extends JoanaGraph {
 	        if (fa.getGraph().getVertexSet().stream().allMatch((v) -> graph.contains(v))) {
 	            collapser.collapseFieldAccess(graph, fa);
 	            collapsedFas.add(fa);
-	            backGroundVertices.remove(fa);
 	        }
 	    }
 	    return collapsedFas;
@@ -182,7 +178,6 @@ public class MethodGraph extends JoanaGraph {
 	        if (graph.contains(fa)) {
 	            collapser.expandFieldAccess(graph, fa);
 	            collapsedFas.add(fa);
-	            backGroundVertices.put(fa, new BackGroundVertex(fa));
 	        }
 	    }
 	    return collapsedFas;
@@ -240,7 +235,11 @@ public class MethodGraph extends JoanaGraph {
     @Override
     public Set<JoanaVertex> getVertexSet() {
         Set<JoanaVertex> result = removeFilteredVertices(graph.getVertexSet());
-        result.addAll(backGroundVertices.values());;
+        for (FieldAccess fa : fieldAccesses) {
+            if (fa.getGraph().getVertexSet().stream().allMatch(v -> graph.contains(v))) {
+                result.add(new BackGroundVertex(fa));
+            }
+        }
         return result;
     }
 
