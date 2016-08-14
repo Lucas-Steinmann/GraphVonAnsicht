@@ -263,7 +263,6 @@ public class GAnsApplication {
         }
 		
 	}
-	
 
 	private void importClicked() {
 		List<Importer> importerList = PluginManager.getPluginManager().getImporter();
@@ -284,6 +283,7 @@ public class GAnsApplication {
 			String fileExtension = "*" + fileName.substring(fileName.lastIndexOf('.'));
 			Importer importer = importerList.get(supportedFileExtensions.indexOf(fileExtension));
 			importer.importGraph(workspace.getGraphModelBuilder(), inputStream);
+			this.graphViewTabPane.getTabs().clear();
 			this.model = workspace.getGraphModel();
 			ViewableGraph currentGraph = this.model.getRootGraphs().get(0);
 			openGraph(currentGraph);
