@@ -100,8 +100,8 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 		sugiyamaLayoutAlgorithm.layout(graph);
 		
 		logger.info("Graph after: Vertices: "+graph.getVertexSet().size()+", Edges: "+graph.getEdgeSet().size());
-		expandFieldAccesses(graph);
-		graph.getFieldAccesses().forEach(fa->drawFieldAccessEdges(graph,fa));
+		List<FieldAccess> expandedFas = expandFieldAccesses(graph);
+		expandedFas.forEach(fa->drawFieldAccessEdges(graph,fa));
 	}
 	
 	/**
@@ -308,7 +308,7 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 	}
 	
 	
-	private void expandFieldAccesses(MethodGraph graph) {
+	private List<FieldAccess> expandFieldAccesses(MethodGraph graph) {
 
 		// Fill a map from id to edge for all outgoing edges of field accesses to match them later
 		// with the new edges of the graph to the specific vertices in the field access
@@ -364,6 +364,7 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
                 assert (! first.equals(p));
 		    }
 		}
+		return fas;
 	}
 	
 	
