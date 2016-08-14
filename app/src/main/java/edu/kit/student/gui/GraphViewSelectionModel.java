@@ -160,8 +160,8 @@ public class GraphViewSelectionModel {
 				//Moving the view
 				} else if(event.getButton() == MouseButton.SECONDARY) { 
 					if(event.isControlDown()) {
-						view.setTranslateX(dragContext.translateAnchorX + event.getSceneX() - dragContext.mouseAnchorX);
-						view.setTranslateY(dragContext.translateAnchorY + event.getSceneY() - dragContext.mouseAnchorY);
+						view.setTranslateX(dragContext.translateAnchorX + event.getX() - dragContext.mouseAnchorX);
+						view.setTranslateY(dragContext.translateAnchorY + event.getY() - dragContext.mouseAnchorY);
 					}
 				}
 
@@ -261,6 +261,7 @@ public class GraphViewSelectionModel {
 			}
 		};
 		
+		// Returns the VertexShapes that are intersected by the given bound
 		private Set<VertexShape> intersectedShapes(Bounds bound) {
 			Set<VertexShape> shapes = new HashSet<VertexShape>();
 			for(VertexShape shape : view.getFactory().getVertexShapes()) {
@@ -278,6 +279,7 @@ public class GraphViewSelectionModel {
 			return shapes;
 		}
 		
+		// Clamps the given value between the given min and max
 		private double clamp(double value, double min, double max) {
 			if (Double.compare(value, min) < 0)
 				return min;
@@ -289,15 +291,19 @@ public class GraphViewSelectionModel {
 		}
 
 		private final class DragContext {
+			//Anchor for the mouse position
 			double mouseAnchorX;
 			double mouseAnchorY;
 
+			//Anchor for the translate position of the view
 			double translateAnchorX;
 			double translateAnchorY;
 			
 			@Override
 			public String toString() {
-				return "mouseX: " + mouseAnchorX + " mouseY: " + mouseAnchorY + " translateX: " + translateAnchorX + " translateY: " + translateAnchorY;
+				return "mouseX: " + mouseAnchorX + " mouseY: " + 
+						mouseAnchorY + " translateX: " + translateAnchorX + 
+						" translateY: " + translateAnchorY;
 			}
 		}
 	}
