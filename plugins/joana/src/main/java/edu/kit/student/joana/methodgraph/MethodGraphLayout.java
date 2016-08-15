@@ -433,15 +433,15 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 
 		    // Offset vertices contained in field access
             for(JoanaVertex v : fa.getGraph().getVertexSet()){
-                v.setX(v.getX() + fa.getX() + (int)FieldAccess.padding/2);
-                v.setY(v.getY() + fa.getY() + (int)FieldAccess.padding/2);
+                v.setX(v.getX() + fa.getX() + (int)FieldAccess.paddingx/2);
+                v.setY(v.getY() + fa.getY() + (int)FieldAccess.paddingy/2);
             }
 			for(JoanaEdge e : fa.getGraph().getEdgeSet()){
 				List<DoublePoint> points = e.getPath().getNodes();
 				List<DoublePoint> newPoints = new LinkedList<>();
 				assert(!points.isEmpty());
-				points.forEach(p->newPoints.add(new DoublePoint(p.x + fa.getX() + FieldAccess.padding/2, 
-				                                                p.y + fa.getY() + FieldAccess.padding/2)));
+				points.forEach(p->newPoints.add(new DoublePoint(p.x + fa.getX() + FieldAccess.paddingx/2, 
+				                                                p.y + fa.getY() + FieldAccess.paddingy/2)));
 				points.clear();
 				points.addAll(newPoints);
 			}

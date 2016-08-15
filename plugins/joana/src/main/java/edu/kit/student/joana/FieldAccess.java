@@ -14,7 +14,8 @@ import edu.kit.student.util.DoublePoint;
 public class FieldAccess extends JoanaCompoundVertex {
 
 	private FieldAccessGraph graph;
-	public static double padding = 10;
+	public static double paddingx = 10;
+	public static double paddingy = 50;
 	
     /**
      * Constructor.
@@ -65,7 +66,7 @@ public class FieldAccess extends JoanaCompoundVertex {
 		
 		
 		// set now the new size of the representing vertex appropriated to the layouted FieldAccessGraphs
-		return new DoublePoint(maxX - minX + padding, maxY - minY + padding);	
+		return new DoublePoint(maxX - minX + paddingx, maxY - minY + paddingy);	
     }
     
 }
