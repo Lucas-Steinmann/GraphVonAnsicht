@@ -1,18 +1,14 @@
 package edu.kit.student.sugiyama.steps;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.sugiyama.graph.ISugiyamaVertex;
 import edu.kit.student.sugiyama.graph.IVertexPositionerGraph;
 import edu.kit.student.sugiyama.graph.SugiyamaGraph;
 import edu.kit.student.util.IdGenerator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.*;
 
 /**
  * This class takes a directed graph and position its vertices in order to look more clearly. (e.g. position vertices in a row or column)
@@ -26,11 +22,12 @@ public class VertexPositioner implements IVertexPositioner {
 		logger.info("VertexPositioner.positionVertices():");
 		int maxwidth = graph.getLayers().stream().mapToInt(layer -> layer.size()).max().getAsInt();
 		List<Segment> allsegments = new LinkedList<>();
+		Set<ISugiyamaVertex> addedVertices = new HashSet<>();
 		Map<Integer, List<ISugiyamaVertex>> segmentStarts = new HashMap<>();
 		Map<Vertex, Segment> vertexToSegment = new HashMap<>();
 
-		int[] horizontalWidth = new int[maxwidth*graph.getLayerCount()];
-		int[] horizontalOffset = new int[maxwidth*graph.getLayerCount()];
+		int[] horizontalWidth = new int[maxwidth*graph.getLayerCount()*10];
+		int[] horizontalOffset = new int[maxwidth*graph.getLayerCount()*10];
 		int horizontalSpacing = 2;
 		int[] verticalHeight = new int[graph.getLayerCount()];
 		int[] verticalOffset = new int[graph.getLayerCount()];
@@ -50,6 +47,7 @@ public class VertexPositioner implements IVertexPositioner {
 			}
 		}
 
+		logger.info("adding paths");
 		//add all paths to segments
 		List<SugiyamaGraph.SupplementPath> paths = new LinkedList<>();
 		paths.addAll(graph.getSupplementPaths());
@@ -57,8 +55,22 @@ public class VertexPositioner implements IVertexPositioner {
 		int counter = 0;
 
 		for (SugiyamaGraph.SupplementPath path : paths) {
-			Segment probableNewSegment = new Segment(path.getDummyVertices());
+			logger.debug("adding path + " + path.getReplacedEdge());
+			List<ISugiyamaVertex> vertices = path.getDummyVertices();
+			ISugiyamaVertex source = path.getReplacedEdge().getSource();
+			ISugiyamaVertex target = path.getReplacedEdge().getTarget();
+
+			/*if (!addedVertices.contains(source)) {
+				vertices.add(source);
+			}
+			if (!addedVertices.contains(target)) {
+				vertices.add(target);
+				addedVertices.add(target);
+			}*/
+
+			Segment probableNewSegment = new Segment(vertices);
 			List<Segment> newSegments = probableNewSegment.cutWithSegments(allsegments);
+			logger.debug("cutting path");
 
 			for (Segment segment : newSegments) {
 				for (ISugiyamaVertex vertex : segment.getVertices()) {
@@ -67,18 +79,44 @@ public class VertexPositioner implements IVertexPositioner {
 			}
 
 			//System.out.println("run " + counter++ + " adds " + newSegments.size() + " segments");
-			
+
 			allsegments.addAll(newSegments);
 		}
 
+		logger.info("adding edges");
+		//add all possible edges as segments
+		/*for (ISugiyamaEdge edge : graph.getEdgeSet()) {
+			if (edge.getSource().isDummy() || edge.getTarget().isDummy() || addedVertices.contains(edge.getSource()) || addedVertices.contains(edge.getTarget())) {
+				continue;
+			}
+
+			List<ISugiyamaVertex> vertices = new LinkedList<>();
+			vertices.add(edge.getSource());
+			vertices.add(edge.getTarget());
+			addedVertices.add(edge.getSource());
+			addedVertices.add(edge.getTarget());
+			Segment probableNewSegment = new Segment(vertices);
+			List<Segment> newSegments = probableNewSegment.cutWithSegments(allsegments);
+
+			for (Segment segment : newSegments) {
+				for (ISugiyamaVertex vertex : segment.getVertices()) {
+					vertexToSegment.put(vertex, segment);
+				}
+			}
+
+			allsegments.addAll(newSegments);
+		}*/
+
+		logger.info("adding others");
 		//add all other vertices as segments
 		for (ISugiyamaVertex vertex : graph.getVertexSet()) {
-			if (!vertex.isDummy()) {
+			if (!vertex.isDummy() && !addedVertices.contains(vertex)) {
 				List<ISugiyamaVertex> list = new LinkedList<ISugiyamaVertex>();
 				list.add(vertex);
 				Segment newSegment = new Segment(list);
 				allsegments.add(newSegment);
 				vertexToSegment.put(vertex, newSegment);
+				addedVertices.add(vertex);
 				//System.out.println("rest run " + counter++ + " adds 1 segments");
 			}
 		}
@@ -87,25 +125,43 @@ public class VertexPositioner implements IVertexPositioner {
 		for (Segment segment : allsegments) {
 			segment.align(graph);
 		}
+		for (Segment segment : allsegments) {
+			logger.debug(Integer.toString(segment.getBoundingBox().right - segment.getBoundingBox().left));
+		}
 
 		allsegments.sort((o1, o2) -> (o1.getBoundingBox().left - o2.getBoundingBox().left) * graph.getLayerCount() + (o1.getBoundingBox().top - o2.getBoundingBox().top));
 
-		for (Segment segment : allsegments) {
-			for (Segment other : allsegments) {
-				if (segment.getId() == other.getId()) {
-					continue;
-				}
-				if (segment.intersects(other)) {
-					other.move(1, graph);
+		logger.debug("moving segments");
+		boolean changes = true;
+		int runs = 0;
+		while (changes && runs < 1) {
+			changes = false;
+
+			for (Segment segment : allsegments) {
+				for (Segment other : allsegments) {
+					if (segment.getId() == other.getId()) {
+						continue;
+					}
+					if (segment.intersects(other)) {
+						changes = true;
+						other.move(1, graph);
+					}
 				}
 			}
+
+			runs++;
+		}
+
+		logger.debug("it does it again");
+		for (Segment segment : allsegments) {
+			logger.debug(Integer.toString(segment.getBoundingBox().right - segment.getBoundingBox().left));
 		}
 
 		for (ISugiyamaVertex vertex : graph.getVertexSet()) {
 		}
 
 		for (Vertex vertex : graph.getVertexSet()) {
-			logger.debug(vertex.getSize().toString());
+			//logger.debug(vertex.getSize().toString());
 			horizontalWidth[vertex.getX()] = Math.max(horizontalWidth[vertex.getX()], Math.round((float) vertex.getSize().x));
 			verticalHeight[vertex.getY()] = Math.max(verticalHeight[vertex.getY()], Math.round((float) vertex.getSize().y));
 		}
@@ -139,29 +195,6 @@ public class VertexPositioner implements IVertexPositioner {
 		}
 
 		return false;
-	}
-
-	private void correctSegment(Segment segment, int newX, IVertexPositionerGraph graph) {
-		if (segment.isCorrected()) {
-			return;
-		}
-
-		for (ISugiyamaVertex vertex : segment.getVertices()) {
-			correctVertex(vertex, newX, graph);
-		}
-
-		segment.setCorrected(true);
-	}
-
-	private void correctVertex(ISugiyamaVertex vertex, int newX, IVertexPositionerGraph graph) {
-		int oldX = vertex.getX();
-		vertex.setX(newX);
-
-		List<ISugiyamaVertex> layer = graph.getLayer(vertex.getY());
-
-		for (int i = oldX + 1; i < layer.size(); i++) {
-			layer.get(i).setX(newX + i);
-		}
 	}
 
 	private class Segment {
@@ -204,17 +237,18 @@ public class VertexPositioner implements IVertexPositioner {
 		public List<Segment> cutWithSegments(List<Segment> others) {
 			List<Segment> result = new LinkedList<>();
 
+			boolean stop = false;
 			for (Segment segment : others)  {
 				if (!intersects(segment)) {
 					continue;
 				}
 
 				List<ISugiyamaVertex> otherVertices = segment.getVertices();
-				int vOffset = vertices.get(0).getLayer();
+				int vOffset = this.vertices.get(0).getLayer();
 				int oOffset = otherVertices.get(0).getLayer();
 
 				int startLayer = Math.max(vOffset, oOffset);
-				int endLayer = Math.min(vertices.get(vertices.size() - 1).getLayer(), otherVertices.get(otherVertices.size() - 1).getLayer());
+				int endLayer = Math.min(this.vertices.get(this.vertices.size() - 1).getLayer(), otherVertices.get(otherVertices.size() - 1).getLayer());
 
 
 				if (endLayer - startLayer == 0) {
@@ -222,19 +256,24 @@ public class VertexPositioner implements IVertexPositioner {
 				}
 
 				boolean firstIsLeft = false;
-				firstIsLeft = (vertices.get(startLayer - vOffset).getX() - otherVertices.get(startLayer - oOffset).getX()) < 0;
+				firstIsLeft = (this.vertices.get(startLayer - vOffset).getX() - otherVertices.get(startLayer - oOffset).getX()) < 0;
 
 				for (int i = startLayer + 1; i < endLayer; i++) {
 
-					boolean isStillLeft = (vertices.get(i - vOffset).getX() - otherVertices.get(i - oOffset).getX()) < 0;
+					boolean isStillLeft = (this.vertices.get(i - vOffset).getX() - otherVertices.get(i - oOffset).getX()) < 0;
 
 					if (firstIsLeft != isStillLeft) {
-						result.addAll((new Segment(this.vertices.subList(0, i)).cutWithSegments(others)));
-						result.addAll((new Segment(this.vertices.subList(i, this.vertices.size())).cutWithSegments(others)));
+						result.addAll((new Segment(new LinkedList<ISugiyamaVertex>(this.vertices.subList(0, i - vOffset))).cutWithSegments(others)));
+						result.addAll((new Segment(new LinkedList<ISugiyamaVertex>(this.vertices.subList(i - vOffset, this.vertices.size()))).cutWithSegments(others)));
+						stop = true;
 						break;
 					}
 
 					firstIsLeft = isStillLeft;
+				}
+
+				if (stop == true) {
+					break;
 				}
 			}
 
@@ -243,6 +282,16 @@ public class VertexPositioner implements IVertexPositioner {
 			}
 
 			return result;
+		}
+
+		@Override
+		public String toString() {
+			return "Segment{" +
+					"vertices=" + vertices +
+					", changed=" + changed +
+					", boundingBox=" + boundingBox +
+					", id=" + id +
+					'}';
 		}
 
 		private boolean intersects(Segment other) {
