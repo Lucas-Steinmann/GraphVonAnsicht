@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.swing.event.ListSelectionEvent;
+
 import edu.kit.student.graphmodel.EdgePath;
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.joana.FieldAccess;
@@ -129,6 +131,109 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 		turnedEdges.forEach(edge->drawEdge(fa,edge));
 		notTurned.forEach(edge->drawEdge(fa,edge));
 		turnedEdges.forEach(edge->Collections.reverse(edge.getPath().getNodes()));
+	}
+	
+	//edges that have been drawn in layouting that go through at least one layer. 
+	//mapped are layer number (index 0 means the first layer...) to the points with y-coordinate of the middle of the vertex box of this layer and the
+	//x-coordinate of the edge crossing this y-coordinate section
+	private Map<Integer, List<Double>> oldEdgesPointsSkipLayer(FieldAccess fa){
+		Map<Integer, List<Double>> map = new HashMap<Integer, List<Double>>();
+		Set<JoanaVertex> faVertices = fa.getGraph().getVertexSet();
+		Set<JoanaEdge> faEdges = fa.getGraph().getEdgeSet();
+		List<Double> doubley = new LinkedList<>();
+		for(JoanaVertex v : faVertices){
+			doubley.add((double) v.getY());
+			doubley.add(v.getY() + v.getSize().y);
+		}
+		for(JoanaEdge e : faEdges){	//start always above end, even if the edge goes from bottom to the top
+			Double start = e.getSource().getY() < e.getTarget().getY() ? e.getSource().getY() + e.getSource().getSize().y: e.getTarget().getY() + e.getTarget().getSize().y;
+			Double end = (double) (e.getTarget().getY() > e.getSource().getY() ? e.getTarget().getY() : e.getSource().getY());
+			//TODO: look whether an edge go through at least one layer, then add mapping if not added yet, otherwise add point or do nothing ;)
+			
+			int index1 = -1;
+			int index2 = -1;
+			int i = 0;
+			for(Double d : doubley){
+				if(index1 != -1 && index2 != -1){
+					break;
+				}
+				if(dEquals(d, start)){
+					index1 = i;
+					continue;
+				}
+				if(dEquals(d, end)){
+					index2 = i;
+					continue;
+				}
+				i++;
+			}
+			assert((index2 - index1) % 2 == 1);
+			for(int j = index1; j + 1 < index2; j+=2){
+				if(index2 - index1 > 2){
+					if(!map.containsKey(index1/2)){
+						List<Double> list = new LinkedList<Double>();
+						map.put(index1/2, list);
+					}else{
+						map.get(index1/2).add(doubley.get(index1 + 1) + (doubley.get(index1 + 2) - doubley.get(index1 + 1)) / 2);	//middle between both points
+					}
+				}
+			}
+		}
+		return map;
+	}
+	
+	//vertices that have to be drawn new and skip a certain layer
+	private int[] newVerticesSkipLayer(FieldAccess fa, Set<JoanaEdge> fromOutEdges){
+		double boxYtop = fa.getY();
+		double boxYbottom = fa.getY() + fa.getSize().y;
+		int[] result;
+		List<Double> yVals = new LinkedList<>(); 
+		for(JoanaVertex v : fa.getGraph().getVertexSet()){
+			yVals.add((double) v.getY());
+			yVals.add(v.getY() + v.getSize().y);
+		}
+		assert(yVals.size() % 2 == 0);
+		result = new int[yVals.size()/2];
+		yVals.sort((d1,d2)->Double.compare(d1, d2));
+		Double start = null;
+		Double end = null;
+		for(JoanaEdge e : fromOutEdges){
+			List<DoublePoint> points = e.getPath().getNodes();
+			if(dEquals(points.get(points.size() - 1).y, boxYtop)){	//draw from top of box down to the target vertex
+				start = points.get(points.size() - 1).y;
+				JoanaVertex target = e.getTarget().getY() > e.getSource().getY() ? e.getTarget() : e.getSource();
+				end = (double) target.getY();
+			} else{	//draw from target vertex to bottom 
+				JoanaVertex source = e.getSource().getY() < e.getTarget().getY() ? e.getSource() : e.getTarget();
+				start = (double) source.getY();
+				end = points.get(0).y;
+			}
+			int index1 = -1;
+			int index2 = -1;
+			int i = 0;
+			for(Double d : yVals){	//looks for the distance between start and end point and therefore the layer numbers where an edge skips this layer.
+				if(index1 != -1 && index2 != -1){
+					break;
+				}
+				if(dEquals(d, start)){
+					index1 = i;
+					continue;
+				}
+				if(dEquals(d, end)){
+					index2 = i;
+					continue;
+				}
+				i++;
+			}
+			//set here the amount of edges skipping a certain layer
+			assert((index2 - index1) % 2 == 1 );
+			for(int j = index1; j + 1 < index2; j+=2){
+				if(index2 - index1 > 2){
+					result[index1 / 2]++;
+				}
+			}
+		}
+		return result;
 	}
 	
 	//first list points on top of vertex, second list on its bottom. (lists are sorted from left to right)
@@ -389,7 +494,6 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
     }
     
     private boolean dEquals(double a, double b){
-    	logger.debug("comparing "+a+" with "+b);
 		return Math.abs(a-b) < Math.pow(10, -6);
 	}
 
