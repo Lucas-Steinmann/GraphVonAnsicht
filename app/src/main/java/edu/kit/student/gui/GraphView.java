@@ -14,15 +14,11 @@ import edu.kit.student.plugin.EdgeFilter;
 import edu.kit.student.plugin.LayoutOption;
 import edu.kit.student.plugin.PluginManager;
 import edu.kit.student.plugin.VertexFilter;
-import javafx.beans.property.DoubleProperty;
-import javafx.beans.property.SimpleDoubleProperty;
 import javafx.collections.SetChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.canvas.Canvas;
-import javafx.scene.canvas.GraphicsContext;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
@@ -40,7 +36,6 @@ import javafx.scene.layout.Pane;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
-import javafx.scene.paint.Color;
 
 /**
  * A view used for showing and creating a graph in GAns. It supports zooming and
@@ -50,12 +45,13 @@ import javafx.scene.paint.Color;
  */
 public class GraphView extends Pane {
 
-	private DoubleProperty myScale = new SimpleDoubleProperty(1.0);
 	private GraphViewSelectionModel selectionModel;
 	private GraphViewGraphFactory graphFactory;
 	private LayoutOption layout;
 	
 	private ContextMenu contextMenu;
+    private List<MenuItem> dynamicMenuListItems = new LinkedList<>();
+    
 	private List<VertexGroup> groups = new LinkedList<VertexGroup>();
 	
 	private GAnsMediator mediator;
@@ -65,78 +61,10 @@ public class GraphView extends Pane {
 	 */
 	public GraphView(GAnsMediator mediator) {
 		this.mediator = mediator;
-		 setPrefSize(600, 600);
-//		 setStyle("-fx-background-color: lightgrey;");
-
-		// add scale transform
-		scaleXProperty().bind(myScale);
-		scaleYProperty().bind(myScale);
-		
 		this.contextMenu = new ContextMenu();
 		setupContextMenu();
 	}
-
-	/**
-	 * Adds a grid to the GraphView, on which the dragging can be mapped.
-	 */
-	public void addGrid() {
-		double w = getBoundsInLocal().getWidth();
-		double h = getBoundsInLocal().getHeight();
-
-		// add grid
-		Canvas grid = new Canvas(w, h);
-		// don't catch mouse events
-		grid.setMouseTransparent(true);
-
-		GraphicsContext gc = grid.getGraphicsContext2D();
-		gc.setStroke(Color.GRAY);
-		gc.setLineWidth(1);
-
-		// draw grid lines
-		double offset = 50;
-		for (double i = offset; i < w; i += offset) {
-			gc.strokeLine(i, 0, i, h);
-			gc.strokeLine(0, i, w, i);
-		}
-
-		getChildren().add(grid);
-
-		grid.toBack();
-	}
-
-	/**
-	 * Returns the scale on which the GraphView currently is.
-	 * 
-	 * @return The scale of the GraphView.
-	 */
-	public double getScale() {
-		return myScale.get();
-	}
-
-	/**
-	 * Sets the scale of the GraphView.
-	 * 
-	 * @param scale
-	 *            The scale of the GraphView.
-	 */
-	public void setScale(double scale) {
-		myScale.set(scale);
-	}
-
-	/**
-	 * Sets the pivot so the scrolling follows the mouse position on the
-	 * GraphView.
-	 * 
-	 * @param x
-	 *            The x coordinate of the pivot.
-	 * @param y
-	 *            The y coordinate of the pivot.
-	 */
-	public void setPivot(double x, double y) {
-		setTranslateX(getTranslateX() - x);
-		setTranslateY(getTranslateY() - y);
-	}
-
+	
 	/**
 	 * Sets a graph. Every element in the graph will be generated and then
 	 * shown.
@@ -202,7 +130,6 @@ public class GraphView extends Pane {
 	}
 	
 	private void setupContextMenu() {
-		
 		MenuItem group = new MenuItem("Add to group");
 		group.setOnAction(new EventHandler<ActionEvent>() {
 		    public void handle(ActionEvent e) {
@@ -213,8 +140,6 @@ public class GraphView extends Pane {
 		
 		this.contextMenu.getItems().addAll(group);
 	}
-	
-    private List<MenuItem> dynamicMenuListItems = new LinkedList<>();
 
 	private void dynamicContextMenu() {
 	    this.getSelectionModel().getSelectedItems().addListener(new SetChangeListener<VertexShape>() {

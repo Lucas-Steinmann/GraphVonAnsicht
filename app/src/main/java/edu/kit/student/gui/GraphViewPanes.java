@@ -9,6 +9,35 @@ import javafx.scene.Group;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.layout.Pane;
 
+/**
+ * The GraphViewPanes class capsulates all graphical elements needed to make the GraphView behave as specified.
+ * The GraphView is encapsulated in three other Panes.
+ * 
+ * |-----------------------------------------------|
+ * |                  ScrollPane                   |
+ * |   |---------------------------------------|   |
+ * |   |              OuterPane                |   |
+ * |   |   |-------------------------------|   |   |
+ * |   |   |          InnerPane            |   |   |
+ * |   |   |   |-----------------------|   |   |   |
+ * |   |   |   |      GraphView        |   |   |   |
+ * |   |   |   |                       |   |   |   |
+ * |   |   |   |                       |   |   |   |
+ * |   |   |   |                       |   |   |   |
+ * |   |   |   |                       |   |   |   |
+ * |   |   |   |                       |   |   |   |
+ * |   |   |   |-----------------------|   |   |   |
+ * |   |   |-------------------------------|   |   |
+ * |   |---------------------------------------|   |
+ * |-----------------------------------------------|
+ *
+ * ScrollPane: Uses standard implementation to show scrollbars.
+ * OuterPane: Handles events for moving the inner Panes and zooming.
+ *            Resizes to the InnerPanes size when its scaled(zoomed).
+ * InnerPane: Is being scaled while zooming.
+ * GraphView: Shows the graph.
+ *
+ */
 public class GraphViewPanes {
 	
 	private ScrollPane scrollPane = new ScrollPane();
@@ -19,6 +48,12 @@ public class GraphViewPanes {
 	private DoubleProperty innerPaneScale = new SimpleDoubleProperty(1.0);
     private DoubleProperty deltaY = new SimpleDoubleProperty(0.0);
 	
+    /**
+	 * Constructor
+	 * 
+	 * @param graphView
+	 *            The graphview placed inside of the panes.
+	 */
 	public GraphViewPanes(GraphView graphView) {
 		this.graphView = graphView;
 		
@@ -56,14 +91,36 @@ public class GraphViewPanes {
 		return graphView;
 	}
 	
+	/**
+	 * Returns the scale on which the InnerPane currently is.
+	 * 
+	 * @return The scale of the InnerPane.
+	 */
 	public double getScale() {
         return innerPaneScale.get();
     }
 
+	/**
+	 * Sets the scale of the InnerPane.
+	 * 
+	 * @param scale
+	 *            The scale of the InnerPane.
+	 */
     public void setScale( double scale) {
         innerPaneScale.set(scale);
     }
 
+	/**
+	 * Sets the pivot so the zooming follows the mouse position on the
+	 * GraphView.
+	 * 
+	 * @param x
+	 *            The x coordinate of the pivot.
+	 * @param y
+	 *            The y coordinate of the pivot.
+	 * @param scale
+	 *            The scale of the InnerPane.
+	 */
     public void setPivot( double x, double y, double scale) {
         // note: pivot value must be untransformed, i. e. without scaling
     	innerPane.setTranslateX(innerPane.getTranslateX() - x);
@@ -74,6 +131,7 @@ public class GraphViewPanes {
     public double getDeltaY() {
         return deltaY.get();
     }
+    
     public void setDeltaY( double dY) {
         deltaY.set(dY);
     }
