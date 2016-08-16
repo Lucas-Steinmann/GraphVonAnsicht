@@ -73,9 +73,14 @@ public class EdgeDrawer implements IEdgeDrawer {
 		this.sameLayerEdges.forEach(edge->this.drawSameLayerEdge(edge));
 		this.selfLoopEdges.forEach(loop->this.drawSelfLoop(loop));
 		this.paths.forEach(path->this.drawSupplementPath(path));
-		Set<ISugiyamaEdge> reversed =this.graphEdges.stream().filter(edge->edge.isReversed()).collect(Collectors.toSet());	//reverses edge paths from reversed edges
-		logger.debug("reversed edges: " + reversed.size());
-		reversed.forEach(edge->this.reverseEdgePath(edge));
+		this.graphEdges.stream().filter(edge->edge.isReversed()).forEach(edge->this.reverseEdgePath(edge));	//reverses edge paths from reversed edges
+		for(SupplementPath p : this.paths){	//reverses edgepath of replaced edges in supplement paths
+			ISugiyamaEdge e = p.getReplacedEdge();
+			if(e.isReversed()){
+				this.reverseEdgePath(e);
+			}
+		}
+		
 //		testEdgePaths();
 	}
 	

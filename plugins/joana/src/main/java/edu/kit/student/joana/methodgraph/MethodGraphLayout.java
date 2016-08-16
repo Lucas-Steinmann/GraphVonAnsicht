@@ -123,7 +123,12 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 	//method responsible for drawing every edge from out or inside the fieldAccess new
 	//calls other private methods 
 	private void drawFieldAccessEdges(MethodGraph graph, FieldAccess fa){
+		//!!!draw FA through layouting the complete FA with sugiyama (prob. just last step)
+		//problem with giving the sugiyama a whole supplement path as they are defined just in sugiyama
+		//add dummy vertices in deep copies of vertex- and edgeset of this original given methodgraph
+		
 		//TODO: draw here every? edge in the FieldAccess new. beginning from the point going to the top or bottom of the representing vertex
+		//TODO: maybe distinguish between turned edges and not turned ones. (even 2 diff methods possible)
 		Set<JoanaEdge> fromOutEdges = this.getEdgesFromOutside(graph, fa);	//edges from out in representing vertex
 		Set<JoanaEdge> turnedEdges = this.getTurnedEdges(fa, fromOutEdges);	//turned edges so on top are just incoming and on bottom just outgoing
 		Set<JoanaEdge> notTurned = fromOutEdges.stream().filter(e->!turnedEdges.contains(e)).collect(Collectors.toSet());	//not turned edges
@@ -139,24 +144,65 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 		double boxYtop = fa.getY();
 		double boxYbottom = fa.getY() + fa.getSize().y;
 		Map<Integer, List<Double>> map = new HashMap<>();
-		List<Double> vertexYvals = new LinkedList<>();
-		vertexYvals.add(boxYtop);
-		vertexYvals.add(boxYbottom);
+		List<Double> yvals = new LinkedList<>();
+		yvals.add(boxYtop);
+		yvals.add(boxYbottom);
 		for(JoanaVertex v : fa.getGraph().getVertexSet()){
-			vertexYvals.add((double) v.getY());
-			vertexYvals.add(v.getY() + v.getSize().y);
+			yvals.add((double) v.getY());
+			yvals.add(v.getY() + v.getSize().y);
 		}
 		for(JoanaEdge e : fa.getGraph().getEdgeSet()){
 			List<DoublePoint> points = e.getPath().getNodes();
 			Double start = e.getSource().getY() < e.getTarget().getY() ? e.getSource().getY() + e.getSource().getSize().y: e.getTarget().getY() + e.getTarget().getSize().y;
 			Double end = (double) (e.getTarget().getY() > e.getSource().getY() ? e.getTarget().getY() : e.getSource().getY());
-			//TODO: map correctly!
 			//look here for yet assigned y-vals between layers. through these y-coords no new edge can go through
 			//this is the orientation for every new edge!
-			for(DoublePoint p : points){
+			int index1 = -1;
+			int index2 = -1;
+			int i = 0;
+			for(Double d : yvals){	//TODO: might be not necessary, there are other possibilities to calc layers
+									//just with the points of an edgepath!
+				if(index1 != -1 && index2 != -1){
+					break;
+				}
+				if(dEquals(d, start)){
+					index1 = i;
+					continue;
+				}
+				if(dEquals(d, end)){
+					index2 = i;
+					continue;
+				}
+				i++;
+			}
+			assert((index2 - index1) % 2 == 1);
+			//an edgepath between 2 vertices is described by 2 or 4 points
+			//4 points: 2 different y vals, 2 points: only one y-value
+			assert(points.size() / 2 == 0); //either two or four values should have been added at once
+			int index = index1;	//start index, end index is not necessary because we go over the edgepaths till end
+			for(int j = 0; j < points.size();){
+				if(points.size() - j >= 4){	//look now if edgepath between 2 layers consist of 2 or 4 points
+					if(dEquals(points.get(j).x, points.get(j + 1).x)//are these 3 checks enough ?
+						&& dEquals(points.get(j + 1).y, points.get(j + 2).y)
+						&& dEquals(points.get(j + 2).x, points.get(j + 3).x)){
+						if(!map.containsKey(index/2)){
+							map.put(index/2, new LinkedList<>());
+						}
+						map.get(index/2).add(points.get(j + 1).y);	//enough because between 2 layers can only be 1 kink
+						j+=4;//because 4 are one layer
+					}else if(dEquals(points.get(j).x, points.get(j + 1).x)//enough for check, that the next 4 points 
+							&& dEquals(points.get(j + 1).x, points.get(j + 2).x)//describe 2 layerdiffs instead of 1 ?
+							&& dEquals(points.get(j + 2).x, points.get(j + 3).x)){
+						//don't add a point here because if edgepath between 2 layers has length 2 there is no kink
+						j+=2; //because 4 are 2 layer, so 2 are 1 layer
+					} else{assert(false);}	//must not occur
+				}
+				index += 2;	//normally add one, but index will be halved, s add every iteration 2
+				assert(points.size() - j >= 2);	//at least 1 point must be after index j (2 points with index j)
+				//here for just 2 points left and assigning them to an layer. 
+				//without if, because the assertion checks it !!!
 			}
 		}
-		//TODO: add more code for correct working
 		return map;
 	}
 	
