@@ -133,6 +133,33 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 		turnedEdges.forEach(edge->Collections.reverse(edge.getPath().getNodes()));
 	}
 	
+	//y-values of old edges between two layers (two vertices nearby)
+	//first layer is between y-value of the box and the first vertex (index 0)
+	private Map<Integer, List<Double>> assignedYvalsBetweenLayers(FieldAccess fa){
+		double boxYtop = fa.getY();
+		double boxYbottom = fa.getY() + fa.getSize().y;
+		Map<Integer, List<Double>> map = new HashMap<>();
+		List<Double> vertexYvals = new LinkedList<>();
+		vertexYvals.add(boxYtop);
+		vertexYvals.add(boxYbottom);
+		for(JoanaVertex v : fa.getGraph().getVertexSet()){
+			vertexYvals.add((double) v.getY());
+			vertexYvals.add(v.getY() + v.getSize().y);
+		}
+		for(JoanaEdge e : fa.getGraph().getEdgeSet()){
+			List<DoublePoint> points = e.getPath().getNodes();
+			Double start = e.getSource().getY() < e.getTarget().getY() ? e.getSource().getY() + e.getSource().getSize().y: e.getTarget().getY() + e.getTarget().getSize().y;
+			Double end = (double) (e.getTarget().getY() > e.getSource().getY() ? e.getTarget().getY() : e.getSource().getY());
+			//TODO: map correctly!
+			//look here for yet assigned y-vals between layers. through these y-coords no new edge can go through
+			//this is the orientation for every new edge!
+			for(DoublePoint p : points){
+			}
+		}
+		//TODO: add more code for correct working
+		return map;
+	}
+	
 	//edges that have been drawn in layouting that go through at least one layer. 
 	//mapped are layer number (index 0 means the first layer...) to the points with y-coordinate of the middle of the vertex box of this layer and the
 	//x-coordinate of the edge crossing this y-coordinate section
@@ -148,7 +175,7 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 		for(JoanaEdge e : faEdges){	//start always above end, even if the edge goes from bottom to the top
 			Double start = e.getSource().getY() < e.getTarget().getY() ? e.getSource().getY() + e.getSource().getSize().y: e.getTarget().getY() + e.getTarget().getSize().y;
 			Double end = (double) (e.getTarget().getY() > e.getSource().getY() ? e.getTarget().getY() : e.getSource().getY());
-			//TODO: look whether an edge go through at least one layer, then add mapping if not added yet, otherwise add point or do nothing ;)
+			//look whether an edge go through at least one layer, then add mapping if not added yet, otherwise add point or do nothing ;)
 			
 			int index1 = -1;
 			int index2 = -1;
@@ -340,7 +367,7 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 		int length = spaceBetweenLayers.length;
 		double[] result = new double[length];
 		for(int i = 0; i < length; i++){
-			result[i] = spaceBetweenLayers[i] / newEdgesPerLayer[i];
+			result[i] = spaceBetweenLayers[i] / (newEdgesPerLayer[i] + 1);
 		}
 		return result;
 	}

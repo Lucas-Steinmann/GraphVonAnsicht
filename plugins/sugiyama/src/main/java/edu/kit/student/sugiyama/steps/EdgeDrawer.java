@@ -71,10 +71,11 @@ public class EdgeDrawer implements IEdgeDrawer {
 		
 		this.normalEdges.forEach(edge->this.drawNormalEdge(edge));
 		this.sameLayerEdges.forEach(edge->this.drawSameLayerEdge(edge));
-//		this.sameLayerEdges.forEach(edge->this.drawNormalEdge(edge));	//as long as drawSameLayerEdge is not implemented yet
 		this.selfLoopEdges.forEach(loop->this.drawSelfLoop(loop));
 		this.paths.forEach(path->this.drawSupplementPath(path));
-		this.graphEdges.stream().filter(edge->edge.isReversed()).forEach(edge->this.reverseEdgePath(edge));	//reverses edge paths from reversed edges
+		Set<ISugiyamaEdge> reversed =this.graphEdges.stream().filter(edge->edge.isReversed()).collect(Collectors.toSet());	//reverses edge paths from reversed edges
+		System.out.println("reversed edges: " + reversed.size());
+		reversed.forEach(edge->this.reverseEdgePath(edge));
 //		testEdgePaths();
 	}
 	
@@ -316,7 +317,7 @@ public class EdgeDrawer implements IEdgeDrawer {
 		double edgeDistances = this.distancePerEdgeInLayer[source.getLayer()];
 		double edgeKinkY = pointPosition * edgeDistances;
 		DoublePoint sPoint = this.inOutPoints.get(source.getID()).get(1).get(index);
-//		assert(this.points.add(sPoint));	//sPoint must not be in the graph at all
+		assert(this.points.add(sPoint));	//sPoint must not be in the graph at all
 		path.addPoint(sPoint);
 		
 		//search here for the Point incoming in the target vertex!
@@ -330,7 +331,7 @@ public class EdgeDrawer implements IEdgeDrawer {
 			}
 		}
 		logger.debug("target index: "+index + "| " +this.inOutPoints.get(target.getID()).get(0).get(index));
-//		assert(found);
+		assert(found);
 
 //		if(!found) {
 //			((JoanaEdge) edge.getWrappedEdge()).setEdgeKind(JoanaEdge.EdgeKind.DEBUG);
@@ -343,12 +344,12 @@ public class EdgeDrawer implements IEdgeDrawer {
 			double newY = tPoint.y - edgeKinkY;
 			DoublePoint t1 = new DoublePoint(sPoint.x, newY);
 			DoublePoint t2 = new DoublePoint(tPoint.x, newY);
-//			assert(this.points.add(t1));
-//			assert(this.points.add(t2));
+			assert(this.points.add(t1));
+			assert(this.points.add(t2));
 			path.addPoint(t1);
 			path.addPoint(t2);
 		}
-//		assert(this.points.add(tPoint));	//tPoint must not be in the graph at all //TODO: assertion error here is not in loop line 321
+		assert(this.points.add(tPoint));	//tPoint must not be in the graph at all //TODO: assertion error here is not in loop line 321
 		path.addPoint(tPoint);	//finally add the point where the edge goes into the target vertex
 	}
 	
@@ -418,13 +419,13 @@ public class EdgeDrawer implements IEdgeDrawer {
 				break;
 			}
 		}
-//		assert(found);
+		assert(found);
 		
 		int pointPosition = pointsBeforeVertex(source) + index +1;	//relative Y-position of this edge if it has to kink horizontally. (multiplied by distancePerEdgeLayer)
 		double edgeDistances = this.distancePerEdgeInLayer[source.getLayer()];
 		double edgeKinkY = pointPosition * edgeDistances;
 		DoublePoint sPoint = this.inOutPoints.get(source.getID()).get(1).get(index);
-//		assert(this.points.add(sPoint));	//sPoint must not be in the graph at all
+		assert(this.points.add(sPoint));	//sPoint must not be in the graph at all
 		path.addPoint(sPoint);
 		
 		//search here for the Point incoming in the target vertex!
@@ -437,7 +438,7 @@ public class EdgeDrawer implements IEdgeDrawer {
 				break;
 			}
 		}
-//		assert(found);
+		assert(found);
 
 		
 		DoublePoint tPoint = this.inOutPoints.get(target.getID()).get(0).get(index);
@@ -464,11 +465,11 @@ public class EdgeDrawer implements IEdgeDrawer {
 		double newY = target.getLayer() + 1 < graph.getLayerCount() ? this.graph.getLayers().get(target.getLayer() + 1).get(0).getY() - edgeKinkY : projected.y + target.getSize().y + edgeKinkY;
 		DoublePoint t1 = new DoublePoint(sPoint.x, newY);
 		DoublePoint t2 = new DoublePoint(projected.x, newY);
-//		assert(this.points.add(t1));
-//		assert(this.points.add(t2));
+		assert(this.points.add(t1));
+		assert(this.points.add(t2));
 		path.addPoint(t1);
 		path.addPoint(t2);
-//		assert(this.points.add(tPoint));	//tPoint must not be in the graph at all //TODO: assertion error here is not in loop line 321
+		assert(this.points.add(tPoint));	//tPoint must not be in the graph at all //TODO: assertion error here is not in loop line 321
 		path.addPoint(projected);	//finally add the point where the edge goes into the target vertex
 	}
 	
