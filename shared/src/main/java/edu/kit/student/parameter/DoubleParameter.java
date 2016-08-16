@@ -6,6 +6,7 @@ package edu.kit.student.parameter;
 public class DoubleParameter extends Parameter<DoubleParameter, Double> {
 	private Double min;
 	private Double max;
+	private Double amoutPerStep;
 	
     /**
      * Constructs a new DoubleParameter, sets its name, its default value and boundaries.
@@ -14,10 +15,11 @@ public class DoubleParameter extends Parameter<DoubleParameter, Double> {
      * @param min The minimum boundary of the parameter.
      * @param max The maximum boundary of the parameter.
      */
-	public DoubleParameter(String name, Double value, Double min, Double max) {
+	public DoubleParameter(String name, Double value, Double min, Double max, Double amoutPerStep) {
 		super(name, value);
 		this.min = min;
 		this.max = max;
+		this.amoutPerStep = amoutPerStep;
 	}
 
 	@Override
@@ -55,5 +57,13 @@ public class DoubleParameter extends Parameter<DoubleParameter, Double> {
 	 */
 	public void setMax(double max) {
 		this.max = max;
+	}
+	
+	public double getAmoutPerStep() {
+		return amoutPerStep;
+	}
+	
+	public void setAmoutPerStep(double amoutPerStep) {
+		this.amoutPerStep = amoutPerStep;
 	}
 }

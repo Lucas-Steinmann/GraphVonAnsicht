@@ -132,7 +132,7 @@ public class CrossMinimizer implements ICrossMinimizer {
 		}
 
 		BooleanParameter p1 = new BooleanParameter("Use Threshold", true);
-		DoubleParameter p2 = new DoubleParameter("Crossminimizer reduction Threshold", 0.01, 0.00000001, 1d);
+		DoubleParameter p2 = new DoubleParameter("Crossminimizer reduction Threshold", 0.001, 0.001, 0.01, 0.001);
 		IntegerParameter p3 = new IntegerParameter("Crossminimizer max runs", 10, 1, 999999);
 
 		HashMap<String, Parameter<?,?>> parameter = new HashMap<String, Parameter<?,?>>();

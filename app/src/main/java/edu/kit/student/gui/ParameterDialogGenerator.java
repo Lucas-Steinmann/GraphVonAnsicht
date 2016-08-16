@@ -1,5 +1,7 @@
 package edu.kit.student.gui;
 
+import java.text.DecimalFormat;
+import java.text.ParseException;
 import java.util.Optional;
 
 import edu.kit.student.parameter.BooleanParameter;
@@ -18,12 +20,14 @@ import javafx.scene.control.ComboBox;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.Spinner;
+import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
 import javafx.util.Callback;
+import javafx.util.StringConverter;
 
 /**
  * Generates a parameter dialog given a parent node and a set of parameters.
@@ -48,7 +52,7 @@ public class ParameterDialogGenerator extends ParameterVisitor {
 			p.accept(this);
 		}
 	}
-	
+
 	@Override
 	public void visit(BooleanParameter parameter) {
 		parent.add(new CheckBox(parameter.getName()), 0, parameterCount);
@@ -62,15 +66,48 @@ public class ParameterDialogGenerator extends ParameterVisitor {
 				parameterCount);
 		parameterCount++;
 	}
-	
+
 	@Override
 	public void visit(DoubleParameter parameter) {
+
+		//The factories only purpose is so that 3 decimals can be shown in the spinner. 
+		SpinnerValueFactory.DoubleSpinnerValueFactory factory = new SpinnerValueFactory.DoubleSpinnerValueFactory(
+				parameter.getMin(), parameter.getMax(), parameter.getValue(), parameter.getAmoutPerStep());
+
+		factory.setConverter(new StringConverter<Double>() {
+			private final DecimalFormat df = new DecimalFormat("#.###");
+			
+			@Override
+			public String toString(Double value) {
+				// If the specified value is null, return a zero-length String
+				if (value == null) return "";
+				return df.format(value);
+			}
+
+			@Override
+			public Double fromString(String value) {
+				try {
+					// If the specified value is null or zero-length, return
+					// null
+					if (value == null) return null;
+
+					value = value.trim();
+
+					if (value.length() < 1) return null;
+
+					// Perform the requested parsing
+					return df.parse(value).doubleValue();
+				} catch (ParseException ex) {
+					throw new RuntimeException(ex);
+				}
+			}
+		});
+		
 		parent.add(new Text(parameter.getName()), 0, parameterCount);
-		parent.add(new Spinner<Double>(parameter.getMin(), parameter.getMax(), parameter.getValue()), 1,
-				parameterCount);
+		parent.add(new Spinner<Double>(factory), 1, parameterCount);
 		parameterCount++;
 	}
-	
+
 	@Override
 	public void visit(StringParameter parameter) {
 		parent.add(new Text(parameter.getName()), 0, parameterCount);
@@ -103,15 +140,18 @@ public class ParameterDialogGenerator extends ParameterVisitor {
 		parent.add(cmb, 1, parameterCount);
 		parameterCount++;
 	}
-	
+
 	/**
 	 * Creates a ParameterDialog for the supplied Settings.
-	 * @param settings The settings for which the dialog will be created.
+	 * 
+	 * @param settings
+	 *            The settings for which the dialog will be created.
 	 * @return true: Dialog was accepted, false: Dialog was aborted.
 	 */
 	public static boolean showDialog(Settings settings) {
-		if(settings.size() == 0) {
-			// if there are no settings to be shown the dialog will automatically be accepted
+		if (settings.size() == 0) {
+			// if there are no settings to be shown the dialog will
+			// automatically be accepted
 			return true;
 		} else {
 			GridPane root = new GridPane();
@@ -128,7 +168,7 @@ public class ParameterDialogGenerator extends ParameterVisitor {
 			dialog.setGraphic(null);
 			dialog.getDialogPane().setContent(root);
 			Optional<ButtonType> result = dialog.showAndWait();
-			if(result.get() != ButtonType.OK) {
+			if (result.get() != ButtonType.OK) {
 				return false;
 			}
 			return true;
