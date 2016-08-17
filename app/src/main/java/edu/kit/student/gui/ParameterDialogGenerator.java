@@ -37,6 +37,8 @@ import javafx.util.StringConverter;
 public class ParameterDialogGenerator extends ParameterVisitor {
 	private GridPane parent;
 	private int parameterCount = 0;
+	
+	private StringConverter<Double> doubleConverter;
 
 	/**
 	 * Constructs a new ParameterDialogGenerator and sets the parent, where all
@@ -47,6 +49,8 @@ public class ParameterDialogGenerator extends ParameterVisitor {
 		parent.setHgap(10);
 		parent.setVgap(10);
 		parent.setPadding(new Insets(10, 20, 10, 10));
+		
+		this.initDoubleConverter();
 
 		for (Parameter<?, ?> p : settings.values()) {
 			p.accept(this);
@@ -55,63 +59,46 @@ public class ParameterDialogGenerator extends ParameterVisitor {
 
 	@Override
 	public void visit(BooleanParameter parameter) {
-		parent.add(new CheckBox(parameter.getName()), 0, parameterCount);
+		CheckBox box = new CheckBox(parameter.getName());
+		parameter.propertyValue().bind(box.selectedProperty());
+		
+		parent.add(box, 0, parameterCount);
 		parameterCount++;
 	}
 
 	@Override
 	public void visit(IntegerParameter parameter) {
+		Spinner<Integer> spinner = new Spinner<Integer>(parameter.getMin(), parameter.getMax(), parameter.getValue());
+		parameter.propertyValue().bind(spinner.valueProperty());
+		
 		parent.add(new Text(parameter.getName()), 0, parameterCount);
-		parent.add(new Spinner<Integer>(parameter.getMin(), parameter.getMax(), parameter.getValue()), 1,
-				parameterCount);
+		parent.add(spinner, 1, parameterCount);
 		parameterCount++;
 	}
 
 	@Override
 	public void visit(DoubleParameter parameter) {
-
 		//The factories only purpose is so that 3 decimals can be shown in the spinner. 
 		SpinnerValueFactory.DoubleSpinnerValueFactory factory = new SpinnerValueFactory.DoubleSpinnerValueFactory(
 				parameter.getMin(), parameter.getMax(), parameter.getValue(), parameter.getAmoutPerStep());
 
-		factory.setConverter(new StringConverter<Double>() {
-			private final DecimalFormat df = new DecimalFormat("#.###");
-			
-			@Override
-			public String toString(Double value) {
-				// If the specified value is null, return a zero-length String
-				if (value == null) return "";
-				return df.format(value);
-			}
-
-			@Override
-			public Double fromString(String value) {
-				try {
-					// If the specified value is null or zero-length, return
-					// null
-					if (value == null) return null;
-
-					value = value.trim();
-
-					if (value.length() < 1) return null;
-
-					// Perform the requested parsing
-					return df.parse(value).doubleValue();
-				} catch (ParseException ex) {
-					throw new RuntimeException(ex);
-				}
-			}
-		});
+		factory.setConverter(this.doubleConverter);
+		
+		Spinner<Double> spinner = new Spinner<Double>(factory);
+		parameter.propertyValue().bind(spinner.valueProperty());
 		
 		parent.add(new Text(parameter.getName()), 0, parameterCount);
-		parent.add(new Spinner<Double>(factory), 1, parameterCount);
+		parent.add(spinner, 1, parameterCount);
 		parameterCount++;
 	}
 
 	@Override
 	public void visit(StringParameter parameter) {
+		TextField field = new TextField(parameter.getValue());
+		parameter.propertyValue().bind(field.textProperty());
+		
 		parent.add(new Text(parameter.getName()), 0, parameterCount);
-		parent.add(new TextField(parameter.getName()), 1, parameterCount);
+		parent.add(field, 1, parameterCount);
 		parameterCount++;
 	}
 
@@ -137,6 +124,8 @@ public class ParameterDialogGenerator extends ParameterVisitor {
 			}
 		});
 		cmb.getSelectionModel().select(parameter.getSelectedIndex());
+		parameter.propertyValue().bind(cmb.valueProperty());
+		
 		parent.add(cmb, 1, parameterCount);
 		parameterCount++;
 	}
@@ -173,5 +162,36 @@ public class ParameterDialogGenerator extends ParameterVisitor {
 			}
 			return true;
 		}
+	}
+	
+	private void initDoubleConverter() {
+		this.doubleConverter = new StringConverter<Double>() {
+			private final DecimalFormat df = new DecimalFormat("#.###");
+			
+			@Override
+			public String toString(Double value) {
+				// If the specified value is null, return a zero-length String
+				if (value == null) return "";
+				return df.format(value);
+			}
+
+			@Override
+			public Double fromString(String value) {
+				try {
+					// If the specified value is null or zero-length, return
+					// null
+					if (value == null) return null;
+
+					value = value.trim();
+
+					if (value.length() < 1) return null;
+
+					// Perform the requested parsing
+					return df.parse(value).doubleValue();
+				} catch (ParseException ex) {
+					throw new RuntimeException(ex);
+				}
+			}
+		};
 	}
 }

@@ -4,7 +4,6 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
 
-// Implementation aehnlich wie im Beispiel "Person" bei https://docs.oracle.com/javase/8/javafx/api/javafx/scene/control/TableView.html
 
 /**
  * The GAnsProperty is a single property of a vertex or an edge in GAns. The
@@ -52,6 +51,8 @@ public class GAnsProperty<T extends Object> {
 	public GAnsProperty(String name, T value) {
 		setName(name);
 		setValue(value);
+		
+		valueAsStringProperty.bind(valueProperty.asString());
 	}
 
 	/**
@@ -119,6 +120,7 @@ public class GAnsProperty<T extends Object> {
 	 */
 	public void setValue(T value) {
 		propertyValue().setValue(value);
+		//maybe not needed anymore, because of its binding with value in the constructor.
 		propertyValueAsString().set(value.toString());
 	}
 	
