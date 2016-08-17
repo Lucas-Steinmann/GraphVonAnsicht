@@ -1,9 +1,8 @@
 package edu.kit.student.sugiyama;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
+import java.util.LinkedHashMap;
 import java.util.Set;
 
 import org.slf4j.Logger;
@@ -123,13 +122,9 @@ public class SugiyamaLayoutAlgorithm<G extends DirectedGraph>
 		if (this.settings != null) {
 			return this.settings;
 		}
-		HashMap<String, Parameter<?,?>> parameter = new HashMap<String, Parameter<?,?>>();
-
-		Set<Map.Entry<String, Parameter<?, ?>>> minimizerSettings = this.minimizer.getSettings().entrySet();
-
-		for (Map.Entry<String, Parameter<?, ?>>minimizerSetting: minimizerSettings) {
-			parameter.put(minimizerSetting.getKey(), minimizerSetting.getValue());
-		}
+		//Needs to be a LinkedHashMap, because the parameters might need to be displayed in a specific order to make sense
+		LinkedHashMap<String, Parameter<?,?>> parameter = new LinkedHashMap<String, Parameter<?,?>>();
+		parameter.putAll(this.minimizer.getSettings().getParameters());
 
 		Settings  settings = new Settings(parameter);
 		this.settings = settings;
