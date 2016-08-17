@@ -21,6 +21,11 @@ public class VertexPositioner implements IVertexPositioner {
 	@Override
 	public void positionVertices(IVertexPositionerGraph graph) {
 		logger.info("VertexPositioner.positionVertices():");
+
+		if (graph.getVertexSet().size() == 0) {
+			return;
+		}
+
 		int maxwidth = graph.getLayers().stream().mapToInt(layer -> layer.size()).max().getAsInt();
 		List<Segment> allsegments = new LinkedList<>();
 		Set<ISugiyamaVertex> addedVertices = new HashSet<>();
