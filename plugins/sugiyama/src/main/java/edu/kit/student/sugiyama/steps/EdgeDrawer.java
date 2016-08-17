@@ -56,7 +56,7 @@ public class EdgeDrawer implements IEdgeDrawer {
 	@Override
 	public void drawEdges(IEdgeDrawerGraph graph) {
 		logger.info("EdgeDrawer.drawEdges():");
-		if(graph.getEdgeSet() == null || graph.getEdgeSet().isEmpty()){
+		if(graph.getEdgeSet() == null || graph.getEdgeSet().isEmpty() || graph.getVertexSet() == null || graph.getVertexSet().isEmpty()){
 			return;
 		}
 		initialize(graph);	//initializes the graph and it's sets, needed in the whole class!
@@ -85,21 +85,21 @@ public class EdgeDrawer implements IEdgeDrawer {
 	}
 	
 	
-	private void test(){
-		//layer of source layer must be lower than target vertex
-		logger.debug("isolated vertices: " + this.isolatedVertices.size());
-		for(ISugiyamaEdge e : this.graphEdges.stream().filter(edge->!this.selfLoopEdges.contains(edge)).collect(Collectors.toList())){
-			assert(e.getSource().getLayer() < e.getTarget().getLayer());
-		}
-		for(ISugiyamaEdge e : this.selfLoopEdges){
-			logger.debug("loop: "+e.getSource().getID());
-			assert(e.getSource().getLayer() == e.getTarget().getLayer());
-		}
-		for(SupplementPath p: this.paths){
-			assert(p.getReplacedEdge().getSource().getLayer() < p.getReplacedEdge().getTarget().getLayer());
-		}
-		
-		//checks if there are vertices overlapping in an layer
+//	private void test(){
+//		//layer of source layer must be lower than target vertex
+//		logger.debug("isolated vertices: " + this.isolatedVertices.size());
+//		for(ISugiyamaEdge e : this.graphEdges.stream().filter(edge->!this.selfLoopEdges.contains(edge)).collect(Collectors.toList())){
+//			assert(e.getSource().getLayer() < e.getTarget().getLayer());
+//		}
+//		for(ISugiyamaEdge e : this.selfLoopEdges){
+//			logger.debug("loop: "+e.getSource().getID());
+//			assert(e.getSource().getLayer() == e.getTarget().getLayer());
+//		}
+//		for(SupplementPath p: this.paths){
+//			assert(p.getReplacedEdge().getSource().getLayer() < p.getReplacedEdge().getTarget().getLayer());
+//		}
+//		
+//		//checks if there are vertices overlapping in an layer
 //		for(List<ISugiyamaVertex> list : this.graph.getLayers()){
 //			for(int i =0; i<list.size() - 1;i++){
 //				ISugiyamaVertex first = list.get(i);
@@ -107,49 +107,49 @@ public class EdgeDrawer implements IEdgeDrawer {
 //				assert(first.getX() + first.getSize().getKey() < second.getX());
 //			}
 //		}
-		
-		//prints vertices with coordinates on every layer
-		for(List<ISugiyamaVertex> list : this.graph.getLayers()){
-			for(ISugiyamaVertex v : list){
+//		
+//		//prints vertices with coordinates on every layer
+//		for(List<ISugiyamaVertex> list : this.graph.getLayers()){
+//			for(ISugiyamaVertex v : list){
 //				System.out.print("["+v.getID()+"]("+v.getX()+","+v.getY()+") ");
-			}
+//			}
 //			System.out.print('\n');
-		}
-		
-		//prints map inOutDeg
+//		}
+//		
+//		//prints map inOutDeg
 //		for(int i : this.inOutDeg.keySet()){
 //			int[] degs = this.inOutDeg.get(i);
 //			System.out.println("ID: "+i+"; vals: "+degs[0]+","+degs[1]);
 //		}
-		
-		//tests the order of the supplement edges in supplement paths
+//		
+//		//tests the order of the supplement edges in supplement paths
 //		for(SupplementPath p : this.paths){
 //			for(ISugiyamaEdge e : this.getEdgesFromPath(p)){
 //				System.out.print("("+e.getSource().getX()+","+e.getSource().getY()+")->("+e.getTarget().getX()+","+e.getTarget().getY()+")");
 //			}
 //			System.out.print('\n');
 //		}
-	}
+//	}
 	
 	//tests every edge if its edgepath describes an orthogonal edge
-	private void testEdgePaths(){
-		Set<DoublePoint> points = new HashSet<DoublePoint>();
-		for(ISugiyamaEdge e : this.graphEdges.stream().filter(edge -> !this.selfLoopEdges.contains(edge)).collect(Collectors.toList())){
-			List<DoublePoint> l = e.getPath().getNodes();
-			
-			for(DoublePoint p : l){
-				assert(points.add(p));
-			}
-			
-			DoublePoint first = l.get(0);
-			DoublePoint second;
-			for(int i = 1; i < l.size(); i++){
-				second = l.get(i);
-				assert(dEquals(first.x, second.x) ^ dEquals(first.y,second.y));
-				first=second;
-			}
-		}
-	}
+//	private void testEdgePaths(){
+//		Set<DoublePoint> points = new HashSet<DoublePoint>();
+//		for(ISugiyamaEdge e : this.graphEdges.stream().filter(edge -> !this.selfLoopEdges.contains(edge)).collect(Collectors.toList())){
+//			List<DoublePoint> l = e.getPath().getNodes();
+//			
+//			for(DoublePoint p : l){
+//				assert(points.add(p));
+//			}
+//			
+//			DoublePoint first = l.get(0);
+//			DoublePoint second;
+//			for(int i = 1; i < l.size(); i++){
+//				second = l.get(i);
+//				assert(dEquals(first.x, second.x) ^ dEquals(first.y,second.y));
+//				first=second;
+//			}
+//		}
+//	}
 
 	/**
 	 * Sorts the vertices in every layer in ascending order of their X-coordinate.
