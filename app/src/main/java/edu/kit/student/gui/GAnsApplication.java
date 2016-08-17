@@ -276,6 +276,7 @@ public class GAnsApplication {
 			Importer importer = importerList.get(supportedFileExtensions.indexOf(fileExtension));
 			importer.importGraph(workspace.getGraphModelBuilder(), inputStream);
 			this.graphViewTabPane.getTabs().clear();
+			this.informationView.setInformations(FXCollections.observableList(new LinkedList<GAnsProperty<?>>()));
 			this.model = workspace.getGraphModel();
 			ViewableGraph currentGraph = this.model.getRootGraphs().get(0);
 			openGraph(currentGraph);
