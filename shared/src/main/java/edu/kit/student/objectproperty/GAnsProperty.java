@@ -51,8 +51,6 @@ public class GAnsProperty<T extends Object> {
 	public GAnsProperty(String name, T value) {
 		setName(name);
 		setValue(value);
-		
-		valueAsStringProperty.bind(valueProperty.asString());
 	}
 
 	/**
@@ -75,8 +73,10 @@ public class GAnsProperty<T extends Object> {
 	 * @return The property which contains the value in the GAnsProperty.
 	 */
 	public GAnsObjectProperty<T> propertyValue() {
-		if (valueProperty == null)
+		if (valueProperty == null) {
 			valueProperty = new GAnsObjectProperty<T>(this, value);
+			propertyValueAsString().bind(valueProperty.asString());
+		}
 		return valueProperty;
 	}
 
@@ -120,12 +120,6 @@ public class GAnsProperty<T extends Object> {
 	 */
 	public void setValue(T value) {
 		propertyValue().setValue(value);
-		//maybe not needed anymore, because of its binding with value in the constructor.
-		propertyValueAsString().set(value.toString());
-	}
-	
-	public void setValueAsString(String value) {
-		propertyValueAsString().set(value);
 	}
 
 	/**
