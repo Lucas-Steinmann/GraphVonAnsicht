@@ -409,8 +409,7 @@ public class GAnsApplication {
 		return false;
 	}
 	
-	private void openLayoutSettingsDialog() {
-		LayoutOption option = currentGraphView.getCurrentLayoutOption();
+	private void openLayoutSettingsDialog(LayoutOption option) {
 		Settings settings = option.getSettings();
 	    if(ParameterDialogGenerator.showDialog(settings)) {
 	    	currentGraphView.setCurrentLayoutOption(option);
@@ -463,7 +462,7 @@ public class GAnsApplication {
 		layoutPropertiesItem.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
-				openLayoutSettingsDialog();
+				openLayoutSettingsDialog(currentGraphView.getCurrentLayoutOption());
 			}
 		});
 		menuLayout.getItems().addAll(changeLayoutItem, layoutPropertiesItem);
@@ -489,7 +488,7 @@ public class GAnsApplication {
 							@Override
 							public void handle(ActionEvent e) {
 								option.chooseLayout();
-								if(ParameterDialogGenerator.showDialog(option.getSettings())) option.applyLayout();
+								openLayoutSettingsDialog(option);
 								currentGraphView.reloadGraph();
 							}
 						});
