@@ -3,6 +3,7 @@ package edu.kit.student.sugiyama.steps;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -135,11 +136,12 @@ public class CrossMinimizer implements ICrossMinimizer {
 		DoubleParameter p2 = new DoubleParameter("Crossminimizer reduction Threshold", 0.001, 0.001, 0.01, 0.001);
 		IntegerParameter p3 = new IntegerParameter("Crossminimizer max runs", 10, 1, 999999);
 
-		HashMap<String, Parameter<?,?>> parameter = new HashMap<String, Parameter<?,?>>();
+		//Needs to be a LinkedHashMap, because the parameters might need to be displayed in a specific order to make sense
+		LinkedHashMap<String, Parameter<?,?>> parameter = new LinkedHashMap<String, Parameter<?,?>>();
 		parameter.put(p1.getName(), p1);
 		parameter.put(p2.getName(), p2);
 		parameter.put(p3.getName(), p3);
-		Settings  settings = new Settings(parameter);
+		Settings settings = new Settings(parameter);
 		this.settings = settings;
 		return settings;
 	}

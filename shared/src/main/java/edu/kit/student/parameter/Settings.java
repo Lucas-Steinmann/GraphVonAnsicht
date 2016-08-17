@@ -2,7 +2,6 @@ package edu.kit.student.parameter;
 
 import java.util.Collection;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * A compound object to store parameters.
@@ -56,10 +55,10 @@ public class Settings {
     }
 
     /**
-     * Returns a Set of all the parameters.
-     * @return A Set of all the parameters.
-     */
-    public Set<Map.Entry<String, Parameter<?,?>>> entrySet() {
-        return parameters.entrySet();
+     * Returns the map containing all the parameters.
+     * @return A map containing all the parameters.
+     */    
+    public Map<String, Parameter<?,?>> getParameters() {
+    	return parameters;
     }
 }

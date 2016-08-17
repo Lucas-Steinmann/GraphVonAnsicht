@@ -60,6 +60,7 @@ public class ParameterDialogGenerator extends ParameterVisitor {
 	@Override
 	public void visit(BooleanParameter parameter) {
 		CheckBox box = new CheckBox(parameter.getName());
+		box.setSelected(parameter.getValue());
 		parameter.propertyValue().bind(box.selectedProperty());
 		
 		parent.add(box, 0, parameterCount);
