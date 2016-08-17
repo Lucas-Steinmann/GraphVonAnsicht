@@ -70,6 +70,7 @@ public class ParameterDialogGenerator extends ParameterVisitor {
 	@Override
 	public void visit(IntegerParameter parameter) {
 		Spinner<Integer> spinner = new Spinner<Integer>(parameter.getMin(), parameter.getMax(), parameter.getValue());
+		spinner.setEditable(true);
 		parameter.propertyValue().bind(spinner.valueProperty());
 		
 		parent.add(new Text(parameter.getName()), 0, parameterCount);
@@ -86,6 +87,7 @@ public class ParameterDialogGenerator extends ParameterVisitor {
 		factory.setConverter(this.doubleConverter);
 		
 		Spinner<Double> spinner = new Spinner<Double>(factory);
+		spinner.setEditable(true);
 		parameter.propertyValue().bind(spinner.valueProperty());
 		
 		parent.add(new Text(parameter.getName()), 0, parameterCount);
