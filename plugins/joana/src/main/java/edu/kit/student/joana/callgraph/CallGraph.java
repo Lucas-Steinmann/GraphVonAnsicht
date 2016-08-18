@@ -9,6 +9,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import edu.kit.student.graphmodel.CompoundVertex;
+import edu.kit.student.graphmodel.SubGraph;
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.ViewableVertex;
 import edu.kit.student.graphmodel.action.SubGraphAction;
@@ -119,6 +120,11 @@ public class CallGraph extends JoanaGraph {
         }
 
         return actions;
+    }
+
+    @Override
+    public Set<? extends SubGraph> getSubGraphs() {
+        return new HashSet<>();
     }
 
 	private VertexAction newExpandAction(CompoundVertex vertex) {
