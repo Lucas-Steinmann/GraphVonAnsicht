@@ -229,10 +229,10 @@ public class EdgeDrawer implements IEdgeDrawer {
 				this.inOutVertices.put(e.getTarget().getID(), list);
 			}
 			this.inOutVertices.get(e.getSource().getID()).get(1).add(e.getTarget());	//source vertex got one outgoing vertex, the target of this edge
-			logger.debug("adding to source "+e.getSource().getID()+": "+ e.getTarget().getID());
+//			logger.debug("adding to source "+e.getSource().getID()+": "+ e.getTarget().getID());
 			if(!this.selfLoopEdges.contains(e)){	//at a selfloop the vertex just got an outgoing edge, no incoming, the point will be calculated later
 				this.inOutVertices.get(e.getTarget().getID()).get(0).add(e.getSource());	//target vertex got one incoming vertex, the source of this edge
-				logger.debug("adding to target "+e.getTarget().getID()+ ": "+ e.getSource().getID());
+//				logger.debug("adding to target "+e.getTarget().getID()+ ": "+ e.getSource().getID());
 			}
 		}
 	}
@@ -300,7 +300,7 @@ public class EdgeDrawer implements IEdgeDrawer {
 	}
 	
 	private void drawNormalEdge(ISugiyamaEdge edge){
-		logger.debug("drawing: " + edge.getSource().getID()+","+edge.getTarget().getID());
+//		logger.debug("drawing: " + edge.getSource().getID()+","+edge.getTarget().getID());
 		edge.getPath().clear();	//clears edge path before setting it again
 		ISugiyamaVertex source = edge.getSource();
 		ISugiyamaVertex target = edge.getTarget();
@@ -315,7 +315,7 @@ public class EdgeDrawer implements IEdgeDrawer {
 				break;
 			}
 		}
-		logger.debug("source index: "+index + "| "+this.inOutPoints.get(source.getID()).get(1).get(index));
+//		logger.debug("source index: "+index + "| "+this.inOutPoints.get(source.getID()).get(1).get(index));
 		assert(found);
 		
 		int pointPosition = pointsBeforeVertex(source) + index +1;	//relative Y-position of this edge if it has to kink horizontally. (multiplied by distancePerEdgeLayer)
@@ -335,7 +335,7 @@ public class EdgeDrawer implements IEdgeDrawer {
 				break;
 			}
 		}
-		logger.debug("target index: "+index + "| " +this.inOutPoints.get(target.getID()).get(0).get(index));
+//		logger.debug("target index: "+index + "| " +this.inOutPoints.get(target.getID()).get(0).get(index));
 		assert(found);
 
 //		if(!found) {
@@ -354,7 +354,7 @@ public class EdgeDrawer implements IEdgeDrawer {
 			path.addPoint(t1);
 			path.addPoint(t2);
 		}
-		assert(this.points.add(tPoint));	//tPoint must not be in the graph at all //TODO: assertion error here is not in loop line 321
+		assert(this.points.add(tPoint));	//tPoint must not be in the graph at all
 		path.addPoint(tPoint);	//finally add the point where the edge goes into the target vertex
 	}
 	
@@ -407,7 +407,7 @@ public class EdgeDrawer implements IEdgeDrawer {
 	
 	//draw edges that connect two vertices from the same layer
 	private void drawSameLayerEdge(ISugiyamaEdge edge){
-		//TODO: draw edge if the edge connects two vertices in the same layer
+		// draw edge if the edge connects two vertices in the same layer
 		//first just draw the path normal under the vertices on this layer then project the incoming point down to the bottom of the target vertex
 		//not very good nor finished yet!!!!!
 		edge.getPath().clear();	//clears edge path before setting it again
@@ -450,7 +450,7 @@ public class EdgeDrawer implements IEdgeDrawer {
 		DoublePoint projected = new DoublePoint(tPoint.x, tPoint.y + target.getSize().y);	//!!!!! set project target point down on bottom of target vertex !!!!!!!
 		
 		//now draw edge between sPoint and projected!!!!!
-		//TODO: search for the y-coordinate one layer below
+		// search for the y-coordinate one layer below
 		List<DoublePoint> targetOut = this.inOutPoints.get(target.getID()).get(1);
 		DoublePoint p = null;
 		for(int i = 0; i<targetOut.size(); i++){
@@ -474,7 +474,7 @@ public class EdgeDrawer implements IEdgeDrawer {
 		assert(this.points.add(t2));
 		path.addPoint(t1);
 		path.addPoint(t2);
-		assert(this.points.add(tPoint));	//tPoint must not be in the graph at all //TODO: assertion error here is not in loop line 321
+		assert(this.points.add(tPoint));	//tPoint must not be in the graph at all
 		path.addPoint(projected);	//finally add the point where the edge goes into the target vertex
 	}
 	
