@@ -25,6 +25,7 @@ import edu.kit.student.plugin.PluginManager;
 import edu.kit.student.plugin.Workspace;
 import edu.kit.student.plugin.WorkspaceOption;
 import javafx.application.Application.Parameters;
+import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -88,6 +89,7 @@ public class GAnsApplication {
 		Scene scene = new Scene(rootLayout, 800, 600);
 
 		menuBar = new MenuBar();
+		menuBar.setId("Menubar");
 		setupMenuBar();
 		
 		
@@ -299,10 +301,12 @@ public class GAnsApplication {
                 exporter.getSupportedFileEndings().forEach((fe) -> description.append("*." + fe + ", "));
                 description.delete(description.length() - 2, description.length());
                 description.append(")");
-		        supportedFileExtensions.put(new FileChooser.ExtensionFilter( description.toString(),
-                                                                             exporter.getSupportedFileEndings().stream().map((fe) 
-		                                                                                -> "*." + fe).collect(Collectors.toList())),
-		                                    exporter);
+		        supportedFileExtensions.put(new FileChooser.ExtensionFilter( 
+		                description.toString(), 
+		                exporter.getSupportedFileEndings().stream()
+		                                                  .map((fe) -> "*." + fe)
+		                                                  .collect(Collectors.toList())),
+		                exporter);
 		}
 
 		FileChooser fileChooser = new FileChooser();
@@ -440,12 +444,7 @@ public class GAnsApplication {
 			exportItem.setDisable(true);
 		}
 		MenuItem exitItem = new MenuItem("Exit");
-		exitItem.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				System.exit(0);
-			}
-		});
+		exitItem.setOnAction(e -> Platform.exit());
 		menuFile.getItems().addAll(importItem, exportItem, exitItem);
 		
 		// disabling the export button if there is no graphView
