@@ -1,5 +1,6 @@
 package edu.kit.student.sugiyama.graph;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,6 +12,7 @@ import java.util.Vector;
 
 import edu.kit.student.graphmodel.DefaultGraphLayering;
 import edu.kit.student.graphmodel.DefaultVertex;
+import edu.kit.student.graphmodel.DirectedSupplementEdgePath;
 import edu.kit.student.graphmodel.EdgeArrow;
 import edu.kit.student.graphmodel.EdgePath;
 import edu.kit.student.graphmodel.FastGraphAccessor;
@@ -41,7 +43,6 @@ public class SugiyamaGraph
 
 	private List<Integer> layerPositions;
 	private DefaultDirectedGraph<ISugiyamaVertex, ISugiyamaEdge> graph;
-	private DirectedGraph wrappedGraph;
 	private Set<SupplementPath> supplementPaths = new HashSet<>();
 	private DefaultGraphLayering<ISugiyamaVertex> layering;
 
@@ -57,8 +58,6 @@ public class SugiyamaGraph
 		Map<Integer, ISugiyamaVertex> tmpVertexMap = new HashMap<>();
 		HashSet<ISugiyamaVertex> vertices = new HashSet<>();
 		HashSet<ISugiyamaEdge> edges = new HashSet<>();
-		this.wrappedGraph = graph;
-
 		layering = new DefaultGraphLayering<>(new HashSet<>());
 		for (Vertex vertex: graph.getVertexSet()) {
 			//TODO: Why -1 and not 0? Does -1 mean an illegal state? Why not just put all vertices on layer 0 at start to achieve an consistent state at all time.
@@ -79,9 +78,92 @@ public class SugiyamaGraph
 		layerPositions.add(0);
 	}
 
-	public SugiyamaGraph(String name, Set<ISugiyamaVertex> vertices, Set<ISugiyamaEdge> edges) {
-		this(new DefaultDirectedGraph<>(vertices, edges));
+	/**
+	 * Builds a SugiyamaGraph, consisting of vertices, edges and Supplementpaths, like SupplementPaths in SugiyamaGraph.
+	 * The Set of paths is optional, it can be null or empty. 
+	 * If paths is not empty the constructed SugiyamaGraph will be used just for EdgeDrawing. 
+	 * 
+	 * @param name name of this SugiyamaGraph
+	 * @param vertices vertices to be contained in this SugiyamaGraph
+	 * @param edges edges to be contained in this SugiyamaGraph
+	 * @param paths Optional, can be empty or null. The paths replace a certain edge which is then not contained in the edgeset. 
+	 * Just use these if you want to redraw given edges and vertices. not recommended for use in the whole sugiyama-steps.
+	 */
+	public SugiyamaGraph(String name, Set<Vertex> vertices, Set<DirectedEdge> edges, Set<DirectedSupplementEdgePath> paths) {
+
+		HashSet<ISugiyamaVertex> sugyVertices = new HashSet<>();
+		HashSet<ISugiyamaEdge> sugyEdges = new HashSet<>();
+		Map<Integer, ISugiyamaVertex> tmpVertexMap = new HashMap<>();
+		List<Integer> yValsOfVertices = new ArrayList<>();
+		
+
+		for (Vertex vertex: vertices){	//given vertices, wrap them to SugiyamaVertex
+			SugiyamaVertex sugiyamaVertex = new SugiyamaVertex(vertex);
+			sugyVertices.add(sugiyamaVertex);	//fills vertexset with all wrapped vertices
+			tmpVertexMap.put(vertex.getID(), sugiyamaVertex);
+			yValsOfVertices.add(vertex.getY());	//add every different position to list, to assign layers later
+		}
+		yValsOfVertices.sort((y1,y2)->y1.compareTo(y2));	//sorts y vals in ascending order
+		//assign every vertex a layer, first all given vertices, then in a loop every dummy (use layer of source and target !!!)
+				for(ISugiyamaVertex v : sugyVertices){
+					for(int i = 0; i < yValsOfVertices.size(); i++){
+						if(yValsOfVertices.get(i) == v.getY()){
+							this.assignToLayer(v, i);
+							break;
+						}
+					}
+				}
+		for(DirectedEdge edge: edges){	//given edges, wrap them to SugiyamaEdges
+			SugiyamaEdge sugiyamaEdge = new SugiyamaEdge(edge,
+					tmpVertexMap.get(edge.getSource().getID()),
+					tmpVertexMap.get(edge.getTarget().getID()));
+			if(sugiyamaEdge.getSource().getLayer() > sugiyamaEdge.getTarget().getLayer()){	//need to reverse edge
+				this.reverseEdge(sugiyamaEdge);
+			}
+			sugyEdges.add(sugiyamaEdge);	//fills edgeset with all wrapped edges
+		}
+		
+		//now iterate over all paths and construct the correct SupplementPath, also construct:
+		//representingVertex->sugyVertex, assign it a layer!,  dummies->dummyVertex(also add them to sugyVertices set), 
+		//supplementEdges->SupplementEdge(also add them to sugyEdges set)
+		for(DirectedSupplementEdgePath p : paths){
+			DirectedEdge replaced = p.getReplacedEdge();
+			ISugiyamaEdge tempReplacedEdge = new SugiyamaEdge(replaced, tmpVertexMap.get(replaced.getSource().getID()), tmpVertexMap.get(replaced.getTarget().getID()));
+			if(tempReplacedEdge.getSource().getLayer() > tempReplacedEdge.getTarget().getLayer()){	//need to reverse edge
+				this.reverseEdge(tempReplacedEdge);	//reverse edge
+				Collections.reverse(p.getDummyVertices());	//reverse order of dummies
+			}
+			List<ISugiyamaVertex> tempDummies = new LinkedList<>();
+			List<ISugiyamaEdge> tempSupplementEdges = new LinkedList<>();
+			int assignLayer = tempReplacedEdge.getSource().getLayer() +1 ;
+			for(Vertex v : p.getDummyVertices()){
+				DummyVertex newDummy = this.createDummy("","",assignLayer);
+				newDummy.setX(v.getX());
+				newDummy.setY(v.getY());
+				tempDummies.add(newDummy);
+				assignLayer++;
+			}
+			assert(assignLayer == tempReplacedEdge.getTarget().getLayer());	//last dummy needs to be a layer under target vertex
+			SupplementEdge newSuppE = this.createSupplementEdge("","", tempReplacedEdge.getSource(), tempDummies.get(0));
+			tempSupplementEdges.add(newSuppE);
+			for(int i = 0; i < tempDummies.size() - 1; i++){
+				newSuppE = this.createSupplementEdge("","", tempDummies.get(i), tempDummies.get(i+1));
+				tempSupplementEdges.add(newSuppE);
+			}
+			newSuppE = this.createSupplementEdge("","", tempDummies.get(tempDummies.size() - 1), tempReplacedEdge.getTarget());
+			tempSupplementEdges.add(newSuppE);
+			
+			SupplementPath tempSupplementPath = this.createSupplementPath(tempReplacedEdge, tempDummies, tempSupplementEdges);
+			this.supplementPaths.add(tempSupplementPath);
+			sugyVertices.addAll(tempDummies);	//add dummies to normal vertex set
+			sugyEdges.addAll(tempSupplementEdges);	//add SupplementEdges to normal edge set
+		}
+		
+		this.graph = new DefaultDirectedGraph<>(sugyVertices, sugyEdges);
+		layerPositions = new LinkedList<>();
+		layerPositions.add(0);
 	}
+	
 
 //	/**
 //	 * Replaces the specified edge with a path of dummy vertices of the specified length.
@@ -282,6 +364,10 @@ public class SugiyamaGraph
 		}
 		out=out.substring(0, out.length()-2);
 		return out+="}";
+	}
+	
+	private boolean dEquals(double a, double b){
+		return Math.abs(a-b) < Math.pow(10, -6);
 	}
 
 	/**

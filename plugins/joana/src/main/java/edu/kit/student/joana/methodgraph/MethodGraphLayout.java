@@ -122,6 +122,7 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 	//method responsible for drawing every edge from out or inside the fieldAccess new
 	//calls other private methods 
 	private void drawFieldAccessEdges(MethodGraph graph, FieldAccess fa){
+		logger.info("FieldAccess: vertices: "+fa.getGraph().getVertexSet().size() + "; edges: "+ fa.getGraph().getEdgeSet().size());
 		//!!!draw FA through layouting the complete FA with sugiyama (prob. just last step)
 		//problem with giving the sugiyama a whole supplement path as they are defined just in sugiyama
 		//add dummy vertices in deep copies of vertex- and edgeset of this original given methodgraph
@@ -458,10 +459,10 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 				fromOutEdges.add(e);
 			}
 		}
-		logger.debug("from out edges: "+fromOutEdges.size());
-		logger.debug("box pos: "+fa.getX()+","+fa.getY()+" size: "+fa.getSize().x+","+fa.getSize().y);
+//		logger.debug("from out edges: "+fromOutEdges.size());
+//		logger.debug("box pos: "+fa.getX()+","+fa.getY()+" size: "+fa.getSize().x+","+fa.getSize().y);
 		for(JoanaVertex v : faVertices){
-			logger.debug("vertex pos: "+v.getX()+","+v.getY()+" size: "+v.getSize().x+","+v.getSize().y);
+//			logger.debug("vertex pos: "+v.getX()+","+v.getY()+" size: "+v.getSize().x+","+v.getSize().y);
 		}
 		return fromOutEdges;
 	}

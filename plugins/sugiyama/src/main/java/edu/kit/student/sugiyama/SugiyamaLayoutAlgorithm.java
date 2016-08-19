@@ -9,6 +9,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import edu.kit.student.graphmodel.DefaultVertex;
+import edu.kit.student.graphmodel.DirectedSupplementEdgePath;
+import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
 import edu.kit.student.graphmodel.directed.DirectedEdge;
 import edu.kit.student.graphmodel.directed.DirectedGraph;
@@ -156,5 +158,12 @@ public class SugiyamaLayoutAlgorithm<G extends DirectedGraph>
 		positioner.positionVertices(wrappedGraph);
 		logger.info("drawing edges");
 		drawer.drawEdges(wrappedGraph);
+	}
+	
+	//draw given edges new, also take paths into account
+	//positions of every vertex is set and should not be changed
+	public void drawEdgesNew(Set<Vertex> vertices, Set<DirectedEdge> edges, Set<DirectedSupplementEdgePath> paths){
+		SugiyamaGraph sugyGraph = new SugiyamaGraph("",vertices, edges, paths);
+		drawer.drawEdges(sugyGraph);	//draw edges
 	}
 }
