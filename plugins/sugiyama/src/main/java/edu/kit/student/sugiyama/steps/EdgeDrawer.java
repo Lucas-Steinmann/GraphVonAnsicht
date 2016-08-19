@@ -33,40 +33,44 @@ import edu.kit.student.util.DoublePoint;
 public class EdgeDrawer implements IEdgeDrawer {
 	private IEdgeDrawerGraph graph;
 	private Set<SupplementPath> paths;
-	private Set<ISugiyamaVertex> graphVertices;	//all vertices of the graph, with dummy vertices
-	private Set<ISugiyamaEdge> graphEdges;	//all edges of the graph, with supplement edges
+	private Set<ISugiyamaVertex> graphVertices;                        // all vertices of the graph, with dummy vertices
+	private Set<ISugiyamaEdge> graphEdges;                             // all edges of the graph, with supplement edges
 	
-	private Set<ISugiyamaEdge> sugiEdges; //edges that are not supplementEdges
-	private Set<ISugiyamaEdge> selfLoopEdges;	//edges with same source and target vertex
-	private Set<ISugiyamaEdge> sameLayerEdges;	//edges that connect two vertices of the same layer, (for now without selfloops!)
-	private Set<ISugiyamaEdge> normalEdges;	//edges that are not (supplement edges, selfLoopEdges or sameLayerEdges)
+	private Set<ISugiyamaEdge> sugiEdges;                              // edges that are not supplementEdges
+	private Set<ISugiyamaEdge> selfLoopEdges;	                       // edges with same source and target vertex
+	private Set<ISugiyamaEdge> sameLayerEdges;	                       // edges that connect two vertices of the same layer, (for now without selfloops!)
+	private Set<ISugiyamaEdge> normalEdges;	                           // edges that are not (supplement edges, selfLoopEdges or sameLayerEdges)
 	
-	private Set<ISugiyamaVertex> isolatedVertices;	//isolated vertices
+	private Set<ISugiyamaVertex> isolatedVertices;                     //isolated vertices
 	private double[] spaceBetweenLayers;
 	private double[] distancePerEdgeInLayer;
 	
 	private Set<DoublePoint> points = new HashSet<DoublePoint>();
 	
-	private Map<Integer,int[]> inOutDeg = new HashMap<Integer,int[]>();	//maps vertex id, to an array, containing the indegree on index 0 and outdegree on index 1
-	private Map<Integer, List<List<DoublePoint>>> inOutPoints = new HashMap<Integer, List<List<DoublePoint>>>();	//maps vertex id to Lists of incoming and outgoing points
-	private Map<Integer, List<List<ISugiyamaVertex>>> inOutVertices = new HashMap<Integer, List<List<ISugiyamaVertex>>>();// maps vertex id to incoming and outgoing vertices
+	private Map<Integer,int[]> inOutDeg;                               // maps vertex id, to an array, containing the indegree on index 0 and outdegree on index 1
+	private Map<Integer, List<List<DoublePoint>>> inOutPoints;         // maps vertex id to Lists of incoming and outgoing points
+	private Map<Integer, List<List<ISugiyamaVertex>>> inOutVertices;   // maps vertex id to incoming and outgoing vertices
 	
     final Logger logger = LoggerFactory.getLogger(EdgeDrawer.class);
 
 	@Override
 	public void drawEdges(IEdgeDrawerGraph graph) {
+        inOutDeg = new HashMap<Integer,int[]>();
+        inOutPoints = new HashMap<Integer, List<List<DoublePoint>>>();
+        inOutVertices = new HashMap<Integer, List<List<ISugiyamaVertex>>>();
+
 		logger.info("EdgeDrawer.drawEdges():");
 		if(graph.getEdgeSet() == null || graph.getEdgeSet().isEmpty() || graph.getVertexSet() == null || graph.getVertexSet().isEmpty()){
 			return;
 		}
-		initialize(graph);	//initializes the graph and it's sets, needed in the whole class!
-		sortLayers();	//sorts the vertices in every layer in ascending order of their X-coordinate
-		fillInOutDeg();	//fills mapping of vertex to degrees
-		fillInOutPoints();	//fills mapping of vertex to points where edges come in or are going out
-		fillInOutVertices();	//fills mapping of vertex to incoming and outgoing vertices
-		sortInOutVertices();	//sorts the lists of in- and out vertices in ascending order of their X-coordinate
-		calcSpaceBetweenLayers();	//fills the array that contains the space between two layers
-		calcDistancePerEdgeInLayer();//fills the array that contains the distance between two kinking edges. (if all edges are kinking, the distance between two adjacency edges is constant)
+		initialize(graph);            //initializes the graph and it's sets, needed in the whole class!
+		sortLayers();	              //sorts the vertices in every layer in ascending order of their X-coordinate
+		fillInOutDeg();               //fills mapping of vertex to degrees
+		fillInOutPoints();            //fills mapping of vertex to points where edges come in or are going out
+		fillInOutVertices();          //fills mapping of vertex to incoming and outgoing vertices
+		sortInOutVertices();          //sorts the lists of in- and out vertices in ascending order of their X-coordinate
+		calcSpaceBetweenLayers();     //fills the array that contains the space between two layers
+		calcDistancePerEdgeInLayer(); //fills the array that contains the distance between two kinking edges. (if all edges are kinking, the distance between two adjacency edges is constant)
 //		test();
 		
 		this.normalEdges.forEach(edge->this.drawNormalEdge(edge));
@@ -81,6 +85,10 @@ public class EdgeDrawer implements IEdgeDrawer {
 			}
 		}
 		
+        isolatedVertices.clear();
+	    inOutDeg.clear();
+	    inOutPoints.clear();
+	    inOutVertices.clear();
 //		testEdgePaths();
 	}
 	

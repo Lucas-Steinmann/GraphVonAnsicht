@@ -283,10 +283,12 @@ public class GraphView extends Pane {
 		Tab vertexFilterTab = new Tab("Vertices");
 		vertexFilterTab.setClosable(false);
 		vertexFilterTab.setContent(setupVertexFilterPane(selectedVertexFilter));
+		List<VertexFilter> vertexBackup = new LinkedList<>(selectedVertexFilter);
 		
 		Tab edgeFilterTab = new Tab("Edges");
 		edgeFilterTab.setClosable(false);
 		edgeFilterTab.setContent(setupEdgeFilterPane(selectedEdgeFilter));
+		List<EdgeFilter> edgeBackup = new LinkedList<>(selectedEdgeFilter);
 		
 		tabPane.getTabs().addAll(vertexFilterTab, edgeFilterTab);
 		
@@ -298,13 +300,24 @@ public class GraphView extends Pane {
 		dialog.setWidth(500);
 		dialog.setHeight(500);
 		Optional<ButtonType> result = dialog.showAndWait();
-		if(result.get() == ButtonType.OK) { 
+		if(result.get() == ButtonType.OK &&
+		        !(listEqualsNoOrder(vertexBackup, selectedVertexFilter) &&
+		        listEqualsNoOrder(edgeBackup, selectedEdgeFilter))) 
+		{ 
+		    // Only redraw if OK was pressed and if there was a change in the selection.
 			this.graphFactory.getGraph().setVertexFilter(selectedVertexFilter);
 			this.graphFactory.getGraph().setEdgeFilter(selectedEdgeFilter);
             getCurrentLayoutOption().applyLayout();
             reloadGraph();
 		}
 	}
+
+    public static <T> boolean listEqualsNoOrder(List<T> l1, List<T> l2) {
+        final Set<T> s1 = new HashSet<>(l1);
+        final Set<T> s2 = new HashSet<>(l2);
+
+        return s1.equals(s2);
+    }
 	
 	private GridPane setupVertexFilterPane(List<VertexFilter> selectedVertexFilter) {
 		List<VertexFilter> vertexFilter = PluginManager.getPluginManager().getVertexFilter();
