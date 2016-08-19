@@ -7,6 +7,7 @@ public class GAnsMediator extends Application {
 	private GAnsApplication app;
 	
 	private Stage primaryStage;
+	private Parameters params;
 	
 	public GAnsMediator() {
 		this.app = new GAnsApplication(this);
@@ -15,7 +16,7 @@ public class GAnsMediator extends Application {
 	@Override
 	public void start(Stage primaryStage) throws Exception {
 		this.primaryStage = primaryStage;
-		this.app.start(this.primaryStage, this.getParameters());
+		this.app.start(this.primaryStage, params == null ? getParameters() : params);
 	}
 
 	public static void main(String[] args) {
@@ -24,5 +25,9 @@ public class GAnsMediator extends Application {
 	
 	public void openGraph(int id) {
 		this.app.openGraph(id);
+	}
+	
+	public GAnsApplication getGansApp() {
+	    return app;
 	}
 }
