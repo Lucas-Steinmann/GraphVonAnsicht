@@ -1,5 +1,6 @@
 package edu.kit.student.joana;
 
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -7,21 +8,26 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import edu.kit.student.graphmodel.FastGraphAccessor;
+import edu.kit.student.graphmodel.SubGraph;
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.ViewableVertex;
 import edu.kit.student.graphmodel.action.SubGraphAction;
 import edu.kit.student.graphmodel.action.VertexAction;
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
 import edu.kit.student.plugin.LayoutOption;
+import edu.kit.student.util.DoublePoint;
+import javafx.scene.paint.Color;
 
 
 /**
  * A {@link JoanaGraph} which specifies a {@link FieldAccess} in a {@link JoanaGraph}.
  */
-public class FieldAccessGraph extends JoanaGraph {
+public class FieldAccessGraph extends JoanaGraph implements SubGraph {
 
     private DefaultDirectedGraph<JoanaVertex, JoanaEdge> graph;
     private JoanaVertex fieldEntry;
+	public static double paddingx = 10;
+	public static double paddingy = 50;
     
     public FieldAccessGraph(String name, Set<JoanaVertex> vertices, Set<JoanaEdge> edges) {
         //TODO: Check whether the sets build a valid field access
@@ -115,4 +121,59 @@ public class FieldAccessGraph extends JoanaGraph {
         return new LinkedList<>();
     }
 
+
+    @Override
+    public Color getBackgroundColor() {
+        return Color.LIGHTGREEN;
+    }
+
+
+    @Override
+    public Set<? extends SubGraph> getSubGraphs() {
+        return new HashSet<>();
+    }
+
+    @Override
+    public DoublePoint getSize() {
+        if (graph.getVertexSet().isEmpty()) {
+            return new DoublePoint(0, 0);
+        }
+        Set<JoanaVertex> fagVertices = this.graph.getVertexSet();
+        Set<JoanaEdge> fagEdges = this.graph.getEdgeSet();
+        
+        double minX, minY, maxX, maxY;
+		minX = fagVertices.stream().mapToDouble(vertex->vertex.getX()).min().getAsDouble();
+		maxX = fagVertices.stream().mapToDouble(vertex->vertex.getX() + vertex.getSize().x).max().getAsDouble();
+		minY = fagVertices.stream().mapToDouble(vertex->vertex.getY()).min().getAsDouble();
+		maxY = fagVertices.stream().mapToDouble(vertex->vertex.getY() + vertex.getSize().y).max().getAsDouble();
+		for(JoanaEdge e : fagEdges){	//look if there are some edges more right or left than a vertex.
+			minX = Math.min(e.getPath().getNodes().stream().mapToDouble(point->(point.x)).min().getAsDouble(), minX);
+			maxX = Math.max(e.getPath().getNodes().stream().mapToDouble(point->(point.x)).max().getAsDouble(), maxX);
+			minY = Math.min(e.getPath().getNodes().stream().mapToDouble(point->(point.y)).min().getAsDouble(), minY);
+			maxY = Math.max(e.getPath().getNodes().stream().mapToDouble(point->(point.y)).max().getAsDouble(), maxY);
+		}
+		
+		
+		// set now the new size of the representing vertex appropriated to the layouted FieldAccessGraphs
+		return new DoublePoint(maxX - minX + paddingx, maxY - minY + paddingy);	
+    }
+
+
+    @Override
+    public Double getX() {
+        if (graph.getVertexSet().isEmpty()) {
+            return 0d;
+        }
+        return (double) graph.getVertexSet().stream().min(Comparator.comparing(v -> v.getX())).get().getX() - paddingx/2;
+    }
+
+
+    @Override
+    public Double getY() {
+        if (graph.getVertexSet().isEmpty()) {
+            return 0d;
+        }
+        return (double) graph.getVertexSet().stream().min(Comparator.comparing(v -> v.getY())).get().getY() - paddingy/2;
+    }
+    
 }

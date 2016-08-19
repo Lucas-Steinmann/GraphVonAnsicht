@@ -98,6 +98,11 @@ public interface ViewableGraph extends Graph {
 	@Override
     public Set<? extends ViewableVertex> getVertexSet();
 
+	/**
+	 * Returns the set of all conceptual subgraphs in this graph
+	 * @return the list of subgraphs
+	 */
+	public Set<? extends SubGraph> getSubGraphs();
 
 	/**
 	 * Returns a list of layouts which have been registered at the corresponding

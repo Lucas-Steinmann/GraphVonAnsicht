@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Set;
 
 import edu.kit.student.graphmodel.FastGraphAccessor;
+import edu.kit.student.graphmodel.SubGraph;
 import edu.kit.student.graphmodel.Vertex;
 
 /**

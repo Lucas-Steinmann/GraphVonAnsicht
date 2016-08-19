@@ -36,50 +36,26 @@ public class JoanaVertex extends DefaultVertex implements ViewableVertex {
      * @param kind  the kind (type)
      */
     public JoanaVertex(String name, String label, VertexKind kind) {
-        super(name, label);
-        
-        nodeKind = new GAnsProperty<VertexKind>("nodeKind", kind);
-        nodeSource = new GAnsProperty<String>("nodeSource", "");
-        nodeProc = new GAnsProperty<Integer>("nodeProc", 0);
-        nodeOperation = new GAnsProperty<String>("nodeOperation", "");
-        nodeBcName = new GAnsProperty<String>("nodeBcName", "");
-        nodeBcIndex = new GAnsProperty<Integer>("nodeBCIndex", 0);
-        nodeSr = new GAnsProperty<Integer>("nodeSr", 0);
-        nodeSc = new GAnsProperty<Integer>("nodeSc", 0);
-        nodeEr = new GAnsProperty<Integer>("nodeEr", 0);
-        nodeEc = new GAnsProperty<Integer>("nodeEc", 0);
-        
-        this.sizeSet = false;
+        this(name, label, kind, "", 0, "", "", 0, 0, 0, 0, 0);
     }
 
-    /**
-     * Sets properties of this joana vertex.
-     * @param nodeKind the kind
-     * @param nodeSource the source where it is described
-     * @param nodeProc
-     * @param nodeOperation
-     * @param nodeBcName
-     * @param nodeBcIndex
-     * @param nodeSr
-     * @param nodeSc
-     * @param nodeEr
-     * @param nodeEc
-     */
-    public void setProperties(VertexKind nodeKind, String nodeSource, 
-            Integer nodeProc, String nodeOperation, String nodeBcName,
-            Integer nodeBcIndex, Integer nodeSr, Integer nodeSc, 
-            Integer nodeEr, Integer nodeEc) {
-	    //TODO: Replace setProperties with constructor, as all arguments should not change over time
-        this.nodeKind.setValue(nodeKind);
-        this.nodeSource.setValue(nodeSource);
-        this.nodeProc.setValue(nodeProc);
-        this.nodeOperation.setValue(nodeOperation);
-        this.nodeBcName.setValue(nodeBcName);
-        this.nodeBcIndex.setValue(nodeBcIndex);
-        this.nodeSr.setValue(nodeSr);
-        this.nodeSc.setValue(nodeSc);
-        this.nodeEr.setValue(nodeEr);
-        this.nodeEc.setValue(nodeEc);
+    public JoanaVertex(String name, String label, VertexKind nodeKind, String nodeSource, 
+            int nodeProc, String nodeOperation, String nodeBcName, int nodeBcIndex, int nodeSr, 
+            int nodeSc, int nodeEr, int nodeEc) {
+
+        super(name, label);
+
+        this.nodeKind = new GAnsProperty<VertexKind>("nodeKind", nodeKind);
+        this.nodeSource = new GAnsProperty<String>("nodeSource", nodeSource);
+        this.nodeProc = new GAnsProperty<Integer>("nodeProc", nodeProc);
+        this.nodeOperation = new GAnsProperty<String>("nodeOperation", nodeOperation);
+        this.nodeBcName = new GAnsProperty<String>("nodeBcName", nodeBcName);
+        this.nodeBcIndex = new GAnsProperty<Integer>("nodeBCIndex", nodeBcIndex);
+        this.nodeSr = new GAnsProperty<Integer>("nodeSr", nodeSr);
+        this.nodeSc = new GAnsProperty<Integer>("nodeSc", nodeSc);
+        this.nodeEr = new GAnsProperty<Integer>("nodeEr", nodeEr);
+        this.nodeEc = new GAnsProperty<Integer>("nodeEc", nodeEc);
+        this.sizeSet = false;
     }
     
     @Override

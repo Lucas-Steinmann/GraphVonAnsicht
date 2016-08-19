@@ -36,7 +36,6 @@ public class JoanaCollapsedVertex extends JoanaCompoundVertex {
 	public JoanaCollapsedVertex(String name, String label, DefaultDirectedGraph<JoanaVertex, JoanaEdge> graph,
 			Map<JoanaEdge, JoanaEdge> newEdgeToOldEdge) {
 		super(name, label, VertexKind.SUMMARY);
-		super.setProperties(VertexKind.SUMMARY, "", 0, "", "", 0, 0, 0, 0, 0);
 
 		this.graph = graph;
 		

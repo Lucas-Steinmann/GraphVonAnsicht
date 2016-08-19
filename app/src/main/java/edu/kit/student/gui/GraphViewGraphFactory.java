@@ -9,6 +9,7 @@ import java.util.Set;
 
 import edu.kit.student.graphmodel.Edge;
 import edu.kit.student.graphmodel.Graph;
+import edu.kit.student.graphmodel.SubGraph;
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.ViewableGraph;
 import edu.kit.student.graphmodel.ViewableVertex;
@@ -130,6 +131,10 @@ public class GraphViewGraphFactory {
 				VertexShape shape = new VertexShape(vertex);
 				vertices.put(shape, vertex);
 			}
+		}
+		for(SubGraph subgraph : graph.getSubGraphs()) {
+		    BackgroundShape shape = new BackgroundShape(subgraph);
+		    background.add(shape);
 		}
 	}
 	

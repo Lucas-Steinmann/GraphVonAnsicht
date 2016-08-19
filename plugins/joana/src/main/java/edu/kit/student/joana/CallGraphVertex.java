@@ -24,12 +24,6 @@ public class CallGraphVertex extends JoanaVertex {
 	}
 	
 	@Override
-	public void setProperties(VertexKind nodeKind, String nodeSource, Integer nodeProc, String nodeOperation,
-			String nodeBcName, Integer nodeBCIndex, Integer nodeSr, Integer nodeSc, Integer nodeEr, Integer nodeEc) {
-	    //TODO: Replace setProperties with constructor, as all arguments should not change over time
-	}
-	
-	@Override
 	public VertexKind getNodeKind() {
 		return methodGraph.getEntryVertex().getNodeKind();
 	}

@@ -78,8 +78,8 @@ public class JoanaVertexBuilder implements IVertexBuilder {
      * @return the built vertex
      */
     public JoanaVertex build() {
-        JoanaVertex vertex = new JoanaVertex(name, label, kind);
-        vertex.setProperties(kind, source, proc, operation, bcName, bcIndex, sr, sc, er, ec);
+        JoanaVertex vertex = new JoanaVertex(name, label, kind, source, proc, 
+                                             operation, bcName, bcIndex, sr, sc, er, ec);
         //TODO Check relations nodeKind-nodeOperation and maybe others
         return vertex;
     }

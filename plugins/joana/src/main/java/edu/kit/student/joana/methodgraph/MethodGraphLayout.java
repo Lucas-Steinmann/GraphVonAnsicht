@@ -11,7 +11,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.swing.event.ListSelectionEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import edu.kit.student.graphmodel.EdgePath;
 import edu.kit.student.graphmodel.Vertex;
@@ -27,8 +28,6 @@ import edu.kit.student.sugiyama.RelativeLayerConstraint;
 import edu.kit.student.sugiyama.SugiyamaLayoutAlgorithm;
 import edu.kit.student.sugiyama.steps.LayerAssigner;
 import edu.kit.student.util.DoublePoint;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Implements hierarchical layout with layers for {@link MethodGraph}.
@@ -506,15 +505,15 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 
 		    // Offset vertices contained in field access
             for(JoanaVertex v : fa.getGraph().getVertexSet()){
-                v.setX(v.getX() + fa.getX() + (int)FieldAccess.paddingx/2);
-                v.setY(v.getY() + fa.getY() + (int)FieldAccess.paddingy/2);
+                v.setX(v.getX() + fa.getX() + (int)FieldAccessGraph.paddingx/2);
+                v.setY(v.getY() + fa.getY() + (int)FieldAccessGraph.paddingy/2);
             }
 			for(JoanaEdge e : fa.getGraph().getEdgeSet()){
 				List<DoublePoint> points = e.getPath().getNodes();
 				List<DoublePoint> newPoints = new LinkedList<>();
 				assert(!points.isEmpty());
-				points.forEach(p->newPoints.add(new DoublePoint(p.x + fa.getX() + FieldAccess.paddingx/2, 
-				                                                p.y + fa.getY() + FieldAccess.paddingy/2)));
+				points.forEach(p->newPoints.add(new DoublePoint(p.x + fa.getX() + FieldAccessGraph.paddingx/2, 
+				                                                p.y + fa.getY() + FieldAccessGraph.paddingy/2)));
 				points.clear();
 				points.addAll(newPoints);
 			}

@@ -36,50 +36,19 @@ import edu.kit.student.plugin.PluginManager;
 
 public class JoanaGraphTester {
     
-    static final int PARSECOUNT = 1;
     static List<JoanaGraphModel> models = new LinkedList<>();
+    private static Iterator<File> lastOpenedFile;
     static Random randomGenerator;
-
+    static List<File> files;
+    
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-        File resources = new File("plugins/joana/src/test/resources");
-        List<File> files = Arrays.asList(resources.listFiles()).stream().filter((file) 
-                -> file.getName().endsWith(".graphml")).collect(Collectors.toList());
-        if (files == null) {
-            return;
-        }
-
-        List<JoanaWorkspace> ws = new LinkedList<JoanaWorkspace>(); 
-        for (int i = 0; i < files.size() && i < PARSECOUNT; i++) {
-            ws.add(new JoanaWorkspace());
-        }
-        List<JoanaGraphModelBuilder> builders = ws.stream().map((workspace) -> workspace.getGraphModelBuilder()).collect(Collectors.toList());
-
-        for (Importer importer : PluginManager.getPluginManager().getImporter()) {
-            if (importer.getSupportedFileEndings().equals("*.graphml")) {
-                Iterator<JoanaGraphModelBuilder> itBuilder = builders.iterator();
-
-                int parsed = 0;
-                for (File file : files) {
-                    try {
-                        System.out.println("Parsing: " + file.getName());
-                        importer.importGraph(itBuilder.next(), new FileInputStream(file));
-                        if (++parsed >= PARSECOUNT)
-                            break;
-                    } catch (FileNotFoundException | ParseException e) {
-                        e.printStackTrace();
-                    }
-                }
-                break;
-            }
-        }
-        models = ws.stream().map((workspace) -> workspace.getGraphModel()).collect(Collectors.toList());
-
+        generateGraphModel();
         long time = System.nanoTime();
         System.out.println("Seed: " + time);
         randomGenerator = new Random(time);
     }
-
+    
     @Before
     public void setUp() throws Exception {
     }
@@ -115,6 +84,7 @@ public class JoanaGraphTester {
     }
     
     //First collapse a random number of time, then expand, then check for equality
+    @Test
     public void randomSymmetricCollapseTest() {
         for (int run = 0; run < 20; run++) {
            // System.out.print("Run: " + run + " ");
@@ -144,6 +114,7 @@ public class JoanaGraphTester {
         }
     }
 
+    @Test
     public void randomMixedCollapseTest() {
         for (int run = 0; run < 20; run++) {
            // System.out.print("Run: " + run + " ");
@@ -193,6 +164,8 @@ public class JoanaGraphTester {
             Assert.assertTrue(compareAdjList(adjList, createAdjacenceList(randomTestGraph)));
         }
     }
+    
+    @Test
     public void randomAssymmetricCollapseTest() {
         for (int run = 0; run < 20; run++) {
            // System.out.print("Run: " + run + " ");
@@ -287,5 +260,60 @@ public class JoanaGraphTester {
         List<T> list = items.stream().collect(Collectors.toList());
         Collections.shuffle(list);
         return list.subList(0, m).stream().collect(Collectors.toSet());
+    }
+    
+    /**
+     * Returns all methodgraphs with less than maxV vertices and less then maxE edges.
+     * @param maxV the maximum number of vertices
+     * @param maxE the maximum number of edges
+     * @return the methodgraphs
+     */
+    public static List<MethodGraph> getAllMethodGraphs(int maxV, int maxE) {
+        while (generateGraphModel() != null)  {}
+        return models.stream().map(model -> model.getMethodGraphs())
+                              .flatMap(mgraphs -> mgraphs.stream())
+                              .filter(mgraph -> mgraph.getVertexSet().size() < maxV)
+                              .filter(mgraph -> mgraph.getEdgeSet().size() < maxE)
+                              .collect(Collectors.toList());
+    }
+    
+    public static JoanaGraphModel generateGraphModel() {
+        if (lastOpenedFile == null) {
+            lastOpenedFile = getDirIterator();
+        }
+        if (lastOpenedFile.hasNext()) {
+            return parse(lastOpenedFile.next());
+        }
+        return null;
+    }
+    
+    public static JoanaGraphModel parse(File file) {
+        JoanaWorkspace ws = new JoanaWorkspace();
+        for (Importer importer : PluginManager.getPluginManager().getImporter()) {
+            if (importer.getSupportedFileEndings().equals("*.graphml")) {
+                try {
+                    System.out.println("Parsing: " + file.getName());
+                    importer.importGraph(new JoanaGraphModelBuilder(ws), new FileInputStream(file));
+                } catch (FileNotFoundException | ParseException e) {
+                    e.printStackTrace();
+                    return null;
+                }
+                break;
+            }
+        }
+        models.add(ws.getGraphModel());
+        return ws.getGraphModel();
+    }
+    
+    private static Iterator<File> getDirIterator() {
+        File resources = new File("plugins/joana/src/test/resources");
+        files = Arrays.asList(resources.listFiles()).stream()
+                                                    .filter((file)-> file.getName().endsWith(".graphml"))
+                                                    .collect(Collectors.toList());
+        if (files == null) {
+            files = new LinkedList<>();
+        }
+        return files.iterator();
+
     }
 }

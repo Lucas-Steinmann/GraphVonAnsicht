@@ -73,10 +73,6 @@ public class JoanaEdge implements DirectedEdge {
     	return this.lastTarget;
     }
 
-    public void setProperties(EdgeKind edgeKind) {
-        this.edgeKind.setValue(edgeKind);
-    }
-
     /**
      * Returns the edgeKind of the JoanaEdge.
      * 

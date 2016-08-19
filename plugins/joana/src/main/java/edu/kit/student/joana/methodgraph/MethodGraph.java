@@ -7,13 +7,14 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
+import edu.kit.student.graphmodel.SubGraph;
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.ViewableVertex;
 import edu.kit.student.graphmodel.action.SubGraphAction;
 import edu.kit.student.graphmodel.action.VertexAction;
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
-import edu.kit.student.joana.BackGroundVertex;
 import edu.kit.student.joana.FieldAccess;
 import edu.kit.student.joana.FieldAccessCollapser;
 import edu.kit.student.joana.FieldAccessGraph;
@@ -235,11 +236,6 @@ public class MethodGraph extends JoanaGraph {
     @Override
     public Set<JoanaVertex> getVertexSet() {
         Set<JoanaVertex> result = removeFilteredVertices(graph.getVertexSet());
-        for (FieldAccess fa : fieldAccesses) {
-            if (fa.getGraph().getVertexSet().stream().allMatch(v -> graph.contains(v))) {
-                result.add(new BackGroundVertex(fa));
-            }
-        }
         return result;
     }
 
@@ -253,6 +249,11 @@ public class MethodGraph extends JoanaGraph {
         return removeFilteredEdges(graph.edgesOf(vertex));
     }
 
+    @Override
+    public Set<? extends SubGraph> getSubGraphs() {
+        return fieldAccesses.stream().map(fa -> fa.getGraph())
+                                     .collect(Collectors.toSet());
+    }
     
     @Override
     public void addVertexFilter(VertexFilter filter) {
@@ -682,4 +683,5 @@ public class MethodGraph extends JoanaGraph {
             }
 		}
 	}
+
 }
