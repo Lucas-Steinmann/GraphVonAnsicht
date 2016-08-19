@@ -2,7 +2,9 @@ package edu.kit.student.graphvonansicht.tests;
 
 import java.io.File;
 import java.util.List;
+import java.util.concurrent.TimeoutException;
 
+import org.testfx.api.FxRobot;
 import org.testfx.api.FxToolkit;
 
 import edu.kit.student.gui.GAnsMediator;
@@ -28,7 +30,7 @@ public class GUITestHandle {
 
     MenuItem groupItem, filterItem;
 
-    public void start(String... args) throws Exception {
+    public void start(String... args) throws TimeoutException {
 
         appStage = FxToolkit.registerPrimaryStage();
         app = (GAnsMediator) FxToolkit.setupApplication(GAnsMediator.class, args);
@@ -74,11 +76,10 @@ public class GUITestHandle {
     
     // Helper functions for gui testing
     public void importGraph(File file) {
-        //TODO: Implement
+        new FxRobot().clickOn("File").sleep(200).clickOn("Import").closeCurrentWindow();
     }
 
-    public void exportGraph() {
-        //TODO: Implement
+    public void exportGraph(File file) {
     }
     
     public void changeLayout(String name) {
@@ -114,8 +115,15 @@ public class GUITestHandle {
         return null;
     }
 
-    public void exit() {
-        exitItem.fire();
+    public void exit() throws TimeoutException {
+//        exitItem.fire();
+//        new FxRobot().clickOn("File").sleep(200).clickOn("Exit");
+
+
+        FxToolkit.cleanupApplication(app);
+        FxToolkit.hideStage();
+        FxToolkit.cleanupStages();
+        //FxToolkit.cleanupStages();    
     }
 
     public Stage getAppStage() {

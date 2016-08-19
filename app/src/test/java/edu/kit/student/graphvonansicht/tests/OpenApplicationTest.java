@@ -1,13 +1,27 @@
 package edu.kit.student.graphvonansicht.tests;
 
+import java.io.File;
+import java.util.concurrent.TimeoutException;
+
 import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
-import org.junit.Test; 
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.testfx.api.FxToolkit;
+
+import javafx.application.Platform;
+import javafx.stage.Stage; 
 
 public class OpenApplicationTest {
 
     static GUITestHandle handle;
+    static Stage primaryStage;
+    
+    @BeforeClass
+    public static void setUpBeforeClass() throws TimeoutException {
+        primaryStage = FxToolkit.registerPrimaryStage();
+    }
 
     @Before
     public void setUp() throws Exception {
@@ -34,10 +48,18 @@ public class OpenApplicationTest {
         Assert.assertNotNull(handle.getGroupItem());
         Assert.assertNotNull(handle.getFilterItem());
     }
+    
+    @Test
+    public void importGraph() {
+        handle.importGraph(new File(""));
+        Assert.assertNotNull(System.in);
+    }
 
     @After
     public void tearDown() throws Exception {
+        Platform.setImplicitExit(false);
         handle.exit();
         Assert.assertNull(handle.getAppStage().getOwner());
+        //handle.getAppStage().close();
     }
 }
