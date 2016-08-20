@@ -47,6 +47,10 @@ public class OpenApplicationTest {
         Assert.assertNotNull(handle.getOtherMenu());
         Assert.assertNotNull(handle.getGroupItem());
         Assert.assertNotNull(handle.getFilterItem());
+
+        Assert.assertNotNull(handle.getGraphViewTabs());
+        Assert.assertNotNull(handle.getStructureView());
+        Assert.assertNotNull(handle.getInformationView());
     }
     
     @Test

@@ -100,7 +100,9 @@ public class GAnsApplication {
 		treeInfoLayout.setOrientation(Orientation.VERTICAL);
 		treeInfoLayout.setDividerPosition(0, 0.6);
 		structureView = new StructureView();
+		structureView.setId("StructureView");
 		informationView = new InformationView();
+		informationView.setId("InformationView");
 		treeInfoLayout.getItems().addAll(structureView, informationView);
 		
 		structureView.getSelectionModel().setSelectionMode(SelectionMode.SINGLE);
@@ -126,6 +128,7 @@ public class GAnsApplication {
 		SplitPane mainViewLayout = new SplitPane();
 		mainViewLayout.setDividerPosition(0, 0.75);
 		graphViewTabPane = new TabPane();
+		graphViewTabPane.setId("GraphViewTabPane");
 		graphViewTabPane.getSelectionModel().selectedItemProperty().addListener(new ChangeListener<Tab>() {
 			@Override
 			public void changed(ObservableValue<? extends Tab> observable, Tab oldValue, Tab newValue) {

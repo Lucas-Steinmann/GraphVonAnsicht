@@ -8,27 +8,37 @@ import org.testfx.api.FxRobot;
 import org.testfx.api.FxToolkit;
 
 import edu.kit.student.gui.GAnsMediator;
+import edu.kit.student.gui.InformationView;
+import edu.kit.student.gui.StructureView;
 import edu.kit.student.util.DoublePoint;
 import javafx.collections.ObservableList;
+import javafx.event.Event;
+import javafx.event.EventHandler;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
+import javafx.scene.control.Tab;
+import javafx.scene.control.TabPane;
 import javafx.stage.Stage;
 
 public class GUITestHandle {
 
-    GAnsMediator app = new GAnsMediator();
-    Stage appStage;
+    private GAnsMediator app = new GAnsMediator();
+    private Stage appStage;
 
-    MenuBar menuBar;
-    Menu fileMenu, layoutMenu, otherMenu;
-    MenuItem importItem, exportItem, exitItem;
+    private InformationView informationView ;
+    private TabPane graphViewTabs;
+    private StructureView structureView;
+    private MenuBar menuBar;
 
-    Menu changeLayoutMenu; 
-    ObservableList<MenuItem> availableLayouts;
-    MenuItem propertiesItem;
+    private Menu fileMenu, layoutMenu, otherMenu;
+    private MenuItem importItem, exportItem, exitItem;
 
-    MenuItem groupItem, filterItem;
+    private Menu changeLayoutMenu; 
+    private ObservableList<MenuItem> availableLayouts;
+    private MenuItem propertiesItem;
+
+    private MenuItem groupItem, filterItem;
 
     public void start(String... args) throws TimeoutException {
 
@@ -71,8 +81,12 @@ public class GUITestHandle {
                  }
              }
         }
+        
+        graphViewTabs = (TabPane) appStage.getScene().lookup("#GraphViewTabPane");
+        structureView = (StructureView) appStage.getScene().lookup("#StructureView");
+        informationView = (InformationView) appStage.getScene().lookup("#InformationView");
+        
     }
-    
     
     // Helper functions for gui testing
     public void importGraph(File file) {
@@ -90,12 +104,18 @@ public class GUITestHandle {
         //TODO: Implement
     }
     
-    public void closeTab() {
-        //TODO: Implement
+    public void closeTab(int index) {
+        Tab tab = graphViewTabs.getTabs().get(index);
+        tab.getTabPane().getTabs().remove(tab);
     }
     
+    public void closeAllTabs() {
+        for (Tab tab : graphViewTabs.getTabs())
+            graphViewTabs.getTabs().remove(tab);
+    }
+
     public void applyVertexFilter(String name) {
-        //TODO: Implement
+
     }
     
     public void applyEdgeFilter(String name) {
@@ -116,14 +136,9 @@ public class GUITestHandle {
     }
 
     public void exit() throws TimeoutException {
-//        exitItem.fire();
-//        new FxRobot().clickOn("File").sleep(200).clickOn("Exit");
-
-
         FxToolkit.cleanupApplication(app);
         FxToolkit.hideStage();
         FxToolkit.cleanupStages();
-        //FxToolkit.cleanupStages();    
     }
 
     public Stage getAppStage() {
@@ -177,4 +192,17 @@ public class GUITestHandle {
     public MenuItem getFilterItem() {
         return filterItem;
     }
+
+    public InformationView getInformationView() {
+        return informationView;
+    }
+
+    public TabPane getGraphViewTabs() {
+        return graphViewTabs;
+    }
+
+    public StructureView getStructureView() {
+        return structureView;
+    }
+
 }
