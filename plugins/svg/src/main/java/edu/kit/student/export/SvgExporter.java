@@ -32,7 +32,7 @@ import edu.kit.student.plugin.Exporter;
 public class SvgExporter implements Exporter {
 
     private static String rectStyle = "opacity:0.9;display:inline;stroke-width:4;";
-    private static String textStyle = "font-size:12pt;";
+    private static String textStyle = "font-size:9pt;";
     private static String lineStyle = "stroke-width:2;";
     private static String fileExtension = "svg";
     
@@ -54,6 +54,9 @@ public class SvgExporter implements Exporter {
         
         if (!fileExtension.equals(SvgExporter.fileExtension)) {
             throw new IllegalArgumentException("Only accept files with ending \"." + SvgExporter.fileExtension + "\".");
+        }
+        if (graph == null) {
+            throw new IllegalArgumentException("SerializedGraph is not initialized. "); 
         }
 
         //Create new DOM document
@@ -83,15 +86,13 @@ public class SvgExporter implements Exporter {
         document.appendChild(rootElement);
         
         //add Vertex Elements to DOM
-        Set<SerializedVertex> vertices = graph.getVertices();
+        Set<SerializedVertex> vertices = graph.getVertices();        
         for (SerializedVertex v : vertices) {
             Element vertex = this.createVertexElement(document, v.getShapeProperties());
             rootElement.appendChild(vertex);
-
-        }
+        }       
         
-        //add Edges to DOM
-        
+        //add Edges to DOM        
         Set<SerializedEdge> edges = graph.getEdges();
         for (SerializedEdge e : edges) {
             Element edge = this.createEdgeElement(document, e.getShapeProperties());
