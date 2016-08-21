@@ -19,11 +19,14 @@ import edu.kit.student.joana.FieldAccess;
 import edu.kit.student.joana.FieldAccessCollapser;
 import edu.kit.student.joana.FieldAccessGraph;
 import edu.kit.student.joana.JoanaCollapsedVertex;
+import edu.kit.student.joana.JoanaCollapser;
 import edu.kit.student.joana.JoanaEdge;
 import edu.kit.student.joana.JoanaGraph;
 import edu.kit.student.joana.JoanaPlugin;
 import edu.kit.student.joana.JoanaVertex;
 import edu.kit.student.joana.JoanaVertex.VertexKind;
+import edu.kit.student.joana.graphmodel.DirectedOnionPath;
+import edu.kit.student.joana.graphmodel.JoanaCompoundVertex;
 import edu.kit.student.objectproperty.GAnsProperty;
 import edu.kit.student.plugin.EdgeFilter;
 import edu.kit.student.plugin.LayoutOption;
@@ -42,7 +45,8 @@ public class MethodGraph extends JoanaGraph {
     private GAnsProperty<Integer> fieldAccessCount;
     private Map<JoanaCollapsedVertex, VertexAction> expandActions;
     
-    private FieldAccessCollapser collapser;
+    private FieldAccessCollapser fcollapser;
+    private JoanaCollapser collapser;
 
     public MethodGraph(Set<JoanaVertex> vertices, Set<JoanaEdge> edges, 
             String methodName) {
@@ -61,7 +65,9 @@ public class MethodGraph extends JoanaGraph {
         this.fieldAccesses = this.searchFieldAccesses();
         this.fieldAccessCount = new GAnsProperty<Integer>("Field accesses", this.fieldAccesses.size());
 
-        this.collapser = new FieldAccessCollapser(graph);
+        Map<JoanaEdge, DirectedOnionPath<JoanaEdge, JoanaCompoundVertex>> onionEdges = new HashMap<>();
+        this.fcollapser = new FieldAccessCollapser(graph, onionEdges);
+        this.collapser = new JoanaCollapser(graph, onionEdges);
         this.expandActions = new HashMap<>();
     }
 
@@ -159,7 +165,7 @@ public class MethodGraph extends JoanaGraph {
 	    for (FieldAccess fa : fieldAccesses) {
 	        // If all vertices are contained in the graph replace the fieldAccess
 	        if (fa.getGraph().getVertexSet().stream().allMatch((v) -> graph.contains(v))) {
-	            collapser.collapseFieldAccess(graph, fa);
+	            fcollapser.collapseFieldAccess(fa);
 	            collapsedFas.add(fa);
 	        }
 	    }
@@ -177,7 +183,7 @@ public class MethodGraph extends JoanaGraph {
 	    for (FieldAccess fa : fieldAccesses) {
 	        // If field access is contained in the graph (and not collapsed for example) it is expanded
 	        if (graph.contains(fa)) {
-	            collapser.expandFieldAccess(graph, fa);
+	            fcollapser.expandFieldAccess(fa);
 	            collapsedFas.add(fa);
 	        }
 	    }
@@ -193,13 +199,13 @@ public class MethodGraph extends JoanaGraph {
 	            directedSubset.add(graph.getVertexById(v.getID()));
 	        }
 	    }
-	    JoanaCollapsedVertex collapsed = collapser.collapse(graph, directedSubset);
+	    JoanaCollapsedVertex collapsed = collapser.collapse(directedSubset);
 		expandActions.put(collapsed, newExpandAction(collapsed));
 		return collapsed;
 	}
 	
     public Set<JoanaVertex> expand(JoanaCollapsedVertex vertex) {
-        return collapser.expand(graph, vertex);
+        return collapser.expand(vertex);
     }
 
 
