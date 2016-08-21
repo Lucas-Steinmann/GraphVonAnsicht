@@ -207,6 +207,11 @@ public class EdgeDrawer implements IEdgeDrawer {
 //				logger.debug("added target: "+target.getID() +" one in(source: "+source.getID()+")");
 			}
 		}
+		for(ISugiyamaVertex v : this.graphVertices){
+			if(!this.inOutDeg.containsKey(v.getID())){
+				this.inOutDeg.put(v.getID(), new int[2]);
+			}
+		}
 		this.isolatedVertices.forEach(v->this.inOutDeg.put(v.getID(), new int[2]));
 	}
 	
