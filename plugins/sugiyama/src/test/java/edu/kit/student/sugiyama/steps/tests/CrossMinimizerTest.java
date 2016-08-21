@@ -101,7 +101,7 @@ public class CrossMinimizerTest {
         }
     }
 
-    @Test
+    //@Test
     public void performanceTest() {
         for (int i = 0; i < 20; i++) {
             SugiyamaGraph sugiyamaGraph = GraphUtil.generateSugiyamaGraph(75, 2, 8, true, (new Random()).nextLong());
@@ -112,7 +112,7 @@ public class CrossMinimizerTest {
         }
     }
 
-    @Test
+    //@Test
     public void hugeTest() {
         SugiyamaGraph sugiyamaGraph = GraphUtil.generateSugiyamaGraph(250, 2, 6, true, (new Random()).nextLong());
         int crossingsBefore = CrossMinimizer.crossings(sugiyamaGraph);
