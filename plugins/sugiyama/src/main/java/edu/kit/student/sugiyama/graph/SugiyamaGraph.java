@@ -97,10 +97,10 @@ public class SugiyamaGraph
 		layerPositions = new LinkedList<>();
 		layerPositions.add(0);
 		
-		for(Vertex v : vertices){
-			System.out.print(v.getID() + ", ");
-		}
-		System.out.print('\n');
+//		for(Vertex v : vertices){
+//			System.out.print(v.getID() + ", ");
+//		}
+//		System.out.print('\n');
 		
 		//add here points for later layer assigning
 		for (Vertex vertex: vertices){	//add every different position to list, to assign layers later
@@ -228,18 +228,18 @@ public class SugiyamaGraph
 		}
 	}
 	
-	private void checkSupplementPath(SupplementPath p){
-		ISugiyamaEdge replaced = p.getReplacedEdge();
-		List<ISugiyamaVertex> vertices = p.getDummyVertices();
-		List<ISugiyamaEdge> edges = p.getSupplementEdges();
-		System.out.println("replaced: source: y: "+replaced.getSource().getY()+", id: "+replaced.getSource().getID()+ ", layer: "+ replaced.getSource().getLayer() +", target: "+replaced.getTarget().getY()+", id: "+replaced.getTarget().getID()+", layer: "+replaced.getTarget().getLayer());
-		for(ISugiyamaVertex v : vertices){
-			System.out.println("vertices y: "+v.getY()+", id: "+v.getID()+ ", layer: "+ v.getLayer());
-		}
-		for(ISugiyamaEdge e : edges){
-			System.out.println("edges: source: y: "+e.getSource().getY()+", id: "+e.getSource().getID()+ ", layer: "+ e.getSource().getLayer() +"->; target: "+e.getTarget().getY()+", id: "+e.getTarget().getID()+", layer: "+e.getTarget().getLayer());
-		}
-	}
+//	private void checkSupplementPath(SupplementPath p){
+//		ISugiyamaEdge replaced = p.getReplacedEdge();
+//		List<ISugiyamaVertex> vertices = p.getDummyVertices();
+//		List<ISugiyamaEdge> edges = p.getSupplementEdges();
+//		System.out.println("replaced: source: y: "+replaced.getSource().getY()+", id: "+replaced.getSource().getID()+ ", layer: "+ replaced.getSource().getLayer() +", target: "+replaced.getTarget().getY()+", id: "+replaced.getTarget().getID()+", layer: "+replaced.getTarget().getLayer());
+//		for(ISugiyamaVertex v : vertices){
+//			System.out.println("vertices y: "+v.getY()+", id: "+v.getID()+ ", layer: "+ v.getLayer());
+//		}
+//		for(ISugiyamaEdge e : edges){
+//			System.out.println("edges: source: y: "+e.getSource().getY()+", id: "+e.getSource().getID()+ ", layer: "+ e.getSource().getLayer() +"->; target: "+e.getTarget().getY()+", id: "+e.getTarget().getID()+", layer: "+e.getTarget().getLayer());
+//		}
+//	}
 	
 
 //	/**
