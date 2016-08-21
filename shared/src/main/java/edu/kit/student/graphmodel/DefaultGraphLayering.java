@@ -130,6 +130,15 @@ public class DefaultGraphLayering<V extends Vertex> implements GraphLayering<V> 
         this.setLayer(vertex, layer);
     }
 
+    public List<V> getSortedLayer(int layerIndex){
+    	if (getHeight() <= layerIndex) {
+            return new LinkedList<>();
+        }
+    	List<V> result = new LinkedList<>(layers.get(layerIndex));
+    	result.sort((v1,v2)->Integer.compare(v1.getX(), v2.getX()));
+        return result;
+    }
+    
     @Override
     public List<V> getLayer(int layerIndex) {
         if (getHeight() <= layerIndex) {
@@ -138,6 +147,15 @@ public class DefaultGraphLayering<V extends Vertex> implements GraphLayering<V> 
         return new LinkedList<>(layers.get(layerIndex));
     }
 
+    public List<List<V>> getSortedLayers(){
+    	List<List<V>> copy = new LinkedList<>();
+        for (List<V> layer : layers) {
+            copy.add(new LinkedList<V>(layer));
+        }
+        copy.forEach(l->l.sort((v1,v2)->Integer.compare(v1.getX(), v2.getX())));
+        return copy;
+    }
+    
     @Override
     public List<List<V>> getLayers() {
         List<List<V>> copy = new LinkedList<>();

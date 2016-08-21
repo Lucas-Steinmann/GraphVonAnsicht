@@ -44,11 +44,26 @@ public interface LayeredGraph extends DirectedGraph {
 	public List<? extends Vertex> getLayer(int layerNum);
 	
 	/**
+	 * Get all vertices from a certain layer.
+	 * 
+	 * @param layerNum the index of the layer
+	 * @return 		 a list of all vertices which are on this layer, sorted in ascending order of their x-coordinates
+	 */
+	public List<? extends Vertex> getSortedLayer(int layerNum);
+	
+	/**
 	 * Get all layers that contain vertices.
 	 * 
 	 * @return a list of lists of vertices which are on this layer
 	 */
 	public List<? extends List<? extends Vertex>> getLayers();
+	
+	/**
+	 * Get all layers that contain vertices.
+	 * 
+	 * @return a list of lists of vertices which are on this layer. Vertices in every list are sorted in ascending order of their x-coordinates
+	 */
+	public List<? extends List<? extends Vertex>> getSortedLayers();
 	
 	/**
 	 * Returns the height, i.e. the number of layers.

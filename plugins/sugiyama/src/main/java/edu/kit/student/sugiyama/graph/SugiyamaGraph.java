@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
+import java.util.stream.Collectors;
 
 import edu.kit.student.graphmodel.DefaultGraphLayering;
 import edu.kit.student.graphmodel.DefaultVertex;
@@ -60,9 +61,6 @@ public class SugiyamaGraph
 		HashSet<ISugiyamaEdge> edges = new HashSet<>();
 		layering = new DefaultGraphLayering<>(new HashSet<>());
 		for (Vertex vertex: graph.getVertexSet()) {
-			//TODO: Why -1 and not 0? Does -1 mean an illegal state? Why not just put all vertices on layer 0 at start to achieve an consistent state at all time.
-			//      In the statement after this all vertices are set to the starting layer. Isn't this layer 0?
-			//SugiyamaVertex sugiyamaVertex = new SugiyamaVertex(vertex, -1);
 			SugiyamaVertex sugiyamaVertex = new SugiyamaVertex(vertex);
 			vertices.add(sugiyamaVertex);	//fills vertexset with all wrapped vertices
 			tmpVertexMap.put(vertex.getID(), sugiyamaVertex);
@@ -90,78 +88,157 @@ public class SugiyamaGraph
 	 * Just use these if you want to redraw given edges and vertices. not recommended for use in the whole sugiyama-steps.
 	 */
 	public SugiyamaGraph(String name, Set<Vertex> vertices, Set<DirectedEdge> edges, Set<DirectedSupplementEdgePath> paths) {
-
-		HashSet<ISugiyamaVertex> sugyVertices = new HashSet<>();
-		HashSet<ISugiyamaEdge> sugyEdges = new HashSet<>();
+		
+		HashSet<ISugiyamaVertex> sugyVertices = new HashSet<>();	//only SugiyamaVertices
+		HashSet<ISugiyamaEdge> sugyEdges = new HashSet<>();	//only SugiyamaEdges
 		Map<Integer, ISugiyamaVertex> tmpVertexMap = new HashMap<>();
 		List<Integer> yValsOfVertices = new ArrayList<>();
+		layering = new DefaultGraphLayering<>(new HashSet<>());
+		layerPositions = new LinkedList<>();
+		layerPositions.add(0);
 		
-
-		for (Vertex vertex: vertices){	//given vertices, wrap them to SugiyamaVertex
-			SugiyamaVertex sugiyamaVertex = new SugiyamaVertex(vertex);
-			sugyVertices.add(sugiyamaVertex);	//fills vertexset with all wrapped vertices
-			tmpVertexMap.put(vertex.getID(), sugiyamaVertex);
-			yValsOfVertices.add(vertex.getY());	//add every different position to list, to assign layers later
+		for(Vertex v : vertices){
+			System.out.print(v.getID() + ", ");
 		}
-		yValsOfVertices.sort((y1,y2)->y1.compareTo(y2));	//sorts y vals in ascending order
-		//assign every vertex a layer, first all given vertices, then in a loop every dummy (use layer of source and target !!!)
-				for(ISugiyamaVertex v : sugyVertices){
-					for(int i = 0; i < yValsOfVertices.size(); i++){
-						if(yValsOfVertices.get(i) == v.getY()){
-							this.assignToLayer(v, i);
-							break;
-						}
+		System.out.print('\n');
+		
+		//add here points for later layer assigning
+		for (Vertex vertex: vertices){	//add every different position to list, to assign layers later
+			if(!yValsOfVertices.contains(vertex.getY())){
+				yValsOfVertices.add(vertex.getY());	
+			}
+//			System.out.println("yval: "+vertex.getY());
+		}
+//		System.out.println("yvals size: "+yValsOfVertices.size());
+		yValsOfVertices.sort((y1,y2)->Integer.compare(y1, y2));	//sorts y vals in ascending order
+		//assign every vertex a layer, vertices on first or last layer are normal SugiyamaVertex though they have a negative id
+		//dummies will be assigned at the path building
+		for(Vertex v : vertices){
+			for(int i = 0; i < yValsOfVertices.size(); i++){
+				if(yValsOfVertices.get(i).equals(v.getY())){	//assign here the layer
+					if(i == 0 || i == yValsOfVertices.size() - 1 || v.getID() >= 0){//first or last layer, or normal vertex -> SugiyamaVertex
+						SugiyamaVertex sugiyamaVertex = new SugiyamaVertex(v);
+						sugyVertices.add(sugiyamaVertex);	//fills vertexset with all wrapped vertices
+						tmpVertexMap.put(v.getID(), sugiyamaVertex);
+						this.assignToLayer(sugiyamaVertex, i);
+						break;
+					}else{	//case dummy vertex
+//						assert(v.getID() < 0);
+//						DummyVertex tempDummy = new DummyVertex("","",i,v.getSize(),v.getID());
+//						dummies.add(tempDummy);
+//						tmpVertexMap.put(tempDummy.getID(), tempDummy);
+//						this.assignToLayer(tempDummy, i);
+//						break;
 					}
 				}
-		for(DirectedEdge edge: edges){	//given edges, wrap them to SugiyamaEdges
-			SugiyamaEdge sugiyamaEdge = new SugiyamaEdge(edge,
-					tmpVertexMap.get(edge.getSource().getID()),
-					tmpVertexMap.get(edge.getTarget().getID()));
-			if(sugiyamaEdge.getSource().getLayer() > sugiyamaEdge.getTarget().getLayer()){	//need to reverse edge
-				this.reverseEdge(sugiyamaEdge);
 			}
-			sugyEdges.add(sugiyamaEdge);	//fills edgeset with all wrapped edges
 		}
 		
+		//only wrap edges that are normal edges (from or to last layer with layer diff ==1 or between two normal vertices with layer diff == 1)
+		//also yet turn the edge if it has the wrong direction
+		for(DirectedEdge edge: edges){	//given edges, wrap them to SugiyamaEdges
+//			System.out.println("edges: source y: "+edge.getSource().getY()+", id: "+edge.getSource().getID()+ ", layer: "+ tmpVertexMap.get(edge.getSource().getID()).getLayer() +", target: "+edge.getTarget().getY()+", id: "+edge.getTarget().getID()+", layer: "+tmpVertexMap.get(edge.getTarget().getID()).getLayer());        
+			Vertex source = edge.getSource();
+			Vertex target = edge.getTarget();
+			if(tmpVertexMap.containsKey(source.getID()) && tmpVertexMap.containsKey(target.getID())
+					&& Math.abs(tmpVertexMap.get(source.getID()).getLayer() - tmpVertexMap.get(target.getID()).getLayer()) == 1){
+				SugiyamaEdge sugiyamaEdge = new SugiyamaEdge(edge,
+						tmpVertexMap.get(edge.getSource().getID()),
+						tmpVertexMap.get(edge.getTarget().getID()));
+				sugyEdges.add(sugiyamaEdge);
+				if(sugiyamaEdge.getSource().getLayer() > sugiyamaEdge.getTarget().getLayer()){
+					sugiyamaEdge.reverse();
+				}
+			}
+//			SugiyamaEdge sugiyamaEdge = new SugiyamaEdge(edge,
+//					tmpVertexMap.get(edge.getSource().getID()),
+//					tmpVertexMap.get(edge.getTarget().getID()));
+//			System.out.println("sugiyamaEdge: source y: "+sugiyamaEdge.getSource().getY()+", id: "+sugiyamaEdge.getSource().getID()+ ", layer: "+ tmpVertexMap.get(sugiyamaEdge.getSource().getID()).getLayer() +", target: "+sugiyamaEdge.getTarget().getY()+", id: "+sugiyamaEdge.getTarget().getID()+", layer: "+tmpVertexMap.get(sugiyamaEdge.getTarget().getID()).getLayer());
+//			sugyEdges.add(sugiyamaEdge);	//fills edgeset with all wrapped edges
+		}
+		//created dummies, supplementEdges and supplementPaths are added to the graph in the method which is creating them
+		this.graph = new DefaultDirectedGraph<>(sugyVertices, sugyEdges);
+		
+//		for(ISugiyamaVertex v : graph.getVertexSet()){
+//			System.out.println("layer after graph init: "+" id: "+v.getID()+" , layer: "+v.getLayer());
+//		}
+				
 		//now iterate over all paths and construct the correct SupplementPath, also construct:
 		//representingVertex->sugyVertex, assign it a layer!,  dummies->dummyVertex(also add them to sugyVertices set), 
 		//supplementEdges->SupplementEdge(also add them to sugyEdges set)
-		for(DirectedSupplementEdgePath p : paths){
+		for(DirectedSupplementEdgePath p : paths){//TODO: add dummies and supp edges and watch out for direction!
 			DirectedEdge replaced = p.getReplacedEdge();
+			List<Vertex> pathDummies = p.getDummyVertices();
+//			System.out.println("old: source y: "+replaced.getSource().getY()+", id: "+replaced.getSource().getID()+ ", layer: "+ tmpVertexMap.get(replaced.getSource().getID()).getLayer() +", target: "+replaced.getTarget().getY()+", id: "+replaced.getTarget().getID()+", layer: "+tmpVertexMap.get(replaced.getTarget().getID()).getLayer());        
 			ISugiyamaEdge tempReplacedEdge = new SugiyamaEdge(replaced, tmpVertexMap.get(replaced.getSource().getID()), tmpVertexMap.get(replaced.getTarget().getID()));
-			if(tempReplacedEdge.getSource().getLayer() > tempReplacedEdge.getTarget().getLayer()){	//need to reverse edge
-				this.reverseEdge(tempReplacedEdge);	//reverse edge
-				Collections.reverse(p.getDummyVertices());	//reverse order of dummies
+//			System.out.println("new: source y: "+tempReplacedEdge.getSource().getY()+", id: "+ tempReplacedEdge.getSource().getID()+ ", layer: "+tempReplacedEdge.getSource().getLayer() +", target: "+tempReplacedEdge.getTarget().getY()+", id: "+tempReplacedEdge.getTarget().getID() + ", layer: "+tempReplacedEdge.getTarget().getLayer());
+			
+			if(tempReplacedEdge.getSource().getLayer() > tempReplacedEdge.getTarget().getLayer()){
+				ISugiyamaVertex source = tempReplacedEdge.getSource();
+				ISugiyamaVertex target = tempReplacedEdge.getTarget();
+//				int tempNum = source.getLayer();
+//				this.assignToLayer(source, target.getLayer());
+//				this.assignToLayer(target, tempNum);
+				tempReplacedEdge.reverse();
+				Collections.reverse(pathDummies);// reverse direction of dummies 
 			}
+//			System.out.println("new after turning: source y: "+tempReplacedEdge.getSource().getY()+", id: "+ tempReplacedEdge.getSource().getID()+ ", layer: "+tempReplacedEdge.getSource().getLayer() +", target: "+tempReplacedEdge.getTarget().getY()+", id: "+tempReplacedEdge.getTarget().getID() + ", layer: "+tempReplacedEdge.getTarget().getLayer());
+//			String res = "";
+//			for(Vertex v : p.getDummyVertices()){
+//				res+=v.getY()+", ";
+//			}
+//			System.out.println("vertices: "+res);
+//			res = "";
+//			for(DirectedEdge e : p.getSupplementEdges()){
+//				res+=e.getSource().getY() + "->" +e.getTarget().getY()+", ";
+//			}
+//			System.out.println("edges: "+res);
+//			System.out.println("dummies: "+p.getDummyVertices().size());
 			List<ISugiyamaVertex> tempDummies = new LinkedList<>();
-			List<ISugiyamaEdge> tempSupplementEdges = new LinkedList<>();
-			int assignLayer = tempReplacedEdge.getSource().getLayer() +1 ;
-			for(Vertex v : p.getDummyVertices()){
-				DummyVertex newDummy = this.createDummy("","",assignLayer);
-				newDummy.setX(v.getX());
-				newDummy.setY(v.getY());
-				tempDummies.add(newDummy);
-				assignLayer++;
+			int layer = tempReplacedEdge.getSource().getLayer() + 1;
+			for(Vertex v : pathDummies){
+				ISugiyamaVertex tempDummy = new DummyVertex("", "", layer, v.getSize(), v.getID() );
+				tempDummy.setX(v.getX());
+				tempDummy.setY(v.getY());
+				this.assignToLayer(tempDummy, layer);
+				tempDummies.add(tempDummy);
+				layer++;
 			}
-			assert(assignLayer == tempReplacedEdge.getTarget().getLayer());	//last dummy needs to be a layer under target vertex
-			SupplementEdge newSuppE = this.createSupplementEdge("","", tempReplacedEdge.getSource(), tempDummies.get(0));
+			this.graph.addAllVertices(tempDummies.stream().collect(Collectors.toSet()));
+			assert(layer == tempReplacedEdge.getTarget().getLayer());	//to ensure correct layer numbers for source, target and dummies!
+			List<ISugiyamaEdge> tempSupplementEdges = new LinkedList<>();
+			//TODO: turn the replaced edge if necessary and turn also dummies, watch out to set their layers correctly
+//			int upOrDown = tempReplacedEdge.getSource().getLayer() > tempReplacedEdge.getTarget().getLayer() ? -1 : 1;
+			//TODO: differ between turned and not turned replaced edges of the supplement path!!!
+			SupplementEdge newSuppE = new SupplementEdge("","", tempReplacedEdge.getSource(), tempDummies.get(0));
 			tempSupplementEdges.add(newSuppE);
 			for(int i = 0; i < tempDummies.size() - 1; i++){
-				newSuppE = this.createSupplementEdge("","", tempDummies.get(i), tempDummies.get(i+1));
+				newSuppE = new SupplementEdge("","", tempDummies.get(i), tempDummies.get(i+1));
 				tempSupplementEdges.add(newSuppE);
 			}
-			newSuppE = this.createSupplementEdge("","", tempDummies.get(tempDummies.size() - 1), tempReplacedEdge.getTarget());
+			newSuppE = new SupplementEdge("","", tempDummies.get(tempDummies.size() - 1), tempReplacedEdge.getTarget());
 			tempSupplementEdges.add(newSuppE);
 			
+			this.graph.addAllEdges(tempSupplementEdges.stream().collect(Collectors.toSet()));
 			SupplementPath tempSupplementPath = this.createSupplementPath(tempReplacedEdge, tempDummies, tempSupplementEdges);
 			this.supplementPaths.add(tempSupplementPath);
-			sugyVertices.addAll(tempDummies);	//add dummies to normal vertex set
-			sugyEdges.addAll(tempSupplementEdges);	//add SupplementEdges to normal edge set
+//			sugyVertices.addAll(tempDummies);	//add dummies to normal vertex set
+//			sugyEdges.addAll(tempSupplementEdges);	//add SupplementEdges to normal edge set
+//			checkSupplementPath(tempSupplementPath);
 		}
-		
-		this.graph = new DefaultDirectedGraph<>(sugyVertices, sugyEdges);
-		layerPositions = new LinkedList<>();
-		layerPositions.add(0);
+	}
+	
+	private void checkSupplementPath(SupplementPath p){
+		ISugiyamaEdge replaced = p.getReplacedEdge();
+		List<ISugiyamaVertex> vertices = p.getDummyVertices();
+		List<ISugiyamaEdge> edges = p.getSupplementEdges();
+		System.out.println("replaced: source: y: "+replaced.getSource().getY()+", id: "+replaced.getSource().getID()+ ", layer: "+ replaced.getSource().getLayer() +", target: "+replaced.getTarget().getY()+", id: "+replaced.getTarget().getID()+", layer: "+replaced.getTarget().getLayer());
+		for(ISugiyamaVertex v : vertices){
+			System.out.println("vertices y: "+v.getY()+", id: "+v.getID()+ ", layer: "+ v.getLayer());
+		}
+		for(ISugiyamaEdge e : edges){
+			System.out.println("edges: source: y: "+e.getSource().getY()+", id: "+e.getSource().getID()+ ", layer: "+ e.getSource().getLayer() +"->; target: "+e.getTarget().getY()+", id: "+e.getTarget().getID()+", layer: "+e.getTarget().getLayer());
+		}
 	}
 	
 
@@ -245,12 +322,19 @@ public class SugiyamaGraph
 		this.layering.cleanUpEmptyLayers();
 	}
 
+	public List<ISugiyamaVertex> getSortedLayer(int layerIndex){
+		return layering.getSortedLayer(layerIndex);
+	}
 
 	@Override
 	public List<ISugiyamaVertex> getLayer(int layerNum) {
 		return layering.getLayer(layerNum);
 	}
 
+	public List<List<ISugiyamaVertex>> getSortedLayers(){
+		return layering.getSortedLayers();
+	}
+	
 	@Override
 	public List<List<ISugiyamaVertex>> getLayers() {
 		return layering.getLayers();
@@ -420,8 +504,10 @@ public class SugiyamaGraph
 		/**
 		 * Reverses a supplement path by reversing the replaced edge and reversing the order of the dummy vertices on this path.
 		 */
-		public void reverse(){
+		public void reverse(){	//TODO: test if correct or not!!
 			Collections.reverse(this.dummies);
+			this.supplementEdges.forEach(e->e.reverse());
+			Collections.reverse(this.supplementEdges);
 			this.replacedEdge.reverse();
 		}
 	}
@@ -554,9 +640,37 @@ public class SugiyamaGraph
 	 */
 	public class DummyVertex extends DefaultVertex implements ISugiyamaVertex {
 
+		private final boolean custom;
+		private String name;
+		private String label;
+		private int layer;
+		private DoublePoint size;
+		private int id;
+		
 		public DummyVertex(String name, String label, int layer) {
 			super(name, label);
 			layering.addVertex(this, layer);
+			custom = false;
+		}
+		
+		//custom dummy if size and id were set before creating a dummy
+		public DummyVertex(String name, String label, int layer, DoublePoint size, int id){
+			super(name, label);
+			layering.addVertex(this, layer);
+			this.name = name;
+			this.label = label;
+			this.layer = layer;
+			this.size = size;
+			this.id = id;
+			custom = true;
+		}
+		
+		public Integer getID(){
+			return custom ? this.id : super.getID();
+		}
+		
+		public DoublePoint getSize(){
+			return custom ? this.size : super.getSize();
 		}
 
 		public boolean isDummy() {
