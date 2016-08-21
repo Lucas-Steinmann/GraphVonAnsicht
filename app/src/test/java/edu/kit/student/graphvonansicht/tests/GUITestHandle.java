@@ -4,7 +4,6 @@ import java.io.File;
 import java.util.List;
 import java.util.concurrent.TimeoutException;
 
-import org.testfx.api.FxRobot;
 import org.testfx.api.FxToolkit;
 
 import edu.kit.student.gui.GAnsMediator;
@@ -12,8 +11,6 @@ import edu.kit.student.gui.InformationView;
 import edu.kit.student.gui.StructureView;
 import edu.kit.student.util.DoublePoint;
 import javafx.collections.ObservableList;
-import javafx.event.Event;
-import javafx.event.EventHandler;
 import javafx.scene.control.Menu;
 import javafx.scene.control.MenuBar;
 import javafx.scene.control.MenuItem;
@@ -90,7 +87,7 @@ public class GUITestHandle {
     
     // Helper functions for gui testing
     public void importGraph(File file) {
-        new FxRobot().clickOn("File").sleep(200).clickOn("Import").closeCurrentWindow();
+        app.getGansApp().importFile(file);
     }
 
     public void exportGraph(File file) {

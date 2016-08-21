@@ -36,10 +36,10 @@ import edu.kit.student.plugin.PluginManager;
 
 public class JoanaGraphTester {
     
-    static List<JoanaGraphModel> models = new LinkedList<>();
+    private static List<JoanaGraphModel> models = new LinkedList<>();
     private static Iterator<File> lastOpenedFile;
-    static Random randomGenerator;
-    static List<File> files;
+    private static Random randomGenerator;
+    private static List<File> files;
     
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
@@ -305,7 +305,7 @@ public class JoanaGraphTester {
         return ws.getGraphModel();
     }
     
-    private static Iterator<File> getDirIterator() {
+    public static Iterator<File> getDirIterator() {
         File resources = new File("plugins/joana/src/test/resources");
         files = Arrays.asList(resources.listFiles()).stream()
                                                     .filter((file)-> file.getName().endsWith(".graphml"))

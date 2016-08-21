@@ -1,6 +1,5 @@
 package edu.kit.student.graphvonansicht.tests;
 
-import java.io.File;
 import java.util.concurrent.TimeoutException;
 
 import org.junit.After;
@@ -53,12 +52,6 @@ public class OpenApplicationTest {
         Assert.assertNotNull(handle.getInformationView());
     }
     
-    @Test
-    public void importGraph() {
-        handle.importGraph(new File(""));
-        Assert.assertNotNull(System.in);
-    }
-
     @After
     public void tearDown() throws Exception {
         Platform.setImplicitExit(false);

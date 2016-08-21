@@ -271,13 +271,19 @@ public class GAnsApplication {
 		fileChooser.getExtensionFilters().add(filter);
 		fileChooser.setSelectedExtensionFilter(filter);
 		currentFile = fileChooser.showOpenDialog(primaryStage);
-		if(currentFile == null) return;
+		importFile(currentFile);
+	}
+	
+	public void importFile(File file) {
+		if(file == null) return;
 		if(!openWorkspaceDialog()) return;
 		FileInputStream inputStream;
 		try {
-			inputStream = new FileInputStream(currentFile);
-			String fileName = currentFile.getName();
+			inputStream = new FileInputStream(file);
+			String fileName = file.getName();
 			String fileExtension = "*" + fileName.substring(fileName.lastIndexOf('.'));
+            List<Importer> importerList = PluginManager.getPluginManager().getImporter();
+            List<String> supportedFileExtensions = new ArrayList<String>();
 			Importer importer = importerList.get(supportedFileExtensions.indexOf(fileExtension));
 			importer.importGraph(workspace.getGraphModelBuilder(), inputStream);
 			this.graphViewTabPane.getTabs().clear();
@@ -295,6 +301,7 @@ public class GAnsApplication {
 			this.graphViewTabPane.getTabs().clear();
 			showErrorDialog(e.getMessage());
 		} 
+	    
 	}
 
 	private void exportClicked() {
