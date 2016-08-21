@@ -53,7 +53,6 @@ public class VertexPositioner implements IVertexPositioner {
 			}
 		}
 
-		logger.info("adding paths");
 		//add all paths to segments
 		List<SugiyamaGraph.SupplementPath> paths = new LinkedList<>();
 		paths.addAll(graph.getSupplementPaths());
@@ -61,7 +60,6 @@ public class VertexPositioner implements IVertexPositioner {
 		int counter = 0;
 
 		for (SugiyamaGraph.SupplementPath path : paths) {
-			logger.debug("adding path + " + path.getReplacedEdge());
 			List<ISugiyamaVertex> vertices = path.getDummyVertices();
 			ISugiyamaVertex source = path.getReplacedEdge().getSource();
 			ISugiyamaVertex target = path.getReplacedEdge().getTarget();
@@ -77,7 +75,6 @@ public class VertexPositioner implements IVertexPositioner {
 
 			Segment probableNewSegment = new Segment(vertices);
 			List<Segment> newSegments = probableNewSegment.cutWithSegments(allsegments);
-			logger.debug("cutting path");
 
 			for (Segment segment : newSegments) {
 				for (ISugiyamaVertex vertex : segment.getVertices()) {
@@ -90,7 +87,6 @@ public class VertexPositioner implements IVertexPositioner {
 			allsegments.addAll(newSegments);
 		}
 
-		logger.info("adding edges");
 		//add all possible edges as segments
 		for (ISugiyamaEdge edge : graph.getEdgeSet()) {
 			if (edge.getSource().isDummy() || edge.getTarget().isDummy() || addedVertices.contains(edge.getSource()) || addedVertices.contains(edge.getTarget())) {
@@ -117,7 +113,6 @@ public class VertexPositioner implements IVertexPositioner {
 			allsegments.addAll(newSegments);
 		}
 
-		logger.info("adding others");
 		//add all other vertices as segments
 		for (ISugiyamaVertex vertex : graph.getVertexSet()) {
 			if (!vertex.isDummy() && !addedVertices.contains(vertex)) {
@@ -135,24 +130,9 @@ public class VertexPositioner implements IVertexPositioner {
 		for (Segment segment : allsegments) {
 			segment.align(graph);
 		}
-		for (Segment segment : allsegments) {
-			logger.debug(Integer.toString(segment.getBoundingBox().right - segment.getBoundingBox().left));
-		}
 
 		allsegments.sort((o1, o2) -> (o1.getBoundingBox().left - o2.getBoundingBox().left) * graph.getLayerCount() + (o1.getBoundingBox().top - o2.getBoundingBox().top));
 
-		Set<ISugiyamaVertex> testset = new HashSet<>();
-		for (Segment segment : allsegments) {
-			for (ISugiyamaVertex vertex : segment.getVertices()) {
-				if (testset.contains(vertex)) {
-					logger.debug("overlaps");
-				}
-
-				testset.add(vertex);
-			}
-		}
-
-		logger.debug("moving segments");
 		boolean changes = true;
 		int runs = 0; //safeguard
 		while (changes && runs < 1000) {
@@ -174,9 +154,6 @@ public class VertexPositioner implements IVertexPositioner {
 		}
 
 		logger.debug("last was overlapping: " + changes);
-		for (Segment segment : allsegments) {
-			logger.debug(Integer.toString(segment.getBoundingBox().right - segment.getBoundingBox().left));
-		}
 
 		for (ISugiyamaVertex vertex : graph.getVertexSet()) {
 		}
@@ -196,10 +173,6 @@ public class VertexPositioner implements IVertexPositioner {
 
 		for (int i = 1; i < verticalHeight.length; i++) {
 			verticalOffset[i] = verticalOffset[i - 1] + verticalHeight[i - 1] + verticalSpacing;
-		}
-
-		for (int i : verticalHeight) {
-			logger.debug(Integer.toString(i));
 		}
 
 		for (Vertex vertex : graph.getVertexSet()) {

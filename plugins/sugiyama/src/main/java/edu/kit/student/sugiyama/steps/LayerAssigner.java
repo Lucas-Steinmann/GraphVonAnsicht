@@ -1,14 +1,5 @@
 package edu.kit.student.sugiyama.steps;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
 import edu.kit.student.sugiyama.AbsoluteLayerConstraint;
@@ -17,6 +8,14 @@ import edu.kit.student.sugiyama.RelativeLayerConstraint;
 import edu.kit.student.sugiyama.graph.ILayerAssignerGraph;
 import edu.kit.student.sugiyama.graph.ISugiyamaEdge;
 import edu.kit.student.sugiyama.graph.ISugiyamaVertex;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * This class takes a directed graph and assigns every vertex in it a layer.
@@ -142,7 +141,7 @@ public class LayerAssigner implements ILayerAssigner {
 		}
 
 		//for printing the layers after layer assigning
-		graph.getLayers().forEach(iSugiyamaVertices -> logger.debug(iSugiyamaVertices.stream().map(iSugiyamaVertex -> iSugiyamaVertex.getName()).collect(Collectors.joining(", "))));
+		//graph.getLayers().forEach(iSugiyamaVertices -> logger.debug(iSugiyamaVertices.stream().map(iSugiyamaVertex -> iSugiyamaVertex.getName()).collect(Collectors.joining(", "))));
 	}
 
 	private void pushUp(ISugiyamaVertex vertex, ILayerAssignerGraph graph, int amount) {
@@ -153,7 +152,6 @@ public class LayerAssigner implements ILayerAssigner {
 		int currentLayer = graph.getLayer(vertex);
 		int targetLayer = currentLayer - amount;
 		Set<ISugiyamaVertex> affectedVertices = graph.incomingEdgesOf(vertex).stream().map(edge -> edge.getSource()).collect(Collectors.toSet());
-		logger.debug("pushing up " + vertex + " by " + amount);
 
 		if (targetLayer < 0) {
 			graph.insertLayers(0, 0 - targetLayer);
@@ -179,7 +177,6 @@ public class LayerAssigner implements ILayerAssigner {
 		int currentLayer = graph.getLayer(vertex);
 		int targetLayer = currentLayer + amount;
 		Set<ISugiyamaVertex> affectedVertices = graph.outgoingEdgesOf(vertex).stream().map(edge -> edge.getTarget()).collect(Collectors.toSet());
-		logger.debug("pushing down " + vertex + " by " + amount);
 		graph.assignToLayer(vertex, targetLayer);
 		ignoredVertices.add(vertex);
 
