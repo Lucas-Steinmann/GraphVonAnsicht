@@ -36,6 +36,9 @@ public class SvgExporter implements Exporter {
     private static String lineStyle = "stroke-width:2;";
     private static String fileExtension = "svg";
     
+    private int maxHeight = 0;
+    private int maxWidth = 0;
+    
     
     @Override
     public List<String> getSupportedFileEndings() {
@@ -98,6 +101,10 @@ public class SvgExporter implements Exporter {
             Element edge = this.createEdgeElement(document, e.getShapeProperties());
             rootElement.appendChild(edge);
         }    
+        
+        //add maxHEight and Width size
+        rootElement.setAttribute("height", Integer.toString(this.maxHeight + 20));
+        rootElement.setAttribute("width", Integer.toString(this.maxWidth + 20));
         
         
         //Transform DOM tree to writeable file
@@ -205,6 +212,12 @@ public class SvgExporter implements Exporter {
                 line.setAttribute("y2", ycoords.get(i + 1));
                 line.setAttribute("style", SvgExporter.lineStyle + "stroke:" + color + ";");
                 
+                //check maxHeight and width
+                this.maxHeight = Math.max(this.maxHeight, (int) Double.parseDouble(ycoords.get(i)));
+                this.maxHeight = Math.max(this.maxHeight, (int) Double.parseDouble(ycoords.get(i + 1)));
+                this.maxWidth = Math.max(this.maxWidth, (int) Double.parseDouble(xcoords.get(i)));
+                this.maxWidth = Math.max(this.maxWidth, (int) Double.parseDouble(xcoords.get(i + 1)));
+                
                 //add to group
                 group.appendChild(line);
             }
@@ -258,6 +271,11 @@ public class SvgExporter implements Exporter {
               default:                          
             }
         }
+        
+        
+        //check maxHeight and width
+        this.maxHeight = Math.max(this.maxHeight, (int) maxY);
+        this.maxWidth = Math.max(this.maxWidth, (int) maxX);
         
         double width = Math.abs(maxX - minX);
         double height = Math.abs(maxY - minY);

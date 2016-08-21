@@ -182,7 +182,27 @@ public class GraphViewGraphFactory {
 			set.add(serialized);
 		}
 		
-		return set;
+		//add background shapes as vertices
+	    for(BackgroundShape shape : background) {
+	        Map<String,String> shapeProperties = new HashMap<String,String>();
+	        shapeProperties.put("label", shape.getText());
+	        shapeProperties.put("color", GraphViewGraphFactory.toRGBCode(shape.getColor()));
+	        
+	        Bounds bounds = shape.getBoundsInParent();
+	        shapeProperties.put("minX", Double.toString(bounds.getMinX()));
+	        shapeProperties.put("minY", Double.toString(bounds.getMinY()));
+	        shapeProperties.put("maxX", Double.toString(bounds.getMaxX()));
+	        shapeProperties.put("maxY", Double.toString(bounds.getMaxY()));
+	        shapeProperties.put("arcWidth", Double.toString(shape.getElementShape().getArcWidth()));
+	        shapeProperties.put("arcHeight", Double.toString(shape.getElementShape().getArcHeight()));
+	        
+	        Map<String,String> metaProperties = new HashMap<String,String>();
+            SerializedVertex serialized = new SerializedVertex(shapeProperties, metaProperties);
+            set.add(serialized);
+	    }
+		
+		
+	    return set;
 	}
 	
 	private Set<SerializedEdge> serializeEdges() {
