@@ -10,6 +10,8 @@ import edu.kit.student.objectproperty.GAnsProperty;
  */
 public abstract class Parameter<T, V extends Object> extends GAnsProperty<V> {
 	
+	private V tempValue;
+	
 	/**
 	 * Constructor, setting the name and value of the property.
 	 * 
@@ -20,6 +22,7 @@ public abstract class Parameter<T, V extends Object> extends GAnsProperty<V> {
 	 */
 	public Parameter(String name, V value) {
 		super(name, value);
+		tempValue = value;
 	}
     
     /**
@@ -27,4 +30,21 @@ public abstract class Parameter<T, V extends Object> extends GAnsProperty<V> {
      * @param visitor The visitor to visit
      */
     public abstract void accept(ParameterVisitor visitor);
+    
+    /**
+     * Caches the current value in a variable.
+     * This has to be called before reset() is called, 
+     * otherwise the cached value is the initial value of the parameter.
+     */
+    public void cacheCurrentValue() {
+    	tempValue = this.getValue();
+    }
+    
+    /**
+     * Sets the value of the parameter to the value cached via cacheCurrentValue().
+     * If no value is cached, the initial value of the parameter is set.
+     */
+    public void reset() {
+    	this.setValue(tempValue);
+    }
 }

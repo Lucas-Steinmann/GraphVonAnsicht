@@ -2,6 +2,8 @@ package edu.kit.student.gui;
 
 import java.text.DecimalFormat;
 import java.text.ParseException;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Optional;
 
 import edu.kit.student.parameter.BooleanParameter;
@@ -39,6 +41,8 @@ public class ParameterDialogGenerator extends ParameterVisitor {
 	private int parameterCount = 0;
 	
 	private StringConverter<Double> doubleConverter;
+	
+	private List<Parameter<?,?>> parameters;
 
 	/**
 	 * Constructs a new ParameterDialogGenerator and sets the parent, where all
@@ -51,8 +55,10 @@ public class ParameterDialogGenerator extends ParameterVisitor {
 		parent.setPadding(new Insets(10, 20, 10, 10));
 		
 		this.initDoubleConverter();
+		
+		parameters = new LinkedList<Parameter<?,?>>(settings.values());
 
-		for (Parameter<?, ?> p : settings.values()) {
+		for (Parameter<?, ?> p : parameters) {
 			p.accept(this);
 		}
 	}
@@ -62,6 +68,7 @@ public class ParameterDialogGenerator extends ParameterVisitor {
 		CheckBox box = new CheckBox(parameter.getName());
 		box.setSelected(parameter.getValue());
 		parameter.propertyValue().bind(box.selectedProperty());
+		parameter.cacheCurrentValue();
 		
 		parent.add(box, 0, parameterCount);
 		parameterCount++;
@@ -72,6 +79,7 @@ public class ParameterDialogGenerator extends ParameterVisitor {
 		Spinner<Integer> spinner = new Spinner<Integer>(parameter.getMin(), parameter.getMax(), parameter.getValue());
 		spinner.setEditable(true);
 		parameter.propertyValue().bind(spinner.valueProperty());
+		parameter.cacheCurrentValue();
 		
 		parent.add(new Text(parameter.getName()), 0, parameterCount);
 		parent.add(spinner, 1, parameterCount);
@@ -89,6 +97,7 @@ public class ParameterDialogGenerator extends ParameterVisitor {
 		Spinner<Double> spinner = new Spinner<Double>(factory);
 		spinner.setEditable(true);
 		parameter.propertyValue().bind(spinner.valueProperty());
+		parameter.cacheCurrentValue();
 		
 		parent.add(new Text(parameter.getName()), 0, parameterCount);
 		parent.add(spinner, 1, parameterCount);
@@ -99,6 +108,7 @@ public class ParameterDialogGenerator extends ParameterVisitor {
 	public void visit(StringParameter parameter) {
 		TextField field = new TextField(parameter.getValue());
 		parameter.propertyValue().bind(field.textProperty());
+		parameter.cacheCurrentValue();
 		
 		parent.add(new Text(parameter.getName()), 0, parameterCount);
 		parent.add(field, 1, parameterCount);
@@ -128,6 +138,7 @@ public class ParameterDialogGenerator extends ParameterVisitor {
 		});
 		cmb.getSelectionModel().select(parameter.getSelectedIndex());
 		parameter.propertyValue().bind(cmb.valueProperty());
+		parameter.cacheCurrentValue();
 		
 		parent.add(cmb, 1, parameterCount);
 		parameterCount++;
@@ -153,7 +164,7 @@ public class ParameterDialogGenerator extends ParameterVisitor {
 			c2.setPercentWidth(50);
 			root.getColumnConstraints().add(c1);
 			root.getColumnConstraints().add(c2);
-			new ParameterDialogGenerator(root, settings);
+			ParameterDialogGenerator gen = new ParameterDialogGenerator(root, settings);
 			Alert dialog = new Alert(AlertType.CONFIRMATION);
 			dialog.setTitle("Settings");
 			dialog.setHeaderText(null);
@@ -161,9 +172,17 @@ public class ParameterDialogGenerator extends ParameterVisitor {
 			dialog.getDialogPane().setContent(root);
 			Optional<ButtonType> result = dialog.showAndWait();
 			if (result.get() != ButtonType.OK) {
+				gen.resetParameters();
 				return false;
 			}
 			return true;
+		}
+	}
+	
+	private void resetParameters() {
+		for (Parameter<?, ?> p : parameters) {
+			p.propertyValue().unbind();
+			p.reset();
 		}
 	}
 	
