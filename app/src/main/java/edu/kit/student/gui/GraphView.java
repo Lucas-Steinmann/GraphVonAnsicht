@@ -19,23 +19,16 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.CheckBox;
-import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Dialog;
-import javafx.scene.control.Label;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
-import javafx.scene.control.TextInputDialog;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.Priority;
-import javafx.scene.layout.Region;
-import javafx.scene.layout.VBox;
 
 /**
  * A view used for showing and creating a graph in GAns. It supports zooming and
@@ -52,7 +45,7 @@ public class GraphView extends Pane {
 	private ContextMenu contextMenu;
     private List<MenuItem> dynamicMenuListItems = new LinkedList<>();
     
-	private List<VertexGroup> groups = new LinkedList<VertexGroup>();
+	private GroupManager groupManager = new GroupManager();
 	
 	private GAnsMediator mediator;
 
@@ -133,8 +126,10 @@ public class GraphView extends Pane {
 		MenuItem group = new MenuItem("Add to group");
 		group.setOnAction(new EventHandler<ActionEvent>() {
 		    public void handle(ActionEvent e) {
-		    	openAddGroupDialog();
-		    	openGroupDialog();
+		    	if(groupManager.openAddGroupDialog(GraphView.this.getSelectionModel().getSelectedItems())) {
+		    		openGroupDialog();
+		    		selectionModel.clear();
+		    	}
 		    }
 		});
 		
@@ -209,67 +204,8 @@ public class GraphView extends Pane {
         });
 	}
 	
-	private void openAddGroupDialog() {
-		TextInputDialog dialog = new TextInputDialog("New Group");
-    	dialog.setTitle("Add group");
-    	dialog.setHeaderText(null);
-    	dialog.setGraphic(null);
-    	dialog.setContentText("Enter new group name:");
-    	Optional<String> result = dialog.showAndWait();
-    	if (result.isPresent()){
-    	    VertexGroup newGroup = new VertexGroup(result.get(), GraphView.this.getSelectionModel().getSelectedItems());
-    	    groups.add(newGroup);
-    	}
-    }
-	
 	public void openGroupDialog() {
-		Dialog<ButtonType> dialog = new Dialog<ButtonType>();
-		GridPane grid = new GridPane();
-		grid.setHgap(10);
-		grid.setVgap(10);
-		grid.setPadding(new Insets(10, 10, 10, 10));
-		
-		for(int i = 0; i < groups.size(); i++) {
-			VertexGroup group = groups.get(i);
-			Label groupName = new Label(group.getName());
-			grid.add(groupName, 0, i);
-			grid.add(group.getPicker(), 1, i);
-		}
-		//spacer maybe not needed
-		Region spacer = new Region();
-		GridPane.setHgrow(spacer, Priority.ALWAYS);
-		
-		Button removeButton = new Button("Remove");
-		VBox root = new VBox(grid, removeButton);
-		
-		removeButton.setOnAction(new EventHandler<ActionEvent>() {
-		    @Override public void handle(ActionEvent e) {
-		    	if(!groups.isEmpty()) {
-		    		List<String> groupNames = new LinkedList<String>();
-			    	groups.forEach((group) -> groupNames.add(group.getName()));
-			    	ChoiceDialog<String> dialog = new ChoiceDialog<String>(groupNames.get(0), groupNames);
-			    	dialog.setTitle("Remove group");
-			    	dialog.setHeaderText(null);
-			    	dialog.setGraphic(null);
-			    	dialog.setContentText("Select a group:");
-			    	Optional<String> result = dialog.showAndWait();
-			    	if(result.isPresent()) {
-			    		int index = groupNames.indexOf(result.get());
-			    	    VertexGroup removedGroup = groups.remove(index);
-			    	    removedGroup.uncolorVertices();
-			    	    grid.getChildren().remove(index * 2);
-			    	    grid.getChildren().remove(removedGroup.getPicker());
-			    	}
-		    	}
-		    }
-		});
-		
-		dialog.getDialogPane().setContent(root);
-		dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK);
-		dialog.setTitle("Groups");
-		dialog.setHeaderText(null);
-		dialog.setGraphic(null);
-		dialog.showAndWait();
+		groupManager.openGroupDialog();
 	}
 	
 	public void openFilterDialog() {

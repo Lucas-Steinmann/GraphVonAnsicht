@@ -62,6 +62,7 @@ public class GraphViewSelectionModel {
 		while (!selection.isEmpty()) {
 			remove(selection.iterator().next());
 		}
+		log();
 	}
 
 	public boolean contains(VertexShape node) {

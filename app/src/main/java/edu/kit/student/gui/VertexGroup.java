@@ -3,15 +3,17 @@ package edu.kit.student.gui;
 import java.util.HashSet;
 import java.util.Set;
 
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
+import edu.kit.student.util.IdGenerator;
 import javafx.scene.control.ColorPicker;
+import javafx.scene.control.Label;
 import javafx.scene.paint.Color;
 
 public class VertexGroup {
 	
+	private Integer id;
 	private String name;
 	private Set<VertexShape> vertices = new HashSet<VertexShape>();
+	private Label label;
 	private ColorPicker picker;
 	
 	public VertexGroup() {
@@ -19,19 +21,24 @@ public class VertexGroup {
 	}
 	
 	public VertexGroup(String name, Set<VertexShape> vertices) {
-		picker = new ColorPicker();
-		picker.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent t) {
-				colorVertices(picker.getValue());
-			}
-		 });
+		this.id = IdGenerator.getInstance().createId();
 		this.name = name;
+		this.label = new Label(name);
+		this.picker = new ColorPicker();
+		
 		setVertices(vertices);
+	}
+	
+	public int getId() {
+		return this.id;
 	}
 	
 	public String getName() {
 		return this.name;
+	}
+	
+	public Label getLabel() {
+		return this.label;
 	}
 	
 	public Color getColor() {
@@ -44,12 +51,10 @@ public class VertexGroup {
 	
 	public void setColor(Color color) {
 		this.picker.setValue(color);
-		colorVertices(color);
 	}
 	
 	public void setVertices(Set<VertexShape> vertices) {
 		this.vertices.addAll(vertices);
-		colorVertices(picker.getValue());
 	}
 	
 	public void uncolorVertices() {
@@ -58,9 +63,9 @@ public class VertexGroup {
 		}
 	}
 	
-	private void colorVertices(Color color) {
+	public void colorVertices() {
 		for(VertexShape shape : vertices) {
-			shape.setVertexStyle("-fx-effect: dropshadow(three-pass-box, " + GraphViewGraphFactory.toRGBCode(color) + ", 4, 4, 0, 0);");
+			shape.setVertexStyle("-fx-effect: dropshadow(three-pass-box, " + GraphViewGraphFactory.toRGBCode(this.getColor()) + ", 4, 4, 0, 0);");
 		}
 	}
 }
