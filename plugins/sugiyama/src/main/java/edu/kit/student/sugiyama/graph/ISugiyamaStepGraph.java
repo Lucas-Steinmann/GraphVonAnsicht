@@ -9,8 +9,14 @@ import java.util.Set;
 public interface ISugiyamaStepGraph extends LayeredGraph {
 
 
+	@Override
+	public List<ISugiyamaVertex> getSortedLayer(int layerNum);
+	
     @Override
     public List<ISugiyamaVertex> getLayer(int layerNum);
+    
+    @Override
+    public List<List<ISugiyamaVertex>> getSortedLayers();
 
     @Override
     public List<List<ISugiyamaVertex>> getLayers();
