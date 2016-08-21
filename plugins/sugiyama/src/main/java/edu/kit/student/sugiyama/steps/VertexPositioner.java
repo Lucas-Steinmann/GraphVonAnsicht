@@ -96,6 +96,9 @@ public class VertexPositioner implements IVertexPositioner {
 			if (edge.getSource().isDummy() || edge.getTarget().isDummy() || addedVertices.contains(edge.getSource()) || addedVertices.contains(edge.getTarget())) {
 				continue;
 			}
+			if (edge.getTarget().getLayer() - edge.getSource().getLayer() == 0) {
+				continue;
+			}
 
 			List<ISugiyamaVertex> vertices = new LinkedList<>();
 			vertices.add(edge.getSource());
