@@ -2,6 +2,7 @@ package edu.kit.student.gui;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedHashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -152,7 +153,27 @@ public class GraphViewGraphFactory {
 	}
 	
 	private Set<SerializedVertex> serializeVertices() {
-		Set<SerializedVertex> set = new HashSet<SerializedVertex>();
+		Set<SerializedVertex> set = new LinkedHashSet<SerializedVertex>();
+		
+	    //add background shapes as vertices
+        for(BackgroundShape shape : background) {
+            Map<String,String> shapeProperties = new HashMap<String,String>();
+            shapeProperties.put("label", shape.getText());
+            shapeProperties.put("color", GraphViewGraphFactory.toRGBCode(shape.getColor()));
+            
+            Bounds bounds = shape.getBoundsInParent();
+            shapeProperties.put("minX", Double.toString(bounds.getMinX()));
+            shapeProperties.put("minY", Double.toString(bounds.getMinY()));
+            shapeProperties.put("maxX", Double.toString(bounds.getMaxX()));
+            shapeProperties.put("maxY", Double.toString(bounds.getMaxY()));
+            shapeProperties.put("arcWidth", Double.toString(shape.getElementShape().getArcWidth()));
+            shapeProperties.put("arcHeight", Double.toString(shape.getElementShape().getArcHeight()));
+            
+            Map<String,String> metaProperties = new HashMap<String,String>();
+            SerializedVertex serialized = new SerializedVertex(shapeProperties, metaProperties);
+            set.add(serialized);
+        }
+		
 		for(VertexShape shape : vertices.keySet()) {
 			Map<String,String> shapeProperties = new HashMap<String,String>();
 			shapeProperties.put("label", shape.getText());
@@ -180,27 +201,7 @@ public class GraphViewGraphFactory {
 			}
 			SerializedVertex serialized = new SerializedVertex(shapeProperties, metaProperties);
 			set.add(serialized);
-		}
-		
-		//add background shapes as vertices
-	    for(BackgroundShape shape : background) {
-	        Map<String,String> shapeProperties = new HashMap<String,String>();
-	        shapeProperties.put("label", shape.getText());
-	        shapeProperties.put("color", GraphViewGraphFactory.toRGBCode(shape.getColor()));
-	        
-	        Bounds bounds = shape.getBoundsInParent();
-	        shapeProperties.put("minX", Double.toString(bounds.getMinX()));
-	        shapeProperties.put("minY", Double.toString(bounds.getMinY()));
-	        shapeProperties.put("maxX", Double.toString(bounds.getMaxX()));
-	        shapeProperties.put("maxY", Double.toString(bounds.getMaxY()));
-	        shapeProperties.put("arcWidth", Double.toString(shape.getElementShape().getArcWidth()));
-	        shapeProperties.put("arcHeight", Double.toString(shape.getElementShape().getArcHeight()));
-	        
-	        Map<String,String> metaProperties = new HashMap<String,String>();
-            SerializedVertex serialized = new SerializedVertex(shapeProperties, metaProperties);
-            set.add(serialized);
-	    }
-		
+		}		
 		
 	    return set;
 	}
