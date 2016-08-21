@@ -222,7 +222,7 @@ public class EdgeDrawer implements IEdgeDrawer {
 	 */
 	private void fillInOutPoints(){
 		for(ISugiyamaVertex v : this.graphVertices){
-			logger.info("Processing vertex: "+v.getID()+", is dummy: " + v.isDummy());
+//			logger.info("Processing vertex: "+v.getID()+", is dummy: " + v.isDummy());
 			if(this.isolatedVertices.contains(v)){
 				List<DoublePoint> inPoints = new LinkedList<DoublePoint>();
 				List<DoublePoint> outPoints = new LinkedList<DoublePoint>();
@@ -238,7 +238,7 @@ public class EdgeDrawer implements IEdgeDrawer {
 				list.add(outPoints);
 				assert(!this.inOutPoints.containsKey(v.getID()));
 				this.inOutPoints.put(v.getID(),list);
-				logger.debug("added vertex: "+v.getID()+", in: "+inPoints.size()+", out: "+outPoints.size());
+//				logger.debug("added vertex: "+v.getID()+", in: "+inPoints.size()+", out: "+outPoints.size());
 				for(DoublePoint p : inPoints){
 					assert(this.inOutPointsTest.add(p));
 				}
@@ -272,10 +272,10 @@ public class EdgeDrawer implements IEdgeDrawer {
 				this.inOutVertices.put(e.getTarget().getID(), list);
 			}
 			this.inOutVertices.get(e.getSource().getID()).get(1).add(e.getTarget());	//source vertex got one outgoing vertex, the target of this edge
-			logger.debug("adding to source "+e.getSource().getID()+": "+ e.getTarget().getID());
+//			logger.debug("adding to source "+e.getSource().getID()+": "+ e.getTarget().getID());
 			if(!this.selfLoopEdges.contains(e)){	//at a selfloop the vertex just got an outgoing edge, no incoming, the point will be calculated later
 				this.inOutVertices.get(e.getTarget().getID()).get(0).add(e.getSource());	//target vertex got one incoming vertex, the source of this edge
-				logger.debug("adding to target "+e.getTarget().getID()+ ": "+ e.getSource().getID());
+//				logger.debug("adding to target "+e.getTarget().getID()+ ": "+ e.getSource().getID());
 			}
 		}
 	}
@@ -343,7 +343,7 @@ public class EdgeDrawer implements IEdgeDrawer {
 	}
 	
 	private void drawNormalEdge(ISugiyamaEdge edge){
-		logger.debug("drawing: source: id: " + edge.getSource().getID()+", coord: "+edge.getSource().getX()+","+edge.getSource().getY()+" ,target: id: "+edge.getTarget().getID()+", coord: "+edge.getTarget().getX()+","+edge.getTarget().getY());
+//		logger.debug("drawing: source: id: " + edge.getSource().getID()+", coord: "+edge.getSource().getX()+","+edge.getSource().getY()+" ,target: id: "+edge.getTarget().getID()+", coord: "+edge.getTarget().getX()+","+edge.getTarget().getY());
 		edge.getPath().clear();	//clears edge path before setting it again
 		ISugiyamaVertex source = edge.getSource();
 		ISugiyamaVertex target = edge.getTarget();
@@ -353,13 +353,13 @@ public class EdgeDrawer implements IEdgeDrawer {
 		boolean found = false;
 		for(ISugiyamaVertex v : this.inOutVertices.get(source.getID()).get(1)){	//searches for the correct Point at the bottom of source
 			index++;
-			logger.debug("searched target: "+v.getID()+", edge target: "+target.getID());
+//			logger.debug("searched target: "+v.getID()+", edge target: "+target.getID());
 			if(v.getID().equals(target.getID()) && !this.points.contains(this.inOutPoints.get(source.getID()).get(1).get(index))){
 				found = true;
 				break;
 			}
 		}
-		logger.debug("source index: "+index + "| "+this.inOutPoints.get(source.getID()).get(1).get(index));
+//		logger.debug("source index: "+index + "| "+this.inOutPoints.get(source.getID()).get(1).get(index));
 		assert(found);
 		
 		int pointPosition = pointsBeforeVertex(source) + index +1;	//relative Y-position of this edge if it has to kink horizontally. (multiplied by distancePerEdgeLayer)
@@ -380,7 +380,7 @@ public class EdgeDrawer implements IEdgeDrawer {
 				break;
 			}
 		}
-		logger.debug("target index: "+index + "| " +this.inOutPoints.get(target.getID()).get(0).get(index));
+//		logger.debug("target index: "+index + "| " +this.inOutPoints.get(target.getID()).get(0).get(index));
 		assert(found);
 		
 		DoublePoint tPoint = this.inOutPoints.get(target.getID()).get(0).get(index);
@@ -600,7 +600,7 @@ public class EdgeDrawer implements IEdgeDrawer {
 		this.paths = graph.getSupplementPaths();
 		this.graphVertices = this.graph.getVertexSet();	//all graph vertices, with dummy vertices
 		this.graphEdges = this.graph.getEdgeSet();	//all graph edges, with supplement edges
-		logger.debug("amount: "+graphVertices.size()+","+graphEdges.size());
+//		logger.debug("amount: "+graphVertices.size()+","+graphEdges.size());
 		
 		Set<ISugiyamaVertex> sugyVertices = graphVertices.stream().filter(v->!v.isDummy()).collect(Collectors.toSet());
 		this.isolatedVertices = new HashSet<ISugiyamaVertex>();
