@@ -284,6 +284,7 @@ public class GAnsApplication {
 			String fileExtension = "*" + fileName.substring(fileName.lastIndexOf('.'));
             List<Importer> importerList = PluginManager.getPluginManager().getImporter();
             List<String> supportedFileExtensions = new ArrayList<String>();
+            importerList.forEach((importer) -> supportedFileExtensions.add(importer.getSupportedFileEndings()));
 			Importer importer = importerList.get(supportedFileExtensions.indexOf(fileExtension));
 			importer.importGraph(workspace.getGraphModelBuilder(), inputStream);
 			this.graphViewTabPane.getTabs().clear();
