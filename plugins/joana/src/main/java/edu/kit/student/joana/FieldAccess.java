@@ -21,7 +21,7 @@ public class FieldAccess extends JoanaCompoundVertex {
     public FieldAccess(FieldAccessGraph graph, String name, String label) {
         //TODO: Rework hierarchy. FieldAccess can not inherit from JoanaVertex, 
         // because having a kind doesn't make sense.
-        super(name, label, VertexKind.EXPR);
+        super(name, label, VertexKind.FIELDACCESS);
         this.graph = graph;
     }
 
