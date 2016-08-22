@@ -32,6 +32,6 @@ public interface IGraphModelBuilder {
 	 * @return The {@link GraphModel} that is being build by the
 	 *         IGraphModelBuilder.
 	 */
-	public GraphModel build();
+	public GraphModel build() throws IllegalStateException;
 
 }

@@ -39,7 +39,6 @@ public class GraphmlImporter implements Importer {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder;
         Document document = null;
-        //TODO: catch exceptions and handle it or forward?
         try {
             docBuilder = factory.newDocumentBuilder();
             document = docBuilder.parse(graphmlInputStream);

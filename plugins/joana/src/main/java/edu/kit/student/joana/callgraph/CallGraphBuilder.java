@@ -59,7 +59,7 @@ public class CallGraphBuilder implements IGraphBuilder {
      * Builds a new CallGraph with the given information, added before this call.
      * @return the callgraph
      */
-    public CallGraph build() {
+    public CallGraph build() throws IllegalStateException {
         for (MethodGraphBuilder b : methodGraphBuilders) {
             methodGraphs.add(b.build());
         }
