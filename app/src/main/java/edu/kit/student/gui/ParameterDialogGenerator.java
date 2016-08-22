@@ -39,10 +39,11 @@ import javafx.util.StringConverter;
 public class ParameterDialogGenerator extends ParameterVisitor {
 	private GridPane parent;
 	private int parameterCount = 0;
-	
+
+	private StringConverter<Integer> intConverter;
 	private StringConverter<Double> doubleConverter;
-	
-	private List<Parameter<?,?>> parameters;
+
+	private List<Parameter<?, ?>> parameters;
 
 	/**
 	 * Constructs a new ParameterDialogGenerator and sets the parent, where all
@@ -53,10 +54,11 @@ public class ParameterDialogGenerator extends ParameterVisitor {
 		parent.setHgap(10);
 		parent.setVgap(10);
 		parent.setPadding(new Insets(10, 20, 10, 10));
-		
+
+		this.initIntConverter();
 		this.initDoubleConverter();
-		
-		parameters = new LinkedList<Parameter<?,?>>(settings.values());
+
+		parameters = new LinkedList<Parameter<?, ?>>(settings.values());
 
 		for (Parameter<?, ?> p : parameters) {
 			p.accept(this);
@@ -69,18 +71,23 @@ public class ParameterDialogGenerator extends ParameterVisitor {
 		box.setSelected(parameter.getValue());
 		parameter.propertyValue().bind(box.selectedProperty());
 		parameter.cacheCurrentValue();
-		
+
 		parent.add(box, 0, parameterCount);
 		parameterCount++;
 	}
 
 	@Override
 	public void visit(IntegerParameter parameter) {
-		Spinner<Integer> spinner = new Spinner<Integer>(parameter.getMin(), parameter.getMax(), parameter.getValue());
+		SpinnerValueFactory.IntegerSpinnerValueFactory factory = new SpinnerValueFactory.IntegerSpinnerValueFactory(
+				parameter.getMin(), parameter.getMax(), parameter.getValue());
+		
+		factory.setConverter(this.intConverter);
+
+		Spinner<Integer> spinner = new Spinner<Integer>(factory);
 		spinner.setEditable(true);
 		parameter.propertyValue().bind(spinner.valueProperty());
 		parameter.cacheCurrentValue();
-		
+
 		parent.add(new Text(parameter.getName()), 0, parameterCount);
 		parent.add(spinner, 1, parameterCount);
 		parameterCount++;
@@ -88,17 +95,17 @@ public class ParameterDialogGenerator extends ParameterVisitor {
 
 	@Override
 	public void visit(DoubleParameter parameter) {
-		//The factories only purpose is so that 3 decimals can be shown in the spinner. 
+		// The factories purpose is so that 3 decimals can be shown in the spinner, also it prevents illegal input.
 		SpinnerValueFactory.DoubleSpinnerValueFactory factory = new SpinnerValueFactory.DoubleSpinnerValueFactory(
 				parameter.getMin(), parameter.getMax(), parameter.getValue(), parameter.getAmoutPerStep());
 
 		factory.setConverter(this.doubleConverter);
-		
+
 		Spinner<Double> spinner = new Spinner<Double>(factory);
 		spinner.setEditable(true);
 		parameter.propertyValue().bind(spinner.valueProperty());
 		parameter.cacheCurrentValue();
-		
+
 		parent.add(new Text(parameter.getName()), 0, parameterCount);
 		parent.add(spinner, 1, parameterCount);
 		parameterCount++;
@@ -109,7 +116,7 @@ public class ParameterDialogGenerator extends ParameterVisitor {
 		TextField field = new TextField(parameter.getValue());
 		parameter.propertyValue().bind(field.textProperty());
 		parameter.cacheCurrentValue();
-		
+
 		parent.add(new Text(parameter.getName()), 0, parameterCount);
 		parent.add(field, 1, parameterCount);
 		parameterCount++;
@@ -139,7 +146,7 @@ public class ParameterDialogGenerator extends ParameterVisitor {
 		cmb.getSelectionModel().select(parameter.getSelectedIndex());
 		parameter.propertyValue().bind(cmb.valueProperty());
 		parameter.cacheCurrentValue();
-		
+
 		parent.add(cmb, 1, parameterCount);
 		parameterCount++;
 	}
@@ -178,22 +185,53 @@ public class ParameterDialogGenerator extends ParameterVisitor {
 			return true;
 		}
 	}
-	
+
 	private void resetParameters() {
 		for (Parameter<?, ?> p : parameters) {
 			p.propertyValue().unbind();
 			p.reset();
 		}
 	}
-	
+
+	private void initIntConverter() {
+		this.intConverter = new StringConverter<Integer>() {
+
+			@Override
+			public String toString(Integer value) {
+				if (value == null)
+					return "";
+				return value.toString();
+			}
+
+			@Override
+			public Integer fromString(String value) {
+				try {
+					if (value == null)
+						return null;
+					
+					value = value.trim();
+					
+					if (value.length() < 1)
+						return null;
+					
+					return Integer.parseInt(value);
+				} catch (NumberFormatException ex) {
+					return 0;
+				}
+
+			}
+		};
+	}
+
 	private void initDoubleConverter() {
 		this.doubleConverter = new StringConverter<Double>() {
 			private final DecimalFormat df = new DecimalFormat("#.###");
-			
+
 			@Override
 			public String toString(Double value) {
 				// If the specified value is null, return a zero-length String
-				if (value == null) return "";
+				if (value == null)
+					return "";
 				return df.format(value);
 			}
 
@@ -202,16 +240,18 @@ public class ParameterDialogGenerator extends ParameterVisitor {
 				try {
 					// If the specified value is null or zero-length, return
 					// null
-					if (value == null) return null;
+					if (value == null)
+						return null;
 
 					value = value.trim();
 
-					if (value.length() < 1) return null;
+					if (value.length() < 1)
+						return null;
 
 					// Perform the requested parsing
 					return df.parse(value).doubleValue();
 				} catch (ParseException ex) {
-					throw new RuntimeException(ex);
+					return 0.0d;
 				}
 			}
 		};
