@@ -50,6 +50,7 @@ import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
+import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
@@ -139,9 +140,9 @@ public class GAnsApplication {
 				}
 			}
 		});
-		
 		mainViewLayout.getItems().addAll(graphViewTabPane, treeInfoLayout);
 		rootLayout.getChildren().addAll(menuBar, mainViewLayout);
+		VBox.setVgrow(mainViewLayout, Priority.ALWAYS);
 
 		primaryStage.setScene(scene);
 		primaryStage.show();
