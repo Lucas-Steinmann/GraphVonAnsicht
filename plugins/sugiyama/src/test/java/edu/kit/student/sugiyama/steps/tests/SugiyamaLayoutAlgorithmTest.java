@@ -91,10 +91,11 @@ public class SugiyamaLayoutAlgorithmTest {
 		this.alg.layout(DDGraph);
 	}
 
+	@Test
 	public void testRandomGraph() {
 		for (int i = 0; i < 3; i++) {
 			long timeBefore = (new Date()).getTime();
-			DefaultDirectedGraph<DefaultVertex, DirectedEdge> DDGraph = GraphUtil.generateGraph(1000, 0.004f, true);
+			DefaultDirectedGraph<DefaultVertex, DirectedEdge> DDGraph = GraphUtil.generateGraph(100, 0.04f, true);
 			this.alg.layout(DDGraph);
 			System.out.println("runs in " + ((new Date()).getTime() - timeBefore) + "ms");
 		}
