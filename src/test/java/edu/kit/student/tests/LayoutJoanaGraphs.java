@@ -18,12 +18,12 @@ import edu.kit.student.sugiyama.steps.tests.SugiyamaLayoutAlgorithmTest.AsNonApp
 
 public class LayoutJoanaGraphs {
 
-    private static JoanaGraphModel model;
+    private static List<JoanaGraphModel> models;
     private static JoanaPlugin plugin;
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-         model = JoanaGraphTester.getGraphModelGenerator().get(0);
+         models = JoanaGraphTester.getGraphModelGenerator();
          plugin = new JoanaPlugin();
          
          Thread t = new Thread("JavaFX Init Thread") {
@@ -41,17 +41,23 @@ public class LayoutJoanaGraphs {
 
     @Test
     public void methodLayout() {
-        List<MethodGraph> mgs = model.getMethodGraphs();
-        MethodGraphLayout mgl = new MethodGraphLayout();
-        for (MethodGraph mg : mgs) {
-            mgl.layout(mg);
+        for (JoanaGraphModel model : models) {
+            List<MethodGraph> mgs = model.getMethodGraphs();
+            MethodGraphLayout mgl = new MethodGraphLayout();
+            for (MethodGraph mg : mgs) {
+                if (mg.getVertexSet().size() < 700) {
+                    mgl.layout(mg);
+                }
+            }
         }
     }
 
     @Test
     public void callLayout() {
-        CallGraph cg = model.getCallGraph();
-        CallGraphLayout cgl = new CallGraphLayout();
-        cgl.layout(cg);
+        for (JoanaGraphModel model : models) {
+            CallGraph cg = model.getCallGraph();
+            CallGraphLayout cgl = new CallGraphLayout();
+            cgl.layout(cg);
+        }
     }
 }
