@@ -68,7 +68,12 @@ public class MethodGraphBuilder implements IGraphBuilder {
         }
         
         for (JoanaEdgeBuilder builder : edgeBuilders) {
-            edges.add(builder.build(vertices));
+            JoanaEdge edge = builder.build(vertices);
+            
+            //check if edge exists
+            if (edge != null) {
+                edges.add(edge);
+            } 
         }
 
         String name = "";

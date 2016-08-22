@@ -81,7 +81,11 @@ public class CallGraphBuilder implements IGraphBuilder {
         Set<JoanaEdge> callEdges = new HashSet<>();
         for (JoanaEdgeBuilder builder : callEdgeBuilders) {
             JoanaEdge edge = builder.build(vertexPool);
-            callEdges.add(edge);
+            
+            //check if edge exists
+            if (edge != null) {
+                callEdges.add(edge);
+            }       
         }
         
         //search for call loops
@@ -94,6 +98,7 @@ public class CallGraphBuilder implements IGraphBuilder {
             }
         }
         
+        //TODO: throw exception when no callEdges
         for (JoanaEdge callEdge : callEdges) {
             if (callEdge.getEdgeKind() != EdgeKind.CL)
                 continue;
