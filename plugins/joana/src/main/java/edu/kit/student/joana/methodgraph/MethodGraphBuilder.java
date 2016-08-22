@@ -62,7 +62,7 @@ public class MethodGraphBuilder implements IGraphBuilder {
      * Builds the method graph, which has been described before this method is called.
      * @return the built methodgraph
      */
-    public MethodGraph build() throws IllegalStateException {
+    public MethodGraph build() throws Exception {
         for (JoanaVertexBuilder builder : vertexBuilders) {	
             vertices.add(builder.build());
         }

@@ -35,7 +35,7 @@ public class JoanaGraphModelBuilder implements IGraphModelBuilder {
     }
 
     @Override
-    public GraphModel build() throws IllegalStateException {
+    public GraphModel build() throws Exception {
         CallGraph callGraph = callBuilder.build();
         JoanaGraphModel model = new JoanaGraphModel(callGraph);
         workspace.setGraphModel(model);

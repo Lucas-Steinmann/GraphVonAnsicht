@@ -85,7 +85,11 @@ public class GraphmlImporter implements Importer {
             }
         }
         
-        builder.build();
+        try {
+            builder.build();
+        } catch(Exception e) {
+            throw new ParseException(e.getMessage(), 0);
+        }
     }
 
     /**
