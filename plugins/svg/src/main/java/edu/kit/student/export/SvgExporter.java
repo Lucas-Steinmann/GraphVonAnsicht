@@ -64,7 +64,7 @@ public class SvgExporter implements Exporter {
 
         //Create new DOM document
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        DocumentBuilder docBuilder = null;
+        DocumentBuilder docBuilder;
         try {
             docBuilder = factory.newDocumentBuilder();
         } catch (ParserConfigurationException e1) {
@@ -109,7 +109,7 @@ public class SvgExporter implements Exporter {
         
         //Transform DOM tree to writeable file
         TransformerFactory transformerFactory = TransformerFactory.newInstance();
-        Transformer transformer = null;
+        Transformer transformer;
         try {
             transformer = transformerFactory.newTransformer();
         } catch (TransformerConfigurationException e2) {

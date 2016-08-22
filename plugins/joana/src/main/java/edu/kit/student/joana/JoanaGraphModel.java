@@ -26,7 +26,7 @@ public class JoanaGraphModel extends GraphModel {
 	 * @param methdoGraphs
 	 */
 	public JoanaGraphModel(CallGraph callgraph) {
-	    this.setCallGraph(callgraph);
+		this.callgraph = callgraph;
 	}
 
 	/**
@@ -68,9 +68,9 @@ public class JoanaGraphModel extends GraphModel {
 	
 	@Override
 	public ViewableGraph getGraphFromId(Integer id) {
-	    if (id.equals(getCallGraph().getID())) {
-	        return this.getCallGraph();
-	    }
+		if (id.equals(callgraph.getID())) {
+			return callgraph;
+		}
 		for (ViewableGraph graph : this.getMethodGraphs()) {
 			if (graph.getID().compareTo(id) == 0) {
 				return graph;

@@ -1,12 +1,6 @@
 package edu.kit.student.joana.methodgraph;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import edu.kit.student.graphmodel.SubGraph;
@@ -86,7 +80,7 @@ public class MethodGraph extends JoanaGraph {
 
     private JoanaVertex searchEntry() {
         for (JoanaVertex v : getVertexSet()) {
-            if (v.getName() == ENTRY_NAME) {
+            if (Objects.equals(v.getName(), ENTRY_NAME)) {
                 entry = v;
                 return entry;
             }

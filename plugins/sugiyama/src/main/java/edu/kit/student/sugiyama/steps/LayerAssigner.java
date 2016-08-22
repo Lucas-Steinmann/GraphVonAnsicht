@@ -189,9 +189,8 @@ public class LayerAssigner implements ILayerAssigner {
 	) {
 		Set<ISugiyamaEdge> incomingEdges = graph.incomingEdgesOf(vertex);
 		Set<ISugiyamaEdge> selfLoops = graph.selfLoopsOf(vertex);
-		Set<ISugiyamaEdge> tempEdges = new HashSet<ISugiyamaEdge>(); //necessary in order don't to get a
-		tempEdges.addAll(incomingEdges);							//concurrentModificationException
-		
+		Set<ISugiyamaEdge> tempEdges = new HashSet<ISugiyamaEdge>(incomingEdges); //necessary in order don't to get a
+
 
 		for (ISugiyamaEdge edge : tempEdges) {
 			if (!edges.contains(edge)) {

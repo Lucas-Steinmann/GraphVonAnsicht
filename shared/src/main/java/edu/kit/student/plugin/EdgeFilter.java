@@ -1,8 +1,8 @@
 package edu.kit.student.plugin;
 
-import java.util.function.Predicate;
-
 import edu.kit.student.graphmodel.Edge;
+
+import java.util.function.Predicate;
 
 /**
  * This class represents a filter for edges. 
@@ -40,7 +40,7 @@ public abstract class EdgeFilter {
     @Override
     public boolean equals(Object o) {
     	if(o instanceof EdgeFilter) {
-    		return (this.getName().compareTo(((EdgeFilter)o).getName()) == 0);
+            return (name.compareTo(((EdgeFilter) o).name) == 0);
     	} else {
     		return super.equals(o);
     	}

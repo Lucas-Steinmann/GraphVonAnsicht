@@ -16,6 +16,7 @@ import org.xml.sax.SAXException;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.ParseException;
+import java.util.Objects;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -38,7 +39,7 @@ public class GraphmlImporter implements Importer {
         //Build Document from FileInputStream
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder;
-        Document document = null;
+        Document document;
         try {
             docBuilder = factory.newDocumentBuilder();
             document = docBuilder.parse(graphmlInputStream);
@@ -66,9 +67,9 @@ public class GraphmlImporter implements Importer {
             if (node.getNodeType() == Node.ELEMENT_NODE) {
                 Element element = (Element) node; 
                 //check if node is a key
-                if (element.getNodeName() == "key") {
+                if (Objects.equals(element.getNodeName(), "key")) {
                     //TODO:process keys
-                } else if (node.getNodeName() == "graph") {
+                } else if (Objects.equals(node.getNodeName(), "graph")) {
                     //get GraphBuilder and parse graph
                     String graphId = element.getAttribute("id");
                     IGraphBuilder graphBuilder = builder.getGraphBuilder(graphId);
@@ -110,7 +111,7 @@ public class GraphmlImporter implements Importer {
             if (node.getNodeType() == Node.ELEMENT_NODE) {
                 Element child = (Element) node; 
                 //check if node is a key
-                if (child.getNodeName() == "node") {
+                if (Objects.equals(child.getNodeName(), "node")) {
 
                     //Check if this node contains a graph
                     Element childGraph = getGraphVertex(child);
@@ -124,7 +125,7 @@ public class GraphmlImporter implements Importer {
                         IVertexBuilder vertexBuilder = builder.getVertexBuilder(vertexId);
                         this.parseVertex(vertexBuilder, child);
                     }
-                } else if (child.getNodeName() == "edge") {
+                } else if (Objects.equals(child.getNodeName(), "edge")) {
                     IEdgeBuilder edgeBuilder = builder.getEdgeBuilder(child.getAttribute("source"), child.getAttribute("target"));
                     this.parseEdge(edgeBuilder, child);
                 }  else {
@@ -151,7 +152,7 @@ public class GraphmlImporter implements Importer {
             if (node.getNodeType() == Node.ELEMENT_NODE) {
                 Element child = (Element) node; 
                 //check if node is a data
-                if (child.getNodeName() == "data") {
+                if (Objects.equals(child.getNodeName(), "data")) {
                     //get key and value
                     String key = child.getAttribute("key");
                     String value = child.getTextContent();
@@ -188,7 +189,7 @@ public class GraphmlImporter implements Importer {
             if (node.getNodeType() == Node.ELEMENT_NODE) {
                 Element child = (Element) node; 
                 //check for data
-                if (child.getNodeName() == "data") {
+                if (Objects.equals(child.getNodeName(), "data")) {
                     //get key and value
                     String key = child.getAttribute("key");
                     String value = child.getTextContent();
@@ -219,7 +220,7 @@ public class GraphmlImporter implements Importer {
             Node node = childs.item(j);
             
             //check if contains a element as graph
-            if (node.getNodeName() == "graph" && node.getNodeType() == Node.ELEMENT_NODE) {
+            if (Objects.equals(node.getNodeName(), "graph") && node.getNodeType() == Node.ELEMENT_NODE) {
                 return (Element) node;
             }
         }    

@@ -301,7 +301,7 @@ public class JoanaGraphTester {
             if (file.getName().equals("BigCG.pdg.graphml")) {
                 continue;
             }
-            parsed = true;;
+            ;
             return parse(file);
         }
         return null;

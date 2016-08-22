@@ -293,6 +293,6 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
 			out+= '\n';
 		}
 		out=out.substring(0, out.length()-2);
-		return out+="}";
+		return out + "}";
 	}
 }

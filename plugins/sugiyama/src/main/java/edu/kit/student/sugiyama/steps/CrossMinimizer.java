@@ -33,7 +33,7 @@ public class CrossMinimizer implements ICrossMinimizer {
 	public CrossMinimizer(float crossingReductionThreshold, int maxRuns, boolean stopOnThreshold) {
 		setCrossingReductionThreshold(crossingReductionThreshold);
 		setMaxRuns(maxRuns);
-		setStopOnThreshold(stopOnThreshold);
+		this.stopOnThreshold = stopOnThreshold;
 	}
 
 	private void setCrossingReductionThreshold(double crossingReductionThreshold) {
@@ -51,7 +51,7 @@ public class CrossMinimizer implements ICrossMinimizer {
 	@Override
 	public void minimizeCrossings(ICrossMinimizerGraph graph) {
 		if (settings != null) {
-			setStopOnThreshold(Settings.unpackBoolean((Parameter<?, Boolean>) getSettings().get("Use Threshold")));
+			this.stopOnThreshold = Settings.unpackBoolean((Parameter<?, Boolean>) getSettings().get("Use Threshold"));
 			setCrossingReductionThreshold(Settings.unpackDouble((Parameter<?, Double>) getSettings().get("Crossminimizer reduction Threshold")));
 			setMaxRuns(Settings.unpackInteger((Parameter<?, Integer>) getSettings().get("Crossminimizer max runs")));
 		}
@@ -154,7 +154,7 @@ public class CrossMinimizer implements ICrossMinimizer {
 			ISugiyamaVertex source = edge.getSource();
 			ISugiyamaVertex target = edge.getTarget();
 
-			if (source.getID() == target.getID()) {
+			if (Objects.equals(source.getID(), target.getID())) {
 				continue;
 			}
 
@@ -170,7 +170,7 @@ public class CrossMinimizer implements ICrossMinimizer {
 				List<ISugiyamaEdge> supplementEdges = new LinkedList<>();
 				replacedEdges.add(edge);		// the  distance of both vertices of this edge is greater than 1 so it must be replaced
 				ISugiyamaVertex nv = null;	// through dummy vertices and supplement edges. add it here to remove it later from the original edge set.
-				ISugiyamaEdge ne = null;
+				ISugiyamaEdge ne;
 				int c = 0;
 
 				for(int l = lowerLayer + 1; l <= upperLayer; l++){
@@ -178,19 +178,19 @@ public class CrossMinimizer implements ICrossMinimizer {
 					ISugiyamaVertex dummy = null;
 
 					if(l==lowerLayer+1){
-						nv = graph.createDummy("d"+c+"("+source.getName()+"->"+target.getName()+")", "", lowerLayer + 1);	//first dummy vertex created
+						nv = graph.createDummy("d"+c+ '(' +source.getName()+"->"+target.getName()+ ')', "", lowerLayer + 1);	//first dummy vertex created
 						dummy = nv;
-						ne = graph.createSupplementEdge(edge.getName()+"("+c+")", "", source, nv);	//first dummy edge created
+						ne = graph.createSupplementEdge(edge.getName()+ '(' +c+ ')', "", source, nv);	//first dummy edge created
 						supplementEdges.add(ne);
 						((SugiyamaGraph) graph).assignToLayer(nv, l);
 					}else if(l==upperLayer){
-						ne = graph.createSupplementEdge(edge.getName() + "(e" + c + ")", "", nv, target);
+						ne = graph.createSupplementEdge(edge.getName() + "(e" + c + ')', "", nv, target);
 						supplementEdges.add(ne);
 					}else{
 						ISugiyamaVertex temp = nv;	//temporary ISugiyamaVertex so that the new created vertex is always the one with the variable nv
-						nv = graph.createDummy("d"+c+"("+source.getName()+"->"+target.getName()+")", "", c);
+						nv = graph.createDummy("d"+c+ '(' +source.getName()+"->"+target.getName()+ ')', "", c);
 						dummy = nv;
-						ne = graph.createSupplementEdge(edge.getName()+"("+c+")", "", temp, nv);
+						ne = graph.createSupplementEdge(edge.getName()+ '(' +c+ ')', "", temp, nv);
 						supplementEdges.add(ne);
 						((SugiyamaGraph) graph).assignToLayer(nv, l);
 					}
@@ -264,7 +264,7 @@ public class CrossMinimizer implements ICrossMinimizer {
 	}
 
 	public static int crossings(SugiyamaGraph graph) {
-		int result = 0;
+		int result;
 		List<List<ISugiyamaVertex>> layers = graph.getLayers();
 
 
@@ -299,7 +299,7 @@ public class CrossMinimizer implements ICrossMinimizer {
 	}
 
 	private static int crossingsOfVertices(SugiyamaGraph graph, ISugiyamaVertex vertex1, ISugiyamaVertex vertex2, List<ISugiyamaVertex> layer, int layer2number) {
-		if (vertex1.getID() == vertex2.getID()) {
+		if (Objects.equals(vertex1.getID(), vertex2.getID())) {
 			return 0;
 		}
 
@@ -312,8 +312,8 @@ public class CrossMinimizer implements ICrossMinimizer {
 				.filter(edge -> edge.getSource().getLayer() == layer2number || edge.getTarget().getLayer() == layer2number)
 				.collect(Collectors.toSet());
 
-		List<ISugiyamaVertex> sources = vertex1Edges.stream().map(sugiyamaEdge -> sugiyamaEdge.getSource()).filter(vertex -> vertex.getID() != vertex2.getID()).collect(Collectors.toList());
-		List<ISugiyamaVertex> targets = vertex1Edges.stream().map(sugiyamaEdge -> sugiyamaEdge.getTarget()).filter(vertex -> vertex.getID() != vertex2.getID()).collect(Collectors.toList());
+		List<ISugiyamaVertex> sources = vertex1Edges.stream().map(sugiyamaEdge -> sugiyamaEdge.getSource()).filter(vertex -> !Objects.equals(vertex.getID(), vertex2.getID())).collect(Collectors.toList());
+		List<ISugiyamaVertex> targets = vertex1Edges.stream().map(sugiyamaEdge -> sugiyamaEdge.getTarget()).filter(vertex -> !Objects.equals(vertex.getID(), vertex2.getID())).collect(Collectors.toList());
 		//sources.removeIf(vertex -> vertex.getID() == vertex1.getID());
 		//targets.removeIf(vertex -> vertex.getID() == vertex1.getID());
 
@@ -327,8 +327,8 @@ public class CrossMinimizer implements ICrossMinimizer {
 				.filter(edge -> edge.getSource().getLayer() == layer2number || edge.getTarget().getLayer() == layer2number)
 				.collect(Collectors.toSet());
 
-		sources = vertex2Edges.stream().map(sugiyamaEdge -> sugiyamaEdge.getSource()).filter(vertex -> vertex.getID() != vertex2.getID()).collect(Collectors.toList());
-		targets = vertex2Edges.stream().map(sugiyamaEdge -> sugiyamaEdge.getTarget()).filter(vertex -> vertex.getID() != vertex2.getID()).collect(Collectors.toList());
+		sources = vertex2Edges.stream().map(sugiyamaEdge -> sugiyamaEdge.getSource()).filter(vertex -> !Objects.equals(vertex.getID(), vertex2.getID())).collect(Collectors.toList());
+		targets = vertex2Edges.stream().map(sugiyamaEdge -> sugiyamaEdge.getTarget()).filter(vertex -> !Objects.equals(vertex.getID(), vertex2.getID())).collect(Collectors.toList());
 		//sources.removeIf(vertex -> vertex.getID() == vertex2.getID());
 		//targets.removeIf(vertex -> vertex.getID() == vertex2.getID());
 

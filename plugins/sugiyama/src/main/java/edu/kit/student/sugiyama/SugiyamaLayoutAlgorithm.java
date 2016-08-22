@@ -53,11 +53,11 @@ public class SugiyamaLayoutAlgorithm<G extends DirectedGraph>
 	public SugiyamaLayoutAlgorithm() {
 		relativeLayerConstraints = new HashSet<>();
 		absoluteLayerConstraints = new HashSet<>();
-		setCycleRemover(new CycleRemover());
-		setLayerAssigner(new LayerAssigner());
-		setCrossMinimizer(new CrossMinimizer());
-		setVertexPositioner(new VertexPositioner());
-		setEdgeDrawer(new EdgeDrawer());
+		this.remover = new CycleRemover();
+		this.assigner = new LayerAssigner();
+		this.minimizer = new CrossMinimizer();
+		this.positioner = new VertexPositioner();
+		this.drawer = new EdgeDrawer();
 	}
 	//TODO check if it would be wise to set the first steps in the constructor in order to avoid nullpointer exceptions
 	//they can still be replaced in the setter
@@ -125,8 +125,7 @@ public class SugiyamaLayoutAlgorithm<G extends DirectedGraph>
 			return this.settings;
 		}
 		//Needs to be a LinkedHashMap, because the parameters might need to be displayed in a specific order to make sense
-		LinkedHashMap<String, Parameter<?,?>> parameter = new LinkedHashMap<String, Parameter<?,?>>();
-		parameter.putAll(this.minimizer.getSettings().getParameters());
+		LinkedHashMap<String, Parameter<?,?>> parameter = new LinkedHashMap<String, Parameter<?,?>>(this.minimizer.getSettings().getParameters());
 
 		Settings  settings = new Settings(parameter);
 		this.settings = settings;

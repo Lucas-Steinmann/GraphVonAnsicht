@@ -6,8 +6,8 @@ public abstract class VertexAction implements Action {
     private String description;
     
     public VertexAction(String name, String description) {
-        this.setName(name);
-        this.setDescription(description);
+        this.name = name;
+        this.description = description;
     }
 
     @Override

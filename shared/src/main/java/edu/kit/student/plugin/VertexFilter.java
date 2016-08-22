@@ -40,7 +40,7 @@ public abstract class VertexFilter {
     @Override
     public boolean equals(Object o) {
     	if(o instanceof VertexFilter) {
-    		return (this.getName().compareTo(((VertexFilter)o).getName()) == 0);
+            return (name.compareTo(((VertexFilter) o).name) == 0);
     	} else {
     		return super.equals(o);
     	}

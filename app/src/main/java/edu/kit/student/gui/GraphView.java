@@ -137,7 +137,7 @@ public class GraphView extends Pane {
 	}
 
 	private void dynamicContextMenu() {
-	    this.getSelectionModel().getSelectedItems().addListener(new SetChangeListener<VertexShape>() {
+		this.selectionModel.getSelectedItems().addListener(new SetChangeListener<VertexShape>() {
 
             @Override
             public void onChanged(SetChangeListener.Change<? extends VertexShape> change) {
@@ -243,7 +243,7 @@ public class GraphView extends Pane {
 		    // Only redraw if OK was pressed and if there was a change in the selection.
 			this.graphFactory.getGraph().setVertexFilter(selectedVertexFilter);
 			this.graphFactory.getGraph().setEdgeFilter(selectedEdgeFilter);
-            getCurrentLayoutOption().applyLayout();
+			this.layout.applyLayout();
             reloadGraph();
 		}
 	}

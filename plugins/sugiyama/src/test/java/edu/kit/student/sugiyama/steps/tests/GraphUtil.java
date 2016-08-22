@@ -129,7 +129,7 @@ public class GraphUtil {
 
         DefaultDirectedGraph<Vertex, DirectedEdge> graph = new DefaultDirectedGraph<>();
         density = Math.min(Math.max(density, 0f), 1f);
-        int edgeCount = 0;
+        int edgeCount;
         int maxEdgeCount = 0;
         List<Integer> layerSizes = new LinkedList<>();
         int currentLayerStart = 0;

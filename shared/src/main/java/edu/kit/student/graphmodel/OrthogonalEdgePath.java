@@ -44,10 +44,10 @@ public class OrthogonalEdgePath extends EdgePath {
 	public String toString() {
 	    StringBuilder sb = new StringBuilder();
 	    sb.append("( ");
-	    for (DoublePoint point : this.getNodes()) {
+		for (DoublePoint point : this.nodes) {
 	        sb.append("<").append(point.x).append(", ").append(point.y).append(">").append(" -> ");
 	    }
-	    if (!this.getNodes().isEmpty()) {
+		if (!this.nodes.isEmpty()) {
 	        sb.delete(sb.length() - 2, sb.length());
 	    }
 	    sb.append(" )");

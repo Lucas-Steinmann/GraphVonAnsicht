@@ -486,7 +486,7 @@ public class EdgeDrawer implements IEdgeDrawer {
 		//now draw edge between sPoint and projected!!!!!
 		// search for the y-coordinate one layer below
 		List<DoublePoint> targetOut = this.inOutPoints.get(target.getID()).get(1);
-		DoublePoint p = null;
+		DoublePoint p;
 		for(int i = 0; i<targetOut.size(); i++){
 			p = targetOut.get(i);
 			if(dEquals(p.x, projected.x) && dEquals(p.y, projected.y)){	//point, projected from top of vertex on its bottom collided with another point on the bottom

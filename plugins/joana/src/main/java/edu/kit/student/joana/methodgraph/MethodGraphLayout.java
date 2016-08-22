@@ -178,10 +178,10 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 			List<DoublePoint> points = e.getPath().getNodes();
 			DoublePoint borderDummySize = new DoublePoint(3, 5);//just a simple size for dummies on first or last layer
 			//cases: top of box and bottom, in and out of the box.
-			Double start = null;
-			Double end = null;
-			DoublePoint boxCross = null;
-			int layerToAddDummy = -1;
+			Double start;
+			Double end;
+			DoublePoint boxCross;
+			int layerToAddDummy;
 			JoanaDummyVertex tempDummy;
 			Double yAddition = 0.0;	//adds this value to the new set y-coordinate of the new dummy(another value than 0 just needed on bottom of FA-box)
 			//vertex boxes are not accurate so that the entry point in box is the same point as drawn by EdgeDrawer
@@ -253,9 +253,8 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 //		this.printGraph(fa.getGraph().getVertexSet(), fa.getGraph().getEdgeSet());
 		double boxYtop = fa.getY();
 		double boxYbottom = fa.getY() + fa.getSize().y;
-		Set<Vertex> vertices = new HashSet<>();
+		Set<Vertex> vertices = new HashSet<>(fa.getGraph().getVertexSet());
 		Set<DirectedEdge> edges = new HashSet<>();
-		vertices.addAll(fa.getGraph().getVertexSet());
 		edges.addAll(fa.getGraph().getEdgeSet());
 		edges.addAll(newFAedges);	//edges from outside going to the next vertex in FA, not describing a path (not skipping a layer)
 		for(DirectedEdge edge : newFAedges){
@@ -499,11 +498,11 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 		}
 		for(JoanaEdge e : fromOutEdges){
 			List<DoublePoint> points = e.getPath().getNodes();
-			Double start = null;
-			Double end = null;
-			int upOrDown = 0;	//+1 is down (increase layer), -1 is up(decrease layer)
-			Vertex source = null;	//one of these will be a dummy instead of being a
-			Vertex target = null;	//source or target because the vertex out of the fa is replaced by a dummy while layouting
+			Double start;
+			Double end;
+			int upOrDown;	//+1 is down (increase layer), -1 is up(decrease layer)
+			Vertex source;	//one of these will be a dummy instead of being a
+			Vertex target;	//source or target because the vertex out of the fa is replaced by a dummy while layouting
 			if(dEquals(points.get(points.size() - 1).y, boxYtop)){ //edge into box from top
 				start = boxYtop;
 				end = (double) e.getTarget().getY();

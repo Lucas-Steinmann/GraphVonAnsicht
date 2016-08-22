@@ -224,7 +224,7 @@ public class VertexPositioner implements IVertexPositioner {
 					continue;
 				}
 
-				List<ISugiyamaVertex> otherVertices = segment.getVertices();
+				List<ISugiyamaVertex> otherVertices = segment.vertices;
 				int vOffset = this.vertices.get(0).getLayer();
 				int oOffset = otherVertices.get(0).getLayer();
 
@@ -236,7 +236,7 @@ public class VertexPositioner implements IVertexPositioner {
 					continue;
 				}
 
-				boolean firstIsLeft = false;
+				boolean firstIsLeft;
 				firstIsLeft = (this.vertices.get(startLayer - vOffset).getX() - otherVertices.get(startLayer - oOffset).getX()) < 0;
 
 				for (int i = startLayer + 1; i < endLayer; i++) {

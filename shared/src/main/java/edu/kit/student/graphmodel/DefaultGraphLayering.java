@@ -80,7 +80,7 @@ public class DefaultGraphLayering<V extends Vertex> implements GraphLayering<V> 
     
     public void setPosition(V vertex, IntegerPoint point) {
     	IntegerPoint oldPos = getPosition(vertex);
-        assert (vertex == getVertex(oldPos));
+        assert (Objects.equals(vertex, getVertex(oldPos)));
         // Remove from old position
         ArrayList<V> vs = this.layers.get(oldPos.y);
         assert (oldPos.x <  vs.size());
@@ -104,14 +104,14 @@ public class DefaultGraphLayering<V extends Vertex> implements GraphLayering<V> 
             vertexToPoint.put(layer.get(i), new IntegerPoint(i, point.y));
         }
 
-        assert (vertex == getVertex(getPosition(vertex)));
+        assert (Objects.equals(vertex, getVertex(getPosition(vertex))));
     }
     
     public void setLayer(V vertex, int layer) {
         if (getLayerFromVertex(vertex) == layer) {
             return;
         }
-        List<V> assignedLayer = null;
+        List<V> assignedLayer;
 
         if (getHeight() <= layer) {
             assignedLayer = new LinkedList<>();
@@ -120,7 +120,7 @@ public class DefaultGraphLayering<V extends Vertex> implements GraphLayering<V> 
         }
 
         setPosition(vertex, new IntegerPoint(assignedLayer.size(), layer));
-        assert (vertex == getVertex(getPosition(vertex)));
+        assert (Objects.equals(vertex, getVertex(getPosition(vertex))));
     }
     
     public void addVertex(V vertex, int layer) {

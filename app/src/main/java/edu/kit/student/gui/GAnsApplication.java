@@ -5,12 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.text.ParseException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import edu.kit.student.graphmodel.GraphModel;
@@ -240,7 +235,7 @@ public class GAnsApplication {
             }  
 
             if (!validLayout) {
-                if (layout != "") {
+                if (!Objects.equals(layout, "")) {
                     showErrorDialog("Warning! The layout " + layout + 
                             " is not a valid layout. The default layout will be selected.");
                 }
