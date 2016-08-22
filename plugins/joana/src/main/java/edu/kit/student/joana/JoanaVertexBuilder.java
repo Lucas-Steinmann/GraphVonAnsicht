@@ -28,7 +28,7 @@ public class JoanaVertexBuilder implements IVertexBuilder {
     
     
     @Override
-    public void addData(String keyname, String value) throws IllegalArgumentException {
+    public void addData(String keyname, String value) {
         switch (keyname) {
           case "nodeKind":
               kind = JoanaVertex.VertexKind.valueOf(value);
