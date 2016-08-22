@@ -208,6 +208,6 @@ public class JoanaEdge implements DirectedEdge {
 
     @Override
     public String toString() {
-        return this.source.getID() + " -" + this.id + "-> " + this.target.getLabel();
+        return this.getSource().getLabel() + " -" + this.getLabel() + "-> " + this.getTarget().getLabel();
     }
 }

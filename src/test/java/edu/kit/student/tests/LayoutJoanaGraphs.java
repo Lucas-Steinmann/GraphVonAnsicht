@@ -20,7 +20,7 @@ public class LayoutJoanaGraphs {
 
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
-         model = JoanaGraphTester.generateGraphModel();
+         model = JoanaGraphTester.getGraphModelGenerator().get(0);
          plugin = new JoanaPlugin();
     }
 
