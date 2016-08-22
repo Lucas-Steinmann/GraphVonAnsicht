@@ -1,7 +1,6 @@
 package edu.kit.student.joana.methodgraph;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -137,8 +136,8 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 		//maybe split more functionality into private methods
 		double boxYtop = fa.getY();
 		double boxYbottom = fa.getY() + fa.getSize().y;
-		List<JoanaVertex> faVertices = new ArrayList(fa.getGraph().getVertexSet());
-		List<JoanaEdge> faEdges = new ArrayList(fa.getGraph().getEdgeSet());
+		List<JoanaVertex> faVertices = new ArrayList<>(fa.getGraph().getVertexSet());
+		List<JoanaEdge> faEdges = new ArrayList<>(fa.getGraph().getEdgeSet());
 		Set<DirectedEdge> newFAedges = new HashSet<>();	//new edges from outside to the next layer, not describing a path
 		faVertices.sort((v1,v2)->Integer.compare(v1.getY(), v2.getY()));	//sort vertices in ascending order of y values
 		Map<Integer, List<Vertex>> layerNumToVertices = new HashMap<>();
@@ -424,7 +423,6 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 				if(distancePoints.size() == 2){//just one segment
 //					System.out.println("first!");
 					Double d1 = distancePoints.get(0);
-					Double d2 = distancePoints.get(1);
 					Vertex tmp = dummies.get(tempDummyCount - 1);
 //					System.out.println("assigned dummy: "+tmp.getID());
 					tmp.setX((int) Math.round(Math.ceil(d1+distBetweenDummies)));
@@ -436,7 +434,6 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 //					System.out.println("second!");
 					for(int i = 0; i < distancePoints.size() - 1 && tempDummyCount > 0; i+=2){//draw one dummy in each segment and adjust distances
 						Double d1 = distancePoints.get(i);
-						Double d2 = distancePoints.get(i+1);
 						Vertex tmp = dummies.get(tempDummyCount - 1);
 //						System.out.println("assigned dummy: "+tmp.getID());
 						tmp.setX((int) Math.round(Math.ceil(d1+distBetweenDummies)));
@@ -492,11 +489,11 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 					dummies.add(layerDummies.get(randomIndex));
 					layerDummies.remove(randomIndex);
 				}
-				supplementEdges.add(new DefaultDirectedEdge("","",e.getSource(), dummies.get(0)));
+				supplementEdges.add(new DefaultDirectedEdge<Vertex>("","",e.getSource(), dummies.get(0)));
 				for(int i = 0; i < dummies.size() - 1; i++){
-					supplementEdges.add(new DefaultDirectedEdge("","",dummies.get(i),dummies.get(i + 1)));
+					supplementEdges.add(new DefaultDirectedEdge<Vertex>("","",dummies.get(i),dummies.get(i + 1)));
 				}
-				supplementEdges.add(new DefaultDirectedEdge("","",dummies.get(dummies.size() - 1),e.getTarget()));
+				supplementEdges.add(new DefaultDirectedEdge<Vertex>("","",dummies.get(dummies.size() - 1),e.getTarget()));
 				paths.add(new DefaultDirectedSupplementEdgePath(e, dummies, supplementEdges));
 			}
 		}
@@ -548,16 +545,16 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 					dummies.add(layerDummies.get(randomIndex));
 					layerDummies.remove(randomIndex);
 				}
-				supplementEdges.add(new DefaultDirectedEdge("","",source, dummies.get(0)));
+				supplementEdges.add(new DefaultDirectedEdge<Vertex>("","",source, dummies.get(0)));
 				for(int i = 0; i < dummies.size() - 1; i++){
-					supplementEdges.add(new DefaultDirectedEdge("","",dummies.get(i),dummies.get(i + 1)));
+					supplementEdges.add(new DefaultDirectedEdge<Vertex>("","",dummies.get(i),dummies.get(i + 1)));
 				}
-				supplementEdges.add(new DefaultDirectedEdge("","",dummies.get(dummies.size() - 1),target));
-				paths.add(new DefaultDirectedSupplementEdgePath(new DefaultDirectedEdge("","",source, target), dummies, supplementEdges));
+				supplementEdges.add(new DefaultDirectedEdge<Vertex>("","",dummies.get(dummies.size() - 1),target));
+				paths.add(new DefaultDirectedSupplementEdgePath(new DefaultDirectedEdge<Vertex>("","",source, target), dummies, supplementEdges));
 			}else{//edge from outside goes direct into the first vertex (start layer +1 or last layer - 1), so just build a normal edge!
 				//TODO
 				assert(Math.abs(index1 - index2) == 1);	//should be so !
-				newFAedges.add(new DefaultDirectedEdge("","",source,target));
+				newFAedges.add(new DefaultDirectedEdge<Vertex>("","",source,target));
 			}
 		}
 		return paths;
@@ -623,9 +620,9 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 		}
 //		logger.debug("from out edges: "+fromOutEdges.size());
 //		logger.debug("box pos: "+fa.getX()+","+fa.getY()+" size: "+fa.getSize().x+","+fa.getSize().y);
-		for(JoanaVertex v : faVertices){
+//		for(JoanaVertex v : faVertices){
 //			logger.debug("vertex pos: "+v.getX()+","+v.getY()+" size: "+v.getSize().x+","+v.getSize().y);
-		}
+//		}
 		return fromOutEdges;
 	}
 	

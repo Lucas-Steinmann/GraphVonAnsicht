@@ -27,7 +27,7 @@ public class CrossMinimizer implements ICrossMinimizer {
     final Logger logger = LoggerFactory.getLogger(CrossMinimizer.class);
 
 	public CrossMinimizer() {
-		this(0.001f, 100, false);
+		this(0.001f, 10, false);
 	}
 
 	public CrossMinimizer(float crossingReductionThreshold, int maxRuns, boolean stopOnThreshold) {

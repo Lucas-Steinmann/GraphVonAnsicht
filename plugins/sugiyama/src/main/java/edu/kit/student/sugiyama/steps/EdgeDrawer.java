@@ -602,7 +602,7 @@ public class EdgeDrawer implements IEdgeDrawer {
 		this.graphEdges = this.graph.getEdgeSet();	//all graph edges, with supplement edges
 //		logger.debug("amount: "+graphVertices.size()+","+graphEdges.size());
 		
-		Set<ISugiyamaVertex> sugyVertices = graphVertices.stream().filter(v->!v.isDummy()).collect(Collectors.toSet());
+//		Set<ISugiyamaVertex> sugyVertices = graphVertices.stream().filter(v->!v.isDummy()).collect(Collectors.toSet());
 		this.isolatedVertices = new HashSet<ISugiyamaVertex>();
 		this.selfLoopEdges = new HashSet<ISugiyamaEdge>();
 		this.sameLayerEdges = new HashSet<ISugiyamaEdge>();

@@ -174,9 +174,7 @@ public class SugiyamaGraph
 //			System.out.println("new: source y: "+tempReplacedEdge.getSource().getY()+", id: "+ tempReplacedEdge.getSource().getID()+ ", layer: "+tempReplacedEdge.getSource().getLayer() +", target: "+tempReplacedEdge.getTarget().getY()+", id: "+tempReplacedEdge.getTarget().getID() + ", layer: "+tempReplacedEdge.getTarget().getLayer());
 			
 			if(tempReplacedEdge.getSource().getLayer() > tempReplacedEdge.getTarget().getLayer()){
-				ISugiyamaVertex source = tempReplacedEdge.getSource();
-				ISugiyamaVertex target = tempReplacedEdge.getTarget();
-//				int tempNum = source.getLayer();
+				//				int tempNum = source.getLayer();
 //				this.assignToLayer(source, target.getLayer());
 //				this.assignToLayer(target, tempNum);
 				tempReplacedEdge.reverse();
@@ -450,6 +448,7 @@ public class SugiyamaGraph
 		return out+="}";
 	}
 	
+	@SuppressWarnings("unused")
 	private boolean dEquals(double a, double b){
 		return Math.abs(a-b) < Math.pow(10, -6);
 	}
@@ -641,9 +640,6 @@ public class SugiyamaGraph
 	public class DummyVertex extends DefaultVertex implements ISugiyamaVertex {
 
 		private final boolean custom;
-		private String name;
-		private String label;
-		private int layer;
 		private DoublePoint size;
 		private int id;
 		
@@ -657,9 +653,6 @@ public class SugiyamaGraph
 		public DummyVertex(String name, String label, int layer, DoublePoint size, int id){
 			super(name, label);
 			layering.addVertex(this, layer);
-			this.name = name;
-			this.label = label;
-			this.layer = layer;
 			this.size = size;
 			this.id = id;
 			custom = true;
