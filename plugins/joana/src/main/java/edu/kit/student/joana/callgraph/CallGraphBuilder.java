@@ -84,6 +84,16 @@ public class CallGraphBuilder implements IGraphBuilder {
             callEdges.add(edge);
         }
         
+        //search for call loops
+        //maybe there is a better/faster solution without searching through all edges
+        for (MethodGraph methodGraph : methodGraphs) {
+            for (JoanaEdge edge : methodGraph.getEdgeSet()) {
+                if (edge.getEdgeKind() == JoanaEdge.EdgeKind.CL) {
+                    callEdges.add(edge);
+                }
+            }
+        }
+        
         for (JoanaEdge callEdge : callEdges) {
             if (callEdge.getEdgeKind() != EdgeKind.CL)
                 continue;
