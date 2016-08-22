@@ -45,7 +45,7 @@ public class GraphView extends Pane {
 	private ContextMenu contextMenu;
     private List<MenuItem> dynamicMenuListItems = new LinkedList<>();
     
-	private GroupManager groupManager = new GroupManager();
+	private GroupManager groupManager;
 	
 	private GAnsMediator mediator;
 
@@ -67,6 +67,7 @@ public class GraphView extends Pane {
 	 */
 	public void setGraph(ViewableGraph graph) {
 		graphFactory = new GraphViewGraphFactory(graph);
+		groupManager = new GroupManager(graphFactory);
 
 		getChildren().addAll(graphFactory.getGraphicalElements());
 	}
@@ -83,6 +84,8 @@ public class GraphView extends Pane {
 		    maxY = maxY > element.getBoundsInParent().getMaxY() ? maxY : element.getBoundsInLocal().getMaxY();
 		}
 		setPrefSize(maxX, maxY);
+		
+		groupManager.applyGroups();
 	}
 
 	/**
@@ -126,13 +129,16 @@ public class GraphView extends Pane {
 		MenuItem group = new MenuItem("Add to group");
 		group.setOnAction(new EventHandler<ActionEvent>() {
 		    public void handle(ActionEvent e) {
-		    	if(groupManager.openAddGroupDialog(GraphView.this.getSelectionModel().getSelectedItems())) {
+		    	Set<ViewableVertex> selectedVertices = new HashSet<ViewableVertex>();
+		    	GraphView.this.getSelectionModel().getSelectedItems().forEach(
+		    			shape -> selectedVertices.add(graphFactory.getVertexFromShape(shape)));
+		    	if(groupManager.openAddGroupDialog(selectedVertices)) {
 		    		openGroupDialog();
 		    		selectionModel.clear();
 		    	}
 		    }
-		});
-		
+	 	});
+		 
 		this.contextMenu.getItems().addAll(group);
 	}
 

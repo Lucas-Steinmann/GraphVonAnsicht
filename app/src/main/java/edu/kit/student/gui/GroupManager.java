@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import edu.kit.student.graphmodel.ViewableVertex;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -28,19 +29,22 @@ import javafx.util.Callback;
 
 public class GroupManager {
 
+	private GraphViewGraphFactory factory;
+	
 	private List<Integer> groupIdsBacking;
 	private ObservableList<Integer> groupIds;
 	private Map<Integer, VertexGroup> groupMap;
 	private List<Integer> removedGroups;
 
-	public GroupManager() {
+	public GroupManager(GraphViewGraphFactory factory) {
+		this.factory = factory;
 		groupIdsBacking = new LinkedList<Integer>();
 		groupIds = FXCollections.observableList(groupIdsBacking);
 		groupMap = new HashMap<Integer, VertexGroup>();
 		removedGroups = new LinkedList<Integer>();
 	}
 	
-	public boolean openAddGroupDialog(Set<VertexShape> vertices) {
+	public boolean openAddGroupDialog(Set<ViewableVertex> vertices) {
 		TextInputDialog dialog = new TextInputDialog("New Group");
     	dialog.setTitle("Add group");
     	dialog.setHeaderText(null);
@@ -48,7 +52,7 @@ public class GroupManager {
     	dialog.setContentText("Enter new group name:");
     	Optional<String> result = dialog.showAndWait();
     	if (result.isPresent()){
-    		VertexGroup group = new VertexGroup(result.get(), vertices);
+    		VertexGroup group = new VertexGroup(factory, result.get(), vertices);
     		groupIds.add(group.getId());
     		groupMap.put(group.getId(), group);
     		return true;
@@ -150,11 +154,12 @@ public class GroupManager {
 		}
 	}
 	
-	private void applyGroups() {
+	public void applyGroups() {
 		//TODO: inefficient, could map over all groups and vertices before coloring
 		for(int i = groupIds.size() - 1; i > -1; i--) {
 			groupMap.get(groupIds.get(i)).colorVertices();
 		}
+		System.out.println("Groups applied!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 	}
 	
 	private class GroupListCell extends ListCell<Integer> {

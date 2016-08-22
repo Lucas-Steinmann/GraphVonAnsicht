@@ -40,6 +40,7 @@ public class GraphViewGraphFactory {
 	
 	private ViewableGraph graph;
 	private Map<VertexShape, ViewableVertex> vertices;
+	private Map<ViewableVertex, VertexShape> reversedVertices;
 	private Map<EdgeShape, Edge> edges;
 	private List<BackgroundShape> background;
 
@@ -52,6 +53,7 @@ public class GraphViewGraphFactory {
 	 */
 	public GraphViewGraphFactory(ViewableGraph graph) {
 		vertices = new HashMap<>();
+		reversedVertices = new HashMap<>();
 		edges = new HashMap<EdgeShape, Edge>();
 		background = new LinkedList<BackgroundShape>();
 		this.graph = graph;
@@ -61,9 +63,32 @@ public class GraphViewGraphFactory {
 	}
 	
 	public void refreshGraph() {
+		//Set<ViewableVertex> oldVertices = new HashSet<ViewableVertex>(reversedVertices.keySet());
+		//oldVertices.removeAll(graph.getVertexSet());
+		//oldVertices.forEach(vertex -> reversedVertices.remove(vertex));
+		
+		Map<VertexShape,ViewableVertex> removeVertices = new HashMap<>();
+		
 		for(VertexShape shape : vertices.keySet()) {
 			ViewableVertex vertex = vertices.get(shape);
-			shape.relocate(vertex.getX(), vertex.getY());
+			if(graph.getVertexSet().contains(vertex)) { //relocate
+				shape.relocate(vertex.getX(), vertex.getY());
+			} else { //remove old shape
+				removeVertices.put(shape, vertex);
+			}
+		}
+		
+		for(ViewableVertex vertex : graph.getVertexSet()) {
+			if(!vertices.containsValue(vertex)) { //add new shape
+				VertexShape newShape = new VertexShape(vertex);
+				vertices.put(newShape, vertex);
+				reversedVertices.put(vertex, newShape);
+			}
+		}
+		
+		for(VertexShape shape : removeVertices.keySet()) {
+			reversedVertices.remove(vertices.get(shape));
+			vertices.remove(shape);
 		}
 		
 		background.clear();
@@ -109,6 +134,10 @@ public class GraphViewGraphFactory {
 	public ViewableVertex getVertexFromShape(GAnsGraphElement shape) {
 		return vertices.get(shape);
 	}
+	
+	public VertexShape getShapeFromVertex(ViewableVertex vertex) {
+		return reversedVertices.get(vertex);
+	}
 
 	/**
 	 * Returns the edge element from the graph model that is being represented
@@ -141,12 +170,14 @@ public class GraphViewGraphFactory {
 			if(vertex.getPriority() == VertexPriority.HIGH) {
 				VertexShape shape = new VertexShape(vertex);
 				vertices.put(shape, vertex);
+				reversedVertices.put(vertex, shape);
 			} else if(vertex.getPriority() == VertexPriority.LOW) {
 				BackgroundShape shape = new BackgroundShape(vertex);
 				background.add(shape);
 			} else { // unknown priorities are interpreted as high.
 				VertexShape shape = new VertexShape(vertex);
 				vertices.put(shape, vertex);
+				reversedVertices.put(vertex, shape);
 			}
 		}
 		for(SubGraph subgraph : graph.getSubGraphs()) {
