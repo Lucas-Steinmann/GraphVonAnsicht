@@ -22,13 +22,10 @@ import edu.kit.student.sugiyama.graph.SugiyamaGraph.SupplementPath;
 import edu.kit.student.util.DoublePoint;
 
 /**
- * This class takes a directed graph, as a {@link SugiyamaClass}.
+ * This class takes a directed graph, as a {@link edu.kit.student.sugiyama.graph.SugiyamaGraph}.
  * It removes dummy vertices and reverses previously reversed edges.
  * Afterwards it assigns every edge points it must run through.
  * 
- * @param <G> the type of the directed graph
- * @param <V> the type of the vertices the graph contains
- * @param <E> the type of the directed edges the graph contains
  */
 public class EdgeDrawer implements IEdgeDrawer {
 	private IEdgeDrawerGraph graph;

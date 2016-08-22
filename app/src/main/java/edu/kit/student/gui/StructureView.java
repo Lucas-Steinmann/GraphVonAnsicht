@@ -32,7 +32,7 @@ public class StructureView extends TreeView<String> {
 	 * Should be called, before calling other methods, because there could be a
 	 * dummy root-node in the View.
 	 * 
-	 * @param graph
+	 * @param graphModel
 	 *            The graph which should be represented.
 	 */
 	public void showGraphModel(GraphModel graphModel) {

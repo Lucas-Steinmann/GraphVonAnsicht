@@ -51,6 +51,8 @@ public class GraphView extends Pane {
 
 	/**
 	 * Constructor.
+	 * 
+	 * @param mediator to connect with contexmenu
 	 */
 	public GraphView(GAnsMediator mediator) {
 		this.mediator = mediator;
@@ -100,7 +102,7 @@ public class GraphView extends Pane {
 	/**
 	 * Sets the selection model of the GraphView.
 	 * 
-	 * @param The selection model of the GraphView.
+	 * @param selectionModel of the GraphView.
 	 */
 	public void setSelectionModel(GraphViewSelectionModel selectionModel) {
 		this.selectionModel = selectionModel;

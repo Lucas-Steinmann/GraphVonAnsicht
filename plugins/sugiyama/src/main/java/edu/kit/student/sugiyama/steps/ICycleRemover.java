@@ -14,7 +14,6 @@ public interface ICycleRemover {
 	 * are not part of this subgraph.
 	 * 
 	 * @param  graph the input graph to remove cycles from
-	 * @return       a set of edges whose direction has been reversed in order to remove cycles from the graph
 	 */
 	public void removeCycles(ICycleRemoverGraph graph);
 }

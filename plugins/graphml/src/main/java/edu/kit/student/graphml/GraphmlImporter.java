@@ -98,7 +98,7 @@ public class GraphmlImporter implements Importer {
      * 
      * @param graphBuilder
      * @param graphElement
-     * @return
+     * 
      * @throws ParseException 
      */
     private void parseGraph(IGraphBuilder builder, Element graphElement) throws ParseException {

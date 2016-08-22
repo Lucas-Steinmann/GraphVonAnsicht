@@ -58,6 +58,7 @@ public class CallGraphBuilder implements IGraphBuilder {
     /**
      * Builds a new CallGraph with the given information, added before this call.
      * @return the callgraph
+     * @throws Exception
      */
     public CallGraph build() throws Exception {
         for (MethodGraphBuilder b : methodGraphBuilders) {

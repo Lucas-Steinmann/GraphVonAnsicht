@@ -38,6 +38,7 @@ public interface Exporter {
      * @param graph         serializedGraph that contains the information to write to a file
      * @param filestream    to write the information into
      * @param fileExtension the file extension of the file to write the information to
+     * @throws Exception 
      */
     public void exportGraph(SerializedGraph graph, FileOutputStream filestream, String fileExtension) throws Exception; 
 

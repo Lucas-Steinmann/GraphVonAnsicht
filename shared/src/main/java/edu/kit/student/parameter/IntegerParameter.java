@@ -51,7 +51,7 @@ public class IntegerParameter extends Parameter<IntegerParameter, Integer> {
 
 	/**
 	 * Sets the maximum boundary.
-	 * @param min The maximum boundary.
+	 * @param max The maximum boundary.
 	 */
 	public void setMax(int max) {
 		this.max = max;

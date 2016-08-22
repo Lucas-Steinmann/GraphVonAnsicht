@@ -17,6 +17,8 @@ public class FieldAccess extends JoanaCompoundVertex {
      * Constructor.
      *
      * @param graph The FieldAccessGraph that will be set in the FieldAccess.
+     * @param name The name of this FieldAccess
+     * @param label of this FieldAccess
      */
     public FieldAccess(FieldAccessGraph graph, String name, String label) {
         //TODO: Rework hierarchy. FieldAccess can not inherit from JoanaVertex, 

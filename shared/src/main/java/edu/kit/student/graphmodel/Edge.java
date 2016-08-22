@@ -57,9 +57,9 @@ public interface Edge {
 	public EdgeArrow getArrowHead();
 
 	/**
-	 * Returns a set of properties of the edge that should be shown 
+	 * Returns a list of properties of the edge that should be shown 
 	 * in the InformationView when selected
-	 * @return 
+	 * @return list of properties
 	 */
 	public List<GAnsProperty<?>> getProperties();
 	

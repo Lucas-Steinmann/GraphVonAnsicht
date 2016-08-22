@@ -33,6 +33,7 @@ import edu.kit.student.sugiyama.steps.VertexPositioner;
  * This class supports a customizable implementation of the Sugiyama-framework.
  * The single stages of the framework can be chosen individually.
  * Additionally this class tries to follow the given constraints, if possible.
+ * @param <G> 
  */
 public class SugiyamaLayoutAlgorithm<G extends DirectedGraph> 
 	implements LayoutAlgorithm<G> {

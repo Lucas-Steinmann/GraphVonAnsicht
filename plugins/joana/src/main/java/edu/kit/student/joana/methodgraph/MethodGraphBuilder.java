@@ -27,6 +27,8 @@ public class MethodGraphBuilder implements IGraphBuilder {
     
     /**
      * Constructor for methodgraphBuilder which is created by a callgraphBuilder.
+     * 
+     * @param name of the methodgraph
      */
     public MethodGraphBuilder(String name) {
         this.name = name;
@@ -61,6 +63,7 @@ public class MethodGraphBuilder implements IGraphBuilder {
     /**
      * Builds the method graph, which has been described before this method is called.
      * @return the built methodgraph
+     * @throws Exception
      */
     public MethodGraph build() throws Exception {
         for (JoanaVertexBuilder builder : vertexBuilders) {	

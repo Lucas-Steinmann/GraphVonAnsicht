@@ -13,6 +13,10 @@ import edu.kit.student.graphmodel.Vertex;
 /**
  * A {@link DefaultDirectedGraph} is a specific Graph which only contains
  * {@link DirectedEdge} as edges.
+ * 
+ * @param <V> VertexKind
+ * @param <E> DirectedEdgeKind
+ * 
  */
 public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
 		implements DirectedGraph {
@@ -29,10 +33,6 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
 	/**
 	 * Constructor
 	 * 
-	 * @param name
-	 *            The name of the new graph
-	 * @param id
-	 *            The id of the new graph
 	 */
     public DefaultDirectedGraph(){
         // create Sets
@@ -42,8 +42,6 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
     /**
      * Constructor
      * 
-     * @param name of the new graph
-     * @param id of the new graph
      * @param vertices of the new graph
      * @param edges of the new graph
      */
