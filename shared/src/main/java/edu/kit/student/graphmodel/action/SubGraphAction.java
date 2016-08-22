@@ -7,8 +7,8 @@ public abstract class SubGraphAction implements Action {
     private String description;
     
     public SubGraphAction(String name, String description) {
-        this.name = name;
-        this.description = description;
+        this.setName(name);
+        this.setDescription(description);
     }
 
     @Override

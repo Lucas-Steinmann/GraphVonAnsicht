@@ -123,7 +123,7 @@ public class JoanaCollapser {
                     onionEdges.put(newEdge, new DirectedOnionPath<>(edge));
                     onionEdges.get(newEdge).addAsTarget(collapsed);
                 }
-			}
+			} 
 		}
 
 		graph.removeAllVertices(vertices);

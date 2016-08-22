@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Set;
 
 import edu.kit.student.graphmodel.FastGraphAccessor;
-import edu.kit.student.graphmodel.SubGraph;
 import edu.kit.student.graphmodel.Vertex;
 
 /**
@@ -121,6 +120,7 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
 	    Set<E> edges = new  HashSet<>();
 	    for (V vertex : this.getVertexSet()) {
 	        edges.addAll(this.outgoingEdgesOf(vertex));
+	        edges.addAll(this.incomingEdgesOf(vertex));
 	    }
 		return edges;
 	}
@@ -216,7 +216,7 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
 
 		if (source.getID().equals(target.getID())) {
 			vertexToSelfLoops.get(source).remove(edge);
-			return;
+//			return;
 		}
 
 		vertexToEdge.get(source).remove(edge);
@@ -226,9 +226,10 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
     public void removeVertex(V vertex) {
         if (!this.contains(vertex)) {
             throw new IllegalArgumentException("Cannot delete vertex, not present in this graph!");
+        } 
+        if (!(this.edgesOf(vertex).size() == 0)) {
+            throw new IllegalArgumentException("Cannot delete vertex with edges!");
         }
-        assert (this.outdegreeOf(vertex) == 0);
-        assert (this.indegreeOf(vertex) == 0);
         vertexToEdge.remove(vertex);
         revVertexToEdge.remove(vertex);
         idToVertex.remove(vertex.getID());
