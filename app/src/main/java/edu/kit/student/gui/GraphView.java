@@ -72,8 +72,8 @@ public class GraphView extends Pane {
 	}
 	
 	public void reloadGraph() {
-		graphFactory = new GraphViewGraphFactory(graphFactory.getGraph());
-
+		graphFactory.refreshGraph();
+		
 		getChildren().clear();
 		getChildren().addAll(graphFactory.getGraphicalElements());
 		double maxX = 0;

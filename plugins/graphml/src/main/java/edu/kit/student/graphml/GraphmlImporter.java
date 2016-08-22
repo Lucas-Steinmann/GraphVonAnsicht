@@ -39,7 +39,6 @@ public class GraphmlImporter implements Importer {
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         DocumentBuilder docBuilder;
         Document document = null;
-        //TODO: catch exceptions and handle it or forward?
         try {
             docBuilder = factory.newDocumentBuilder();
             document = docBuilder.parse(graphmlInputStream);
@@ -86,7 +85,11 @@ public class GraphmlImporter implements Importer {
             }
         }
         
-        builder.build();
+        try {
+            builder.build();
+        } catch(Exception e) {
+            throw new ParseException(e.getMessage(), 0);
+        }
     }
 
     /**
@@ -152,7 +155,11 @@ public class GraphmlImporter implements Importer {
                     //get key and value
                     String key = child.getAttribute("key");
                     String value = child.getTextContent();
-                    builder.addData(key, value);
+                    try {
+                        builder.addData(key, value);
+                    } catch (IllegalArgumentException e) {
+                        throw new ParseException(e.getMessage(), 0);
+                    }
                 } else {
                 	throw new ParseException("Selected file has wrong syntax!", 0);
                 }
@@ -185,7 +192,12 @@ public class GraphmlImporter implements Importer {
                     //get key and value
                     String key = child.getAttribute("key");
                     String value = child.getTextContent();
-                    builder.addData(key, value);
+                    try {
+                        builder.addData(key, value);
+                    } catch (IllegalArgumentException e) {
+                        throw new ParseException(e.getMessage(), 0);
+                    }
+                    
                 } else {
                 	throw new ParseException("Selected file has wrong syntax!", 0);
                 }

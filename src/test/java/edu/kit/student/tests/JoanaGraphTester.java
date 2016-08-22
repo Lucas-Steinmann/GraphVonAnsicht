@@ -30,6 +30,7 @@ import edu.kit.student.joana.JoanaGraphModelBuilder;
 import edu.kit.student.joana.JoanaVertex;
 import edu.kit.student.joana.JoanaVertex.VertexKind;
 import edu.kit.student.joana.JoanaWorkspace;
+import edu.kit.student.joana.callgraph.CallGraph;
 import edu.kit.student.joana.methodgraph.MethodGraph;
 import edu.kit.student.plugin.Importer;
 import edu.kit.student.plugin.PluginManager;
@@ -40,6 +41,10 @@ public class JoanaGraphTester {
     private static Iterator<File> lastOpenedFile;
     private static Random randomGenerator;
     private static List<File> files;
+    private static final int RUNS = 20;
+    private static final int MAX_V = 500;
+    private static final int MAX_E = 2000;
+
     
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
@@ -75,23 +80,18 @@ public class JoanaGraphTester {
     }
     
     private JoanaCollapsedVertex collapse(MethodGraph graph, Set<ViewableVertex> subgraph) {
- //       System.out.println("Collapsing : ");
-        List<Vertex> vertexList = subgraph.stream().collect(Collectors.toList());
- //       vertexList.sort((x, y) -> x.getID().compareTo(y.getID()));
- //       vertexList.forEach((vertex) -> System.out.print(vertex.getID() + ", "));
- //       System.out.println("");
         return graph.collapse(subgraph);
     }
     
     //First collapse a random number of time, then expand, then check for equality
     @Test
     public void randomSymmetricCollapseTest() {
-        for (int run = 0; run < 20; run++) {
-           // System.out.print("Run: " + run + " ");
-            JoanaGraphModel model = models.get(randomGenerator.nextInt(models.size()));
-            model.getMethodGraphs().sort((x, y) -> x.getID().compareTo(y.getID()));
-            MethodGraph randomTestGraph = model.getMethodGraphs().get(randomGenerator.nextInt(model.getMethodGraphs().size()));
-            //System.out.println(randomTestGraph.name);
+        List<MethodGraph> mGraphs = getAllMethodGraphs(MAX_V, MAX_E);
+        mGraphs.sort((x, y) -> x.getID().compareTo(y.getID()));
+        for (int run = 0; run < RUNS; run++) {
+            mGraphs.sort((x, y) -> x.getID().compareTo(y.getID()));
+            MethodGraph randomTestGraph = mGraphs.get(randomGenerator.nextInt(mGraphs.size()));
+            
             Map<Integer, List<Integer>> adjList = createAdjacenceList(randomTestGraph);
            // printAdjList(adjList);
             List<JoanaCollapsedVertex> collapsed = new LinkedList<>();
@@ -116,12 +116,11 @@ public class JoanaGraphTester {
 
     @Test
     public void randomMixedCollapseTest() {
-        for (int run = 0; run < 20; run++) {
-           // System.out.print("Run: " + run + " ");
-            JoanaGraphModel model = models.get(randomGenerator.nextInt(models.size()));
-            model.getMethodGraphs().sort((x, y) -> x.getID().compareTo(y.getID()));
-            MethodGraph randomTestGraph = model.getMethodGraphs().get(randomGenerator.nextInt(model.getMethodGraphs().size()));
-            //System.out.println(randomTestGraph.name);
+        List<MethodGraph> mGraphs = getAllMethodGraphs(MAX_V, MAX_E);
+        mGraphs.sort((x, y) -> x.getID().compareTo(y.getID()));
+        for (int run = 0; run < RUNS; run++) {
+            MethodGraph randomTestGraph = mGraphs.get(randomGenerator.nextInt(mGraphs.size()));
+
             Map<Integer, List<Integer>> adjList = createAdjacenceList(randomTestGraph);
             List<JoanaCollapsedVertex> collapsed = new LinkedList<>();
             int maxCollapse = randomGenerator.nextInt(randomTestGraph.getVertexSet().size() / 3);
@@ -167,11 +166,11 @@ public class JoanaGraphTester {
     
     @Test
     public void randomAssymmetricCollapseTest() {
-        for (int run = 0; run < 20; run++) {
-           // System.out.print("Run: " + run + " ");
-            JoanaGraphModel model = models.get(randomGenerator.nextInt(models.size()));
-            model.getMethodGraphs().sort((x, y) -> x.getID().compareTo(y.getID()));
-            MethodGraph randomTestGraph = model.getMethodGraphs().get(randomGenerator.nextInt(model.getMethodGraphs().size()));
+        List<MethodGraph> mGraphs = getAllMethodGraphs(MAX_V, MAX_E);
+        mGraphs.sort((x, y) -> x.getID().compareTo(y.getID()));
+        for (int run = 0; run < RUNS; run++) {
+            MethodGraph randomTestGraph = mGraphs.get(randomGenerator.nextInt(mGraphs.size()));
+
             //System.out.println(randomTestGraph.name);
             Map<Integer, List<Integer>> adjList = createAdjacenceList(randomTestGraph);
            // printAdjList(adjList);
@@ -270,6 +269,7 @@ public class JoanaGraphTester {
      */
     public static List<MethodGraph> getAllMethodGraphs(int maxV, int maxE) {
         while (generateGraphModel() != null)  {}
+        System.out.println("Finished");
         return models.stream().map(model -> model.getMethodGraphs())
                               .flatMap(mgraphs -> mgraphs.stream())
                               .filter(mgraph -> mgraph.getVertexSet().size() < maxV)
@@ -277,17 +277,38 @@ public class JoanaGraphTester {
                               .collect(Collectors.toList());
     }
     
+    /**
+     * Returns all call graphs with less than maxV vertices and less then maxE edges.
+     * @param maxV the maximum number of vertices
+     * @param maxE the maximum number of edges
+     * @return the callgraphs
+     */
+    public static List<CallGraph> getAllCallGraphs(int maxV, int maxE) {
+        while (generateGraphModel() != null)  {}
+        return models.stream().map(model -> model.getCallGraph())
+                              .filter(cgraph -> cgraph.getVertexSet().size() < maxV)
+                              .filter(cgraph -> cgraph.getEdgeSet().size() < maxE)
+                              .collect(Collectors.toList());
+    }
+    
     public static JoanaGraphModel generateGraphModel() {
         if (lastOpenedFile == null) {
             lastOpenedFile = getDirIterator();
         }
-        if (lastOpenedFile.hasNext()) {
-            return parse(lastOpenedFile.next());
+        boolean parsed = false;;
+        while (lastOpenedFile.hasNext() && !parsed) {
+            File file = lastOpenedFile.next();
+            if (file.getName().equals("BigCG.pdg.graphml")) {
+                continue;
+            }
+            parsed = true;;
+            return parse(file);
         }
         return null;
     }
     
     public static JoanaGraphModel parse(File file) {
+
         JoanaWorkspace ws = new JoanaWorkspace();
         for (Importer importer : PluginManager.getPluginManager().getImporter()) {
             if (importer.getSupportedFileEndings().equals("*.graphml")) {

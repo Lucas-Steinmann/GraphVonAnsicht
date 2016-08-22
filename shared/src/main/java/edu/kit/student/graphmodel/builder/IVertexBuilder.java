@@ -21,5 +21,5 @@ public interface IVertexBuilder {
 	 * @param value
 	 * 			Value of the attribute
 	 */
-	public abstract void addData(String keyname, String value);
+	public abstract void addData(String keyname, String value) throws IllegalArgumentException;
 }

@@ -62,13 +62,18 @@ public class MethodGraphBuilder implements IGraphBuilder {
      * Builds the method graph, which has been described before this method is called.
      * @return the built methodgraph
      */
-    public MethodGraph build() {
+    public MethodGraph build() throws Exception {
         for (JoanaVertexBuilder builder : vertexBuilders) {	
             vertices.add(builder.build());
         }
         
         for (JoanaEdgeBuilder builder : edgeBuilders) {
-            edges.add(builder.build(vertices));
+            JoanaEdge edge = builder.build(vertices);
+            
+            //check if edge exists
+            if (edge != null) {
+                edges.add(edge);
+            } 
         }
 
         String name = "";
