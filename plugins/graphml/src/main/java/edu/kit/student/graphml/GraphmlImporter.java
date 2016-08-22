@@ -155,7 +155,11 @@ public class GraphmlImporter implements Importer {
                     //get key and value
                     String key = child.getAttribute("key");
                     String value = child.getTextContent();
-                    builder.addData(key, value);
+                    try {
+                        builder.addData(key, value);
+                    } catch (IllegalArgumentException e) {
+                        throw new ParseException(e.getMessage(), 0);
+                    }
                 } else {
                 	throw new ParseException("Selected file has wrong syntax!", 0);
                 }

@@ -89,7 +89,6 @@ public class MethodGraphBuilder implements IGraphBuilder {
             //TODO: throw exception
         }
         
-        //TODO: exception without Entry vertex! throw it
         MethodGraph methodGraph = new MethodGraph(vertices, edges, name);
         
         return methodGraph;
