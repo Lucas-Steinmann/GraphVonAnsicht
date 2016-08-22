@@ -12,6 +12,7 @@ public class VertexGroup {
 	
 	private Integer id;
 	private String name;
+	private Color currentColor = Color.WHITE;
 	private Set<VertexShape> vertices = new HashSet<VertexShape>();
 	private Label label;
 	private ColorPicker picker;
@@ -42,15 +43,12 @@ public class VertexGroup {
 	}
 	
 	public Color getColor() {
-		return this.picker.getValue();
+		return this.currentColor;
 	}
 	
 	public ColorPicker getPicker() {
+		this.picker.setValue(this.currentColor);
 		return this.picker;
-	}
-	
-	public void setColor(Color color) {
-		this.picker.setValue(color);
 	}
 	
 	public void setVertices(Set<VertexShape> vertices) {
@@ -61,11 +59,13 @@ public class VertexGroup {
 		for(VertexShape shape : vertices) {
 			shape.setVertexStyle("-fx-effect: none");
 		}
+		this.currentColor = Color.WHITE;
 	}
 	
 	public void colorVertices() {
+		this.currentColor = picker.getValue();
 		for(VertexShape shape : vertices) {
-			shape.setVertexStyle("-fx-effect: dropshadow(three-pass-box, " + GraphViewGraphFactory.toRGBCode(this.getColor()) + ", 4, 4, 0, 0);");
+			shape.setVertexStyle("-fx-effect: dropshadow(three-pass-box, " + GraphViewGraphFactory.toRGBCode(this.currentColor) + ", 4, 4, 0, 0);");
 		}
 	}
 }

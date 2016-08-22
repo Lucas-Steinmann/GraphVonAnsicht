@@ -28,14 +28,16 @@ import javafx.util.Callback;
 
 public class GroupManager {
 
+	private List<Integer> groupIdsBacking;
 	private ObservableList<Integer> groupIds;
 	private Map<Integer, VertexGroup> groupMap;
-	private List<VertexGroup> removedGroups;
+	private List<Integer> removedGroups;
 
 	public GroupManager() {
-		groupIds = FXCollections.observableList(new LinkedList<Integer>());
+		groupIdsBacking = new LinkedList<Integer>();
+		groupIds = FXCollections.observableList(groupIdsBacking);
 		groupMap = new HashMap<Integer, VertexGroup>();
-		removedGroups = new LinkedList<VertexGroup>();
+		removedGroups = new LinkedList<Integer>();
 	}
 	
 	public boolean openAddGroupDialog(Set<VertexShape> vertices) {
@@ -98,9 +100,10 @@ public class GroupManager {
 			@Override
 			public void handle(ActionEvent e) {
 				Integer groupId = groupList.getSelectionModel().getSelectedItem();
-				groupIds.remove(groupId);
-				removedGroups.add(groupMap.remove(groupId));
 				groupList.getSelectionModel().clearSelection();
+				groupIds.remove(groupId);
+				removedGroups.add(groupId);
+				groupList.refresh();
 			}
 		});
 		
@@ -129,14 +132,21 @@ public class GroupManager {
 		dialog.setTitle("Groups");
 		dialog.setHeaderText(null);
 		dialog.setGraphic(null);
+
+		LinkedList<Integer> groupIdsAbortBackup = new LinkedList<Integer>(this.groupIds);
+		
 		Optional<ButtonType> result = dialog.showAndWait();
 		if(result.isPresent()) {
 			if(result.get() == ButtonType.OK) {
-				removedGroups.forEach(group -> group.uncolorVertices());
+				removedGroups.forEach(groupId -> groupMap.remove(groupId).uncolorVertices());
 				removedGroups.clear();
 				//TODO: maybe check for made changes and only apply them.
 				applyGroups();
 			}
+		} else {
+			removedGroups.clear();
+			this.groupIdsBacking = new LinkedList<Integer>(groupIdsAbortBackup);
+			this.groupIds = FXCollections.observableList(groupIdsBacking);
 		}
 	}
 	
@@ -158,6 +168,8 @@ public class GroupManager {
 				HBox.setHgrow(spacer, Priority.ALWAYS);
 				box.setSpacing(10);
 				setGraphic(box);
+			} else {
+				setGraphic(null);
 			}
 		}
 	}
