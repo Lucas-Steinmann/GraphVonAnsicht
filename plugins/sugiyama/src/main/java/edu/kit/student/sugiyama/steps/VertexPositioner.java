@@ -155,9 +155,6 @@ public class VertexPositioner implements IVertexPositioner {
 
 		logger.debug("last was overlapping: " + changes);
 
-		for (ISugiyamaVertex vertex : graph.getVertexSet()) {
-		}
-
 		for (Vertex vertex : graph.getVertexSet()) {
 			//logger.debug(vertex.getSize().toString());
 			horizontalWidth[vertex.getX()] = Math.max(horizontalWidth[vertex.getX()], Math.round((float) vertex.getSize().x));
@@ -179,16 +176,6 @@ public class VertexPositioner implements IVertexPositioner {
 			vertex.setX(horizontalOffset[vertex.getX()]);
 			vertex.setY(verticalOffset[vertex.getY()]);
 		}
-	}
-
-	private boolean isBlocked(int x, int yStart, int yStop, boolean[][] blocked) {
-		for (int i = yStart; i < yStop; i++) {
-			if (blocked[i][x]) {
-				return true;
-			}
-		}
-
-		return false;
 	}
 
 	private class Segment {
@@ -292,14 +279,6 @@ public class VertexPositioner implements IVertexPositioner {
 			return getBoundingBox().intersects(other.getBoundingBox());
 		}
 
-		public boolean isCorrected() {
-			return corrected;
-		}
-
-		public void setCorrected(boolean corrected) {
-			this.corrected = corrected;
-		}
-
 		public int getId() {
 			return id;
 		}
@@ -363,9 +342,5 @@ public class VertexPositioner implements IVertexPositioner {
 						'}';
 			}
 		}
-	}
-
-	private enum HorizontalDirection {
-		LEFT, RIGHT;
 	}
 }

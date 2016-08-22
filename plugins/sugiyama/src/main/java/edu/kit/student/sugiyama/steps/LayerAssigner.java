@@ -144,31 +144,6 @@ public class LayerAssigner implements ILayerAssigner {
 		//graph.getLayers().forEach(iSugiyamaVertices -> logger.debug(iSugiyamaVertices.stream().map(iSugiyamaVertex -> iSugiyamaVertex.getName()).collect(Collectors.joining(", "))));
 	}
 
-	private void pushUp(ISugiyamaVertex vertex, ILayerAssignerGraph graph, int amount) {
-		if (amount <= 0) {
-			throw new IllegalArgumentException("amount of layers pusht must be greater than 0. Is " + amount);
-		}
-
-		int currentLayer = graph.getLayer(vertex);
-		int targetLayer = currentLayer - amount;
-		Set<ISugiyamaVertex> affectedVertices = graph.incomingEdgesOf(vertex).stream().map(edge -> edge.getSource()).collect(Collectors.toSet());
-
-		if (targetLayer < 0) {
-			graph.insertLayers(0, 0 - targetLayer);
-		}
-
-		graph.assignToLayer(vertex, targetLayer);
-		ignoredVertices.add(vertex);
-
-		for (ISugiyamaVertex affectedVertex : affectedVertices) {
-			if (affectedVertex.getLayer() < targetLayer || ignoredVertices.contains(affectedVertex)) {
-				continue;
-			}
-
-			pushUp(affectedVertex, graph, affectedVertex.getLayer() - targetLayer - 1);
-		}
-	}
-
 	private void pushDown(ISugiyamaVertex vertex, ILayerAssignerGraph graph, int amount) {
 		if (amount <= 0) {
 			throw new IllegalArgumentException("amount of layers pusht must be greater than 0. Is " + amount);

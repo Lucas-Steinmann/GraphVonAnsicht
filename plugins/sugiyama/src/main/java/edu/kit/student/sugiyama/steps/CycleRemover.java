@@ -1,16 +1,15 @@
 package edu.kit.student.sugiyama.steps;
 
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
 import edu.kit.student.sugiyama.graph.ICycleRemoverGraph;
 import edu.kit.student.sugiyama.graph.ISugiyamaEdge;
 import edu.kit.student.sugiyama.graph.ISugiyamaVertex;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * This class takes a directed Graph G = (V, E) and removes a set of edges E_ 
@@ -29,8 +28,6 @@ public class CycleRemover implements ICycleRemover {
 		Set<ISugiyamaEdge> DAGEdges = new HashSet<ISugiyamaEdge>();
 		Set<ISugiyamaVertex> DDVertices = DDGraph.getVertexSet();
 		Set<ISugiyamaEdge> DDEdges = DDGraph.getEdgeSet();
-		printVertices("vertices: ",DDVertices);
-		printEdges("edges: ",DDEdges);
 
 		while(!DDVertices.isEmpty()) {
 			ISugiyamaVertex vertex = getCurrentSink(DDVertices, DDEdges);
@@ -154,7 +151,6 @@ public class CycleRemover implements ICycleRemover {
 			}
 		}
 
-		printEdges("reversed: ",result);
 		return result;
 	}
 	
@@ -181,52 +177,5 @@ public class CycleRemover implements ICycleRemover {
 			DDEdges.add(edge);
 		}
 		this.DDGraph = new DefaultDirectedGraph<>(DDVertices, DDEdges);
-	}
-	
-	/**
-	 * helper method for printing the DDGraph with all its vertices and edges
-	 */
-	@SuppressWarnings("unused")
-	private void print(){
-		String out="";
-		out+="Vertices: ";
-		for(ISugiyamaVertex v:(Set<ISugiyamaVertex>)DDGraph.getVertexSet()){
-			out+=v.getName()+",";
-		}
-		out+="| Edges: ";
-		for(ISugiyamaEdge e: (Set<ISugiyamaEdge>)DDGraph.getEdgeSet()){
-			out+=e.getName()+",";
-		}
-		logger.debug(out);
-	}
-	
-	/**
-	 * Prints all vertices in the given set.
-	 * 
-	 * @param before prints this string before the output
-	 * @param set given set
-	 */
-	private void printVertices(String before, Set<ISugiyamaVertex> set){
-		String out = before + set.size()+", {";
-		for(ISugiyamaVertex v:set){
-			out+=v.toString()+",";
-		}
-		out=out.substring(0,out.length()-1) + "}";
-		logger.debug(out);
-	}
-	
-	/**
-	 * Prints all edges in the given set.
-	 * 
-	 * @param before prints this string before the output
-	 * @param set given set
-	 */
-	private void printEdges(String before, Set<ISugiyamaEdge> set){
-		String out = before + set.size()+", {";
-		for(ISugiyamaEdge e: set){
-			out+=e.toString()+",";
-		}
-		out=out.substring(0,out.length()-1) + "}";
-		logger.debug(out);
 	}
 }
