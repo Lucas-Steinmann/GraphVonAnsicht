@@ -159,7 +159,6 @@ public class GroupManager {
 		for(int i = groupIds.size() - 1; i > -1; i--) {
 			groupMap.get(groupIds.get(i)).colorVertices();
 		}
-		System.out.println("Groups applied!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 	}
 	
 	private class GroupListCell extends ListCell<Integer> {
