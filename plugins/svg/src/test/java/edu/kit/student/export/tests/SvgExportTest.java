@@ -1,4 +1,4 @@
-package eu.kit.student.export.tests;
+package edu.kit.student.export.tests;
 
 import static org.junit.Assert.*;
 import java.io.File;
