@@ -336,10 +336,8 @@ public class EdgeDrawer implements IEdgeDrawer {
 		//add here the correct out point of source vertex for this edge and target vertex!
 		int index = -1;
 		boolean found = false;
-		System.out.println("source: "+edge.getSource().getID()+", target: "+edge.getTarget().getID());
 		for(ISugiyamaVertex v : this.inOutVertices.get(source.getID()).get(1)){	//searches for the correct Point at the bottom of source
 			index++;
-			System.out.println("vertex: "+v.getID()+", name: "+v.getLabel());
 //			logger.debug("searched target: "+v.getID()+", edge target: "+target.getID());
 			if(v.getID().equals(target.getID()) && !this.points.contains(this.inOutPoints.get(source.getID()).get(1).get(index))){
 				found = true;
