@@ -25,6 +25,7 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.util.Callback;
 
 public class GroupManager {
@@ -138,6 +139,10 @@ public class GroupManager {
 		dialog.setGraphic(null);
 
 		LinkedList<Integer> groupIdsAbortBackup = new LinkedList<Integer>(this.groupIds);
+		Map<Integer,Color> groupColorAbortBackup = new HashMap<Integer,Color>();
+		for(Integer id : groupMap.keySet()) {
+			groupColorAbortBackup.put(id,groupMap.get(id).getColor());
+		}
 		
 		Optional<ButtonType> result = dialog.showAndWait();
 		if(result.isPresent()) {
@@ -151,6 +156,9 @@ public class GroupManager {
 			removedGroups.clear();
 			this.groupIdsBacking = new LinkedList<Integer>(groupIdsAbortBackup);
 			this.groupIds = FXCollections.observableList(groupIdsBacking);
+			for(Integer id : groupColorAbortBackup.keySet()) {
+				groupMap.get(id).setColor(groupColorAbortBackup.get(id));
+			}
 		}
 	}
 	
@@ -159,7 +167,6 @@ public class GroupManager {
 		for(int i = groupIds.size() - 1; i > -1; i--) {
 			groupMap.get(groupIds.get(i)).colorVertices();
 		}
-		System.out.println("Groups applied!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 	}
 	
 	private class GroupListCell extends ListCell<Integer> {

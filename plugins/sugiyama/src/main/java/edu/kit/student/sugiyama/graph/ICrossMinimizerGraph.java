@@ -72,6 +72,8 @@ public interface ICrossMinimizerGraph extends ISugiyamaStepGraph {
 	 * Creates a new supplement edge with the specified name and label.
 	 * @param name name of the new supplement edge
 	 * @param label label of the new supplement edge
+	 * @param source source vertex
+	 * @param target target vertex
 	 * @return a new supplement edge
 	 */
 	public SupplementEdge createSupplementEdge(String name, String label, ISugiyamaVertex source, ISugiyamaVertex target);

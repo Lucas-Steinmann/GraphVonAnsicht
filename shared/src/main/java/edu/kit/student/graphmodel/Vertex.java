@@ -74,9 +74,9 @@ public interface Vertex {
 	public void addToFastGraphAccessor(FastGraphAccessor fga);
 	
 	/**
-	 * Returns a set of properties of the Vertex that should be shown 
+	 * Returns a list of properties of the Vertex that should be shown 
 	 * in the InformationView when selected
-	 * @return 
+	 * @return the list of properties
 	 */
 	public List<GAnsProperty<?>> getProperties();
 	

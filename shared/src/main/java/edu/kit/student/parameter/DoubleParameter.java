@@ -14,6 +14,7 @@ public class DoubleParameter extends Parameter<DoubleParameter, Double> {
      * @param value The value of the parameter.
      * @param min The minimum boundary of the parameter.
      * @param max The maximum boundary of the parameter.
+     * @param amoutPerStep 
      */
 	public DoubleParameter(String name, Double value, Double min, Double max, Double amoutPerStep) {
 		super(name, value);
@@ -53,7 +54,7 @@ public class DoubleParameter extends Parameter<DoubleParameter, Double> {
 
 	/**
 	 * Sets the maximum boundary.
-	 * @param min The maximum boundary.
+	 * @param max The maximum boundary.
 	 */
 	public void setMax(double max) {
 		this.max = max;

@@ -7,6 +7,7 @@ import javafx.beans.property.SimpleObjectProperty;
  * value.
  * 
  * @author Nicolas
+ * @param <T> 
  */
 public class GAnsObjectProperty<T> extends SimpleObjectProperty<T> {
 

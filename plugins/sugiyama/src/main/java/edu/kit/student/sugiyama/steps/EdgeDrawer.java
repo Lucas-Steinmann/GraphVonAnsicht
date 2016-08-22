@@ -22,13 +22,10 @@ import edu.kit.student.sugiyama.graph.SugiyamaGraph.SupplementPath;
 import edu.kit.student.util.DoublePoint;
 
 /**
- * This class takes a directed graph, as a {@link SugiyamaClass}.
+ * This class takes a directed graph, as a {@link edu.kit.student.sugiyama.graph.SugiyamaGraph}.
  * It removes dummy vertices and reverses previously reversed edges.
  * Afterwards it assigns every edge points it must run through.
  * 
- * @param <G> the type of the directed graph
- * @param <V> the type of the vertices the graph contains
- * @param <E> the type of the directed edges the graph contains
  */
 public class EdgeDrawer implements IEdgeDrawer {
 	private IEdgeDrawerGraph graph;
@@ -339,8 +336,10 @@ public class EdgeDrawer implements IEdgeDrawer {
 		//add here the correct out point of source vertex for this edge and target vertex!
 		int index = -1;
 		boolean found = false;
+		System.out.println("source: "+edge.getSource().getID()+", target: "+edge.getTarget().getID());
 		for(ISugiyamaVertex v : this.inOutVertices.get(source.getID()).get(1)){	//searches for the correct Point at the bottom of source
 			index++;
+			System.out.println("vertex: "+v.getID()+", name: "+v.getLabel());
 //			logger.debug("searched target: "+v.getID()+", edge target: "+target.getID());
 			if(v.getID().equals(target.getID()) && !this.points.contains(this.inOutPoints.get(source.getID()).get(1).get(index))){
 				found = true;
@@ -423,6 +422,9 @@ public class EdgeDrawer implements IEdgeDrawer {
 		double edgeDistances = this.distancePerEdgeInLayer[vertex.getLayer()];
 		double edgeKinkY = pointPosition * edgeDistances;
 		double newY = out.y + edgeKinkY;
+		if(edgeKinkY > 5 ){
+			newY-=5;
+		}
 		double newX = out.x + dist;
 		
 		path.addPoint(out);

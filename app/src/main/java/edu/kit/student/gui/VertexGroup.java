@@ -46,8 +46,12 @@ public class VertexGroup {
 		return this.currentColor;
 	}
 	
+	public void setColor(Color color) {
+		this.currentColor = color;
+		updatePickerColor();
+	}
+	
 	public ColorPicker getPicker() {
-		this.picker.setValue(this.currentColor);
 		return this.picker;
 	}
 	
@@ -63,6 +67,7 @@ public class VertexGroup {
 			}
 		}
 		this.currentColor = Color.WHITE;
+		updatePickerColor();
 	}
 	
 	public void colorVertices() {
@@ -73,5 +78,9 @@ public class VertexGroup {
 				shape.setVertexStyle("-fx-effect: dropshadow(three-pass-box, " + GraphViewGraphFactory.toRGBCode(this.currentColor) + ", 4, 4, 0, 0);");
 			}
 		}
+	}
+	
+	private void updatePickerColor() {
+		this.picker.setValue(this.currentColor);
 	}
 }

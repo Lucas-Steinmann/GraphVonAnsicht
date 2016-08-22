@@ -31,6 +31,8 @@ public interface IGraphModelBuilder {
 	 * 
 	 * @return The {@link GraphModel} that is being build by the
 	 *         IGraphModelBuilder.
+	 *         
+	 * @throws Exception
 	 */
 	public GraphModel build() throws Exception;
 

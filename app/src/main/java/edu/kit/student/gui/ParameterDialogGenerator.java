@@ -48,6 +48,9 @@ public class ParameterDialogGenerator extends ParameterVisitor {
 	/**
 	 * Constructs a new ParameterDialogGenerator and sets the parent, where all
 	 * parameter GUI-Elements are placed in afterwards.
+	 * 
+	 * @param parent 
+	 * @param settings
 	 */
 	public ParameterDialogGenerator(GridPane parent, Settings settings) {
 		this.parent = parent;

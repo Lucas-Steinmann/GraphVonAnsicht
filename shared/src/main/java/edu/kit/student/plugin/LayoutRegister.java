@@ -5,6 +5,7 @@ import java.util.List;
 /**
  * Stores a collection of layouts for a specific graph.
  * This allows the client to select fitted layouts for every graph.
+ * @param <E> LayoutOption
  */
 public interface LayoutRegister<E extends LayoutOption> {
     

@@ -10,8 +10,6 @@ import edu.kit.student.parameter.Settings;
  * LayoutAlgorithms can be registered with a {@link LayoutOption} at a {@link LayoutRegister}.
  * 
  * @param <G> the type of directed graph which should be processed
- * @param <V> the type of vertex used in the graph
- * @param <E> the type of edge used in the graph
  */
 public interface LayoutAlgorithm<G extends Graph> {
 

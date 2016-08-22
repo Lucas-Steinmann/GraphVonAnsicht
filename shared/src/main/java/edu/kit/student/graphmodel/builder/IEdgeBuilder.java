@@ -32,6 +32,8 @@ public interface IEdgeBuilder {
 	 * 				Name of the attribute
 	 * @param value
 	 * 				Value of the attribute
+	 * 
+	 * @throws IllegalArgumentException
 	 */
 	public abstract void addData(String keyname, String value) throws IllegalArgumentException;
 }

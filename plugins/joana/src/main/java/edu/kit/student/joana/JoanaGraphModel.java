@@ -23,7 +23,6 @@ public class JoanaGraphModel extends GraphModel {
 	/**
 	 * Constructs a new JoanaGraphModel with the specified callgraph and the specified MethodGraphs
 	 * @param callgraph
-	 * @param methdoGraphs
 	 */
 	public JoanaGraphModel(CallGraph callgraph) {
 		this.callgraph = callgraph;

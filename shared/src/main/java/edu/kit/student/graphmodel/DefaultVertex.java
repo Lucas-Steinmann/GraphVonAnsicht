@@ -27,7 +27,6 @@ public class DefaultVertex implements Vertex {
 	 * 
 	 * @param name of the new vertex
 	 * @param label of the new vertex
-	 * @param id of the new vertex
 	 */
 	public DefaultVertex(String name, String label) {
         this.name = new GAnsProperty<String>("name", name);

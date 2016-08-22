@@ -34,6 +34,7 @@ public abstract class EdgeFilter {
 
     /**
      * Returns a predicate which tests if a given vertex matches this filter.
+     * @return Predicate
      */
     public abstract Predicate<Edge> getPredicate();
     

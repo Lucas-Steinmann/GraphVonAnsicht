@@ -20,6 +20,7 @@ public abstract class VertexFilter {
 
     /**
      * Getter of name.
+     * @return the name
      */
     public String getName() {
         return name;
@@ -27,6 +28,7 @@ public abstract class VertexFilter {
 
     /**
      * Setter of name.
+     * @param name 
      */
     public void setName(String name) { 
         this.name = name; 
@@ -34,6 +36,7 @@ public abstract class VertexFilter {
 
     /**
      * Returns a predicate which tests if a given vertex matches this filter.
+     * @return The Predicate
      */
     public abstract Predicate<Vertex> getPredicate();
     

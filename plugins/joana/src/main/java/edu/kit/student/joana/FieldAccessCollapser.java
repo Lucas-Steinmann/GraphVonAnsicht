@@ -29,7 +29,6 @@ public class FieldAccessCollapser {
 
     /**
      * Collapses the field access
-     * @param graph the graph containing the FieldAccess
      * @param fa the FieldAccess
      */
     public void collapseFieldAccess(FieldAccess fa) {
@@ -86,7 +85,6 @@ public class FieldAccessCollapser {
 
     /**
      * Expand the field access
-     * @param graph the graph containing the FieldAccess
      * @param fa the FieldAccess
      */
     public void expandFieldAccess(FieldAccess fa) {
