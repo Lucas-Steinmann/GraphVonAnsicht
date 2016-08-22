@@ -164,7 +164,7 @@ public class MethodGraph extends JoanaGraph {
 	 */
 	public List<FieldAccess> collapseFieldAccesses() {
 	    List<FieldAccess> collapsedFas = new LinkedList<>();
-	    for (FieldAccess fa : fieldAccesses) {
+	    for (FieldAccess fa : this.getFieldAccesses()) {
 	        // If all vertices are contained in the graph replace the fieldAccess
 	        if (fa.getGraph().getVertexSet().size() != 0) {
 	            fcollapser.collapseFieldAccess(fa);
