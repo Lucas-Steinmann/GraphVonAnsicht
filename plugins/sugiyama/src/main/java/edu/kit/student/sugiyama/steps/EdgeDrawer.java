@@ -41,7 +41,6 @@ public class EdgeDrawer implements IEdgeDrawer {
 	private Set<ISugiyamaEdge> sameLayerEdges;	                       // edges that connect two vertices of the same layer, (for now without selfloops!)
 	private Set<ISugiyamaEdge> normalEdges;	                           // edges that are not (supplement edges, selfLoopEdges or sameLayerEdges)
 	
-	private Set<ISugiyamaVertex> isolatedVertices;                     //isolated vertices
 	private double[] spaceBetweenLayers;
 	private double[] distancePerEdgeInLayer;
 	
@@ -89,7 +88,6 @@ public class EdgeDrawer implements IEdgeDrawer {
 			}
 		}
 		
-        isolatedVertices.clear();
 	    inOutDeg.clear();
 	    inOutPoints.clear();
 	    inOutVertices.clear();
@@ -212,7 +210,6 @@ public class EdgeDrawer implements IEdgeDrawer {
 				this.inOutDeg.put(v.getID(), new int[2]);
 			}
 		}
-		this.isolatedVertices.forEach(v->this.inOutDeg.put(v.getID(), new int[2]));
 	}
 	
 	/**
@@ -223,14 +220,6 @@ public class EdgeDrawer implements IEdgeDrawer {
 	private void fillInOutPoints(){
 		for(ISugiyamaVertex v : this.graphVertices){
 //			logger.info("Processing vertex: "+v.getID()+", is dummy: " + v.isDummy());
-			if(this.isolatedVertices.contains(v)){
-				List<DoublePoint> inPoints = new LinkedList<DoublePoint>();
-				List<DoublePoint> outPoints = new LinkedList<DoublePoint>();
-				List<List<DoublePoint>> list = new ArrayList<List<DoublePoint>>(2);
-				list.add(inPoints);
-				list.add(outPoints);
-				this.inOutPoints.put(v.getID(), null);	//an isolated vertex has no incoming or outgoing points
-			}else {
 				List<DoublePoint> inPoints = this.getInPoints(v);
 				List<DoublePoint> outPoints = this.getOutPoints(v);
 				List<List<DoublePoint>> list = new ArrayList<List<DoublePoint>>(2);
@@ -245,7 +234,6 @@ public class EdgeDrawer implements IEdgeDrawer {
 				for(DoublePoint p : outPoints){
 					assert(this.inOutPointsTest.add(p));
 				}
-			}
 		}
 	}
 	
@@ -603,7 +591,6 @@ public class EdgeDrawer implements IEdgeDrawer {
 //		logger.debug("amount: "+graphVertices.size()+","+graphEdges.size());
 		
 //		Set<ISugiyamaVertex> sugyVertices = graphVertices.stream().filter(v->!v.isDummy()).collect(Collectors.toSet());
-		this.isolatedVertices = new HashSet<ISugiyamaVertex>();
 		this.selfLoopEdges = new HashSet<ISugiyamaEdge>();
 		this.sameLayerEdges = new HashSet<ISugiyamaEdge>();
 //		this.graphVertices.stream().filter(vertex->graph.selfLoopNumberOf(vertex)>0).forEach(vertex->this.selfLoopEdges.addAll(graph.selfLoopsOf(vertex)));//fills selfloops
