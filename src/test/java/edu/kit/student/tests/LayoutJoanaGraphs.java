@@ -45,7 +45,7 @@ public class LayoutJoanaGraphs {
             List<MethodGraph> mgs = model.getMethodGraphs();
             MethodGraphLayout mgl = new MethodGraphLayout();
             for (MethodGraph mg : mgs) {
-                if (mg.getVertexSet().size() < 700) {
+                if (mg.getVertexSet().size() < 700 && mg.getEdgeSet().size() < 4000) {
                     mgl.layout(mg);
                 }
             }
