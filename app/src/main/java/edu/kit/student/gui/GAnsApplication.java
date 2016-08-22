@@ -474,6 +474,7 @@ public class GAnsApplication {
 			@Override
 			public void handle(ActionEvent e) {
 				openLayoutSettingsDialog(currentGraphView.getCurrentLayoutOption());
+				currentGraphView.reloadGraph();
 			}
 		});
 		menuLayout.getItems().addAll(changeLayoutItem, layoutPropertiesItem);

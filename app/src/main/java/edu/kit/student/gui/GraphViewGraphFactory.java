@@ -60,6 +60,22 @@ public class GraphViewGraphFactory {
 		createEdges();
 	}
 	
+	public void refreshGraph() {
+		for(VertexShape shape : vertices.keySet()) {
+			ViewableVertex vertex = vertices.get(shape);
+			shape.relocate(vertex.getX(), vertex.getY());
+		}
+		
+		background.clear();
+		for(SubGraph subgraph : graph.getSubGraphs()) {
+		    BackgroundShape shape = new BackgroundShape(subgraph);
+		    background.add(shape);
+		}
+		
+		edges.clear();
+		createEdges();
+	}
+	
 	public ViewableGraph getGraph() {
 		return this.graph;
 	}
