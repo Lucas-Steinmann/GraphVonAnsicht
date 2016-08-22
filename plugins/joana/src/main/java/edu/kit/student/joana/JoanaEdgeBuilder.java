@@ -45,7 +45,7 @@ public class JoanaEdgeBuilder implements IEdgeBuilder {
 
     /**
      * Builds a new JoanaEdge as described before this call.
-     * @return the built JoanaEdge
+     * @return the built JoanaEdge or null
      */
     public JoanaEdge build(Set<JoanaVertex> vertexPool) {
         if (source == null || target == null) {

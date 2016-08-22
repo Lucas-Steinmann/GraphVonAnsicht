@@ -59,7 +59,7 @@ public class CallGraphBuilder implements IGraphBuilder {
      * Builds a new CallGraph with the given information, added before this call.
      * @return the callgraph
      */
-    public CallGraph build() {
+    public CallGraph build() throws Exception {
         for (MethodGraphBuilder b : methodGraphBuilders) {
             methodGraphs.add(b.build());
         }
@@ -81,7 +81,11 @@ public class CallGraphBuilder implements IGraphBuilder {
         Set<JoanaEdge> callEdges = new HashSet<>();
         for (JoanaEdgeBuilder builder : callEdgeBuilders) {
             JoanaEdge edge = builder.build(vertexPool);
-            callEdges.add(edge);
+            
+            //check if edge exists
+            if (edge != null) {
+                callEdges.add(edge);
+            }       
         }
         
         //search for call loops
@@ -94,26 +98,28 @@ public class CallGraphBuilder implements IGraphBuilder {
             }
         }
         
-        for (JoanaEdge callEdge : callEdges) {
-            if (callEdge.getEdgeKind() != EdgeKind.CL)
-                continue;
-            int sourceID = 0;
-            int targetID = 0;
-            // Find which methodgraph contains the target and the source vertex for the callEdge
-            for (MethodGraph methodGraph : methodGraphs) {
-                if (methodGraph.getVertexSet().contains(callEdge.getSource())) {
-                    sourceID = methodGraph.getID();
+        if (!callEdges.isEmpty()) {
+            for (JoanaEdge callEdge : callEdges) {
+                if (callEdge.getEdgeKind() != EdgeKind.CL)
+                    continue;
+                int sourceID = 0;
+                int targetID = 0;
+                // Find which methodgraph contains the target and the source vertex for the callEdge
+                for (MethodGraph methodGraph : methodGraphs) {
+                    if (methodGraph.getVertexSet().contains(callEdge.getSource())) {
+                        sourceID = methodGraph.getID();
+                    }
+                    if (methodGraph.getVertexSet().contains(callEdge.getTarget())) {
+                        targetID = methodGraph.getID();
+                    }
                 }
-                if (methodGraph.getVertexSet().contains(callEdge.getTarget())) {
-                    targetID = methodGraph.getID();
+                if (connections.get(vertices.get(sourceID)).contains(vertices.get(targetID))) {
+                    // Second call from this function. Skip.
+                    continue;
                 }
+                edges.add(new JoanaEdge(callEdge.getName(), callEdge.getLabel(), vertices.get(sourceID), vertices.get(targetID), EdgeKind.CL));
+                connections.get(vertices.get(sourceID)).add(vertices.get(targetID));
             }
-            if (connections.get(vertices.get(sourceID)).contains(vertices.get(targetID))) {
-                // Second call from this function. Skip.
-                continue;
-            }
-            edges.add(new JoanaEdge(callEdge.getName(), callEdge.getLabel(), vertices.get(sourceID), vertices.get(targetID), EdgeKind.CL));
-            connections.get(vertices.get(sourceID)).add(vertices.get(targetID));
         }
        // // Add call edges between vertices.
        // for (MethodGraph methodGraph : methodGraphs) {

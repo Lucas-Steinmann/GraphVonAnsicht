@@ -100,7 +100,9 @@ public class MethodGraph extends JoanaGraph {
      * @return A list of all {@link FieldAccess} in the MethodGraph.
      */
     public List<FieldAccess> getFieldAccesses() { 
-        return new LinkedList<>(fieldAccesses);
+        return fieldAccesses.stream()
+                            .filter(fa -> fa.getGraph().getVertexSet().size() != 0)
+                            .collect(Collectors.toList());
     }
 
     /**
@@ -164,7 +166,7 @@ public class MethodGraph extends JoanaGraph {
 	    List<FieldAccess> collapsedFas = new LinkedList<>();
 	    for (FieldAccess fa : fieldAccesses) {
 	        // If all vertices are contained in the graph replace the fieldAccess
-	        if (fa.getGraph().getVertexSet().stream().allMatch((v) -> graph.contains(v))) {
+	        if (fa.getGraph().getVertexSet().size() != 0) {
 	            fcollapser.collapseFieldAccess(fa);
 	            collapsedFas.add(fa);
 	        }

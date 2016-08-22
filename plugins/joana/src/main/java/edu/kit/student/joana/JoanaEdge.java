@@ -205,4 +205,9 @@ public class JoanaEdge implements DirectedEdge {
 	public void setEdgeKind(EdgeKind edgeKind) {
 		this.edgeKind.setValue(edgeKind);
 	}
+
+    @Override
+    public String toString() {
+        return this.getSource().getID() + " -" + this.getID() + "-> " + this.getTarget().getLabel();
+    }
 }
