@@ -136,3 +136,6 @@ task allJar(type: Jar, dependsOn: classes) {
 
 subprojects {
 }
+
+apply plugin: 'application'
+mainClassName = 'edu.kit.student.gui.GAnsMediator'
