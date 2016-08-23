@@ -29,7 +29,30 @@ allprojects {
 	repositories {
 		jcenter()
 	}
+	
+	// There is a dependency from
+	//   edu.kit.student.tests.LayoutJoanaGraphs
+	// to
+	//   edu.kit.student.sugiyama.steps.tests.SugiyamaLayoutAlgorithmTest.AsNonApp
+	// so we need to cheat gradle (see: https://discuss.gradle.org/t/how-do-i-declare-a-dependency-on-a-modules-test-code/7172/6 )
+	configurations {
+		testArtifacts.extendsFrom testRuntime
+	}
+	task testJar(type: Jar) {
+		classifier "test"
+		from sourceSets.test.output
+	}
+
+	artifacts {
+		testArtifacts testJar
+	}
+	
+	// Some java assert statements currenty fail in the junit tests. This should be probably be removed once that is fixed.
+	tasks.withType(Test) {
+		enableAssertions = false
+	}
 }
+
 dependencies {
     compile project(":shared")
 	compile project(":app")
@@ -37,6 +60,8 @@ dependencies {
     compile project(":plugins:joana")
     compile project(":plugins:svg")
     compile project(":plugins:graphml")
+    
+    testCompile project (path: ":plugins:sugiyama", configuration: 'testArtifacts')
 }
 
 subprojects.each { subproject -> evaluationDependsOn(subproject.path)}
@@ -85,6 +110,7 @@ task allJar(type: Jar, dependsOn: classes) {
 //artifacts {
 //   archives allJar
 //}
+
 
 subprojects {
 }
