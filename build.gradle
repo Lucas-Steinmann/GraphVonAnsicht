@@ -139,3 +139,9 @@ subprojects {
 
 apply plugin: 'application'
 mainClassName = 'edu.kit.student.gui.GAnsMediator'
+
+
+task runJar(type: JavaExec, dependsOn:[allJar]) {
+   classpath = files(allJar.archivePath)
+   main = 'edu.kit.student.gui.GAnsMediator'
+}
