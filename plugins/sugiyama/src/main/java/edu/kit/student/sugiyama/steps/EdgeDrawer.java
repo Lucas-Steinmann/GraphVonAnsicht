@@ -41,8 +41,8 @@ public class EdgeDrawer implements IEdgeDrawer {
 	private double[] spaceBetweenLayers;
 	private double[] distancePerEdgeInLayer;
 	
-	private Set<DoublePoint> points = new HashSet<DoublePoint>();
-	private Set<DoublePoint> inOutPointsTest = new HashSet<DoublePoint>();
+	private Set<DoublePoint> points;
+	private Set<DoublePoint> inOutPointsTest;
 	
 	private Map<Integer,int[]> inOutDeg;                               // maps vertex id, to an array, containing the indegree on index 0 and outdegree on index 1
 	private Map<Integer, List<List<DoublePoint>>> inOutPoints;         // maps vertex id to Lists of incoming and outgoing points
@@ -55,6 +55,8 @@ public class EdgeDrawer implements IEdgeDrawer {
         inOutDeg = new HashMap<Integer,int[]>();
         inOutPoints = new HashMap<Integer, List<List<DoublePoint>>>();
         inOutVertices = new HashMap<Integer, List<List<ISugiyamaVertex>>>();
+	    points = new HashSet<DoublePoint>();
+	    inOutPointsTest = new HashSet<DoublePoint>();
 
 		logger.info("EdgeDrawer.drawEdges():");
 		if(graph.getEdgeSet() == null || graph.getEdgeSet().isEmpty() || graph.getVertexSet() == null || graph.getVertexSet().isEmpty()){

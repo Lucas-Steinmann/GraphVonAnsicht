@@ -135,11 +135,11 @@ public class FieldAccessGraph extends JoanaGraph implements SubGraph {
 
     @Override
     public DoublePoint getSize() {
-        if (graph.getVertexSet().isEmpty()) {
+        if (this.getVertexSet().isEmpty()) {
             return new DoublePoint(0, 0);
         }
-        Set<JoanaVertex> fagVertices = this.graph.getVertexSet();
-        Set<JoanaEdge> fagEdges = this.graph.getEdgeSet();
+        Set<JoanaVertex> fagVertices = this.getVertexSet();
+        Set<JoanaEdge> fagEdges = this.getEdgeSet();
         
         double minX, minY, maxX, maxY;
 		minX = fagVertices.stream().mapToDouble(vertex->vertex.getX()).min().getAsDouble();
@@ -161,19 +161,19 @@ public class FieldAccessGraph extends JoanaGraph implements SubGraph {
 
     @Override
     public Double getX() {
-        if (graph.getVertexSet().isEmpty()) {
+        if (getVertexSet().isEmpty()) {
             return 0d;
         }
-        return (double) graph.getVertexSet().stream().min(Comparator.comparing(v -> v.getX())).get().getX() - paddingx/2;
+        return (double) getVertexSet().stream().min(Comparator.comparing(v -> v.getX())).get().getX() - paddingx/2;
     }
 
 
     @Override
     public Double getY() {
-        if (graph.getVertexSet().isEmpty()) {
+        if (getVertexSet().isEmpty()) {
             return 0d;
         }
-        return (double) graph.getVertexSet().stream().min(Comparator.comparing(v -> v.getY())).get().getY() - paddingy/2;
+        return (double) getVertexSet().stream().min(Comparator.comparing(v -> v.getY())).get().getY() - paddingy/2;
     }
     
 }

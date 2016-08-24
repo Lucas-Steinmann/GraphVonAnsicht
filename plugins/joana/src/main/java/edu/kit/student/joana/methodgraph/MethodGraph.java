@@ -253,8 +253,9 @@ public class MethodGraph extends JoanaGraph {
 
     @Override
     public Set<? extends SubGraph> getSubGraphs() {
-        return fieldAccesses.stream().map(fa -> fa.getGraph())
-                                     .collect(Collectors.toSet());
+        return getFieldAccesses().stream()
+                                 .map(fa -> fa.getGraph())
+                                 .collect(Collectors.toSet());
     }
     
     @Override
