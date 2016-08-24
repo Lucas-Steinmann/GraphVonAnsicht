@@ -78,6 +78,10 @@ public class JoanaVertexBuilder implements IVertexBuilder {
      * @return the built vertex
      */
     public JoanaVertex build() {
+        if (kind == null) {
+            throw new IllegalArgumentException("JoanaVertex " + name + " needs a NodeKind");
+        }
+        
         JoanaVertex vertex = new JoanaVertex(name, label, kind, source, proc, 
                                              operation, bcName, bcIndex, sr, sc, er, ec);
         //TODO Check relations nodeKind-nodeOperation and maybe others
