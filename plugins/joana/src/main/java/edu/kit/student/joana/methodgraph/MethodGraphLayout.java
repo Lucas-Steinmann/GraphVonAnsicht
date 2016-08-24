@@ -219,7 +219,6 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 				layerToAddDummy = layerYvals.size() - 1;	//add to last layer
 				yAddition = - borderDummySize.y;
 			}else{
-//				continue;	//TODO: catch this case. why may this case occur ?
 				assert(false);
 			}
 			tempDummy = new JoanaDummyVertex("", "", getDummyID(), borderDummySize);
@@ -430,11 +429,11 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 		}
 		for(JoanaEdge e : fromOutEdges){
 			List<DoublePoint> points = e.getPath().getNodes();
-			Double start;
-			Double end;
-			int upOrDown;	//+1 is down (increase layer), -1 is up(decrease layer)
-			Vertex source;	//one of these will be a dummy instead of being a
-			Vertex target;	//source or target because the vertex out of the fa is replaced by a dummy while layouting
+			Double start = null;
+			Double end = null;
+			int upOrDown = 0;	//+1 is down (increase layer), -1 is up(decrease layer)
+			Vertex source = null;	//one of these will be a dummy instead of being a
+			Vertex target = null;	//source or target because the vertex out of the fa is replaced by a dummy while layouting
 			if(dEquals(points.get(points.size() - 1).y, boxYtop)){ //edge into box from top
 				start = boxYtop;
 				end = (double) e.getTarget().getY();
@@ -460,8 +459,7 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 				source = edgeToDummy.get(e.getID());
 				target = e.getTarget();
 			}else{
-				continue;	//TODO: why can this occur ?
-//				assert(false);
+				assert(false);
 			}
 			int index1 = getIndex(layerYvals, (double)start);
 			int index2 = getIndex(layerYvals, (double)end);
