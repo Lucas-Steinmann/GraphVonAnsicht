@@ -132,6 +132,10 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 	//also sets the necessary dummies, supplementEdges, and paths in every layer.
 	//For setting dummies: calc how much dummies per layer, position of vertices in this layer then add dummies, and random assign the dummies layers
 	//maybe go over every edge that skips layer and search in every layer for a free dummy for assigning!
+	/**
+	 * Draws all edges contained in a FieldAccess and coming into and going out of a FieldAcces new.
+	 * The coordinates of vertices stay the same.
+	 */
 	private void drawEdgesNew(MethodGraph graph, FieldAccess fa){
 		//maybe split more functionality into private methods
 		double boxYtop = fa.getY();
@@ -176,12 +180,17 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 		}
 		for(JoanaEdge e : fromOutEdges){	//add dummy vertices for vertices from outside on every necessary layer
 			List<DoublePoint> points = e.getPath().getNodes();
+			System.out.println("box left top: "+"("+fa.getX()+","+boxYtop+")"+", box right bottom: "+"("+(fa.getX()+fa.getSize().x)+","+boxYbottom+"), ");
+			System.out.println("edge: source: "+e.getSource().getLabel()+", target: "+e.getTarget().getLabel());
+			System.out.print("path: ");
+			points.forEach(p->System.out.print("("+p.x+","+p.y+"), "));
+			System.out.print('\n');
 			DoublePoint borderDummySize = new DoublePoint(3, 5);//just a simple size for dummies on first or last layer
 			//cases: top of box and bottom, in and out of the box.
-			Double start;
-			Double end;
-			DoublePoint boxCross;
-			int layerToAddDummy;
+			Double start = null;
+			Double end = null;
+			DoublePoint boxCross = null;
+			int layerToAddDummy = 0;
 			JoanaDummyVertex tempDummy;
 			Double yAddition = 0.0;	//adds this value to the new set y-coordinate of the new dummy(another value than 0 just needed on bottom of FA-box)
 			//vertex boxes are not accurate so that the entry point in box is the same point as drawn by EdgeDrawer
@@ -210,8 +219,8 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 				layerToAddDummy = layerYvals.size() - 1;	//add to last layer
 				yAddition = - borderDummySize.y;
 			}else{
-				continue;	//TODO: catch this case. why may this case occur ?
-//				assert(false);
+//				continue;	//TODO: catch this case. why may this case occur ?
+				assert(false);
 			}
 			tempDummy = new JoanaDummyVertex("", "", getDummyID(), borderDummySize);
 			tempDummy.setX((int) (boxCross.x - borderDummySize.x/2));
@@ -249,111 +258,18 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 		drawAndAdjustFieldAccessEdges(fa, newFAedges , paths, fromOutEdges, edgeToDummy);
 	}
 	
-	private void drawAndAdjustFieldAccessEdges(FieldAccess fa, Set<DirectedEdge> newFAedges, Set<DirectedSupplementEdgePath> paths, Set<JoanaEdge> fromOutEdges, Map<Integer, Vertex> edgeToDummy){
-//		this.printGraph(fa.getGraph().getVertexSet(), fa.getGraph().getEdgeSet());
-		double boxYtop = fa.getY();
-		double boxYbottom = fa.getY() + fa.getSize().y;
-		Set<Vertex> vertices = new HashSet<>(fa.getGraph().getVertexSet());
-		Set<DirectedEdge> edges = new HashSet<>();
-		edges.addAll(fa.getGraph().getEdgeSet());
-		edges.addAll(newFAedges);	//edges from outside going to the next vertex in FA, not describing a path (not skipping a layer)
-		for(DirectedEdge edge : newFAedges){
-			vertices.add(edge.getSource());
-			vertices.add(edge.getTarget());
-		}
-		for(DirectedSupplementEdgePath p : paths){
-//			DirectedEdge e = p.getReplacedEdge();
-//			System.out.println("old from replaced vertices: "+e.getID()+", source: "+e.getSource().getID()+", target: "+e.getTarget().getID());
-			vertices.addAll(p.getDummyVertices());
-			vertices.add(p.getReplacedEdge().getSource());
-			vertices.add(p.getReplacedEdge().getTarget());
-			edges.addAll(p.getSupplementEdges());
-			edges.remove(p.getReplacedEdge());//should not be in here !
-//			this.printGraph(p.getDummyVertices(), p.getSupplementEdges());
-		}
-//		System.out.println("vertices: "+vertices.size()+", edges: "+edges.size()+", paths: "+paths.size());
-//		this.printGraph(vertices, edges);
-		this.sugiyamaLayoutAlgorithm.drawEdgesNew(vertices, edges, paths);
-		//now add the additional EdgePath to fromOutEdges
-		for(JoanaEdge e : fromOutEdges){
-//			System.out.println("from out id: "+e.getID()+", source: "+e.getSource().getID()+", target: "+e.getTarget().getID());
-			List<DoublePoint> points = e.getPath().getNodes();
-			Vertex dummy = edgeToDummy.get(e.getID());
-//			System.out.println("dummy id: "+dummy.getID());
-			assert(vertices.contains(dummy));
-			Vertex source = null;
-			Vertex target = null;
-			boolean newPathInsertionAfter = false;	//tells if new path should be inserted behind or before the actual path
-			if(dEquals(points.get(points.size() - 1).y, boxYtop)){ //edge into box from top
-				source = dummy;
-				target = e.getTarget();
-				newPathInsertionAfter = true;
-			}else if(dEquals(points.get(0).y, boxYtop)){//edge out of box from top
-				source = e.getSource();
-				target = dummy;
-				newPathInsertionAfter = false;
-			}else if(dEquals(points.get(0).y, boxYbottom)){//edge out of box from bottom
-				source = e.getSource();
-				target = dummy;
-				newPathInsertionAfter = false;
-			}else if(dEquals(points.get(points.size() - 1).y, boxYbottom)){//edge into box from bottom
-				source = dummy;
-				target = e.getTarget();
-				newPathInsertionAfter = true;
-			}else{
-				assert(false);
-			}
-			for(DirectedSupplementEdgePath p : paths){	//look here for matching and finding correct drawn edges for every fromOutEdge!!!
-				DirectedEdge replaced = p.getReplacedEdge();
-//				System.out.println("replaced id:"+replaced.getID()+", source: "+replaced.getSource().getID()+", target: "+replaced.getTarget().getID());
-				if(replaced.getSource().getID().equals(dummy.getID()) || replaced.getTarget().getID().equals(dummy.getID())){
-//					System.out.println("found some!!!!!!!!!");
-					DoublePoint newPoint;
-					EdgePath op = e.getPath();
-					EdgePath np = replaced.getPath();
-					if(newPathInsertionAfter){
-						newPoint = new DoublePoint(op.getNodes().get(op.getNodes().size() - 1).x, np.getNodes().get(0).y);
-						op.addPoint(newPoint);
-						np.getNodes().forEach(point->op.addPoint(point));
-//						np.getNodes().forEach(point->e.getPath().addPoint(point));// insert new points behind
-					} else{
-						List<DoublePoint> newPoints = new LinkedList<>();
-						newPoint = new DoublePoint(np.getNodes().get(np.getNodes().size() - 1).x, op.getNodes().get(0).y);
-						newPoints.addAll(np.getNodes());
-						newPoints.add(newPoint);
-						newPoints.addAll(points);
-						e.getPath().clear();
-						newPoints.forEach(point->op.addPoint(point));
-					}
-				}
-			}
-			for(DirectedEdge de : edges){
-				if(dummy.getID().equals(de.getSource().getID()) && target.getID().equals(de.getTarget().getID())
-						|| dummy.getID().equals(de.getTarget().getID()) && source.getID().equals(de.getSource().getID())){
-//					System.out.println("found match!");
-					DoublePoint newPoint;
-					EdgePath op = e.getPath();
-					EdgePath np = de.getPath();
-					if(newPathInsertionAfter){
-						newPoint = new DoublePoint(op.getNodes().get(op.getNodes().size() - 1).x, np.getNodes().get(0).y);
-						op.addPoint(newPoint);
-						np.getNodes().forEach(point->op.addPoint(point));
-//						np.getNodes().forEach(point->e.getPath().addPoint(point));// insert new points behind
-					} else{
-						List<DoublePoint> newPoints = new LinkedList<>();
-						newPoint = new DoublePoint(np.getNodes().get(np.getNodes().size() - 1).x, op.getNodes().get(0).y);
-						newPoints.addAll(np.getNodes());
-						newPoints.add(newPoint);
-						newPoints.addAll(points);
-						e.getPath().clear();
-						newPoints.forEach(point->op.addPoint(point));
-					}
-				}
-			}
-		}
-	}
-	
 	//assigns every vertex with id <0(dummy vertex) in the given list that represents vertices in this layer a x- and y-coordinate
+	/**
+	 * Assigns every dummy in the given layer a coordinate so that they don't collide with other dummies or normal vertices.
+	 * Dummies are identified by a negative id.
+	 * Dummies on the first and last layer should'nt be assigned coordinates because their coordinates are set through the points an edge is coming in or 
+	 * going out of a FieldAccess
+	 * 
+	 * @param layer all vertices contained in this layer. Contains at least one normal vertex(id >= 0) and any amount of dummies(id < 0)
+	 * @param fa the FieldAccess. Necessary because of its x- and y-coordinates
+	 * @return a list of vertices containing the same vertices as given in parameter layer but with every dummy assigned a x- and y-coordinate.
+	 * 		also the vertices are sorted in ascending order of their x-coordinate
+	 */
 	private List<Vertex> assignCoordinatesToDummiesOnLayer(FieldAccess fa, List<Vertex> layer){
 		//watch out that the boxes are placed correctly (coordinates are left on top!!!)
 		List<Vertex> dummies = layer.stream().filter(v->v.getID() < 0).collect(Collectors.toList());
@@ -460,6 +376,22 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 		return layer;
 	}
 	
+	/**
+	 * Builds Paths for every edge in the FieldAccess and edges coming in and going out of a FieldAccess if they skip at least one layer. If so, the edge
+	 * is added to a path, dummies are added for every layer the edge skips and SupplementEdges are built that connect the source with the first dummy,
+	 * the dummies with each other and the last dummy with the target vertex.
+	 * Dummies on each layer are assigned randomly but every dummy just once.
+	 * 
+	 * 
+	 * @param fa the FieldAccess
+	 * @param newFAedges an empty set to add edges that replaces an edge coming into or going out of the FieldAccess, because source and target
+	 * 		have to be completely in a FieldAccess and mustn't be a vertex out of the FieldAccess
+	 * @param fromOutEdges edges coming from out or going into the FieldAccess
+	 * @param layerNumToVertices mapping of layer number to vertices contained in this layer
+	 * @param edgeToDummy mapping of edge id to the dummy that replaces the vertex of this edge being outside of the FieldAccess
+	 * @param layerYvals y-values of all layers
+	 * @return a set of all SupplementPath that have been built
+	 */
 	private Set<DirectedSupplementEdgePath> getRandomPaths(FieldAccess fa, Set<DirectedEdge> newFAedges, Set<JoanaEdge> fromOutEdges, Map<Integer, List<Vertex>> layerNumToVertices, Map<Integer, Vertex> edgeToDummy ,List<Double> layerYvals){
 		double boxYtop = fa.getY();
 		double boxYbottom = fa.getY() + fa.getSize().y;
@@ -551,7 +483,6 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 				supplementEdges.add(new DefaultDirectedEdge<Vertex>("","",dummies.get(dummies.size() - 1),target));
 				paths.add(new DefaultDirectedSupplementEdgePath(new DefaultDirectedEdge<Vertex>("","",source, target), dummies, supplementEdges));
 			}else{//edge from outside goes direct into the first vertex (start layer +1 or last layer - 1), so just build a normal edge!
-				//TODO
 				assert(Math.abs(index1 - index2) == 1);	//should be so !
 				newFAedges.add(new DefaultDirectedEdge<Vertex>("","",source,target));
 			}
@@ -559,7 +490,126 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 		return paths;
 	}
 	
+	/**
+	 * Finally draws all edges new. Adds all required edges and vertices to sets that are given to the sugiyamaLayoutAlgorithm.
+	 * Also adjusts EdgePaths of edges coming into or going out of the FieldAccess because these edges have been replaced by an edge that is completely in the FieldAccess.
+	 * Adds the new drawn edgepath to the existing one of the edges.
+	 * 
+	 * @param fa the FieldAccess
+	 * @param newFAedges new edges to add to faedges
+	 * @param paths the paths
+	 * @param fromOutEdges edges from outside into or out of the FieldAccess
+	 * @param edgeToDummy mapping of edge id to the dummy that replaces the vertex being outside of the FieldAccess.
+	 */
+	private void drawAndAdjustFieldAccessEdges(FieldAccess fa, Set<DirectedEdge> newFAedges, Set<DirectedSupplementEdgePath> paths, Set<JoanaEdge> fromOutEdges, Map<Integer, Vertex> edgeToDummy){
+//		this.printGraph(fa.getGraph().getVertexSet(), fa.getGraph().getEdgeSet());
+		double boxYtop = fa.getY();
+		double boxYbottom = fa.getY() + fa.getSize().y;
+		Set<Vertex> vertices = new HashSet<>(fa.getGraph().getVertexSet());
+		Set<DirectedEdge> edges = new HashSet<>();
+		edges.addAll(fa.getGraph().getEdgeSet());
+		edges.addAll(newFAedges);	//edges from outside going to the next vertex in FA, not describing a path (not skipping a layer)
+		for(DirectedEdge edge : newFAedges){
+			vertices.add(edge.getSource());
+			vertices.add(edge.getTarget());
+		}
+		for(DirectedSupplementEdgePath p : paths){
+//			DirectedEdge e = p.getReplacedEdge();
+//			System.out.println("old from replaced vertices: "+e.getID()+", source: "+e.getSource().getID()+", target: "+e.getTarget().getID());
+			vertices.addAll(p.getDummyVertices());
+			vertices.add(p.getReplacedEdge().getSource());
+			vertices.add(p.getReplacedEdge().getTarget());
+			edges.addAll(p.getSupplementEdges());
+			edges.remove(p.getReplacedEdge());//should not be in here !
+//			this.printGraph(p.getDummyVertices(), p.getSupplementEdges());
+		}
+//		System.out.println("vertices: "+vertices.size()+", edges: "+edges.size()+", paths: "+paths.size());
+//		this.printGraph(vertices, edges);
+		this.sugiyamaLayoutAlgorithm.drawEdgesNew(vertices, edges, paths);
+		//now add the additional EdgePath to fromOutEdges
+		for(JoanaEdge e : fromOutEdges){
+//			System.out.println("from out id: "+e.getID()+", source: "+e.getSource().getID()+", target: "+e.getTarget().getID());
+			List<DoublePoint> points = e.getPath().getNodes();
+			Vertex dummy = edgeToDummy.get(e.getID());
+//			System.out.println("dummy id: "+dummy.getID());
+			assert(vertices.contains(dummy));
+			Vertex source = null;
+			Vertex target = null;
+			boolean newPathInsertionAfter = false;	//tells if new path should be inserted behind or before the actual path
+			if(dEquals(points.get(points.size() - 1).y, boxYtop)){ //edge into box from top
+				source = dummy;
+				target = e.getTarget();
+				newPathInsertionAfter = true;
+			}else if(dEquals(points.get(0).y, boxYtop)){//edge out of box from top
+				source = e.getSource();
+				target = dummy;
+				newPathInsertionAfter = false;
+			}else if(dEquals(points.get(0).y, boxYbottom)){//edge out of box from bottom
+				source = e.getSource();
+				target = dummy;
+				newPathInsertionAfter = false;
+			}else if(dEquals(points.get(points.size() - 1).y, boxYbottom)){//edge into box from bottom
+				source = dummy;
+				target = e.getTarget();
+				newPathInsertionAfter = true;
+			}else{
+				assert(false);
+			}
+			for(DirectedSupplementEdgePath p : paths){	//look here for matching and finding correct drawn edges for every fromOutEdge!!!
+				DirectedEdge replaced = p.getReplacedEdge();
+//				System.out.println("replaced id:"+replaced.getID()+", source: "+replaced.getSource().getID()+", target: "+replaced.getTarget().getID());
+				if(replaced.getSource().getID().equals(dummy.getID()) || replaced.getTarget().getID().equals(dummy.getID())){
+//					System.out.println("found some!!!!!!!!!");
+					DoublePoint newPoint;
+					EdgePath op = e.getPath();
+					EdgePath np = replaced.getPath();
+					if(newPathInsertionAfter){
+						newPoint = new DoublePoint(op.getNodes().get(op.getNodes().size() - 1).x, np.getNodes().get(0).y);
+						op.addPoint(newPoint);
+						np.getNodes().forEach(point->op.addPoint(point));
+//						np.getNodes().forEach(point->e.getPath().addPoint(point));// insert new points behind
+					} else{
+						List<DoublePoint> newPoints = new LinkedList<>();
+						newPoint = new DoublePoint(np.getNodes().get(np.getNodes().size() - 1).x, op.getNodes().get(0).y);
+						newPoints.addAll(np.getNodes());
+						newPoints.add(newPoint);
+						newPoints.addAll(points);
+						e.getPath().clear();
+						newPoints.forEach(point->op.addPoint(point));
+					}
+				}
+			}
+			for(DirectedEdge de : edges){
+				if(dummy.getID().equals(de.getSource().getID()) && target.getID().equals(de.getTarget().getID())
+						|| dummy.getID().equals(de.getTarget().getID()) && source.getID().equals(de.getSource().getID())){
+//					System.out.println("found match!");
+					DoublePoint newPoint;
+					EdgePath op = e.getPath();
+					EdgePath np = de.getPath();
+					if(newPathInsertionAfter){
+						newPoint = new DoublePoint(op.getNodes().get(op.getNodes().size() - 1).x, np.getNodes().get(0).y);
+						op.addPoint(newPoint);
+						np.getNodes().forEach(point->op.addPoint(point));
+//						np.getNodes().forEach(point->e.getPath().addPoint(point));// insert new points behind
+					} else{
+						List<DoublePoint> newPoints = new LinkedList<>();
+						newPoint = new DoublePoint(np.getNodes().get(np.getNodes().size() - 1).x, op.getNodes().get(0).y);
+						newPoints.addAll(np.getNodes());
+						newPoints.add(newPoint);
+						newPoints.addAll(points);
+						e.getPath().clear();
+						newPoints.forEach(point->op.addPoint(point));
+					}
+				}
+			}
+		}
+	}
 	
+	/**
+	 * Get index of value in list.
+	 * Index 0 is the first index.
+	 * -1 is returned, if value is not contained in list.
+	 */
 	private int getIndex(List<Double> list, Double value){
 		int index = 0;
 		for(Double d : list){
