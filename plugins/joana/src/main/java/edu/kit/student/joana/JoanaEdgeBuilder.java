@@ -53,6 +53,11 @@ public class JoanaEdgeBuilder implements IEdgeBuilder {
         if (source == null || target == null) {
             return null;
         }
+        
+        //throw error
+        if (edgeKind == null) {
+            throw new IllegalArgumentException("Invalid joana edge without edgeKind.");
+        }
 
         Optional<JoanaVertex> sourceVertex = vertexPool.stream().filter(joanaVertex -> joanaVertex.getName().equals(source)).findFirst();
         Optional<JoanaVertex> targetVertex = vertexPool.stream().filter(joanaVertex -> joanaVertex.getName().equals(target)).findFirst();
