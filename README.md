@@ -21,3 +21,10 @@ To build an executable version of the jar containing all currently available plu
 ./gradlew clean allJar
 ```
 The jar will be placed into `build/libs/`.
+
+## Code Coverage
+```bash
+./gradlew clean jacocoRootReport
+```
+The html report will be placed into `build/reports/jacoco/jacocoRootReport/html/index.html` 
+

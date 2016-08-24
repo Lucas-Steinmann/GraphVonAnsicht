@@ -51,6 +51,32 @@ allprojects {
 	tasks.withType(Test) {
 		enableAssertions = false
 	}
+
+	apply plugin: "jacoco"
+
+	jacocoTestReport {
+		reports {
+			html.enabled = true
+		}
+	}
+}
+
+task jacocoRootReport(type: org.gradle.testing.jacoco.tasks.JacocoReport) {
+	dependsOn = allprojects.test
+	sourceDirectories = files(allprojects.sourceSets.main.allSource.srcDirs)
+	classDirectories =  files(allprojects.sourceSets.main.output)
+	executionData = files(allprojects.jacocoTestReport.executionData)
+	reports {
+		html.enabled = true
+	}
+	onlyIf = {
+		true
+	}
+	doFirst {
+		executionData = files(executionData.findAll {
+			it.exists()
+		})
+	}
 }
 
 dependencies {
@@ -145,3 +171,4 @@ task runJar(type: JavaExec, dependsOn:[allJar]) {
    classpath = files(allJar.archivePath)
    main = 'edu.kit.student.gui.GAnsMediator'
 }
+
