@@ -26,7 +26,7 @@ public class FieldAccessGraph extends JoanaGraph implements SubGraph {
 
     private DefaultDirectedGraph<JoanaVertex, JoanaEdge> graph;
     private JoanaVertex fieldEntry;
-	public static double paddingx = 10;
+	public static double paddingx = 40;
 	public static double paddingy = 50;
     
     public FieldAccessGraph(String name, Set<JoanaVertex> vertices, Set<JoanaEdge> edges) {

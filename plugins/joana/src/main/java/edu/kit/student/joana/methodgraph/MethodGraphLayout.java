@@ -180,12 +180,12 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 		}
 		for(JoanaEdge e : fromOutEdges){	//add dummy vertices for vertices from outside on every necessary layer
 			List<DoublePoint> points = e.getPath().getNodes();
-			System.out.println("box left top: "+"("+fa.getX()+","+boxYtop+")"+", box right bottom: "+"("+(fa.getX()+fa.getSize().x)+","+boxYbottom+"), ");
-			System.out.println("edge: source: "+e.getSource().getLabel()+", target: "+e.getTarget().getLabel());
-			System.out.print("path: ");
-			points.forEach(p->System.out.print("("+p.x+","+p.y+"), "));
-			System.out.print('\n');
-			DoublePoint borderDummySize = new DoublePoint(3, 5);//just a simple size for dummies on first or last layer
+//			System.out.println("box left top: "+"("+fa.getX()+","+boxYtop+")"+", box right bottom: "+"("+(fa.getX()+fa.getSize().x)+","+boxYbottom+"), ");
+//			System.out.println("edge: source: "+e.getSource().getLabel()+", target: "+e.getTarget().getLabel());
+//			System.out.print("path: ");
+//			points.forEach(p->System.out.print("("+p.x+","+p.y+"), "));
+//			System.out.print('\n');
+			DoublePoint borderDummySize = new DoublePoint(2, 5);//just a simple size for dummies on first or last layer
 			//cases: top of box and bottom, in and out of the box.
 			Double start = null;
 			Double end = null;
@@ -234,7 +234,7 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 			assert(index1 != -1 && index2 != -1);	//start and end have to be found in this list!!!
 			for(int i = index1 + 1; i < index2; i++){
 				Double layerVertexSize = (double) layerNumToVertices.get(i).get(0).getSize().y;//every vertex in the FA got a layer,edges are not from outside!
-				layerNumToVertices.get(i).add(new JoanaDummyVertex("","", getDummyID(), new DoublePoint(3, layerVertexSize)));
+				layerNumToVertices.get(i).add(new JoanaDummyVertex("","", getDummyID(), new DoublePoint(2, layerVertexSize)));
 			}
 		}
 		layerNumToVertices.values().forEach(l->l.sort((v1,v2)->Integer.compare(v1.getX(), v2.getX())));//sort all layers
