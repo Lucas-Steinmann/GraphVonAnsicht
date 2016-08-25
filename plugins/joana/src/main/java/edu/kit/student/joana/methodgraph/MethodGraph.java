@@ -96,6 +96,8 @@ public class MethodGraph extends JoanaGraph {
     public List<FieldAccess> getFieldAccesses() { 
         return fieldAccesses.stream()
                             .filter(fa -> fa.getGraph().getVertexSet().size() != 0)
+                            .filter(fa -> fa.getGraph().getVertexSet().stream()
+                                                                      .anyMatch(v -> getVertexSet().contains(v)))
                             .collect(Collectors.toList());
     }
 
@@ -123,6 +125,20 @@ public class MethodGraph extends JoanaGraph {
         return actions;
     }
 
+    @Override
+    public List<SubGraphAction> getSubGraphActions(Set<ViewableVertex> vertices) {
+        List<SubGraphAction> actions = new LinkedList<>();
+        if (getVertexSet().containsAll(vertices) && 
+        		vertices.size() > 1) {
+            // TODO: Decide between cases:
+            // a) vertices fully contained in field access -> collapse in field access
+            // b) vertices partially contained in field access -> no collapse possible
+            // c) vertices do not contain vertices of a field access or contain only whole field accesses -> collapse
+            actions.add(newCollapseAction(vertices));
+        }
+        return actions;
+    }
+
     private VertexAction newFieldAccessCollapseAction(FieldAccess fa) {
 	    return new VertexAction("Collapse Field access", 
 	            "Collapses the field access.") {
@@ -132,17 +148,6 @@ public class MethodGraph extends JoanaGraph {
                 collapse(fa.getGraph().getVertexSet());
             }
         };
-    }
-
-    @Override
-    public List<SubGraphAction> getSubGraphActions(Set<ViewableVertex> vertices) {
-        List<SubGraphAction> actions = new LinkedList<>();
-        if (getVertexSet().containsAll(vertices) && 
-        		vertices.size() > 1) {
-            actions.add(newCollapseAction(vertices));
-        }
-
-        return actions;
     }
 
 	private VertexAction newExpandAction(JoanaCollapsedVertex vertex) {
@@ -186,11 +191,24 @@ public class MethodGraph extends JoanaGraph {
 	
 	/**
 	 * Expands all visible field access, which have been collapsed earlier.
-	 * This will result in the field access being represented by single field access vertices instead of one representing vertex.
+	 * This will result in the field access being represented by single field access
+	 * vertices instead of one representing vertex.
 	 * Field Access are not visible if they are contained in a collapsed vertex.
-	 * @return all expanded field access
+	 * @return all expanded field accesses
 	 */
 	public List<FieldAccess> expandFieldAccesses() {
+	    return expandFieldAccesses(new LinkedList<>(fieldAccesses));
+	}
+	
+	
+	/**
+	 * Expands all visible field accesses contained in the specified list.
+	 * This will result in the field access being represented by single
+	 * field access vertices instead of one representing vertex.
+	 * Field Access are not visible if they are contained in a collapsed vertex.
+	 * @return all expanded field accesses
+	 */
+	public List<FieldAccess> expandFieldAccesses(List<FieldAccess> fieldAccesses) {
 	    List<FieldAccess> collapsedFas = new LinkedList<>();
 	    for (FieldAccess fa : fieldAccesses) {
 	        // If field access is contained in the graph (and not collapsed for example) it is expanded
@@ -219,7 +237,6 @@ public class MethodGraph extends JoanaGraph {
     public Set<JoanaVertex> expand(JoanaCollapsedVertex vertex) {
         return collapser.expand(vertex);
     }
-
 
     @Override
     public Integer outdegreeOf(Vertex vertex) {
