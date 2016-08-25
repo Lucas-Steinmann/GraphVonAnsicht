@@ -112,10 +112,26 @@ public class MethodGraph extends JoanaGraph {
     @Override
     public List<VertexAction> getVertexActions(Vertex vertex) {
         List<VertexAction> actions = new LinkedList<>();
-        if (this.collapser.getCollapsedVertices().contains(vertex) && this.getVertexSet().contains(vertex)) {
+        if (collapser.getCollapsedVertices().contains(vertex) 
+                           && getVertexSet().contains(vertex)) {
             actions.add(expandActions.get(vertex));
         }
+        getFieldAccesses().stream()
+                          .filter(fa -> fa.getGraph().getVertexSet().contains(vertex))
+                          .forEach(fa -> actions.add(newFieldAccessCollapseAction(fa)));
+                          
         return actions;
+    }
+
+    private VertexAction newFieldAccessCollapseAction(FieldAccess fa) {
+	    return new VertexAction("Collapse Field access", 
+	            "Collapses the field access.") {
+            
+            @Override
+            public void handle() {
+                collapse(fa.getGraph().getVertexSet());
+            }
+        };
     }
 
     @Override
@@ -186,7 +202,7 @@ public class MethodGraph extends JoanaGraph {
 	    return collapsedFas;
 	}
 
-	public JoanaCollapsedVertex collapse(Set<ViewableVertex> subset) {
+	public JoanaCollapsedVertex collapse(Set<? extends ViewableVertex> subset) {
         Set<JoanaVertex> directedSubset = new HashSet<JoanaVertex>();
 	    for (Vertex v : subset) {
 	        if (!graph.contains(v)) {
