@@ -29,7 +29,56 @@ allprojects {
 	repositories {
 		jcenter()
 	}
+	
+	// There is a dependency from
+	//   edu.kit.student.tests.LayoutJoanaGraphs
+	// to
+	//   edu.kit.student.sugiyama.steps.tests.SugiyamaLayoutAlgorithmTest.AsNonApp
+	// so we need to cheat gradle (see: https://discuss.gradle.org/t/how-do-i-declare-a-dependency-on-a-modules-test-code/7172/6 )
+	configurations {
+		testArtifacts.extendsFrom testRuntime
+	}
+	task testJar(type: Jar) {
+		classifier "test"
+		from sourceSets.test.output
+	}
+
+	artifacts {
+		testArtifacts testJar
+	}
+	
+	// Some java assert statements currenty fail in the junit tests. This should be probably be removed once that is fixed.
+	tasks.withType(Test) {
+		enableAssertions = false
+	}
+
+	apply plugin: "jacoco"
+
+	jacocoTestReport {
+		reports {
+			html.enabled = true
+		}
+	}
 }
+
+task jacocoRootReport(type: org.gradle.testing.jacoco.tasks.JacocoReport) {
+	dependsOn = allprojects.test
+	sourceDirectories = files(allprojects.sourceSets.main.allSource.srcDirs)
+	classDirectories =  files(allprojects.sourceSets.main.output)
+	executionData = files(allprojects.jacocoTestReport.executionData)
+	reports {
+		html.enabled = true
+	}
+	onlyIf = {
+		true
+	}
+	doFirst {
+		executionData = files(executionData.findAll {
+			it.exists()
+		})
+	}
+}
+
 dependencies {
     compile project(":shared")
 	compile project(":app")
@@ -37,6 +86,8 @@ dependencies {
     compile project(":plugins:joana")
     compile project(":plugins:svg")
     compile project(":plugins:graphml")
+    
+    testCompile project (path: ":plugins:sugiyama", configuration: 'testArtifacts')
 }
 
 subprojects.each { subproject -> evaluationDependsOn(subproject.path)}
@@ -50,6 +101,28 @@ private def mergeFiles(targetDir, fileTrees, relativePath) {
     mergedFile << it.bytes << "\n"
   }
 }
+
+configure( [project(":app"), project(":")]) {
+    eclipse {
+        classpath {
+            file {
+                withXml {
+                    def node = it.asNode()
+                    //node.appendNode('classpathentry', [ combineaccessrules: false, exported: true, kind: 'src', path: '/shared' ])
+                }
+                whenMerged { classpath ->
+                       def cons = classpath.getEntries().findAll { it.kind == 'con' }.findAll { it.path.contains('JRE_CONTAINER') }
+                       println cons.get(0).path
+                       
+                       cons.findAll{ it.path.contains("JRE_CONTAINER")}.collect { entry ->
+                           entry.accessRules.add(new org.gradle.plugins.ide.eclipse.model.AccessRule('accessible', 'javafx/**'))
+                       }
+                }
+            }
+        }
+    }
+}
+
 
 task allJar(type: Jar, dependsOn: classes) {
     baseName = 'graphvonansicht'
@@ -86,5 +159,16 @@ task allJar(type: Jar, dependsOn: classes) {
 //   archives allJar
 //}
 
+
 subprojects {
 }
+
+apply plugin: 'application'
+mainClassName = 'edu.kit.student.gui.GAnsMediator'
+
+
+task runJar(type: JavaExec, dependsOn:[allJar]) {
+   classpath = files(allJar.archivePath)
+   main = 'edu.kit.student.gui.GAnsMediator'
+}
+
