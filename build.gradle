@@ -81,17 +81,12 @@ task allJar(type: Jar, dependsOn: classes) {
     }
     from mergeDir
 }
-  
-//artifacts {
-//   archives allJar
-//}
 
 eclipse {
     classpath {
         file {
             withXml {
                 def node = it.asNode()
-                //node.appendNode('classpathentry', [ combineaccessrules: false, exported: true, kind: 'src', path: '/shared' ])
             }
             whenMerged { classpath ->
            	    def cons = classpath.getEntries().findAll { it.kind == 'con' }.findAll { it.path.contains('JRE_CONTAINER') }
@@ -105,5 +100,8 @@ eclipse {
     }
 }
 
-subprojects {
+task alljavadoc(type: Javadoc) {
+    source subprojects.collect { it.sourceSets.main.allJava }
+    classpath = files(subprojects.collect { it.sourceSets.main.compileClasspath })
+    destinationDir = file("${buildDir}/docs/javadoc")
 }
