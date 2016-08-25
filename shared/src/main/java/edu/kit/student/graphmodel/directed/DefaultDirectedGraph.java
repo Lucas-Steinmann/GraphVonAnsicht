@@ -13,8 +13,8 @@ import edu.kit.student.graphmodel.Vertex;
  * A {@link DefaultDirectedGraph} is a specific Graph which only contains
  * {@link DirectedEdge} as edges.
  * 
- * @param <V> VertexKind
- * @param <E> DirectedEdgeKind
+ * @param <V> the type of the vertices contained in this graph
+ * @param <E> the type of the edges contained in this graph
  * 
  */
 public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
@@ -25,22 +25,18 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
 	private HashMap<V, Set<E>> vertexToEdge;
 	private HashMap<V, Set<E>> revVertexToEdge;
 	private HashMap<V, Set<E>> vertexToSelfLoops;
-
 	// Maybe replace with FGA
 	private HashMap<Integer, V> idToVertex;
 
 	/**
-	 * Constructor
-	 * 
+	 * Constructs a new empty {@link DefaultDirectedGraph}.
 	 */
     public DefaultDirectedGraph(){
-        // create Sets
         this(new HashSet<>(), new HashSet<>());
     }
 
     /**
-     * Constructor
-     * 
+     * Constructs a new {@link DefaultDirectedGraph} with the given vertex set and edge set.
      * @param vertices of the new graph
      * @param edges of the new graph
      */
@@ -56,7 +52,6 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
             this.revVertexToEdge.put(vertex, new HashSet<>());
 			this.vertexToSelfLoops.put(vertex, new HashSet<>());
             this.idToVertex.put(vertex.getID(), vertex);
-
         }
         for (E edge : edges) {
             this.addEdge(edge);
@@ -64,13 +59,10 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
     }
 
 	/**
-	 * Adds an edge to the edgeSet
-	 * 
-	 * @param edge
+	 * Adds the specified edge to the set of edges.
+	 * @param edge the edge to add
 	 */
 	public void addEdge(E edge) {
-//		System.out.println("adds edge: "+edge.getSource().getID()+","+edge.getTarget().getID());
-		
 	    if (this.vertexToEdge.keySet().contains(edge.getSource()) && this.vertexToEdge.keySet().contains(edge.getTarget())) {
 	        vertexToEdge.get(edge.getSource()).add(edge);
 	        revVertexToEdge.get(edge.getTarget()).add(edge);
@@ -79,35 +71,19 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
 				this.vertexToSelfLoops.get(edge.getSource()).add(edge);
 			}
 	    } else {
-	        throw new IllegalArgumentException("Cannot add edge to a Graph without the Vertex being present");
+	        throw new IllegalArgumentException("Cannot add edge to a graph without the Vertex being present");
 	    }
 	}
 
 	/**
-	 * Adds an vertex to the vertexSet
-	 * 
-	 * @param vertex
+	 * Adds the specified vertex to the set of vertices.
+	 * @param vertex the vertex to add
 	 */
 	public void addVertex(V vertex) {
 		this.vertexToEdge.put(vertex, new HashSet<>());
 		this.revVertexToEdge.put(vertex, new HashSet<>());
 		this.vertexToSelfLoops.put(vertex, new HashSet<>());
 		this.idToVertex.put(vertex.getID(), vertex);
-	}
-
-	/**
-	 * Returns the source of a edge of the graph.
-	 * 
-	 * @param edge
-	 *            A edge which is contained in the graph.
-	 * @return The vertex which the edge is coming from.
-	 */
-	public Vertex getSource(DirectedEdge edge) {
-		// TODO: is this method necessary? because caller already has the edge
-		if (this.getEdgeSet().contains(edge)) {
-			return edge.getSource();
-		}
-		return null;
 	}
 
 	@Override
@@ -123,18 +99,6 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
 	        edges.addAll(this.incomingEdgesOf(vertex));
 	    }
 		return edges;
-	}
-
-	public List<DirectedGraphLayoutOption> getRegisteredLayouts() {
-        List<DirectedGraphLayoutOption> directedLayoutOptions = new LinkedList<>();
-        if (DefaultDirectedGraph.register != null) {
-            directedLayoutOptions.addAll(DefaultDirectedGraph.register.getLayoutOptions());
-        }
-        for (DirectedGraphLayoutOption option : directedLayoutOptions) {
-            option.setGraph(this);
-        }
-        List<DirectedGraphLayoutOption> layoutOptions = new LinkedList<>(directedLayoutOptions);
-        return layoutOptions;
 	}
 
 	@Override
@@ -210,19 +174,26 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
 		}
 	}
 	
+	/**
+	 * Removes the specified edge from the graph.
+	 * @param edge the edge to remove
+	 */
     public void removeEdge(E edge) {
 		Vertex source = edge.getSource();
 		Vertex target = edge.getTarget();
 
 		if (source.getID().equals(target.getID())) {
 			vertexToSelfLoops.get(source).remove(edge);
-//			return;
 		}
 
 		vertexToEdge.get(source).remove(edge);
 		revVertexToEdge.get(target).remove(edge);
     }
 
+    /**
+     * Removes the specified vertex from the graph.
+     * @param vertex the vertex to remove
+     */
     public void removeVertex(V vertex) {
         if (!this.contains(vertex)) {
             throw new IllegalArgumentException("Cannot delete vertex, not present in this graph!");
@@ -236,34 +207,64 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
 		vertexToSelfLoops.remove(vertex);
     }
 
+    /**
+     * Removes all specified vertices from the graph.
+     * @param vertices the vertices to remove
+     */
     public void removeAllVertices(Set<V> vertices) {
         for (V vertex : vertices ) {
             removeVertex(vertex);
         }
     }
 
+    /**
+     * Removes all specified edges from the graph.
+     * @param edges the edges to remove
+     */
     public void removeAllEdges(Set<E> edges) {
         for ( E edge : edges ) {
             removeEdge(edge);
         }
     }
 
+    /**
+     * Adds all specified edges to the graph.
+     * @param edges the edges to add
+     */
     public void addAllEdges(Set<E> edges) {
         for (E edge : edges) {
             this.addEdge(edge);
         }
     }
 
+    /**
+     * Adds all specified vertices to the graph.
+     * @param vertices the vertices to add
+     */
     public void addAllVertices(Set<V> vertices) {
         for (V vertex : vertices) {
             addVertex(vertex);
         }
     }
     
+    /**
+     * Returns true if the graph contains the specified vertex
+     * @param vertex the vertex
+     * @return true if the vertex is contained in this graph, false otherwise.
+     */
     public boolean contains(Vertex vertex) {
         return this.getVertexSet().contains(vertex);
     }
 
+	/**
+	 * Returns the vertex in this graph with the specified id.
+	 * @param id the id
+	 * @return the vertex with the specified id
+	 */
+	public V getVertexById(int id) {
+	    return this.idToVertex.get(id);
+	}
+	
 	public static DirectedGraphLayoutRegister getDirectedGraphLayoutRegister()
 	{
 	    if (register == null) {
@@ -272,10 +273,18 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
 	    return register;
 	}
 	
-	public V getVertexById(int id) {
-	    return this.idToVertex.get(id);
+	public List<DirectedGraphLayoutOption> getRegisteredLayouts() {
+        List<DirectedGraphLayoutOption> directedLayoutOptions = new LinkedList<>();
+        if (DefaultDirectedGraph.register != null) {
+            directedLayoutOptions.addAll(DefaultDirectedGraph.register.getLayoutOptions());
+        }
+        for (DirectedGraphLayoutOption option : directedLayoutOptions) {
+            option.setGraph(this);
+        }
+        List<DirectedGraphLayoutOption> layoutOptions = new LinkedList<>(directedLayoutOptions);
+        return layoutOptions;
 	}
-	
+
 	@Override
 	public String toString(){
 		String out = "Vertices: {";
