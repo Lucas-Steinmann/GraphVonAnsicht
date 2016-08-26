@@ -64,7 +64,7 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 	public void layout(MethodGraph graph) {
 		logger.info("Graph before: Vertices: "+graph.getVertexSet().size()+", Edges: "+graph.getEdgeSet().size());
 		this.layoutFieldAccessGraphs(graph);
-		graph.collapseFieldAccesses();
+		List<FieldAccess> collapsedFAs = graph.collapseFieldAccesses();
 
 	    
 	  //create absoluteLayerConstraints
@@ -110,9 +110,9 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 		sugiyamaLayoutAlgorithm.layout(graph);
 		
 		logger.info("Graph after: Vertices: "+graph.getVertexSet().size()+", Edges: "+graph.getEdgeSet().size());
-		List<FieldAccess> expandedFas = expandFieldAccesses(graph);
+		expandFieldAccesses(graph, collapsedFAs);
 //		System.out.println("now drawing field access edges new !!!!!!!!!!!!!!!!!!!!!!");
-		expandedFas.forEach(fa->drawEdgesNew(graph, fa));	//new version
+		collapsedFAs.forEach(fa->drawEdgesNew(graph, fa));	//new version
 	}
 	
 	/**
@@ -673,18 +673,18 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 		return fromOutEdges;
 	}
 	
-	private List<FieldAccess> expandFieldAccesses(MethodGraph graph) {
+	private List<FieldAccess> expandFieldAccesses(MethodGraph graph, List<FieldAccess> fasToExpand) {
 
 		// Fill a map from id to edge for all outgoing edges of field accesses to match them later
 		// with the new edges of the graph to the specific vertices in the field access
 		Map<Integer, JoanaEdge> idToEdge = new HashMap<>();
-		for (FieldAccess fa : graph.getFieldAccesses()) {
+		for (FieldAccess fa : fasToExpand) {
 		    for (JoanaEdge e : graph.edgesOf(fa)) {
 		        idToEdge.put(e.getID(), e);
 		    }
 		}
 
-		List<FieldAccess> fas = graph.expandFieldAccesses();
+		List<FieldAccess> fas = graph.expandFieldAccesses(fasToExpand);
 		Set<JoanaEdge> copied = new HashSet<>();
 
 		for (FieldAccess fa : fas) {

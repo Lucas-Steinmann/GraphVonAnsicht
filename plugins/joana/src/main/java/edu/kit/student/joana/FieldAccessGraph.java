@@ -1,9 +1,11 @@
 package edu.kit.student.joana;
 
 import java.util.Comparator;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -14,6 +16,8 @@ import edu.kit.student.graphmodel.ViewableVertex;
 import edu.kit.student.graphmodel.action.SubGraphAction;
 import edu.kit.student.graphmodel.action.VertexAction;
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
+import edu.kit.student.joana.graphmodel.DirectedOnionPath;
+import edu.kit.student.joana.graphmodel.JoanaCompoundVertex;
 import edu.kit.student.plugin.LayoutOption;
 import edu.kit.student.util.DoublePoint;
 import javafx.scene.paint.Color;
@@ -28,14 +32,35 @@ public class FieldAccessGraph extends JoanaGraph implements SubGraph {
     private JoanaVertex fieldEntry;
 	public static double paddingx = 40;
 	public static double paddingy = 50;
+
+    private JoanaCollapser collapser;
     
     public FieldAccessGraph(String name, Set<JoanaVertex> vertices, Set<JoanaEdge> edges) {
         //TODO: Check whether the sets build a valid field access
         super(name, vertices, edges);
         Set<JoanaEdge> innerEdges = edges.stream().filter((e) -> vertices.contains(e.getSource()) && vertices.contains(e.getTarget())).collect(Collectors.toSet());
         graph = new DefaultDirectedGraph<>(vertices, innerEdges);
+
+        Map<JoanaEdge, DirectedOnionPath<JoanaEdge, JoanaCompoundVertex>> onionEdges = new HashMap<>();
+        collapser = new JoanaCollapser(graph, onionEdges);
     }
+
+	public JoanaCollapsedVertex collapse(Set<? extends ViewableVertex> subset, JoanaCollapsedVertex collapse) {
+        Set<JoanaVertex> directedSubset = new HashSet<JoanaVertex>();
+	    for (Vertex v : subset) {
+	        if (!graph.contains(v)) {
+                throw new IllegalArgumentException("Cannot collapse vertices, not contained in this graph.");
+	        } else {
+	            directedSubset.add(graph.getVertexById(v.getID()));
+	        }
+	    }
+	    JoanaCollapsedVertex collapsed = collapser.collapse(directedSubset);
+		return collapsed;
+	}
     
+    public Set<JoanaVertex> expand(JoanaCollapsedVertex vertex) {
+        return collapser.expand(vertex);
+    }
 
     @Override
     public FastGraphAccessor getFastGraphAccessor() {

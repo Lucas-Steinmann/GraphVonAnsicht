@@ -154,10 +154,6 @@ task allJar(type: Jar, dependsOn: classes) {
     }
     from mergeDir
 }
-  
-//artifacts {
-//   archives allJar
-//}
 
 
 subprojects {
@@ -172,3 +168,9 @@ task runJar(type: JavaExec, dependsOn:[allJar]) {
    main = 'edu.kit.student.gui.GAnsMediator'
 }
 
+
+task alljavadoc(type: Javadoc) {
+    source subprojects.collect { it.sourceSets.main.allJava }
+    classpath = files(subprojects.collect { it.sourceSets.main.compileClasspath })
+    destinationDir = file("${buildDir}/docs/javadoc")
+}

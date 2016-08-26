@@ -88,7 +88,7 @@ public class DefaultVertex implements Vertex {
 	
 	@Override
 	public String toString(){
-		return this.label.getValue().toString() + "[" + this.id + "]";
+		return getName() + "[" + getID() + "]";
 	}
 
 	@Override
