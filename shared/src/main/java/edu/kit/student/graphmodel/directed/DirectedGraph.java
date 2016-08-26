@@ -6,8 +6,8 @@ import edu.kit.student.graphmodel.Vertex;
 import java.util.Set;
 
 /**
- * A {@link DirectedGraph} is a specific Graph which contains just
- * {@link DirectedEdge} as edges
+ * A {@link DirectedGraph} is a specific Graph which contains only
+ * {@link DirectedEdge} in its edge set.
  */
 public interface DirectedGraph extends Graph {
 

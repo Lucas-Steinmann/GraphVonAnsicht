@@ -1,10 +1,13 @@
 package edu.kit.student.graphmodel.directed;
 
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import edu.kit.student.graphmodel.FastGraphAccessor;
 import edu.kit.student.graphmodel.Vertex;
@@ -63,15 +66,15 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
 	 * @param edge the edge to add
 	 */
 	public void addEdge(E edge) {
-	    if (this.vertexToEdge.keySet().contains(edge.getSource()) && this.vertexToEdge.keySet().contains(edge.getTarget())) {
+        if (!containsAll(Arrays.asList(edge.getSource(), edge.getTarget()))) {
+	        throw new IllegalArgumentException("Cannot add edge to a graph without the Vertex being present");
+	    } else {
 	        vertexToEdge.get(edge.getSource()).add(edge);
 	        revVertexToEdge.get(edge.getTarget()).add(edge);
 
 			if (edge.getSource().getID().equals(edge.getTarget().getID())) {
 				this.vertexToSelfLoops.get(edge.getSource()).add(edge);
 			}
-	    } else {
-	        throw new IllegalArgumentException("Cannot add edge to a graph without the Vertex being present");
 	    }
 	}
 
@@ -85,6 +88,107 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
 		this.vertexToSelfLoops.put(vertex, new HashSet<>());
 		this.idToVertex.put(vertex.getID(), vertex);
 	}
+
+	/**
+	 * Removes the specified edge from the graph.
+	 * @param edge the edge to remove
+	 */
+    public void removeEdge(E edge) {
+		Vertex source = edge.getSource();
+		Vertex target = edge.getTarget();
+
+		if (source.getID().equals(target.getID())) {
+			vertexToSelfLoops.get(source).remove(edge);
+		}
+
+		vertexToEdge.get(source).remove(edge);
+		revVertexToEdge.get(target).remove(edge);
+    }
+
+    /**
+     * Removes the specified vertex from the graph.
+     * @param vertex the vertex to remove
+     */
+    public void removeVertex(V vertex) {
+        if (!this.contains(vertex)) {
+            throw new IllegalArgumentException("Cannot delete vertex, not present in this graph!");
+        } 
+        if (!(this.edgesOf(vertex).size() == 0)) {
+            throw new IllegalArgumentException("Cannot delete vertex with edges!");
+        }
+        vertexToEdge.remove(vertex);
+        revVertexToEdge.remove(vertex);
+        idToVertex.remove(vertex.getID());
+		vertexToSelfLoops.remove(vertex);
+    }
+
+	/**
+	 * Returns the vertex in this graph with the specified id.
+	 * @param id the id
+	 * @return the vertex with the specified id
+	 */
+	public V getVertexById(int id) {
+	    return this.idToVertex.get(id);
+	}
+	
+
+    /**
+     * Adds all specified edges to the graph.
+     * @param edges the edges to add
+     */
+    public void addAllEdges(Set<E> edges) {
+        for (E edge : edges) {
+            this.addEdge(edge);
+        }
+    }
+
+    /**
+     * Adds all specified vertices to the graph.
+     * @param vertices the vertices to add
+     */
+    public void addAllVertices(Set<V> vertices) {
+        for (V vertex : vertices) {
+            addVertex(vertex);
+        }
+    }
+
+    /**
+     * Removes all specified vertices from the graph.
+     * @param vertices the vertices to remove
+     */
+    public void removeAllVertices(Set<V> vertices) {
+        for (V vertex : vertices ) {
+            removeVertex(vertex);
+        }
+    }
+
+    /**
+     * Removes all specified edges from the graph.
+     * @param edges the edges to remove
+     */
+    public void removeAllEdges(Set<E> edges) {
+        for ( E edge : edges ) {
+            removeEdge(edge);
+        }
+    }
+
+    /**
+     * Returns true if the graph contains the specified vertex.
+     * @param vertex the vertex
+     * @return true if the vertex is contained in this graph, false otherwise.
+     */
+    public boolean contains(Vertex vertex) {
+        return this.getVertexSet().contains(vertex);
+    }
+
+    /**
+     * Returns true if the graph contains all specified vertices.
+     * @param vertices the vertices
+     * @return true if the vertices are contained in this graph, false otherwise.
+     */
+    public boolean containsAll(Collection<Vertex> vertices) {
+        return this.getVertexSet().containsAll(vertices);
+    }
 
 	@Override
 	public Set<V> getVertexSet() {
@@ -152,119 +256,13 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
 		return result;
 	}
 
-	@Override
-	public Set<E> edgesOf(Vertex vertex) {
-		Set<E> result = this.incomingEdgesOf(vertex);
-		result.addAll(this.outgoingEdgesOf(vertex));
-		return result;
-	}
-
-	@Override
-	public FastGraphAccessor getFastGraphAccessor() {
-		return fga;
-	}
-
-	@Override
-	public void addToFastGraphAccessor(FastGraphAccessor fga) {
-		for (Vertex v : getVertexSet()) {
-			v.addToFastGraphAccessor(fga);
-		}
-		for (DirectedEdge e : getEdgeSet()) {
-			e.addToFastGraphAccessor(fga);
-		}
-	}
-	
-	/**
-	 * Removes the specified edge from the graph.
-	 * @param edge the edge to remove
-	 */
-    public void removeEdge(E edge) {
-		Vertex source = edge.getSource();
-		Vertex target = edge.getTarget();
-
-		if (source.getID().equals(target.getID())) {
-			vertexToSelfLoops.get(source).remove(edge);
-		}
-
-		vertexToEdge.get(source).remove(edge);
-		revVertexToEdge.get(target).remove(edge);
+    @Override
+    public Set<E> edgesOf(Vertex vertex) {
+        Set<E> result = outgoingEdgesOf(vertex);
+        result.addAll(incomingEdgesOf(vertex));
+        return result;
     }
 
-    /**
-     * Removes the specified vertex from the graph.
-     * @param vertex the vertex to remove
-     */
-    public void removeVertex(V vertex) {
-        if (!this.contains(vertex)) {
-            throw new IllegalArgumentException("Cannot delete vertex, not present in this graph!");
-        } 
-        if (!(this.edgesOf(vertex).size() == 0)) {
-            throw new IllegalArgumentException("Cannot delete vertex with edges!");
-        }
-        vertexToEdge.remove(vertex);
-        revVertexToEdge.remove(vertex);
-        idToVertex.remove(vertex.getID());
-		vertexToSelfLoops.remove(vertex);
-    }
-
-    /**
-     * Removes all specified vertices from the graph.
-     * @param vertices the vertices to remove
-     */
-    public void removeAllVertices(Set<V> vertices) {
-        for (V vertex : vertices ) {
-            removeVertex(vertex);
-        }
-    }
-
-    /**
-     * Removes all specified edges from the graph.
-     * @param edges the edges to remove
-     */
-    public void removeAllEdges(Set<E> edges) {
-        for ( E edge : edges ) {
-            removeEdge(edge);
-        }
-    }
-
-    /**
-     * Adds all specified edges to the graph.
-     * @param edges the edges to add
-     */
-    public void addAllEdges(Set<E> edges) {
-        for (E edge : edges) {
-            this.addEdge(edge);
-        }
-    }
-
-    /**
-     * Adds all specified vertices to the graph.
-     * @param vertices the vertices to add
-     */
-    public void addAllVertices(Set<V> vertices) {
-        for (V vertex : vertices) {
-            addVertex(vertex);
-        }
-    }
-    
-    /**
-     * Returns true if the graph contains the specified vertex
-     * @param vertex the vertex
-     * @return true if the vertex is contained in this graph, false otherwise.
-     */
-    public boolean contains(Vertex vertex) {
-        return this.getVertexSet().contains(vertex);
-    }
-
-	/**
-	 * Returns the vertex in this graph with the specified id.
-	 * @param id the id
-	 * @return the vertex with the specified id
-	 */
-	public V getVertexById(int id) {
-	    return this.idToVertex.get(id);
-	}
-	
 	public static DirectedGraphLayoutRegister getDirectedGraphLayoutRegister()
 	{
 	    if (register == null) {
@@ -286,21 +284,28 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
 	}
 
 	@Override
+	public FastGraphAccessor getFastGraphAccessor() {
+		return fga;
+	}
+
+	@Override
+	public void addToFastGraphAccessor(FastGraphAccessor fga) {
+		for (Vertex v : getVertexSet()) {
+			v.addToFastGraphAccessor(fga);
+		}
+		for (DirectedEdge e : getEdgeSet()) {
+			e.addToFastGraphAccessor(fga);
+		}
+	}
+
+	@Override
 	public String toString(){
-		String out = "Vertices: {";
-		for(Vertex v : getVertexSet()) {
-			out+= v.getName() + ", ";
-		}
-		out = out.substring(0, out.length()-2);
-		out+= "}";
-		out+= '\n';
-		out+= "Edges:{";
-		out+= '\n';
-		for(DirectedEdge e : this.getEdgeSet()){
-			out+= e.getName() + "[" +e.getSource().getName() +"->"+ e.getTarget().getName()+"],";
-			out+= '\n';
-		}
-		out=out.substring(0, out.length()-2);
-		return out + "}";
+	    String vertices = getVertexSet().stream()
+	                                    .map(Vertex::getName)
+	                                    .collect(Collectors.joining(",", "Vertices: {", "}\n"));
+	    String edges = getEdgeSet().stream()
+	                               .map(e -> e.toString())
+                                   .collect(Collectors.joining(",\n", "Edges: {\n", "}\n"));
+	    return vertices + edges;
 	}
 }

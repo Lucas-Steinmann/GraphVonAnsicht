@@ -136,6 +136,6 @@ public class DefaultDirectedEdge<V extends Vertex> implements DirectedEdge {
 	
 	@Override
 	public String toString(){
-		return this.name.toString() + "[" + this.id + "](" + this.source.toString() + "->" + this.target.toString() + ")";
+		return name.toString() + "[" + id + "](" + source.toString() + "->" + target.toString() + ")";
 	}
 }
