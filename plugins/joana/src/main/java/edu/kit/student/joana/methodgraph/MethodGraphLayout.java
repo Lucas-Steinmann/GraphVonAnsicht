@@ -333,7 +333,6 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 				}
 			}
 			if(!adjustedDistancePoints){//big segment
-//				System.out.println("got here!");
 				if(distancePoints.size() == 2){//just one segment
 //					System.out.println("first!");
 					Double d1 = distancePoints.get(0);
@@ -372,6 +371,13 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 //		System.out.println("layer: ");
 //		layer.forEach(v->System.out.print(("["+v.getID()+"]("+v.getX()+","+v.getY()+")size:("+v.getSize().x+"); ")));
 //		System.out.print('\n');
+		//TODO: check if the following works correctly!
+		for(int i =0; i<layer.size() - 1;i++){
+			Vertex first = layer.get(i);
+			Vertex second = layer.get(i + 1);
+//			System.out.println("first: "+first.getID()+", second: "+second.getID());
+			assert(first.getX() + first.getSize().x < second.getX());
+		}
 		return layer;
 	}
 	
