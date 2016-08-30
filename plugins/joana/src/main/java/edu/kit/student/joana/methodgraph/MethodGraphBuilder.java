@@ -52,7 +52,6 @@ public class MethodGraphBuilder implements IGraphBuilder {
     @Override
     public IGraphBuilder getGraphBuilder(String graphId) {
         //is not allowed to happen
-        //TODO: throw exception?
         return null;
     }
 

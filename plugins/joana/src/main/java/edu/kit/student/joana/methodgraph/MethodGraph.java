@@ -233,6 +233,7 @@ public class MethodGraph extends JoanaGraph {
 	 * This will result in the field access being represented by single
 	 * field access vertices instead of one representing vertex.
 	 * Field Access are not visible if they are contained in a collapsed vertex.
+	 * @param fieldAccesses list of all fieldAccesses
 	 * @return all expanded field accesses
 	 */
 	public List<FieldAccess> expandFieldAccesses(List<FieldAccess> fieldAccesses) {

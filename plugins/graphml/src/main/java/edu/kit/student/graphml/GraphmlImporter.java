@@ -118,6 +118,11 @@ public class GraphmlImporter implements Importer {
                     if (childGraph != null) {
                         String graphId = childGraph.getAttribute("id");
                         IGraphBuilder graphBuilder = builder.getGraphBuilder(graphId);
+                        
+                        //check if graphbuilder null
+                        if (graphBuilder == null){
+                            throw new ParseException("The workspace does not allow this syntax.", 0);
+                        }                       
                         this.parseGraph(graphBuilder, childGraph);
                     } else {
                         //is a normal vertex so parse Node
