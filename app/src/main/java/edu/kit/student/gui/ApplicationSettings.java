@@ -15,7 +15,7 @@ public class ApplicationSettings {
 	
 	private Properties properties;
 	
-	private File settingsFile = new File("src/main/resources/settings.xml");
+	private File settingsFile = new File("settings.xml");
 	
 	private ApplicationSettings() {
 		properties = new Properties();
