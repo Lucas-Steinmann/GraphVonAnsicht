@@ -45,6 +45,7 @@ import javafx.scene.control.SelectionMode;
 import javafx.scene.control.SplitPane;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.image.Image;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.layout.Priority;
@@ -150,11 +151,12 @@ public class GAnsApplication {
 			}
 		});
 
+		primaryStage.getIcons().add(new Image("gans_icon.png"));
 		primaryStage.setScene(scene);
+		loadSettings();
 		primaryStage.show();
 		
 		if(parameters != null) parseCommandLineArguments(parameters);
-		loadSettings();
 	}
 	
 	private void loadSettings() {
@@ -433,6 +435,8 @@ public class GAnsApplication {
 		dialog.setHeaderText(null);
 		dialog.setGraphic(null);
 		dialog.setContentText(LanguageManager.getInstance().get("wind_workspace_text"));
+		Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
+    	stage.getIcons().add(new Image("gans_icon.png"));
 		Optional<String> result = dialog.showAndWait();
 		if (result.isPresent()) {
 		    WorkspaceOption chosenOption = options.get(workspaceNames.indexOf(result.get()));
@@ -659,6 +663,8 @@ public class GAnsApplication {
 		Alert alert = new Alert(AlertType.CONFIRMATION);
 		alert.setHeaderText(null);
 		alert.setContentText(LanguageManager.getInstance().get("err_changelng"));
+		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+    	stage.getIcons().add(new Image("gans_icon.png"));
 		Optional<ButtonType> result = alert.showAndWait();
 		if(result.isPresent()) {
 			if(result.get() == ButtonType.OK) {
@@ -673,6 +679,8 @@ public class GAnsApplication {
 		Alert alert = new Alert(AlertType.ERROR);
 		alert.setHeaderText(null);
 		alert.setContentText(message);
+		Stage stage = (Stage) alert.getDialogPane().getScene().getWindow();
+    	stage.getIcons().add(new Image("gans_icon.png"));
 		alert.showAndWait();
 	}
 }

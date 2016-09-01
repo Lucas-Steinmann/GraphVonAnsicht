@@ -25,9 +25,11 @@ import javafx.scene.control.Spinner;
 import javafx.scene.control.SpinnerValueFactory;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.image.Image;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.text.Text;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 import javafx.util.StringConverter;
 
@@ -179,6 +181,8 @@ public class ParameterDialogGenerator extends ParameterVisitor {
 			dialog.setTitle("Settings");
 			dialog.setHeaderText(null);
 			dialog.setGraphic(null);
+			Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
+	    	stage.getIcons().add(new Image("gans_icon.png"));
 			dialog.getDialogPane().setContent(root);
 			Optional<ButtonType> result = dialog.showAndWait();
 			if (result.get() != ButtonType.OK) {

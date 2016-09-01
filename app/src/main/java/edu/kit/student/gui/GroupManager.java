@@ -23,11 +23,13 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
 import javafx.scene.control.TextInputDialog;
+import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
 import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
+import javafx.stage.Stage;
 import javafx.util.Callback;
 
 public class GroupManager {
@@ -53,6 +55,8 @@ public class GroupManager {
     	dialog.setHeaderText(null);
     	dialog.setGraphic(null);
     	dialog.setContentText(LanguageManager.getInstance().get("wind_group_new_text"));
+    	Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
+    	stage.getIcons().add(new Image("gans_icon.png"));
     	Optional<String> result = dialog.showAndWait();
     	if (result.isPresent()){
     		VertexGroup group = new VertexGroup(factory, result.get(), vertices);
@@ -139,6 +143,8 @@ public class GroupManager {
 		dialog.setTitle(LanguageManager.getInstance().get("wind_group_title"));
 		dialog.setHeaderText(null);
 		dialog.setGraphic(null);
+		Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
+    	stage.getIcons().add(new Image("gans_icon.png"));
 
 		LinkedList<Integer> groupIdsAbortBackup = new LinkedList<Integer>(this.groupIds);
 		Map<Integer,Color> groupColorAbortBackup = new HashMap<Integer,Color>();

@@ -27,9 +27,11 @@ import javafx.scene.control.Dialog;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.Tab;
 import javafx.scene.control.TabPane;
+import javafx.scene.image.Image;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
 import javafx.scene.layout.Pane;
+import javafx.stage.Stage;
 
 /**
  * A view used for showing and creating a graph in GAns. It supports zooming and
@@ -244,6 +246,8 @@ public class GraphView extends Pane {
 		dialog.setGraphic(null);
 		dialog.setWidth(500);
 		dialog.setHeight(500);
+		Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
+    	stage.getIcons().add(new Image("gans_icon.png"));
 		
 		Optional<ButtonType> result = dialog.showAndWait();
 		if(result.get() == ButtonType.OK &&
@@ -288,10 +292,10 @@ public class GraphView extends Pane {
 				column = 0;
 				row++;
 			}
-			boolean selected = true;
+			boolean selected = false;
 			if(this.graphFactory.getGraph().getActiveVertexFilter().contains(filter)) {
 				selectedVertexFilter.add(filter);
-				selected = false;
+				selected = true;
 			}
 			CheckBox box = new CheckBox(filter.getName());
 			box.setSelected(selected);
@@ -300,7 +304,7 @@ public class GraphView extends Pane {
 				public void handle(ActionEvent event) {
 					CheckBox box = (CheckBox)event.getSource();
 					int filterIndex = vertexFilterBoxes.indexOf(box);
-					if(!box.isSelected()) {
+					if(box.isSelected()) {
 						selectedVertexFilter.add(vertexFilter.get(filterIndex));
 					} else {
 						selectedVertexFilter.remove(vertexFilter.get(filterIndex));
@@ -339,10 +343,10 @@ public class GraphView extends Pane {
 				column = 0;
 				row++;
 			}
-			boolean selected = true;
+			boolean selected = false;
 			if(this.graphFactory.getGraph().getActiveEdgeFilter().contains(filter)) {
 				selectedEdgeFilter.add(filter);
-				selected = false;
+				selected = true;
 			}
 			CheckBox box = new CheckBox(filter.getName());
 			box.setSelected(selected);
@@ -351,7 +355,7 @@ public class GraphView extends Pane {
 				public void handle(ActionEvent event) {
 					CheckBox box = (CheckBox)event.getSource();
 					int filterIndex = edgeFilterBoxes.indexOf(box);
-					if(!box.isSelected()) {
+					if(box.isSelected()) {
 						selectedEdgeFilter.add(edgeFilter.get(filterIndex));
 					} else {
 						selectedEdgeFilter.remove(edgeFilter.get(filterIndex));
