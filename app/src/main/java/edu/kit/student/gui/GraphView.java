@@ -292,10 +292,10 @@ public class GraphView extends Pane {
 				column = 0;
 				row++;
 			}
-			boolean selected = false;
+			boolean selected = true;
 			if(this.graphFactory.getGraph().getActiveVertexFilter().contains(filter)) {
 				selectedVertexFilter.add(filter);
-				selected = true;
+				selected = false;
 			}
 			CheckBox box = new CheckBox(filter.getName());
 			box.setSelected(selected);
@@ -304,7 +304,7 @@ public class GraphView extends Pane {
 				public void handle(ActionEvent event) {
 					CheckBox box = (CheckBox)event.getSource();
 					int filterIndex = vertexFilterBoxes.indexOf(box);
-					if(box.isSelected()) {
+					if(!box.isSelected()) {
 						selectedVertexFilter.add(vertexFilter.get(filterIndex));
 					} else {
 						selectedVertexFilter.remove(vertexFilter.get(filterIndex));
@@ -343,10 +343,10 @@ public class GraphView extends Pane {
 				column = 0;
 				row++;
 			}
-			boolean selected = false;
+			boolean selected = true;
 			if(this.graphFactory.getGraph().getActiveEdgeFilter().contains(filter)) {
 				selectedEdgeFilter.add(filter);
-				selected = true;
+				selected = false;
 			}
 			CheckBox box = new CheckBox(filter.getName());
 			box.setSelected(selected);
@@ -355,7 +355,7 @@ public class GraphView extends Pane {
 				public void handle(ActionEvent event) {
 					CheckBox box = (CheckBox)event.getSource();
 					int filterIndex = edgeFilterBoxes.indexOf(box);
-					if(box.isSelected()) {
+					if(!box.isSelected()) {
 						selectedEdgeFilter.add(edgeFilter.get(filterIndex));
 					} else {
 						selectedEdgeFilter.remove(edgeFilter.get(filterIndex));
