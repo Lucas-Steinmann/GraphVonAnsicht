@@ -5,6 +5,8 @@ import edu.kit.student.sugiyama.graph.ICrossMinimizerGraph;
 import edu.kit.student.sugiyama.graph.ISugiyamaEdge;
 import edu.kit.student.sugiyama.graph.ISugiyamaVertex;
 import edu.kit.student.sugiyama.graph.SugiyamaGraph;
+import edu.kit.student.util.LanguageManager;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -124,9 +126,9 @@ public class CrossMinimizer implements ICrossMinimizer {
 			return this.settings;
 		}
 
-		BooleanParameter p1 = new BooleanParameter("Use Threshold", false);
-		DoubleParameter p2 = new DoubleParameter("Crossminimizer reduction Threshold", 0.001, 0.001, 0.01, 0.001);
-		IntegerParameter p3 = new IntegerParameter("Crossminimizer max runs", 100, 1, 999999);
+		BooleanParameter p1 = new BooleanParameter(LanguageManager.getInstance().get("sugiy_cross_threshold_use"), false);
+		DoubleParameter p2 = new DoubleParameter(LanguageManager.getInstance().get("sugiy_cross_threshold_reduct"), 0.001, 0.001, 0.01, 0.001);
+		IntegerParameter p3 = new IntegerParameter(LanguageManager.getInstance().get("sugiy_cross_max_runs"), 100, 1, 999999);
 
 		//Needs to be a LinkedHashMap, because the parameters might need to be displayed in a specific order to make sense
 		LinkedHashMap<String, Parameter<?,?>> parameter = new LinkedHashMap<String, Parameter<?,?>>();

@@ -25,6 +25,7 @@ import edu.kit.student.objectproperty.GAnsProperty;
 import edu.kit.student.plugin.EdgeFilter;
 import edu.kit.student.plugin.LayoutOption;
 import edu.kit.student.plugin.VertexFilter;
+import edu.kit.student.util.LanguageManager;
 
 /**
  * This is a specific graph representation for a MethodGraph in JOANA .
@@ -159,7 +160,8 @@ public class MethodGraph extends JoanaGraph {
     }
 
     private VertexAction newCollapseFieldAccessAction(FieldAccess fa) {
-	    return new VertexAction("Collapse Field access", 
+    	//TODO: add translation to string if needed in the future
+	    return new VertexAction(LanguageManager.getInstance().get("ctx_collapse_field"), 
 	            "Collapses the field access.") {
             
             @Override
@@ -171,7 +173,8 @@ public class MethodGraph extends JoanaGraph {
     }
 
 	private VertexAction newExpandAction(JoanaCollapsedVertex vertex, FieldAccess fa) {
-	    return new VertexAction("Expand", 
+		//TODO: add translation to string if needed in the future
+	    return new VertexAction(LanguageManager.getInstance().get("ctx_expand"), 
 	            "Adds all vertices contained in this Summary-Vertex to the graph and removes the Summary-Vertex.") {
             
             @Override
@@ -185,7 +188,9 @@ public class MethodGraph extends JoanaGraph {
 	}
 	
 	private SubGraphAction newCollapseAction(Set<ViewableVertex> vertices, FieldAccess fa) {
-	    return new SubGraphAction("Collapse", "Collapses all vertices into one Summary-Vertex.") {
+		//TODO: add translation to string if needed in the future
+	    return new SubGraphAction(LanguageManager.getInstance().get("ctx_collapse"), 
+	    		"Collapses all vertices into one Summary-Vertex.") {
             
             @Override
             public void handle() {

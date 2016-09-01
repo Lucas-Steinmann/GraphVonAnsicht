@@ -14,6 +14,7 @@ import edu.kit.student.plugin.EdgeFilter;
 import edu.kit.student.plugin.LayoutOption;
 import edu.kit.student.plugin.PluginManager;
 import edu.kit.student.plugin.VertexFilter;
+import edu.kit.student.util.LanguageManager;
 import javafx.collections.SetChangeListener;
 import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
@@ -128,7 +129,7 @@ public class GraphView extends Pane {
 	}
 	
 	private void setupContextMenu() {
-		MenuItem group = new MenuItem("Add to group");
+		MenuItem group = new MenuItem(LanguageManager.getInstance().get("ctx_group"));
 		group.setOnAction(new EventHandler<ActionEvent>() {
 		    public void handle(ActionEvent e) {
 		    	Set<ViewableVertex> selectedVertices = new HashSet<ViewableVertex>();
@@ -194,7 +195,7 @@ public class GraphView extends Pane {
                     // Display links
                     int linkId = vertices.iterator().next().getLink();
                     if (linkId != -1) {
-                        MenuItem item = new MenuItem("Open Graph");
+                        MenuItem item = new MenuItem(LanguageManager.getInstance().get("ctx_open_graph"));
                         dynamicMenuListItems.add(item);
                         // set action to open new graph
                         item.setOnAction(new EventHandler<ActionEvent>() {
@@ -224,12 +225,12 @@ public class GraphView extends Pane {
 		
 		TabPane tabPane = new TabPane();
 		
-		Tab vertexFilterTab = new Tab("Vertices");
+		Tab vertexFilterTab = new Tab(LanguageManager.getInstance().get("wind_filter_vertices"));
 		vertexFilterTab.setClosable(false);
 		vertexFilterTab.setContent(setupVertexFilterPane(selectedVertexFilter));
 		List<VertexFilter> vertexBackup = new LinkedList<>(selectedVertexFilter);
 		
-		Tab edgeFilterTab = new Tab("Edges");
+		Tab edgeFilterTab = new Tab(LanguageManager.getInstance().get("wind_filter_edges"));
 		edgeFilterTab.setClosable(false);
 		edgeFilterTab.setContent(setupEdgeFilterPane(selectedEdgeFilter));
 		List<EdgeFilter> edgeBackup = new LinkedList<>(selectedEdgeFilter);
@@ -238,11 +239,12 @@ public class GraphView extends Pane {
 		
 		dialog.getDialogPane().setContent(tabPane);
 		dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-		dialog.setTitle("Filter");
+		dialog.setTitle(LanguageManager.getInstance().get("wind_filter_title"));
 		dialog.setHeaderText(null);
 		dialog.setGraphic(null);
 		dialog.setWidth(500);
 		dialog.setHeight(500);
+		
 		Optional<ButtonType> result = dialog.showAndWait();
 		if(result.get() == ButtonType.OK &&
 		        !(listEqualsNoOrder(vertexBackup, selectedVertexFilter) &&

@@ -8,6 +8,7 @@ import java.util.Optional;
 import java.util.Set;
 
 import edu.kit.student.graphmodel.ViewableVertex;
+import edu.kit.student.util.LanguageManager;
 import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
@@ -17,6 +18,7 @@ import javafx.event.EventHandler;
 import javafx.scene.control.Button;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.Dialog;
+import javafx.scene.control.DialogEvent;
 import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.control.SelectionMode;
@@ -46,11 +48,11 @@ public class GroupManager {
 	}
 	
 	public boolean openAddGroupDialog(Set<ViewableVertex> vertices) {
-		TextInputDialog dialog = new TextInputDialog("New Group");
-    	dialog.setTitle("Add group");
+		TextInputDialog dialog = new TextInputDialog(LanguageManager.getInstance().get("wind_group_new_default"));
+    	dialog.setTitle(LanguageManager.getInstance().get("wind_group_new_title"));
     	dialog.setHeaderText(null);
     	dialog.setGraphic(null);
-    	dialog.setContentText("Enter new group name:");
+    	dialog.setContentText(LanguageManager.getInstance().get("wind_group_new_text"));
     	Optional<String> result = dialog.showAndWait();
     	if (result.isPresent()){
     		VertexGroup group = new VertexGroup(factory, result.get(), vertices);
@@ -73,7 +75,7 @@ public class GroupManager {
 			}
 		});
 		
-		Button upButton = new Button("Up");
+		Button upButton = new Button(LanguageManager.getInstance().get("wind_group_up"));
 		upButton.setDisable(true);
 		upButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -86,7 +88,7 @@ public class GroupManager {
 			}
 		});
 		
-		Button downButton = new Button("Down");
+		Button downButton = new Button(LanguageManager.getInstance().get("wind_group_down"));
 		downButton.setDisable(true);
 		downButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -99,7 +101,7 @@ public class GroupManager {
 			}
 		});
 		
-		Button removeButton = new Button("Remove");
+		Button removeButton = new Button(LanguageManager.getInstance().get("wind_group_remove"));
 		removeButton.setDisable(true);
 		removeButton.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
@@ -134,7 +136,7 @@ public class GroupManager {
 		
 		dialog.getDialogPane().setContent(root);
 		dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK);
-		dialog.setTitle("Groups");
+		dialog.setTitle(LanguageManager.getInstance().get("wind_group_title"));
 		dialog.setHeaderText(null);
 		dialog.setGraphic(null);
 

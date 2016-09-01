@@ -27,6 +27,7 @@ import edu.kit.student.joana.graphmodel.JoanaCompoundVertex;
 import edu.kit.student.joana.methodgraph.MethodGraph;
 import edu.kit.student.objectproperty.GAnsProperty;
 import edu.kit.student.plugin.LayoutOption;
+import edu.kit.student.util.LanguageManager;
 
 /**
  * This is a specified graph representation for the Callgraph in Joana.
@@ -85,7 +86,8 @@ public class CallGraph extends JoanaGraph {
     }
 
 	private VertexAction newExpandAction(CompoundVertex vertex) {
-	    return new VertexAction("Expand", 
+		//TODO: add translation to string if needed in the future
+	    return new VertexAction(LanguageManager.getInstance().get("ctx_expand"), 
 	            "Adds all vertices contained in this Summary-Vertex to the graph and removes the Summary-Vertex.") {
             
             @Override
@@ -96,7 +98,9 @@ public class CallGraph extends JoanaGraph {
 	}
 	
 	private SubGraphAction newCollapseAction(Set<ViewableVertex> vertices) {
-	    return new SubGraphAction("Collapse", "Collapses all vertices into one Summary-Vertex.") {
+		//TODO: add translation to string if needed in the future
+	    return new SubGraphAction(LanguageManager.getInstance().get("ctx_collapse"), 
+	    		"Collapses all vertices into one Summary-Vertex.") {
             
             @Override
             public void handle() {

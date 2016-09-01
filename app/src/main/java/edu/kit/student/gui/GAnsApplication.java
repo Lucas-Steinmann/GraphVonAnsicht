@@ -19,6 +19,7 @@ import edu.kit.student.plugin.LayoutOption;
 import edu.kit.student.plugin.PluginManager;
 import edu.kit.student.plugin.Workspace;
 import edu.kit.student.plugin.WorkspaceOption;
+import edu.kit.student.util.LanguageManager;
 import javafx.application.Application.Parameters;
 import javafx.application.Platform;
 import javafx.beans.value.ChangeListener;
@@ -34,6 +35,7 @@ import javafx.geometry.Orientation;
 import javafx.scene.Scene;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Alert.AlertType;
+import javafx.scene.control.ButtonType;
 import javafx.scene.control.ChoiceDialog;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.Menu;
@@ -50,6 +52,7 @@ import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
+import javafx.stage.WindowEvent;
 
 /**
  * Main application of GAns.
@@ -70,16 +73,18 @@ public class GAnsApplication {
 
 	private GraphView currentGraphView;
 
-	private File currentFile;
+	private File currentImportPath;
+	private File currentExportPath;
 	private GAnsMediator mediator;
 	
 	public GAnsApplication(GAnsMediator mediator) {
 		this.mediator = mediator;
 	}
 
-	public void start(Stage primaryStage, Parameters parameters) throws Exception {
+	public void start(Stage primaryStage, Parameters parameters) {
+		LanguageManager.getInstance().setLanguage(ApplicationSettings.getInstance().getProperty("language"));
 		this.primaryStage = primaryStage;
-		primaryStage.setTitle("Graph von Ansicht - Graphviewer");
+		primaryStage.setTitle(LanguageManager.getInstance().get("wind_title"));
 
 		VBox rootLayout = new VBox();
 		Scene scene = new Scene(rootLayout, 800, 600);
@@ -87,7 +92,6 @@ public class GAnsApplication {
 		menuBar = new MenuBar();
 		menuBar.setId("Menubar");
 		setupMenuBar();
-		
 		
 		this.structureViewContextMenu = new ContextMenu();
 		setupContextMenu();
@@ -138,12 +142,47 @@ public class GAnsApplication {
 		mainViewLayout.getItems().addAll(graphViewTabPane, treeInfoLayout);
 		rootLayout.getChildren().addAll(menuBar, mainViewLayout);
 		VBox.setVgrow(mainViewLayout, Priority.ALWAYS);
+		
+		primaryStage.setOnCloseRequest(new EventHandler<WindowEvent>() {
+			@Override
+			public void handle(WindowEvent event) {
+				saveSettings();
+			}
+		});
 
 		primaryStage.setScene(scene);
 		primaryStage.show();
 		
-		parseCommandLineArguments(parameters);
+		if(parameters != null) parseCommandLineArguments(parameters);
+		loadSettings();
+	}
+	
+	private void loadSettings() {
+		this.primaryStage.setWidth(ApplicationSettings.getInstance().getPropertyAsDouble("primary_width"));
+		this.primaryStage.setHeight(ApplicationSettings.getInstance().getPropertyAsDouble("primary_height"));
+		this.primaryStage.setX(ApplicationSettings.getInstance().getPropertyAsDouble("primary_x"));
+		this.primaryStage.setY(ApplicationSettings.getInstance().getPropertyAsDouble("primary_y"));
+		this.primaryStage.setFullScreen(Boolean.parseBoolean(ApplicationSettings.getInstance().getProperty("primary_full")));
 		
+		this.currentImportPath = new File(ApplicationSettings.getInstance().getProperty("import_path"));
+		this.currentExportPath = new File(ApplicationSettings.getInstance().getProperty("export_path"));
+	}
+	
+	private void saveSettings() {
+		if(this.primaryStage.isFullScreen()) {
+			ApplicationSettings.getInstance().setProperty("primary_full", "true");
+		} else {
+			ApplicationSettings.getInstance().setProperty("primary_full", "false");
+			ApplicationSettings.getInstance().setProperty("primary_width", this.primaryStage.getWidth());
+			ApplicationSettings.getInstance().setProperty("primary_height", this.primaryStage.getHeight());
+			ApplicationSettings.getInstance().setProperty("primary_x", this.primaryStage.getX());
+			ApplicationSettings.getInstance().setProperty("primary_y", this.primaryStage.getY());
+		}
+		
+		ApplicationSettings.getInstance().setProperty("import_path", currentImportPath.getAbsolutePath());
+		ApplicationSettings.getInstance().setProperty("export_path", currentExportPath.getAbsolutePath());
+		
+		ApplicationSettings.getInstance().saveSettings();
 	}
 	
 	private void parseCommandLineArguments(Parameters params) {
@@ -160,7 +199,7 @@ public class GAnsApplication {
 	          case "in":
 	              filename = namedParams.get(key);
 	              if (!filename.contains(".")) {
-	                  showErrorDialog("Error! The filename " + filename + " is invalid.");
+	            	  showErrorDialog(String.format(LanguageManager.getInstance().get("err_comm_filename_invalid"), filename));
 	                  return;
 	              }
 	              String extension = "*" + filename.substring(filename.lastIndexOf('.'));
@@ -187,34 +226,34 @@ public class GAnsApplication {
 	              break;
 	          default:
 	              // Information not specified
-	              showErrorDialog("Warning! The argument \"--" + key + "=" + namedParams.get(key) + 
-	                      "\" is unspecified and will be ignored.");
+	        	  showErrorDialog(String.format(LanguageManager.getInstance().get("err_comm_argument_unkn"), key, namedParams.get(key)));
 	        }
 	    }
 	    
         if (filename.equals("")) {
-            showErrorDialog("Error! Please specify filename with \"--in=<filename>\"");
+            showErrorDialog(LanguageManager.getInstance().get("err_comm_filename_missing"));
             return;
         } else if (importer == null) {
             String extension = "*" + filename.substring(filename.lastIndexOf('.'));
-            showErrorDialog("Error! The extension " + extension + " is not supported. Please use an other file format.");
+            showErrorDialog(String.format(LanguageManager.getInstance().get("err_comm_extension_unkn"), extension));
             return;
         }
 	    
 	    //import graph
-        currentFile = new File(filename);
+        File importFile = new File(filename);
+        currentImportPath = importFile.getParentFile();
         //check if workspace is in arguments
         if (tempWorkspace != null) {
             this.workspace = tempWorkspace;
         } else {
             if (!ws.equals("")) {
-                showErrorDialog("Warning! " + ws + " is not a valid workspace. Please select a Workspace.");
+            	showErrorDialog(String.format(LanguageManager.getInstance().get("err_comm_workspace_unkn"), ws));
             }
             if(!openWorkspaceDialog()) return;
         }
         FileInputStream inputStream;
         try {
-            inputStream = new FileInputStream(currentFile);
+            inputStream = new FileInputStream(importFile);
             importer.importGraph(workspace.getGraphModelBuilder(), inputStream);
             this.model = workspace.getGraphModel();
             ViewableGraph currentGraph = this.model.getRootGraphs().get(0);
@@ -236,8 +275,7 @@ public class GAnsApplication {
 
             if (!validLayout) {
                 if (!Objects.equals(layout, "")) {
-                    showErrorDialog("Warning! The layout " + layout + 
-                            " is not a valid layout. The default layout will be selected.");
+                	showErrorDialog(String.format(LanguageManager.getInstance().get("err_comm_layout_unkn"), layout));
                 }
                 LayoutOption defaultOption = currentGraph.getDefaultLayout();
                 defaultOption.chooseLayout();
@@ -261,13 +299,19 @@ public class GAnsApplication {
 		List<Importer> importerList = PluginManager.getPluginManager().getImporter();
 		List<String> supportedFileExtensions = new ArrayList<String>();
 		importerList.forEach((importer) -> supportedFileExtensions.add(importer.getSupportedFileEndings()));
-		ExtensionFilter filter = new ExtensionFilter("Supported file extensions", supportedFileExtensions);
+		ExtensionFilter filter = new ExtensionFilter(LanguageManager.getInstance().get("wind_imp_ext"), supportedFileExtensions);
 		FileChooser fileChooser = new FileChooser();
-		fileChooser.setTitle("Select a graph file");
+		fileChooser.setTitle(LanguageManager.getInstance().get("wind_imp_title"));
 		fileChooser.getExtensionFilters().add(filter);
 		fileChooser.setSelectedExtensionFilter(filter);
-		currentFile = fileChooser.showOpenDialog(primaryStage);
-		importFile(currentFile);
+		if(currentImportPath.exists()) {
+			fileChooser.setInitialDirectory(currentImportPath);
+		}
+		File tmp = fileChooser.showOpenDialog(primaryStage);
+		if(tmp != null) {
+			currentImportPath = tmp.getParentFile();
+			importFile(tmp);
+		}
 	}
 	
 	public void importFile(File file) {
@@ -317,23 +361,26 @@ public class GAnsApplication {
 		}
 
 		FileChooser fileChooser = new FileChooser();
-		fileChooser.setTitle("Select an export location");
+		fileChooser.setTitle(LanguageManager.getInstance().get("wind_exp_title"));
+		if(currentExportPath.exists()) {
+			fileChooser.setInitialDirectory(currentExportPath);
+		}
 		supportedFileExtensions.keySet().forEach((filter) -> fileChooser.getExtensionFilters().add(filter));
-		File saveFile = fileChooser.showSaveDialog(primaryStage);
+		File tmp = fileChooser.showSaveDialog(primaryStage);
 
 		// Wait for user to select file
-
-		if (saveFile != null) {
-            String fileExtension = saveFile.getName().substring(saveFile.getName().lastIndexOf('.') + 1);
+		if (tmp != null) {
+			currentExportPath = tmp.getParentFile();
+            String fileExtension = tmp.getName().substring(tmp.getName().lastIndexOf('.') + 1);
             try {
-                FileOutputStream outputStream = new FileOutputStream(saveFile);
+                FileOutputStream outputStream = new FileOutputStream(tmp);
                 Exporter exporter = supportedFileExtensions.get(fileChooser.getSelectedExtensionFilter());
                 try {
                     exporter.exportGraph(this.currentGraphView.getFactory().serializeGraph(), outputStream, fileExtension);
                 } catch (IllegalArgumentException e) {
                     showErrorDialog(e.getMessage());
                 } catch (Exception e) {
-                    showErrorDialog("The exporter has encounterd a problem and stopped.");
+                    showErrorDialog(LanguageManager.getInstance().get("err_exp"));
                 }
             } catch (FileNotFoundException e) {
                 showErrorDialog(e.getMessage());
@@ -382,10 +429,10 @@ public class GAnsApplication {
 		List<WorkspaceOption> options = PluginManager.getPluginManager().getWorkspaceOptions();
 		options.forEach((option) -> workspaceNames.add(option.getName()));
 		ChoiceDialog<String> dialog = new ChoiceDialog<String>(workspaceNames.get(0), workspaceNames);
-		dialog.setTitle("Workspaces");
+		dialog.setTitle(LanguageManager.getInstance().get("wind_workspace_title"));
 		dialog.setHeaderText(null);
 		dialog.setGraphic(null);
-		dialog.setContentText("Choose a workspace:");
+		dialog.setContentText(LanguageManager.getInstance().get("wind_workspace_text"));
 		Optional<String> result = dialog.showAndWait();
 		if (result.isPresent()) {
 		    WorkspaceOption chosenOption = options.get(workspaceNames.indexOf(result.get()));
@@ -397,28 +444,28 @@ public class GAnsApplication {
 		return false;
 	}
 	
-	private boolean openLayoutSelectionDialog(ViewableGraph graph) {
-		List<String> layoutNames = new ArrayList<String>();
-		List<LayoutOption> options = graph.getRegisteredLayouts();
-		options.forEach((option) -> layoutNames.add(option.getName()));
-		ChoiceDialog<String> dialog = new ChoiceDialog<String>(layoutNames.get(0), layoutNames);
-		dialog.setTitle("Layout Algorithms");
-		dialog.setHeaderText(null);
-		dialog.setGraphic(null);
-		dialog.setContentText("Choose an layout algorithm:");
-		Optional<String> result = dialog.showAndWait();
-		if (result.isPresent()) {
-		    LayoutOption chosenOption = options.get(layoutNames.indexOf(result.get()));
-		    chosenOption.chooseLayout();
-		    Settings settings = chosenOption.getSettings();
-		    if(ParameterDialogGenerator.showDialog(settings)) {
-		    	currentGraphView.setCurrentLayoutOption(chosenOption);
-		    	chosenOption.applyLayout();
-		    }
-		    return true;
-		}
-		return false;
-	}
+//	private boolean openLayoutSelectionDialog(ViewableGraph graph) {
+//		List<String> layoutNames = new ArrayList<String>();
+//		List<LayoutOption> options = graph.getRegisteredLayouts();
+//		options.forEach((option) -> layoutNames.add(option.getName()));
+//		ChoiceDialog<String> dialog = new ChoiceDialog<String>(layoutNames.get(0), layoutNames);
+//		dialog.setTitle(LanguageManager.getInstance().get("wind_layoutsel_title"));
+//		dialog.setHeaderText(null);
+//		dialog.setGraphic(null);
+//		dialog.setContentText(LanguageManager.getInstance().get("wind_layoutsel_text"));
+//		Optional<String> result = dialog.showAndWait();
+//		if (result.isPresent()) {
+//		    LayoutOption chosenOption = options.get(layoutNames.indexOf(result.get()));
+//		    chosenOption.chooseLayout();
+//		    Settings settings = chosenOption.getSettings();
+//		    if(ParameterDialogGenerator.showDialog(settings)) {
+//		    	currentGraphView.setCurrentLayoutOption(chosenOption);
+//		    	chosenOption.applyLayout();
+//		    }
+//		    return true;
+//		}
+//		return false;
+//	}
 	
 	private void openLayoutSettingsDialog(LayoutOption option) {
 		Settings settings = option.getSettings();
@@ -429,8 +476,8 @@ public class GAnsApplication {
 	}
 
 	private void setupMenuBar() {
-		Menu menuFile = new Menu("File");
-		MenuItem importItem = new MenuItem("Import");
+		Menu menuFile = new Menu(LanguageManager.getInstance().get("mnu_file"));
+		MenuItem importItem = new MenuItem(LanguageManager.getInstance().get("mnu_file_import"));
 		importItem.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
@@ -440,7 +487,7 @@ public class GAnsApplication {
 		if(PluginManager.getPluginManager().getImporter().isEmpty()) {
 			importItem.setDisable(true);
 		}
-		MenuItem exportItem = new MenuItem("Export");
+		MenuItem exportItem = new MenuItem(LanguageManager.getInstance().get("mnu_file_export"));
 		exportItem.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
@@ -450,8 +497,16 @@ public class GAnsApplication {
 		if(PluginManager.getPluginManager().getExporter().isEmpty()) {
 			exportItem.setDisable(true);
 		}
-		MenuItem exitItem = new MenuItem("Exit");
-		exitItem.setOnAction(e -> Platform.exit());
+		MenuItem exitItem = new MenuItem(LanguageManager.getInstance().get("mnu_file_exit"));
+		exitItem.setOnAction(new EventHandler<ActionEvent>() {
+			@Override
+			public void handle(ActionEvent e) {
+				saveSettings();
+				Platform.exit();
+			}
+		});
+		
+		
 		menuFile.getItems().addAll(importItem, exportItem, exitItem);
 		
 		// disabling the export button if there is no graphView
@@ -462,9 +517,9 @@ public class GAnsApplication {
 			}
 		});
 
-		Menu menuLayout = new Menu("Layout");
-		Menu changeLayoutItem = new Menu("Change algorithms");
-		MenuItem layoutPropertiesItem = new MenuItem("Properties");
+		Menu menuLayout = new Menu(LanguageManager.getInstance().get("mnu_layout"));
+		Menu changeLayoutItem = new Menu(LanguageManager.getInstance().get("mnu_layout_change"));
+		MenuItem layoutPropertiesItem = new MenuItem(LanguageManager.getInstance().get("mnu_layout_prop"));
 		layoutPropertiesItem.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
@@ -505,8 +560,8 @@ public class GAnsApplication {
 			}
 		});
 		
-		Menu menuOther = new Menu("Other");
-		MenuItem groupItem = new MenuItem("Edit Groups");
+		Menu menuOther = new Menu(LanguageManager.getInstance().get("mnu_other"));
+		MenuItem groupItem = new MenuItem(LanguageManager.getInstance().get("mnu_other_groups"));
 		groupItem.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent e) {
@@ -514,7 +569,7 @@ public class GAnsApplication {
 			}
 		});
 		
-		MenuItem filterItem = new MenuItem("Edit Filter");
+		MenuItem filterItem = new MenuItem(LanguageManager.getInstance().get("mnu_other_filter"));
 		filterItem.setOnAction(new EventHandler<ActionEvent>() {
 			@Override
 			public void handle(ActionEvent event) {
@@ -522,7 +577,27 @@ public class GAnsApplication {
 			}
 		});
 		
-		menuOther.getItems().addAll(groupItem, filterItem);
+		Menu menuLanguage = new Menu(LanguageManager.getInstance().get("mnu_other_lang"));
+		
+		String languageOptions = ApplicationSettings.getInstance().getProperty("language_options");
+		List<String> languages = Arrays.asList(languageOptions.split(";"));
+		for(String language : languages) {
+			String[] lang = language.split("_");
+			Locale loc = new Locale(lang[0], lang[1]);
+			MenuItem languageItem = new MenuItem(loc.getCountry());
+			
+			menuLanguage.getItems().add(languageItem);
+			
+			languageItem.setOnAction(new EventHandler<ActionEvent>() {
+				@Override
+				public void handle(ActionEvent event) {
+					showChangeLanguageDialog(language);
+				}
+			});
+		}
+		
+		
+		menuOther.getItems().addAll(groupItem, filterItem, menuLanguage);
 		
 		// disabling the groups button if there is no graphView
 		menuOther.setOnShowing(new EventHandler<Event>() {
@@ -543,7 +618,7 @@ public class GAnsApplication {
 	}
 	
 	private void setupContextMenu() {
-		MenuItem openGraph = new MenuItem("Open");
+		MenuItem openGraph = new MenuItem(LanguageManager.getInstance().get("ctx_open"));
 		openGraph.setOnAction(new EventHandler<ActionEvent>() {
 		    public void handle(ActionEvent e) {
 		    	openGraph(GAnsApplication.this.structureView.getIdOfSelectedItem());
@@ -578,6 +653,20 @@ public class GAnsApplication {
 		currentGraphView.setCurrentLayoutOption(defaultOption);
 		defaultOption.applyLayout();
 		showGraph(graph);
+	}
+	
+	private void showChangeLanguageDialog(String newLanguage) {
+		Alert alert = new Alert(AlertType.CONFIRMATION);
+		alert.setHeaderText(null);
+		alert.setContentText(LanguageManager.getInstance().get("err_changelng"));
+		Optional<ButtonType> result = alert.showAndWait();
+		if(result.isPresent()) {
+			if(result.get() == ButtonType.OK) {
+				ApplicationSettings.getInstance().setProperty("language", newLanguage);
+				saveSettings();
+				mediator.restart();
+			}
+		}
 	}
 	
 	private void showErrorDialog(String message) {

@@ -1,6 +1,7 @@
 package edu.kit.student.gui;
 
 import edu.kit.student.objectproperty.GAnsProperty;
+import edu.kit.student.util.LanguageManager;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -29,9 +30,9 @@ public class InformationView extends TableView<GAnsProperty<?>> {
 		setItems(informations);
 		// Implementation in diesem Stil: (siehe
 		// https://docs.oracle.com/javase/8/javafx/api/javafx/scene/control/TableView.html)
-		TableColumn<GAnsProperty<?>, String> propertyNameCol = new TableColumn<GAnsProperty<?>, String>("Property");
+		TableColumn<GAnsProperty<?>, String> propertyNameCol = new TableColumn<GAnsProperty<?>, String>(LanguageManager.getInstance().get("inf_prop"));
 		propertyNameCol.setCellValueFactory(new PropertyValueFactory<GAnsProperty<?>, String>(GAnsProperty.name));
-		TableColumn<GAnsProperty<?>, String> propertyValueCol = new TableColumn<GAnsProperty<?>, String>("Value");
+		TableColumn<GAnsProperty<?>, String> propertyValueCol = new TableColumn<GAnsProperty<?>, String>(LanguageManager.getInstance().get("inf_value"));
 		propertyValueCol.setCellValueFactory(new PropertyValueFactory<GAnsProperty<?>, String>(GAnsProperty.valueAsString));
         
 		propertyNameCol.prefWidthProperty().bind(this.widthProperty().divide(2));

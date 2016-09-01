@@ -1,6 +1,7 @@
 package edu.kit.student.gui;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.stage.Stage;
 
 public class GAnsMediator extends Application {
@@ -29,5 +30,12 @@ public class GAnsMediator extends Application {
 	
 	public GAnsApplication getGansApp() {
 	    return app;
+	}
+	
+	public void restart() {
+		primaryStage.close();
+		primaryStage = new Stage();
+		app = new GAnsApplication(this);
+		Platform.runLater( () -> app.start(primaryStage, null));
 	}
 }
