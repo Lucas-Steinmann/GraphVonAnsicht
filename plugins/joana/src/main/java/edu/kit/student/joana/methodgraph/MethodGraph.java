@@ -64,6 +64,7 @@ public class MethodGraph extends JoanaGraph {
         this.fcollapser = new FieldAccessCollapser(graph, onionEdges);
         this.collapser = new JoanaCollapser(graph, onionEdges);
         this.expandActions = new HashMap<>();
+        this.applyDefaultFilters();
     }
 
 

@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 import edu.kit.student.graphmodel.FastGraphAccessor;
 import edu.kit.student.graphmodel.ViewableGraph;
 import edu.kit.student.graphmodel.directed.DirectedGraph;
+import edu.kit.student.joana.JoanaEdge.EdgeKind;
 import edu.kit.student.objectproperty.GAnsProperty;
 import edu.kit.student.plugin.EdgeFilter;
 import edu.kit.student.plugin.LayoutOption;
@@ -38,7 +39,7 @@ public abstract class JoanaGraph
         this.edgeCount = new GAnsProperty<Integer>("Edge count", edges.size());
         this.vertexCount = new GAnsProperty<Integer>("Vertex count", vertices.size());
         this.vertexFilter = new LinkedList<>();
-        this.edgeFilter = new LinkedList<>();  
+        this.edgeFilter = new LinkedList<>();
     }
 
     @Override
@@ -131,5 +132,15 @@ public abstract class JoanaGraph
     public void addToFastGraphAccessor(FastGraphAccessor fga) {
         // TODO Auto-generated method stub
         
+    }
+    
+    protected void applyDefaultFilters() {
+    	//default filters for joana graphs
+        JoanaEdgeFilter cfFilter = new JoanaEdgeFilter(EdgeKind.CF);
+        JoanaEdgeFilter heFilter = new JoanaEdgeFilter(EdgeKind.HE);
+        JoanaEdgeFilter psFilter = new JoanaEdgeFilter(EdgeKind.PS);
+        edgeFilter.add(cfFilter);
+        edgeFilter.add(heFilter);
+        edgeFilter.add(psFilter);
     }
 }

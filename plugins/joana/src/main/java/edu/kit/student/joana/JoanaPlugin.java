@@ -2,15 +2,11 @@ package edu.kit.student.joana;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.function.Predicate;
 
-import edu.kit.student.graphmodel.Edge;
-import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.joana.callgraph.CallGraphLayout;
 import edu.kit.student.joana.callgraph.CallGraphLayoutOption;
 import edu.kit.student.joana.methodgraph.MethodGraphLayout;
 import edu.kit.student.joana.methodgraph.MethodGraphLayoutOption;
-import edu.kit.student.objectproperty.GAnsProperty;
 import edu.kit.student.parameter.Settings;
 import edu.kit.student.plugin.AbstractPluginBase;
 import edu.kit.student.plugin.EdgeFilter;
@@ -72,28 +68,7 @@ public class JoanaPlugin extends AbstractPluginBase {
     public List<VertexFilter> getVertexFilter() {
         List<VertexFilter> filter = new LinkedList<>();
         for (JoanaVertex.VertexKind kind : JoanaVertex.VertexKind.values()) {
-            filter.add(new VertexFilter(kind.name()) {
-
-                @Override
-                public Predicate<Vertex> getPredicate() {
-                    return new Predicate<Vertex>() {
-
-                        @Override
-                        public boolean test(Vertex t) {
-                            for (GAnsProperty<?> property : t.getProperties()) {
-                                if (property.getName().equals("nodeKind")) {
-                                    if (property.getValue().equals(kind)) {
-                                        return true;
-                                    }
-                                    return false;
-                                }
-                            }
-                            return false;
-                        } 
-                    };
-                }
-
-            });
+            filter.add(new JoanaVertexFilter(kind));
         }
         return filter;
     }
@@ -102,28 +77,7 @@ public class JoanaPlugin extends AbstractPluginBase {
     public List<EdgeFilter> getEdgeFilter() {
         List<EdgeFilter> filter = new LinkedList<>();
         for (JoanaEdge.EdgeKind kind : JoanaEdge.EdgeKind.values()) {
-            filter.add(new EdgeFilter(kind.name()) {
-
-                @Override
-                public Predicate<Edge> getPredicate() {
-                    return new Predicate<Edge>() {
-
-                        @Override
-                        public boolean test(Edge t) {
-                            for (GAnsProperty<?> property : t.getProperties()) {
-                                if (property.getName().equals("edgeKind")) {
-                                    if (property.getValue().equals(kind)) {
-                                        return true;
-                                    }
-                                    return false;
-                                }
-                            }
-                            return false;
-                        } 
-                    };
-                }
-
-            });
+            filter.add(new JoanaEdgeFilter(kind));
         }
         return filter;
     }

@@ -50,7 +50,7 @@ public class CallGraph extends JoanaGraph {
         Map<JoanaEdge, DirectedOnionPath<JoanaEdge, JoanaCompoundVertex>> onionEdges = new HashMap<>();
         collapser = new JoanaCollapser(graph, onionEdges);
         this.expandActions = new HashMap<>();
-
+        this.applyDefaultFilters();
     }
 
     public CallGraph(String name) {
