@@ -53,9 +53,12 @@ public class CrossMinimizer implements ICrossMinimizer {
 	@Override
 	public void minimizeCrossings(ICrossMinimizerGraph graph) {
 		if (settings != null) {
-			this.stopOnThreshold = Settings.unpackBoolean((Parameter<?, Boolean>) getSettings().get("Use Threshold"));
-			setCrossingReductionThreshold(Settings.unpackDouble((Parameter<?, Double>) getSettings().get("Crossminimizer reduction Threshold")));
-			setMaxRuns(Settings.unpackInteger((Parameter<?, Integer>) getSettings().get("Crossminimizer max runs")));
+			this.stopOnThreshold = Settings.unpackBoolean(
+					(Parameter<?, Boolean>) getSettings().get(LanguageManager.getInstance().get("sugiy_cross_threshold_use")));
+			setCrossingReductionThreshold(Settings.unpackDouble(
+					(Parameter<?, Double>) getSettings().get(LanguageManager.getInstance().get("sugiy_cross_threshold_reduct"))));
+			setMaxRuns(Settings.unpackInteger(
+					(Parameter<?, Integer>) getSettings().get(LanguageManager.getInstance().get("sugiy_cross_max_runs"))));
 		}
 
 		logger.info("CrossMinimizer.minimizeCrossings():");
