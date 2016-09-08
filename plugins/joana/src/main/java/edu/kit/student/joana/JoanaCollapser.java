@@ -11,6 +11,7 @@ import edu.kit.student.graphmodel.CompoundVertex;
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
 import edu.kit.student.joana.graphmodel.DirectedOnionPath;
 import edu.kit.student.joana.graphmodel.JoanaCompoundVertex;
+import edu.kit.student.util.LanguageManager;
 
 public class JoanaCollapser {
 
@@ -75,10 +76,10 @@ public class JoanaCollapser {
      * @return the collapsed vertex
      */
     public JoanaCollapsedVertex collapse(Set<JoanaVertex> vertices) {
-
 		// Construct collapsed vertex
 		DefaultDirectedGraph<JoanaVertex, JoanaEdge> collapsedGraph = new DefaultDirectedGraph<>(vertices, new HashSet<JoanaEdge>());
-		JoanaCollapsedVertex collapsed = new JoanaCollapsedVertex("Collapsed", "Collapsed (" + collapsedGraph.getVertexSet().size() + ")",
+		JoanaCollapsedVertex collapsed = new JoanaCollapsedVertex("Collapsed", 
+				String.format(LanguageManager.getInstance().get("coll_vertex"), collapsedGraph.getVertexSet().size()),
 		        collapsedGraph, new HashMap<>());
 		graph.addVertex(collapsed); 
 		collapsedVertices.add(collapsed);

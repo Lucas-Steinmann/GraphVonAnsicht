@@ -14,6 +14,7 @@ import edu.kit.student.parameter.Parameter;
 import edu.kit.student.parameter.ParameterVisitor;
 import edu.kit.student.parameter.Settings;
 import edu.kit.student.parameter.StringParameter;
+import edu.kit.student.util.LanguageManager;
 import javafx.geometry.Insets;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -178,7 +179,7 @@ public class ParameterDialogGenerator extends ParameterVisitor {
 			root.getColumnConstraints().add(c2);
 			ParameterDialogGenerator gen = new ParameterDialogGenerator(root, settings);
 			Alert dialog = new Alert(AlertType.CONFIRMATION);
-			dialog.setTitle("Settings");
+			dialog.setTitle(LanguageManager.getInstance().get("wind_prop_title"));
 			dialog.setHeaderText(null);
 			dialog.setGraphic(null);
 			Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();

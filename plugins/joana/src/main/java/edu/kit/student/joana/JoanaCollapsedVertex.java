@@ -9,6 +9,7 @@ import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
 import edu.kit.student.joana.graphmodel.JoanaCompoundVertex;
 import edu.kit.student.objectproperty.GAnsProperty;
+import edu.kit.student.util.LanguageManager;
 
 public class JoanaCollapsedVertex extends JoanaCompoundVertex {
 
@@ -39,10 +40,10 @@ public class JoanaCollapsedVertex extends JoanaCompoundVertex {
 
 		this.graph = graph;
 		
-		this.label = new GAnsProperty<String>("Label", label);
-		this.kind = new GAnsProperty<VertexKind>("Kind", VertexKind.SUMMARY);
-		this.vertexCount = new GAnsProperty<Integer>("Vertices contained", this.graph.getVertexSet().size());
-		this.edgeCount = new GAnsProperty<Integer>("Edges contained", this.graph.getEdgeSet().size());
+		this.label = new GAnsProperty<String>(LanguageManager.getInstance().get("coll_label"), label);
+		this.kind = new GAnsProperty<VertexKind>(LanguageManager.getInstance().get("coll_type"), VertexKind.SUMMARY);
+		this.vertexCount = new GAnsProperty<Integer>(LanguageManager.getInstance().get("coll_vertices"), this.graph.getVertexSet().size());
+		this.edgeCount = new GAnsProperty<Integer>(LanguageManager.getInstance().get("coll_edges"), this.graph.getEdgeSet().size());
 	}
 
 	@Override

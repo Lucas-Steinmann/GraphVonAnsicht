@@ -17,6 +17,7 @@ import edu.kit.student.plugin.EdgeFilter;
 import edu.kit.student.plugin.LayoutOption;
 import edu.kit.student.plugin.VertexFilter;
 import edu.kit.student.util.IdGenerator;
+import edu.kit.student.util.LanguageManager;
 
 /**
  * An abstract superclass for all JOANA specific graphs.
@@ -34,10 +35,10 @@ public abstract class JoanaGraph
     
 
     public JoanaGraph(String name, Set<JoanaVertex> vertices, Set<JoanaEdge> edges) {
-        this.name = new GAnsProperty<String>("Name", name);
+        this.name = new GAnsProperty<String>(LanguageManager.getInstance().get("stat_name"), name);
         this.id = IdGenerator.getInstance().createId();    
-        this.edgeCount = new GAnsProperty<Integer>("Edge count", edges.size());
-        this.vertexCount = new GAnsProperty<Integer>("Vertex count", vertices.size());
+        this.edgeCount = new GAnsProperty<Integer>(LanguageManager.getInstance().get("stat_edge"), edges.size());
+        this.vertexCount = new GAnsProperty<Integer>(LanguageManager.getInstance().get("stat_vertex"), vertices.size());
         this.vertexFilter = new LinkedList<>();
         this.edgeFilter = new LinkedList<>();
     }

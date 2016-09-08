@@ -58,7 +58,7 @@ public class MethodGraph extends JoanaGraph {
         }
         //TODO: Search for method calls etc.
         this.fieldAccesses = this.searchFieldAccesses();
-        this.fieldAccessCount = new GAnsProperty<Integer>("Field accesses", this.fieldAccesses.size());
+        this.fieldAccessCount = new GAnsProperty<Integer>(LanguageManager.getInstance().get("stat_fieldacc"), this.fieldAccesses.size());
 
         Map<JoanaEdge, DirectedOnionPath<JoanaEdge, JoanaCompoundVertex>> onionEdges = new HashMap<>();
         this.fcollapser = new FieldAccessCollapser(graph, onionEdges);
