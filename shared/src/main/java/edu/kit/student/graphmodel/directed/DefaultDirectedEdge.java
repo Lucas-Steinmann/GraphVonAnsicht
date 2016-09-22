@@ -138,4 +138,9 @@ public class DefaultDirectedEdge<V extends Vertex> implements DirectedEdge {
 	public String toString(){
 		return name.toString() + "[" + id + "](" + source.toString() + "->" + target.toString() + ")";
 	}
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
 }

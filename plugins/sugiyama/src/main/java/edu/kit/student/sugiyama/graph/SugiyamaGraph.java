@@ -509,6 +509,12 @@ public class SugiyamaGraph
 			Collections.reverse(this.supplementEdges);
 			this.replacedEdge.reverse();
 		}
+
+        @Override
+        public int hashCode() {
+            return getReplacedEdge().hashCode();
+        }
+		
 	}
 	/**
 	 * A supplement edge which is part of a {@link SupplementPath}.
@@ -811,6 +817,11 @@ public class SugiyamaGraph
 		    
 		    return ((ISugiyamaVertex) o).getID() == this.getID();
 		}
+
+        @Override
+        public int hashCode() {
+            return getID().hashCode();
+        }
 	}
 
 	/**
@@ -943,7 +954,6 @@ public class SugiyamaGraph
 		public void setVertices(ISugiyamaVertex source, ISugiyamaVertex nv) {
 			this.source = source;
 			this.target = nv;
-
 		}
 
 		@Override
@@ -965,6 +975,11 @@ public class SugiyamaGraph
 		public DirectedEdge getWrappedEdge() {
 			return wrappedEdge;
 		}
+
+        @Override
+        public int hashCode() {
+            return this.getID().hashCode();
+        }
 	}
 
 	@Override

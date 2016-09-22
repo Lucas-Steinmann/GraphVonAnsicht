@@ -16,7 +16,7 @@ import javafx.scene.paint.Color;
  */
 public class DefaultVertex implements Vertex {
 
-	private GAnsProperty<String> name;
+    private GAnsProperty<String> name;
 	private Integer id;
 	private GAnsProperty<String> label;
 	private int x;
@@ -100,4 +100,9 @@ public class DefaultVertex implements Vertex {
 	public Color getColor() {
 		return Color.LIGHTGREY;
 	}
+
+	@Override
+    public int hashCode() {
+        return id.hashCode();
+    }
 }

@@ -135,6 +135,11 @@ public abstract class JoanaGraph
         
     }
     
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
+
     protected void applyDefaultFilters() {
     	//default filters for joana graphs
         JoanaEdgeFilter cfFilter = new JoanaEdgeFilter(EdgeKind.CF);

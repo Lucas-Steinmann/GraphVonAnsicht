@@ -210,4 +210,9 @@ public class JoanaEdge implements DirectedEdge {
     public String toString() {
         return getSource().getName() + " -" + getName() + "-> " + getTarget().getName();
     }
+
+    @Override
+    public int hashCode() {
+        return id.hashCode();
+    }
 }
