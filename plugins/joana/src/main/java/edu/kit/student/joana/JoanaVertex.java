@@ -24,6 +24,8 @@ public class JoanaVertex extends DefaultVertex implements ViewableVertex {
     private GAnsProperty<Integer> nodeSc;
     private GAnsProperty<Integer> nodeEr;
     private GAnsProperty<Integer> nodeEc;
+    private GAnsProperty<String>  nodeLocalDef;
+    private GAnsProperty<String>  nodeLocalUse;
     
     private DoublePoint setSize;
     private boolean sizeSet;
@@ -36,12 +38,13 @@ public class JoanaVertex extends DefaultVertex implements ViewableVertex {
      * @param kind  the kind (type)
      */
     public JoanaVertex(String name, String label, VertexKind kind) {
-        this(name, label, kind, "", 0, "", "", 0, 0, 0, 0, 0);
+        this(name, label, kind, "", 0, "", "", 0, 0, 0, 0, 0, "", "");
     }
 
     public JoanaVertex(String name, String label, VertexKind nodeKind, String nodeSource, 
             int nodeProc, String nodeOperation, String nodeBcName, int nodeBcIndex, int nodeSr, 
-            int nodeSc, int nodeEr, int nodeEc) {
+            int nodeSc, int nodeEr, int nodeEc,
+            String nodeLocalDef, String nodeLocalUse) {
 
         super(name, label);
 
@@ -55,6 +58,8 @@ public class JoanaVertex extends DefaultVertex implements ViewableVertex {
         this.nodeSc = new GAnsProperty<Integer>("nodeSc", nodeSc);
         this.nodeEr = new GAnsProperty<Integer>("nodeEr", nodeEr);
         this.nodeEc = new GAnsProperty<Integer>("nodeEc", nodeEc);
+        this.nodeLocalDef = new GAnsProperty<String>("nodeLocalDef", nodeLocalDef);
+        this.nodeLocalUse = new GAnsProperty<String>("nodeLocalUse", nodeLocalUse);
         this.sizeSet = false;
     }
     
@@ -71,6 +76,8 @@ public class JoanaVertex extends DefaultVertex implements ViewableVertex {
 		properties.add(nodeSc);
 		properties.add(nodeEr);
 		properties.add(nodeEc);
+		properties.add(nodeLocalDef);
+		properties.add(nodeLocalUse);
 		return properties;
 	}
 
