@@ -697,7 +697,7 @@ public class MethodGraph extends JoanaGraph {
     private boolean isNormCompoundBase(JoanaVertex vertex) {
         if (vertex.getNodeKind() == JoanaVertex.VertexKind.NORM 
                 && vertex.getNodeOperation().equals("compound") 
-                && vertex.getLabel().equals("base")) { 
+                && vertex.getLabel().contains("base")) {//check before:   .equals("base")
             return true;
         } else {
             return false;
@@ -707,7 +707,7 @@ public class MethodGraph extends JoanaGraph {
     private boolean isNormCompoundField(JoanaVertex vertex) {
         if (vertex.getNodeKind() == JoanaVertex.VertexKind.NORM 
                 && vertex.getNodeOperation().equals("compound") 
-                && vertex.getLabel().matches("field\\s.*")) { 
+                && vertex.getLabel().contains("field")) {//check before:   .matches("field\\s.*") TODO: actual check sufficient ?
             return true;
         } else {
             return false;
@@ -717,7 +717,7 @@ public class MethodGraph extends JoanaGraph {
     private boolean isNormCompoundIndex(JoanaVertex vertex) {
         if (vertex.getNodeKind() == JoanaVertex.VertexKind.NORM 
                 && vertex.getNodeOperation().equals("compound") 
-                && vertex.getLabel().equals("index")) { 
+                && vertex.getLabel().contains("index")) {//check before:   .equals("index")
             return true;
         } else {
             return false;

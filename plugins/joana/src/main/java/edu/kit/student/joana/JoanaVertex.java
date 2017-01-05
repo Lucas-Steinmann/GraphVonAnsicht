@@ -27,6 +27,7 @@ public class JoanaVertex extends DefaultVertex implements ViewableVertex {
     
     private DoublePoint setSize;
     private boolean sizeSet;
+    private String nodeLabel;
     
     /**
      * Constructs a new JoanaVertex, giving it a name,
@@ -56,6 +57,7 @@ public class JoanaVertex extends DefaultVertex implements ViewableVertex {
         this.nodeEr = new GAnsProperty<Integer>("nodeEr", nodeEr);
         this.nodeEc = new GAnsProperty<Integer>("nodeEc", nodeEc);
         this.sizeSet = false;
+        this.nodeLabel = label;
     }
     
     @Override
@@ -172,6 +174,11 @@ public class JoanaVertex extends DefaultVertex implements ViewableVertex {
 		} else{
 			return super.getSize();
 		}
+	}
+	
+	@Override
+	public String getLabel(){
+		return this.getName() + "  " + this.getNodeKind().toString() + '\n' + this.nodeLabel;
 	}
 
 	@Override
