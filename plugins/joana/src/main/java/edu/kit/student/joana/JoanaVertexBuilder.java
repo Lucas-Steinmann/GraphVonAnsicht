@@ -20,6 +20,8 @@ public class JoanaVertexBuilder implements IVertexBuilder {
     private int sc;
     private int er;
     private int ec;
+    private String localDef;
+    private String localUse;
     
     public JoanaVertexBuilder(String id) {
         // The id in the persistent data is the name of the joana vertex.
@@ -60,6 +62,12 @@ public class JoanaVertexBuilder implements IVertexBuilder {
           case "nodeEc":
               ec = parseNum(value);
               break;
+          case "nodeLocalDef":
+              localDef = value;
+              break;
+          case "nodeLocalUse":
+              localUse = value;
+              break;
           default:
               break;
         }
@@ -83,7 +91,7 @@ public class JoanaVertexBuilder implements IVertexBuilder {
         }
         
         JoanaVertex vertex = new JoanaVertex(name, label, kind, source, proc, 
-                                             operation, bcName, bcIndex, sr, sc, er, ec);
+                                             operation, bcName, bcIndex, sr, sc, er, ec, localDef, localUse);
         //TODO Check relations nodeKind-nodeOperation and maybe others
         return vertex;
     }
