@@ -35,6 +35,8 @@ public interface ViewableGraph extends Graph {
 
 	/**
 	 * Returns a list of actions which can be executed on the specified vertex induced subgraph.
+	 * The first action in the list will be implicitly used as the default action
+	 * in the context of an user interface.
 	 * @param vertices the vertices inducing the subgraph
 	 * @return         the list of actions
 	 */
@@ -42,6 +44,8 @@ public interface ViewableGraph extends Graph {
 
 	/**
 	 * Returns a list of actions which can be executed on the specified vertex.
+	 * The first action in the list will be implicitly used as the default action
+	 * in the context of an user interface.
 	 * @param vertex the vertex
 	 * @return       the list of actions
 	 */

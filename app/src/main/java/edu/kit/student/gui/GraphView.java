@@ -160,6 +160,7 @@ public class GraphView extends Pane {
                 for(VertexShape shape : getSelectionModel().getSelectedItems()) {
                     vertices.add(getFactory().getVertexFromShape(shape));
                 }
+                int midx = 0;
                 for (SubGraphAction action : getFactory().getGraph().getSubGraphActions(vertices)) {
                     MenuItem item = new MenuItem(action.getName());
                     dynamicMenuListItems.add(item);
@@ -175,11 +176,29 @@ public class GraphView extends Pane {
                             GraphView.this.reloadGraph();
                         }
                     });
-                    GraphView.this.contextMenu.getItems().add(item);
+                    GraphView.this.contextMenu.getItems().add(midx++, item);
                 }
+                midx = 0;
                 if (vertices.size() == 1) {
+                	ViewableVertex vertex = vertices.iterator().next();
+                    // Display link
+                    int linkId = vertex.getLink();
+                    if (linkId != -1) {
+                        MenuItem item = new MenuItem(LanguageManager.getInstance().get("ctx_open_graph"));
+                        dynamicMenuListItems.add(item);
+                        // set action to open new graph
+                        item.setOnAction(new EventHandler<ActionEvent>() {
+
+                            @Override
+                            public void handle(ActionEvent event) {
+                            	GraphView.this.mediator.openGraph(linkId);
+                            }
+                        });
+                        GraphView.this.contextMenu.getItems().add(midx++, item);
+                        
+                    }
                     // Display vertex actions;
-                    for (VertexAction action : getFactory().getGraph().getVertexActions(vertices.iterator().next())) {
+                    for (VertexAction action : getFactory().getGraph().getVertexActions(vertex)) {
                         MenuItem item = new MenuItem(action.getName());
                         dynamicMenuListItems.add(item);
                         item.setOnAction(new EventHandler<ActionEvent>() {
@@ -192,23 +211,7 @@ public class GraphView extends Pane {
                                 GraphView.this.reloadGraph();
                             }
                         });
-                        GraphView.this.contextMenu.getItems().add(item);
-                    }
-                    // Display links
-                    int linkId = vertices.iterator().next().getLink();
-                    if (linkId != -1) {
-                        MenuItem item = new MenuItem(LanguageManager.getInstance().get("ctx_open_graph"));
-                        dynamicMenuListItems.add(item);
-                        // set action to open new graph
-                        item.setOnAction(new EventHandler<ActionEvent>() {
-
-                            @Override
-                            public void handle(ActionEvent event) {
-                            	GraphView.this.mediator.openGraph(linkId);
-                            }
-                        });
-                        GraphView.this.contextMenu.getItems().add(item);
-                        
+                        GraphView.this.contextMenu.getItems().add(midx++, item);
                     }
                 }
             }
