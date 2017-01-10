@@ -410,12 +410,13 @@ public class GAnsApplication {
 		graphViewTabPane.getTabs().add(tab);
 		graphViewTabPane.getSelectionModel().select(tab);
 		
+		// Fill Information-View on change of selection
 		graphView.getSelectionModel().getSelectedItems().addListener(new SetChangeListener<VertexShape>() {
 			public void onChanged(Change<? extends VertexShape> changedItem) {
 				ObservableSet<VertexShape> selectedItems = graphView.getSelectionModel().getSelectedItems();
 				List<GAnsProperty<?>> tmp = new LinkedList<GAnsProperty<?>>();
 				for (VertexShape element : selectedItems) {
-					GraphViewGraphFactory factory = currentGraphView.getFactory();
+					GraphViewGraphFactory factory = graphView.getFactory();
 					Vertex vertex = factory.getVertexFromShape(element);
 					tmp.addAll(vertex.getProperties());
 				}

@@ -180,7 +180,6 @@ public class GraphViewSelectionModel {
 					// selection needs to be cleared before adding new shapes
 					if(!event.isControlDown() && !GraphViewSelectionModel.this.isEmpty()) {
 						if(event.getClickCount() == 2){
-							System.out.println("Double clicked with selected element!");
 							if (menu.getItems().size() > 0) {
 								menu.getItems().iterator().next().fire();;
 								
