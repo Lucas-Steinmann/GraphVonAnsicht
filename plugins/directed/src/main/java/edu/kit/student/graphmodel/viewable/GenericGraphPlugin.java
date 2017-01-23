@@ -3,6 +3,7 @@ package edu.kit.student.graphmodel.viewable;
 import java.util.LinkedList;
 import java.util.List;
 
+import edu.kit.student.graphmodel.directed.DirectedGraphLayoutOption;
 import edu.kit.student.parameter.Settings;
 import edu.kit.student.plugin.EdgeFilter;
 import edu.kit.student.plugin.Exporter;
@@ -12,7 +13,6 @@ import edu.kit.student.plugin.Plugin;
 import edu.kit.student.plugin.VertexFilter;
 import edu.kit.student.plugin.Workspace;
 import edu.kit.student.plugin.WorkspaceOption;
-import edu.kit.student.sugiyama.SugiyamaLayoutAlgorithm;
 
 /**
  * @author Lucas Steinmann
@@ -21,7 +21,7 @@ import edu.kit.student.sugiyama.SugiyamaLayoutAlgorithm;
 public class GenericGraphPlugin implements Plugin {
 
     private static final String pluginName = "Generic Graph Plugin";
-    private static final LayoutRegister<DirectedGraphLayoutOption> directedGraphLayoutOptions 
+    public static final LayoutRegister<DirectedGraphLayoutOption> directedGraphLayoutOptions 
     	= new DirectedGraphLayoutOptionRegister();
 
 	@Override
@@ -31,17 +31,6 @@ public class GenericGraphPlugin implements Plugin {
 
 	@Override
 	public void load() {
-        directedGraphLayoutOptions.addLayoutOption(new DirectedGraphLayoutOption() {
-            {
-                this.setName("Sugiyama-Layout");
-                this.setId("SUG");
-            }
-            
-            @Override
-            public void chooseLayout() {
-                this.setLayout(new SugiyamaLayoutAlgorithm<>());
-            }
-        });
 	}
 
 	@Override

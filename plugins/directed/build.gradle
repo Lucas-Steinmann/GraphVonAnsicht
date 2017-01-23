@@ -10,6 +10,5 @@ eclipse {
 }
 
 dependencies {
-    compile project(":plugins:sugiyama")
     compile project(":shared")
 }

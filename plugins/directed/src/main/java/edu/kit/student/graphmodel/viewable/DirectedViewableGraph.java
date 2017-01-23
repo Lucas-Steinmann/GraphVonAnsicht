@@ -23,7 +23,6 @@ import edu.kit.student.objectproperty.GAnsProperty;
 import edu.kit.student.plugin.EdgeFilter;
 import edu.kit.student.plugin.LayoutOption;
 import edu.kit.student.plugin.VertexFilter;
-import edu.kit.student.sugiyama.SugiyamaLayoutAlgorithm;
 import edu.kit.student.util.IdGenerator;
 
 /**
@@ -138,18 +137,10 @@ public class DirectedViewableGraph implements DirectedGraph, ViewableGraph  {
 
 	@Override
 	public LayoutOption getDefaultLayout() {
-		return new DirectedGraphLayoutOption() {
-			{
-                this.setName("Sugiyama-Layout");
-                this.setId("SUG");
-                this.setGraph(DirectedViewableGraph.this);
-            }
-			
-			@Override
-			public void chooseLayout() {
-				this.setLayout(new SugiyamaLayoutAlgorithm<>());
-			}
-		};
+		if (!GenericGraphPlugin.directedGraphLayoutOptions.getLayoutOptions().isEmpty()) {
+			return GenericGraphPlugin.directedGraphLayoutOptions.getLayoutOptions().get(0);
+		} 
+		return null;
 	}
 
 	@Override
