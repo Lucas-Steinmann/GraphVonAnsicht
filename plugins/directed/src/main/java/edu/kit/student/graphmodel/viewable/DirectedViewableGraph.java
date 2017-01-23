@@ -19,6 +19,7 @@ import edu.kit.student.graphmodel.action.VertexAction;
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
 import edu.kit.student.graphmodel.directed.DirectedEdge;
 import edu.kit.student.graphmodel.directed.DirectedGraph;
+import edu.kit.student.graphmodel.directed.DirectedGraphLayoutOption;
 import edu.kit.student.objectproperty.GAnsProperty;
 import edu.kit.student.plugin.EdgeFilter;
 import edu.kit.student.plugin.LayoutOption;
@@ -138,7 +139,9 @@ public class DirectedViewableGraph implements DirectedGraph, ViewableGraph  {
 	@Override
 	public LayoutOption getDefaultLayout() {
 		if (!GenericGraphPlugin.directedGraphLayoutOptions.getLayoutOptions().isEmpty()) {
-			return GenericGraphPlugin.directedGraphLayoutOptions.getLayoutOptions().get(0);
+			DirectedGraphLayoutOption option = GenericGraphPlugin.directedGraphLayoutOptions.getLayoutOptions().get(0);
+			option.setGraph(this);
+			return option;
 		} 
 		return null;
 	}

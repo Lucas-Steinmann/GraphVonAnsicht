@@ -55,7 +55,7 @@ public class DirectedEdgeBuilder implements IEdgeBuilder {
     	for (DefaultVertex v : vertexPool) {
     		if (v.getName().toString().equals(source))
     			s = v;
-    		else if(v.getName().toString().equals(target))
+    		if(v.getName().toString().equals(target))
     			t = v;
     	}
     	if (s == null || t == null) {

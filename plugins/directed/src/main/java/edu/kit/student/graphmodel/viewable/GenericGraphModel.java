@@ -26,6 +26,9 @@ public class GenericGraphModel extends GraphModel {
 
 	@Override
 	public DirectedViewableGraph getGraphFromId(Integer id) {
+		if (id == 0) {
+			return null;
+		}
 		return getGraphNodefromId(id).data;
 	}
 	
