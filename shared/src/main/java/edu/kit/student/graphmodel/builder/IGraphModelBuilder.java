@@ -3,7 +3,7 @@ package edu.kit.student.graphmodel.builder;
 import edu.kit.student.graphmodel.GraphModel;
 
 /**
- * An abstract interface, which is used to build a graphmodel. This class is
+ * An abstract interface, which is used to build a {@link GraphModel}. This class is
  * based on the Builder Pattern.
  */
 public interface IGraphModelBuilder {
@@ -21,19 +21,12 @@ public interface IGraphModelBuilder {
 	public IGraphBuilder getGraphBuilder(String graphID);
 
 	/**
-	 * This method is called, when the buildingprocess of the graphmodel is
-	 * finished. It returns the finished graphmodel
+	 * Builds the {@link GraphModel} which was described before this call by populating
+	 * the GraphBuilders.
 	 * 
-	 * @return GraphModel
+	 * @return The {@link GraphModel} that is being build by the IGraphModelBuilder.
+	 * @throws GraphBuilderException if the model could not be build for some reason
 	 */
-	/**
-	 * Builds a graphmodel from the given settings and returns it.
-	 * 
-	 * @return The {@link GraphModel} that is being build by the
-	 *         IGraphModelBuilder.
-	 *         
-	 * @throws Exception
-	 */
-	public GraphModel build() throws Exception;
+	public GraphModel build() throws GraphBuilderException;
 
 }

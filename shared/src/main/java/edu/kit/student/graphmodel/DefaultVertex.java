@@ -1,7 +1,10 @@
 package edu.kit.student.graphmodel;
 
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import edu.kit.student.objectproperty.GAnsProperty;
 import edu.kit.student.util.DoublePoint;
@@ -14,24 +17,44 @@ import javafx.scene.paint.Color;
  * main application. This vertex can be derived by plugins which offer more
  * functionality than the basic vertex.
  */
-public class DefaultVertex implements Vertex {
+public class DefaultVertex implements ViewableVertex {
 
     private GAnsProperty<String> name;
 	private Integer id;
 	private GAnsProperty<String> label;
 	private int x;
 	private int y;
+	private int link = 0;
+	private List<GAnsProperty<?>> data;
 
 	/**
-	 * Constructor
+	 * Constructs a new DefaultVertex.
+	 * Sets the specified attributes.
 	 * 
 	 * @param name of the new vertex
 	 * @param label of the new vertex
 	 */
 	public DefaultVertex(String name, String label) {
+		this(name, label, new HashMap<>());
+	}
+
+	/**
+	 * Constructs a new DefaultVertex.
+	 * Sets the specified attributes.
+	 * Adds all specified additional data as properties of this vertex.
+	 * 
+	 * @param name of the new vertex
+	 * @param label of the new vertex
+	 * @param data additional data to be stored
+	 */
+	public DefaultVertex(String name, String label, Map<String, ?> data) {
         this.name = new GAnsProperty<String>("name", name);
         this.label = new GAnsProperty<String>("label", label);
         this.id = IdGenerator.getInstance().createId();
+        this.data = new LinkedList<>();
+        for (Entry<String, ?> entry : data.entrySet()) {
+        	this.data.add(new GAnsProperty<Object>(entry.getKey(), entry.getValue()));
+        }
 	}
 	
 	@Override
@@ -81,6 +104,7 @@ public class DefaultVertex implements Vertex {
 	@Override
 	public List<GAnsProperty<?>> getProperties() {
 		List<GAnsProperty<?>> properties = new LinkedList<GAnsProperty<?>>();
+		properties.addAll(data);
 		properties.add(name);
 		properties.add(label);
 		return properties;
@@ -105,4 +129,18 @@ public class DefaultVertex implements Vertex {
     public int hashCode() {
         return id.hashCode();
     }
+
+	@Override
+	public int getLink() {
+		return this.link;
+	}
+	
+	public void setLink(int graphId) {
+		this.link = graphId;
+	}
+
+	@Override
+	public VertexPriority getPriority() {
+		return VertexPriority.HIGH;
+	}
 }

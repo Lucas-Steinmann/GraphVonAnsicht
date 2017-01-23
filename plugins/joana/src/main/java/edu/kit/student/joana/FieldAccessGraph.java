@@ -10,7 +10,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import edu.kit.student.graphmodel.FastGraphAccessor;
-import edu.kit.student.graphmodel.SubGraph;
+import edu.kit.student.graphmodel.InlineSubGraph;
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.ViewableVertex;
 import edu.kit.student.graphmodel.action.SubGraphAction;
@@ -26,7 +26,7 @@ import javafx.scene.paint.Color;
 /**
  * A {@link JoanaGraph} which specifies a {@link FieldAccess} in a {@link JoanaGraph}.
  */
-public class FieldAccessGraph extends JoanaGraph implements SubGraph {
+public class FieldAccessGraph extends JoanaGraph implements InlineSubGraph {
 
     private DefaultDirectedGraph<JoanaVertex, JoanaEdge> graph;
     private JoanaVertex fieldEntry;
@@ -154,7 +154,7 @@ public class FieldAccessGraph extends JoanaGraph implements SubGraph {
 
 
     @Override
-    public Set<? extends SubGraph> getSubGraphs() {
+    public Set<? extends InlineSubGraph> getInlineSubGraphs() {
         return new HashSet<>();
     }
 

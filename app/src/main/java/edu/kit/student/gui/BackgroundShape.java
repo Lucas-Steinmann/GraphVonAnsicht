@@ -1,6 +1,6 @@
 package edu.kit.student.gui;
 
-import edu.kit.student.graphmodel.SubGraph;
+import edu.kit.student.graphmodel.InlineSubGraph;
 import edu.kit.student.graphmodel.ViewableVertex;
 import edu.kit.student.util.DoublePoint;
 import javafx.scene.paint.Color;
@@ -24,7 +24,7 @@ public class BackgroundShape extends GAnsGraphElement {
 		relocate(vertex.getX(), vertex.getY());
 	}
 
-	public BackgroundShape(SubGraph subgraph) {
+	public BackgroundShape(InlineSubGraph subgraph) {
 		DoublePoint size = subgraph.getSize();
 		this.rectangle = new Rectangle(size.x, size.y, subgraph.getBackgroundColor());
 		this.text = new Text(subgraph.getName());

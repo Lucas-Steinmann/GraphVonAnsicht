@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
+import edu.kit.student.graphmodel.builder.GraphBuilderException;
 import edu.kit.student.graphmodel.builder.IEdgeBuilder;
 import edu.kit.student.graphmodel.builder.IGraphBuilder;
 import edu.kit.student.graphmodel.builder.IVertexBuilder;
@@ -37,6 +38,7 @@ public class CallGraphBuilder implements IGraphBuilder {
                 return builder.getEdgeBuilder(sourceId, targetId);
             }
         }
+        // Found edge between two method graphs
         JoanaEdgeBuilder eBuilder = new JoanaEdgeBuilder();
         callEdgeBuilders.add(eBuilder);
         return eBuilder;
@@ -60,7 +62,7 @@ public class CallGraphBuilder implements IGraphBuilder {
      * @return the callgraph
      * @throws Exception
      */
-    public CallGraph build() throws Exception {
+    public CallGraph build() throws GraphBuilderException {
         for (MethodGraphBuilder b : methodGraphBuilders) {
             methodGraphs.add(b.build());
         }

@@ -25,7 +25,6 @@ public class JoanaEdgeBuilder implements IEdgeBuilder {
     
     @Override
     public void setID(String id) {
-    	// not needed, an edge in joana is defined only by its source, targed and kind.
         this.name = id;
     }
 

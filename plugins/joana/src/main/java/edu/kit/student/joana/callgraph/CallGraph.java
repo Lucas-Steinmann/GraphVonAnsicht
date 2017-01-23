@@ -9,7 +9,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 import edu.kit.student.graphmodel.CompoundVertex;
-import edu.kit.student.graphmodel.SubGraph;
+import edu.kit.student.graphmodel.InlineSubGraph;
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.ViewableVertex;
 import edu.kit.student.graphmodel.action.SubGraphAction;
@@ -81,7 +81,7 @@ public class CallGraph extends JoanaGraph {
     }
 
     @Override
-    public Set<? extends SubGraph> getSubGraphs() {
+    public Set<? extends InlineSubGraph> getInlineSubGraphs() {
         return new HashSet<>();
     }
 

@@ -10,6 +10,7 @@ dependencies {
     compile project(":plugins:joana")
     compile project(":plugins:svg")
     compile project(":plugins:graphml")
+	compile project(":plugins:directed")
 
 
     testCompile "org.testfx:testfx-core:4.0.+"

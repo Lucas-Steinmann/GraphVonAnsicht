@@ -10,7 +10,7 @@ import java.util.Set;
 
 import edu.kit.student.graphmodel.Edge;
 import edu.kit.student.graphmodel.Graph;
-import edu.kit.student.graphmodel.SubGraph;
+import edu.kit.student.graphmodel.InlineSubGraph;
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.ViewableGraph;
 import edu.kit.student.graphmodel.ViewableVertex;
@@ -92,7 +92,7 @@ public class GraphViewGraphFactory {
 		}
 		
 		background.clear();
-		for(SubGraph subgraph : graph.getSubGraphs()) {
+		for(InlineSubGraph subgraph : graph.getInlineSubGraphs()) {
 		    BackgroundShape shape = new BackgroundShape(subgraph);
 		    background.add(shape);
 		}
@@ -180,7 +180,7 @@ public class GraphViewGraphFactory {
 				reversedVertices.put(vertex, shape);
 			}
 		}
-		for(SubGraph subgraph : graph.getSubGraphs()) {
+		for(InlineSubGraph subgraph : graph.getInlineSubGraphs()) {
 		    BackgroundShape shape = new BackgroundShape(subgraph);
 		    background.add(shape);
 		}

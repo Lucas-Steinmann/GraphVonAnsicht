@@ -1,8 +1,11 @@
 package edu.kit.student.graphmodel.directed;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import edu.kit.student.graphmodel.EdgeArrow;
 import edu.kit.student.graphmodel.FastGraphAccessor;
@@ -20,36 +23,57 @@ public class DefaultDirectedEdge<V extends Vertex> implements DirectedEdge {
 	private Integer id;
 	private GAnsProperty<String> label;
 	private OrthogonalEdgePath path;
+	private List<GAnsProperty<?>> data;
 
 	/**
-	 * Constructor
+     * Constructs a new DefaultDirectedEdge.
+     * Sets the specified attributes.
 	 * 
 	 * @param name of the new edge
 	 * @param label of the new edge
 	 */
     public DefaultDirectedEdge(String name, String label) {       
-        this.name = new GAnsProperty<String>("name", name);
-        this.label = new GAnsProperty<String>("label", label);
-        this.id = IdGenerator.getInstance().createId();
-        this.path = new OrthogonalEdgePath();
+    	this(name, label, null, null);
     }
     
     /**
-     * Constructor to set source and target
+     * Constructs a new DefaultDirectedEdge.
+     * Sets the specified attributes.
      * 
-     * @param name
-     * @param label
-     * @param source
-     * @param target
+	 * @param name of the new edge
+	 * @param label of the new edge
+     * @param source source vertex
+     * @param target target vertex
      */
     public DefaultDirectedEdge(String name, String label, V source, V target) {  
-    	this(name,label);
-        this.source = source;
-        this.target = target;
+    	this(name,label,source,target,new HashMap<>());
     }
     
     /**
-     * Set source and target vertex of this directed edge
+     * Constructs a new DefaultDirectedEdge.
+     * Sets the specified attributes and stores additional data as properties of the edge.
+     * 
+	 * @param name of the new edge
+	 * @param label of the new edge
+     * @param source source vertex
+     * @param target target vertex
+     * @param data additional data as key-value pairs
+     */
+    public DefaultDirectedEdge(String name, String label, V source, V target, Map<String, ?> data) {  
+        this.name = new GAnsProperty<String>("name", name);
+        this.label = new GAnsProperty<String>("label", label);
+        this.source = source;
+        this.target = target;
+        this.id = IdGenerator.getInstance().createId();
+        this.path = new OrthogonalEdgePath();
+        this.data = new LinkedList<>();
+        for (Entry<String, ?> entry : data.entrySet()) {
+        	this.data.add(new GAnsProperty<Object>(entry.getKey(), entry.getValue()));
+        }
+    }
+
+    /**
+     * Sets source and target vertex of this directed edge
      * 
      * @param source vertex
      * @param target vertex
@@ -124,6 +148,7 @@ public class DefaultDirectedEdge<V extends Vertex> implements DirectedEdge {
 	@Override
 	public List<GAnsProperty<?>> getProperties() {
 		LinkedList<GAnsProperty<?>> properties = new LinkedList<>();
+		properties.addAll(data);
 		properties.add(name);
 		properties.add(label);
 		return properties;

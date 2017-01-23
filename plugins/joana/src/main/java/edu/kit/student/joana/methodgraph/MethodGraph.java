@@ -3,7 +3,7 @@ package edu.kit.student.joana.methodgraph;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import edu.kit.student.graphmodel.SubGraph;
+import edu.kit.student.graphmodel.InlineSubGraph;
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.ViewableVertex;
 import edu.kit.student.graphmodel.action.SubGraphAction;
@@ -318,7 +318,7 @@ public class MethodGraph extends JoanaGraph {
     }
 
     @Override
-    public Set<? extends SubGraph> getSubGraphs() {
+    public Set<? extends InlineSubGraph> getInlineSubGraphs() {
         return getFieldAccesses().stream()
                                  .map(fa -> fa.getGraph())
                                  .collect(Collectors.toSet());

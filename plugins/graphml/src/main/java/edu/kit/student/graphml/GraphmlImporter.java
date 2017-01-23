@@ -1,6 +1,7 @@
 package edu.kit.student.graphml;
 
 
+import edu.kit.student.graphmodel.builder.GraphBuilderException;
 import edu.kit.student.graphmodel.builder.IEdgeBuilder;
 import edu.kit.student.graphmodel.builder.IGraphBuilder;
 import edu.kit.student.graphmodel.builder.IGraphModelBuilder;
@@ -88,8 +89,8 @@ public class GraphmlImporter implements Importer {
         
         try {
             builder.build();
-        } catch(Exception e) {
-            throw new ParseException(e.getMessage(), 0);
+        } catch(GraphBuilderException e) {
+            throw new ParseException("Exception was thrown in builder:\n" + e.getMessage(), 0);
         }
     }
 
