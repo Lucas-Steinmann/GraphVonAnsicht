@@ -797,6 +797,16 @@ public class SugiyamaGraph
 		public DoublePoint getSize() {
 			return this.vertex.getSize();
 		}
+		
+		@Override
+		public void setLeftRightMargin(IntegerPoint newMargin) {
+			this.vertex.setLeftRightMargin(newMargin);
+		}
+		
+		@Override
+		public IntegerPoint getLeftRightMargin() {
+			return this.vertex.getLeftRightMargin();
+		}
 
 		@Override
 		public Color getColor() {
@@ -822,6 +832,7 @@ public class SugiyamaGraph
         public int hashCode() {
             return getID().hashCode();
         }
+
 	}
 
 	/**
