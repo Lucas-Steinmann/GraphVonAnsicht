@@ -4,6 +4,7 @@ import java.util.List;
 
 import edu.kit.student.objectproperty.GAnsProperty;
 import edu.kit.student.util.DoublePoint;
+import edu.kit.student.util.IntegerPoint;
 import javafx.scene.paint.Color;
 
 /**
@@ -81,6 +82,11 @@ public interface Vertex {
 	public List<GAnsProperty<?>> getProperties();
 	
 	public DoublePoint getSize();
+	
+	//TODO: think about a better way for setting and getting the leftRightMargin from a vertex, with possibility to set a default very easy.
+	public void setLeftRightMargin(IntegerPoint newMargin);
+	
+	public IntegerPoint getLeftRightMargin();
 	
 	public Color getColor();
 }

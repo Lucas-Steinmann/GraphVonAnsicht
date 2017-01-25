@@ -38,6 +38,7 @@ public class VertexPositioner implements IVertexPositioner {
 		int[] verticalHeight = new int[graph.getLayerCount()];
 		int[] verticalOffset = new int[graph.getLayerCount()];
 		int verticalSpacing = 70;
+		System.out.println("Length of:  horizontalWidth: "+horizontalWidth.length+" ,horizontalOffset: "+horizontalOffset.length+" ,verticalHeight: "+verticalHeight.length+" ,verticalOffset: "+verticalOffset.length);
 
 		for (int i = 0; i < maxwidth*4; i++) {
 			segmentStarts.put(i, new LinkedList<>());
@@ -161,7 +162,8 @@ public class VertexPositioner implements IVertexPositioner {
 			verticalHeight[vertex.getY()] = Math.max(verticalHeight[vertex.getY()], Math.round((float) vertex.getSize().y));
 		}
 
-		horizontalOffset[0] = 0;
+		horizontalOffset[0] = (int) Math.ceil(graph.getLayer(0).get(0).getLeftRightMargin().x);//normally the left margins of every vertex are the same
+		//TODO: maybe search in all layers for the bissest left marign in the first vertex of each layer to set as horizontalOffset[0]
 		verticalOffset[0] = 0;
 
 		for (int i = 1; i < horizontalWidth.length; i++) {
@@ -175,6 +177,32 @@ public class VertexPositioner implements IVertexPositioner {
 		for (Vertex vertex : graph.getVertexSet()) {
 			vertex.setX(horizontalOffset[vertex.getX()]);
 			vertex.setY(verticalOffset[vertex.getY()]);
+		}
+		//adjust left and right margins of all vertices in the graph
+		this.adjustLeftAndRightMargin(graph.getLayers());
+	}
+	
+	private void adjustLeftAndRightMargin(List<List <ISugiyamaVertex>> layers){
+		for(List<ISugiyamaVertex> layer : layers){
+			assert(!layer.isEmpty());
+//			int offsetRight = 0; //optional. every distance a single vertex has been moved is added here so all following vertices are also moved this much, even if the distance between both vertices is enough
+			//first move the first vertex more right if he is very left (x-coord 0)
+			ISugiyamaVertex fst = layer.get(0);
+			if(fst.getX() < fst.getLeftRightMargin().x){
+				fst.setX(fst.getX() + (fst.getLeftRightMargin().x - fst.getX()));
+			}
+			for(int i = 1; i < layer.size(); i++){
+				//adjust here left and right margins
+				//is it necessary to move all vertices in a layer if only one has been moved, or just look whether the dist betw. vetrtices is enough ?
+				ISugiyamaVertex left = layer.get(i-1);
+				ISugiyamaVertex right = layer.get(i);
+				int distBetweenVertices = left.getLeftRightMargin().y + right.getLeftRightMargin().x;//necessary space betw. vertices i-1,i
+				if(right.getX() < left.getX() + left.getSize().x + distBetweenVertices){
+					int newX = (int) (left.getX() + left.getSize().x + distBetweenVertices);//TODO: maybe getSize().x should return an int
+					right.setX(newX);
+				}
+			}
+			//TODO: maybe adjust graph size so that the last vertex has the space rightmost that he wants
 		}
 	}
 
