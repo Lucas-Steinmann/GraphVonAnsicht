@@ -5,6 +5,7 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
+import edu.kit.student.graphmodel.builder.GraphBuilderException;
 import edu.kit.student.graphmodel.builder.IEdgeBuilder;
 import edu.kit.student.graphmodel.builder.IGraphBuilder;
 import edu.kit.student.graphmodel.builder.IVertexBuilder;
@@ -27,8 +28,6 @@ public class CallGraphBuilder implements IGraphBuilder {
     Set<MethodGraphBuilder> methodGraphBuilders = new HashSet<>();
     Set<MethodGraph> methodGraphs = new HashSet<>();
     Set<JoanaEdgeBuilder> callEdgeBuilders = new HashSet<>();
-//    Set<Pair<String,String>> interprocEdges = new HashSet<>(); //the id's of the vertices of interprocedural edges in the whole graph. key~source, value~target
-    
     String name;
     
     public CallGraphBuilder(String name) {
@@ -39,11 +38,10 @@ public class CallGraphBuilder implements IGraphBuilder {
     public IEdgeBuilder getEdgeBuilder(String sourceId, String targetId) {
         for (MethodGraphBuilder builder : methodGraphBuilders) {
             if (builder.containsVertexWithId(sourceId) && builder.containsVertexWithId(targetId)) {
-//            	System.out.println("Added edge: "+ "["+sourceId+"->"+targetId+"]");
                 return builder.getEdgeBuilder(sourceId, targetId);
             }
         }
-//        System.out.println("Kicked off edge: " + "["+sourceId+"->"+targetId+"]");
+        // Found edge between two method graphs
         JoanaEdgeBuilder eBuilder = new JoanaEdgeBuilder();
         callEdgeBuilders.add(eBuilder);
         return eBuilder;
@@ -67,7 +65,7 @@ public class CallGraphBuilder implements IGraphBuilder {
      * @return the callgraph
      * @throws Exception
      */
-    public CallGraph build() throws Exception {
+    public CallGraph build() throws GraphBuilderException {
         for (MethodGraphBuilder b : methodGraphBuilders) {
             methodGraphs.add(b.build());
         }
@@ -93,7 +91,7 @@ public class CallGraphBuilder implements IGraphBuilder {
             //check if edge exists
             if (edge != null) {
                 callEdges.add(edge);
-            }
+            }       
         }
         
         //edges between two MethodGraphs. All interprocEdges can be found in callEdges, these are also edges not from the same MethodGraph
