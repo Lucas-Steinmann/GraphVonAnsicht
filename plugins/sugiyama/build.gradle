@@ -18,5 +18,6 @@ eclipse {
 }
 
 dependencies {
+    compile project(":plugins:directed")
     compile project(":shared")
 }

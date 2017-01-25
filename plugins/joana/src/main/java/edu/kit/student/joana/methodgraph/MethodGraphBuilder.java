@@ -3,6 +3,7 @@ package edu.kit.student.joana.methodgraph;
 import java.util.HashSet;
 import java.util.Set;
 
+import edu.kit.student.graphmodel.builder.GraphBuilderException;
 import edu.kit.student.graphmodel.builder.IEdgeBuilder;
 import edu.kit.student.graphmodel.builder.IGraphBuilder;
 import edu.kit.student.graphmodel.builder.IVertexBuilder;
@@ -62,9 +63,9 @@ public class MethodGraphBuilder implements IGraphBuilder {
     /**
      * Builds the method graph, which has been described before this method is called.
      * @return the built methodgraph
-     * @throws Exception
+     * @throws GraphBuilderException
      */
-    public MethodGraph build() throws Exception {
+    public MethodGraph build() throws GraphBuilderException {
         for (JoanaVertexBuilder builder : vertexBuilders) {	
             vertices.add(builder.build());
         }

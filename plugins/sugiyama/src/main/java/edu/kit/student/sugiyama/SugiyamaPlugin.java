@@ -2,9 +2,7 @@ package edu.kit.student.sugiyama;
 
 
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
-import edu.kit.student.graphmodel.directed.DirectedGraph;
-import edu.kit.student.graphmodel.directed.DirectedGraphLayoutOption;
-import edu.kit.student.parameter.Settings;
+import edu.kit.student.graphmodel.viewable.GenericGraphPlugin;
 import edu.kit.student.plugin.AbstractPluginBase;
 
 /**
@@ -25,33 +23,7 @@ public class SugiyamaPlugin extends AbstractPluginBase {
 
     @Override
     public void load() {
-        DefaultDirectedGraph.getDirectedGraphLayoutRegister().addLayoutOption(new DirectedGraphLayoutOption() {
-            
-            SugiyamaLayoutAlgorithm<? extends DirectedGraph> algo;
-            
-            {
-                this.setName("Sugiyama");
-                this.setId("SUG");
-            }
-
-            @Override
-            public Settings getSettings() {
-                if (algo == null) {
-                    chooseLayout();
-                }
-                return algo.getSettings();
-            }
-            
-            @Override
-            public void chooseLayout() {
-                algo = new SugiyamaLayoutAlgorithm<>();
-            }
-            
-            @Override
-            public void applyLayout() {
-                //TODO: Remove casting by changing some interface (probably LayoutAlgorithm.layout)
-                this.algo.layout((DirectedGraph) graph);
-            }
-        });;
+        DefaultDirectedGraph.getDirectedGraphLayoutRegister().addLayoutOption(new SugiyamaLayoutOption());
+        GenericGraphPlugin.directedGraphLayoutOptions.addLayoutOption(new SugiyamaLayoutOption());
     }
 }

@@ -86,6 +86,7 @@ dependencies {
     compile project(":plugins:joana")
     compile project(":plugins:svg")
     compile project(":plugins:graphml")
+    compile project(":plugins:directed")
     
     testCompile project (path: ":plugins:sugiyama", configuration: 'testArtifacts')
 }

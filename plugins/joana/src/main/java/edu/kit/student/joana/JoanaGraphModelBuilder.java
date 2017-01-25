@@ -4,6 +4,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import edu.kit.student.graphmodel.GraphModel;
+import edu.kit.student.graphmodel.builder.GraphBuilderException;
 import edu.kit.student.graphmodel.builder.IGraphBuilder;
 import edu.kit.student.graphmodel.builder.IGraphModelBuilder;
 import edu.kit.student.joana.callgraph.CallGraph;
@@ -35,7 +36,7 @@ public class JoanaGraphModelBuilder implements IGraphModelBuilder {
     }
 
     @Override
-    public GraphModel build() throws Exception {
+    public GraphModel build() throws GraphBuilderException {
         CallGraph callGraph = callBuilder.build();
         JoanaGraphModel model = new JoanaGraphModel(callGraph);
         workspace.setGraphModel(model);

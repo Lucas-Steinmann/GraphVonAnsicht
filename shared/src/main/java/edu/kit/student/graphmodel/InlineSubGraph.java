@@ -3,7 +3,7 @@ package edu.kit.student.graphmodel;
 import edu.kit.student.util.DoublePoint;
 import javafx.scene.paint.Color;
 
-public interface SubGraph extends ViewableGraph {
+public interface InlineSubGraph extends ViewableGraph {
     
     public abstract Color getBackgroundColor();
 

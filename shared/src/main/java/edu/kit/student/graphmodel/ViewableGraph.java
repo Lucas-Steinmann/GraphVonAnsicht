@@ -106,7 +106,7 @@ public interface ViewableGraph extends Graph {
 	 * Returns the set of all conceptual subgraphs in this graph
 	 * @return the list of subgraphs
 	 */
-	public Set<? extends SubGraph> getSubGraphs();
+	public Set<? extends InlineSubGraph> getInlineSubGraphs();
 
 	/**
 	 * Returns a list of layouts which have been registered at the corresponding

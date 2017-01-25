@@ -52,6 +52,7 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
@@ -289,7 +290,10 @@ public class GAnsApplication {
             
             this.structureView.showGraphModel(this.model);
         } catch (ParseException e) {
-            showErrorDialog(e.getMessage());
+			showErrorDialog(e.getMessage() + "\nat\n" 
+					+ Arrays.stream(e.getStackTrace())
+							.map(st -> st.getClassName() + ": " + st.getMethodName() + "(" + st.getLineNumber() + ")")
+							.reduce("", (s,n) -> s + n + "\n"));
             return;
         } catch (FileNotFoundException e) {
             showErrorDialog(e.getMessage());
@@ -338,7 +342,7 @@ public class GAnsApplication {
 			
 		} catch (ParseException e) {
 			this.graphViewTabPane.getTabs().clear();
-			showErrorDialog(e.getMessage());
+			showErrorDialog(e.getMessage() + "\nat\n" + e.getStackTrace());
 			return;
 		} catch (FileNotFoundException e) {
 			this.graphViewTabPane.getTabs().clear();

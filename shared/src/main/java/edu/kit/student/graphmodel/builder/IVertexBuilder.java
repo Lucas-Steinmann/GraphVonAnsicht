@@ -11,6 +11,7 @@ public interface IVertexBuilder {
 	 * @param id
 	 *           value to which the id is set
 	 */
+	// TODO: Inconsistency in naming scheme (should be called set name or have type of integer)
 	public abstract void setID(String id);
 	
 	/**
