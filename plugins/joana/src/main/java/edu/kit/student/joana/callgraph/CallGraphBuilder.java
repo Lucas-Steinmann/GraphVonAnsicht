@@ -28,8 +28,6 @@ public class CallGraphBuilder implements IGraphBuilder {
     Set<MethodGraphBuilder> methodGraphBuilders = new HashSet<>();
     Set<MethodGraph> methodGraphs = new HashSet<>();
     Set<JoanaEdgeBuilder> callEdgeBuilders = new HashSet<>();
-//    Set<Pair<String,String>> interprocEdges = new HashSet<>(); //the id's of the vertices of interprocedural edges in the whole graph. key~source, value~target
-    
     String name;
     
     public CallGraphBuilder(String name) {

@@ -28,6 +28,8 @@ public class DefaultVertex implements ViewableVertex {
 	private int link = 0;
 	private List<GAnsProperty<?>> data;
 	private IntegerPoint leftRightMargin;
+	private int link = 0;
+	private List<GAnsProperty<?>> data;
 
 	/**
 	 * Constructs a new DefaultVertex.
