@@ -6,6 +6,7 @@ import java.util.List;
 import edu.kit.student.objectproperty.GAnsProperty;
 import edu.kit.student.util.DoublePoint;
 import edu.kit.student.util.IdGenerator;
+import edu.kit.student.util.IntegerPoint;
 import edu.kit.student.util.Settings;
 import javafx.scene.paint.Color;
 
@@ -21,6 +22,7 @@ public class DefaultVertex implements Vertex {
 	private GAnsProperty<String> label;
 	private int x;
 	private int y;
+	private IntegerPoint leftRightMargin;
 
 	/**
 	 * Constructor
@@ -95,6 +97,20 @@ public class DefaultVertex implements Vertex {
 	public DoublePoint getSize() {
 		return Settings.getSize(this.getLabel(), true);
 	}
+	
+	@Override
+	public IntegerPoint getLeftRightMargin() {
+		if(this.leftRightMargin != null){
+			return this.leftRightMargin;
+		}else{
+			return new IntegerPoint(2,2);
+		}
+	}
+	
+	@Override
+	public void setLeftRightMargin(IntegerPoint newMargin) {
+		this.leftRightMargin = newMargin;
+	}
 
 	@Override
 	public Color getColor() {
@@ -105,4 +121,5 @@ public class DefaultVertex implements Vertex {
     public int hashCode() {
         return id.hashCode();
     }
+
 }

@@ -9,9 +9,11 @@ import edu.kit.student.graphmodel.ViewableVertex;
 import edu.kit.student.graphmodel.action.SubGraphAction;
 import edu.kit.student.graphmodel.action.VertexAction;
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
+import edu.kit.student.graphmodel.directed.DirectedEdge;
 import edu.kit.student.joana.FieldAccess;
 import edu.kit.student.joana.FieldAccessCollapser;
 import edu.kit.student.joana.FieldAccessGraph;
+import edu.kit.student.joana.InterproceduralVertex;
 import edu.kit.student.joana.JoanaCollapsedVertex;
 import edu.kit.student.joana.JoanaCollapser;
 import edu.kit.student.joana.JoanaEdge;
@@ -25,6 +27,8 @@ import edu.kit.student.objectproperty.GAnsProperty;
 import edu.kit.student.plugin.EdgeFilter;
 import edu.kit.student.plugin.LayoutOption;
 import edu.kit.student.plugin.VertexFilter;
+import edu.kit.student.util.DoublePoint;
+import edu.kit.student.util.IntegerPoint;
 import edu.kit.student.util.LanguageManager;
 
 /**
@@ -42,6 +46,8 @@ public class MethodGraph extends JoanaGraph {
     
     private FieldAccessCollapser fcollapser;
     private JoanaCollapser collapser;
+    
+    private Map<Integer,Set<InterproceduralVertex>> interprocVertices = new HashMap<>();
 
     public MethodGraph(Set<JoanaVertex> vertices, Set<JoanaEdge> edges, 
             String methodName) {
@@ -68,6 +74,63 @@ public class MethodGraph extends JoanaGraph {
     }
 
 
+    //sets the interprocedural vertices of a graph.
+    //Also calculates a mapping of vertex id to the interprocedural vertices thatare connected with this vertex with the specified ID
+    public void setInterprocVertices(Set<InterproceduralVertex> interprocVertices){
+    	Map<Integer,Set<InterproceduralVertex>> idToIVs = new HashMap<>();
+    	for(InterproceduralVertex iv : interprocVertices){
+    		assert(this.getVertexSet().contains(iv.getConnectedVertex()));//has to be fulfilled!!!
+    		if(!idToIVs.containsKey(iv.getConnectedVertex().getID())){
+    			idToIVs.put(iv.getConnectedVertex().getID(), new HashSet<>());
+    		}
+    		idToIVs.get(iv.getConnectedVertex().getID()).add(iv);
+    	}
+    	this.interprocVertices = idToIVs;
+    	this.calcLeftRightMarginNew();
+    }
+    
+    public Map<Integer,Set<InterproceduralVertex>> getInterprocVertices(){
+    	return this.interprocVertices;
+    }
+    
+    /**
+     * Adds interprocedural edges to this MethodGraph. An edge contains a JoanaVertex and an InterproceduralVertex.
+     * The JoanaVertex is already contained in the graph, so only the interprocedural ones should be passed. 
+     * Every InterproceduralVertex should be assigned X- and Y-coordinated, as well as every edge should have a valid EdgePath.
+     * These vertices and edges won't be layouted later, they are added to an already layouted MethodGraph.
+     * 
+     * @param vertices interprocedural vertices that are connected with vertices already in the graph. Should have correct X- and Y-coordinates set!
+     * @param edges edges between normal vertices and interprocedural ones. Shuld have a valid EdgePath!
+     */
+    public void addInterproceduralEdges(Set<JoanaEdge> edges){
+//    	this.graph.addAllVertices(vertices);//TODO: why this doesn't work????????
+    	
+    	this.interprocVertices.values().stream().forEach(set->set.forEach(v->this.graph.addVertex(v)));
+    	this.graph.addAllEdges(edges);
+    }
+    
+    /**
+     * removes interprocedural edges from this graph and also the dummies of it.
+     */
+    public void removeInterproceduralEdges(){
+    	
+    }
+    
+    //calcs for vertices with InterproceduralEdges their leftRightMargin new because they need more space in later layouting.
+    private void calcLeftRightMarginNew(){
+    	for(JoanaVertex v : this.getVertexSet()){
+    		if(this.getInterprocVertices().containsKey(v.getID())){
+    			Set<InterproceduralVertex> ivs = this.getInterprocVertices().get(v.getID());
+    			int rightMargin = v.getLeftRightMargin().x;//left margin is the same as right. Later we will also access the vertex' original right margin through it's left margin
+    			for(InterproceduralVertex iv : ivs){
+    				rightMargin += iv.getLeftRightMargin().x + iv.getSize().x + iv.getLeftRightMargin().y;
+    			}
+    			rightMargin += 5;//bit more distance to other following vertices on the right side
+    			v.setLeftRightMargin(new IntegerPoint(v.getLeftRightMargin().x,rightMargin));
+    		}
+    	}
+    }
+    
     /**
      * Returns the entry vertex of a method.
      * 

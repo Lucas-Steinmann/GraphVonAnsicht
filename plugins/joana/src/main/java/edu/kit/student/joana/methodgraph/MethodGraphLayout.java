@@ -1,6 +1,7 @@
 package edu.kit.student.joana.methodgraph;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -22,6 +23,8 @@ import edu.kit.student.graphmodel.directed.DefaultDirectedSupplementEdgePath;
 import edu.kit.student.graphmodel.directed.DirectedEdge;
 import edu.kit.student.joana.FieldAccess;
 import edu.kit.student.joana.FieldAccessGraph;
+import edu.kit.student.joana.InterproceduralVertex;
+import edu.kit.student.joana.InterproceduralVertex.EdgeDirection;
 import edu.kit.student.joana.JoanaEdge;
 import edu.kit.student.joana.JoanaVertex;
 import edu.kit.student.objectproperty.GAnsProperty;
@@ -33,6 +36,7 @@ import edu.kit.student.sugiyama.RelativeLayerConstraint;
 import edu.kit.student.sugiyama.SugiyamaLayoutAlgorithm;
 import edu.kit.student.sugiyama.steps.LayerAssigner;
 import edu.kit.student.util.DoublePoint;
+import edu.kit.student.util.IntegerPoint;
 import javafx.scene.paint.Color;
 
 
@@ -113,6 +117,9 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 		expandFieldAccesses(graph, collapsedFAs);
 //		System.out.println("now drawing field access edges new !!!!!!!!!!!!!!!!!!!!!!");
 		collapsedFAs.forEach(fa->drawEdgesNew(graph, fa));	//new version
+		
+		//draws interprocedural vertices of this graph. 
+		drawInterproceduralVertices(graph);
 	}
 	
 	/**
@@ -610,6 +617,61 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 	}
 	
 	/**
+	 * Draws every InterproceduralVertex of this MethodGraph.
+	 * There is enough space right from every vertex that is connected with InterproceduralVertices 
+	 * IVs of a vertex are drawn as following: (Example of a vertex wit 3 InterproceduralVertices)
+	 *  ____
+	 * |	|	__	  __	__
+	 * |____|  |__|  |__|  |__|  
+	 * 
+	 * Edges will be drawn horizontally, leaving the Vertex on the right side and going vertically into the IVs to top side.
+	 * 
+	 */
+	private void drawInterproceduralVertices(MethodGraph mg){
+		//TODO: watch out that filtering still works (need possibility for just drawing some IVs of a vertex -> look at FAs and their way!)
+		//TODO: draw here the interprocedural vertices of a MethodGraph
+		Map<Integer,Set<InterproceduralVertex>> idToIVs = mg.getInterprocVertices();
+		Set<JoanaVertex> vertices = mg.getVertexSet();
+		for(JoanaVertex v : vertices){
+			if(idToIVs.containsKey(v.getID())){
+				System.out.println("Vertex " + v.getName() + " : pos("+v.getX()+","+v.getY()+"), size("+v.getSize().x+","+v.getSize().y+"), LR-Margin("+v.getLeftRightMargin().x+","+v.getLeftRightMargin().y+")");
+				Set<InterproceduralVertex> ivs = idToIVs.get(v.getID()); //IVs from this vertex
+				HashSet<JoanaEdge> newEdges = new HashSet<JoanaEdge>();//new edges, created through InterproceduralVertices
+				double edgeDist = (v.getSize().y - ivs.iterator().next().getSize().y) / (ivs.size()+1);//vertical distance of 2 edges (asserting that all IVs have the same size)
+				int xVal = (int) Math.floor(v.getX()+v.getSize().x + v.getLeftRightMargin().x); //end of right margin of the vertex. Take left margin because its the same like the old right margin of this vertex
+				//set the IV's position, also create an edge between it and the vertex and draw the edge (add points to its EdgePath)
+				int idx = 1; //number of IV in the loop. First one has number 1! 
+				for(InterproceduralVertex iv : ivs){
+					xVal += iv.getLeftRightMargin().x;//starting position x of new vertex
+					iv.setX(xVal);
+					iv.setY((int) Math.floor(v.getY() + v.getSize().y - iv.getSize().y));//so the IV's bottom are at the same level as the vertex's bottom
+					System.out.println("IV " + iv.getName()+" : pos("+iv.getX()+","+iv.getY()+"), size("+iv.getSize().x+","+iv.getSize().y+"), LR-Margin("+iv.getLeftRightMargin().x+","+iv.getLeftRightMargin().y+")");
+					xVal += iv.getSize().x + iv.getLeftRightMargin().y;//set to the end of the actual IV's right margin
+					JoanaEdge newEdge;
+					//the IV itself represents the little dummy. IV.dummy is not needed for that!
+					if(iv.getEdgeDirection() == EdgeDirection.TO){//IV is target
+						newEdge = new JoanaEdge("","",iv.getConnectedVertex(),iv,iv.getEdgeKind());
+					}else{
+						newEdge = new JoanaEdge("","",iv,iv.getConnectedVertex(),iv.getEdgeKind());
+					}
+					EdgePath path = newEdge.getPath();
+					path.addPoint(new DoublePoint(v.getX()+v.getSize().x,iv.getY() - idx*edgeDist));//first point: on the Vertex's right side
+					path.addPoint(new DoublePoint(iv.getX() + iv.getSize().x / 2,iv.getY() - idx*edgeDist));//second point: above the middle of the IV's top
+					path.addPoint(new DoublePoint(iv.getX() + iv.getSize().x / 2,iv.getY())); //third point: middle on top of the IV's top
+					System.out.println("path: "+path.getNodes().get(0).toString() + " | " + path.getNodes().get(1).toString() + " | " + path.getNodes().get(2).toString());
+					if(iv.getEdgeDirection() == EdgeDirection.FROM){//wrong direction: turn EdgePath
+						Collections.reverse(path.getNodes());
+					}
+					newEdges.add(newEdge);
+					idx++;
+				}
+				//finally add new vertices and edges to the graph's vertex- and edgeset
+				mg.addInterproceduralEdges(newEdges);
+			}
+		}
+	}
+	
+	/**
 	 * Get index of value in list.
 	 * Index 0 is the first index.
 	 * -1 is returned, if value is not contained in list.
@@ -831,13 +893,22 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 		public DoublePoint getSize() {
 			return this.size;
 		}
+		
+		@Override
+		public IntegerPoint getLeftRightMargin() {
+			return new IntegerPoint(2,2);
+		}
+		
+		@Override
+		public void setLeftRightMargin(IntegerPoint newMargin) {
+			//don't need this here
+		}
 
 		@Override
 		public Color getColor() {
 			// not necessary
 			return null;
 		}
-    	
     }
 
 }
