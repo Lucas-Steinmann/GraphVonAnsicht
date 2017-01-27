@@ -2,7 +2,6 @@ package edu.kit.student.joana.callgraph;
 
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.Map;
 import java.util.Set;
 
 import edu.kit.student.graphmodel.builder.GraphBuilderException;
@@ -17,7 +16,6 @@ import edu.kit.student.joana.JoanaEdgeBuilder;
 import edu.kit.student.joana.JoanaVertex;
 import edu.kit.student.joana.methodgraph.MethodGraph;
 import edu.kit.student.joana.methodgraph.MethodGraphBuilder;
-import javafx.util.Pair;
 
 /**
  * The CallGraphBuilder implements an {@link IGraphBuilder} and builds 

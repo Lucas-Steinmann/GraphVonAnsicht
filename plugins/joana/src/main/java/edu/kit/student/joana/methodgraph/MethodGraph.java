@@ -9,7 +9,6 @@ import edu.kit.student.graphmodel.ViewableVertex;
 import edu.kit.student.graphmodel.action.SubGraphAction;
 import edu.kit.student.graphmodel.action.VertexAction;
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
-import edu.kit.student.graphmodel.directed.DirectedEdge;
 import edu.kit.student.joana.FieldAccess;
 import edu.kit.student.joana.FieldAccessCollapser;
 import edu.kit.student.joana.FieldAccessGraph;
@@ -27,7 +26,6 @@ import edu.kit.student.objectproperty.GAnsProperty;
 import edu.kit.student.plugin.EdgeFilter;
 import edu.kit.student.plugin.LayoutOption;
 import edu.kit.student.plugin.VertexFilter;
-import edu.kit.student.util.DoublePoint;
 import edu.kit.student.util.IntegerPoint;
 import edu.kit.student.util.LanguageManager;
 
@@ -74,8 +72,12 @@ public class MethodGraph extends JoanaGraph {
     }
 
 
-    //sets the interprocedural vertices of a graph.
-    //Also calculates a mapping of vertex id to the interprocedural vertices thatare connected with this vertex with the specified ID
+    /**
+     * Sets the interprocedural vertices of this MethodGraph.
+     * Also calculates a mapping of vertex id to the interprocedural vertices that are connected with this vertex with its ID.
+     * 
+     * @param interprocVertices the interprocedural vertices to be set for this MethodGraph
+     */
     public void setInterprocVertices(Set<InterproceduralVertex> interprocVertices){
     	Map<Integer,Set<InterproceduralVertex>> idToIVs = new HashMap<>();
     	for(InterproceduralVertex iv : interprocVertices){
@@ -89,6 +91,10 @@ public class MethodGraph extends JoanaGraph {
     	this.calcLeftRightMarginNew(this.interprocVertices);//first setting of leftRightMargin assumes that no interprocedural vertex nor its edge nor its connected vertex has been filtered yet.
     }
     
+    /**
+     * 
+     * @return the mapping of vertex id and the interprocedural vertices that are connected with them in this MethodGraph.
+     */
     public Map<Integer,Set<InterproceduralVertex>> getInterprocVertices(){
     	return this.interprocVertices;
     }

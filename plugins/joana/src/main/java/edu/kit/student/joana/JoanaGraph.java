@@ -113,6 +113,11 @@ public abstract class JoanaGraph
         return vertices.stream().filter(v -> vertexFilter.stream().allMatch(f -> f.getPredicate().negate().test(v))).collect(Collectors.toSet());
     }
     
+    /**
+     * Removes interprocedural vertices that match the actual filter settings.
+     * @param vertices vertices to test their kind against the filters
+     * @return vertices whose kind does not match with any filter
+     */
     public Set<InterproceduralVertex> removeFilteredVerticesIV(Set<InterproceduralVertex> vertices) {
         return vertices.stream().filter(v -> vertexFilter.stream().allMatch(f -> f.getPredicate().negate().test(v))).collect(Collectors.toSet());
     }

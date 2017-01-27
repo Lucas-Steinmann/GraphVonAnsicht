@@ -10,8 +10,6 @@ import edu.kit.student.util.IntegerPoint;
 public class InterproceduralVertex extends JoanaVertex{
 	//TODO: maybe name it InterprocedualDummyVertex to clarify that it is just a small dummy vertex in a graph pointing to a real Vertex in another graph ?
 	
-	private String name;
-	private String label;
 	private JoanaVertex dummyVertex;
 	private JoanaVertex connectedVertex;
 	private int graphId;
@@ -37,8 +35,6 @@ public class InterproceduralVertex extends JoanaVertex{
 	 */
 	public InterproceduralVertex(String name, String label, JoanaVertex dummyVertex, JoanaVertex connectedVertex, int graphId, String graphName, boolean isTarget, EdgeKind edgeKind){
 		super(name, label, dummyVertex.getNodeKind());
-		this.name = name;
-		this.label = label;
 		this.dummyVertex = dummyVertex;
 		this.connectedVertex = connectedVertex;
 		this.graphId = graphId;
@@ -47,9 +43,6 @@ public class InterproceduralVertex extends JoanaVertex{
 		this.edgeKind = edgeKind;
 	}
 	
-	//override with dummyVertex attributes?!!
-	//seems not to be necessary because its kind is passed through the constructor, the rest is not necessary
-	//TODO: how pass the graph (id and) name of the vertex this is pointing to to this vertex' InformationView(creating GAnsProperties)
 	
 	@Override
 	public List<GAnsProperty<?>> getProperties(){//new properties are : graph name, dummy label(already contains id and its kind)
@@ -59,10 +52,18 @@ public class InterproceduralVertex extends JoanaVertex{
 		return properties;
 	}
 	
+	/**
+	 * Get the JoanaVertex that represents the dummy
+	 * @return the JoanaVertex that represents the dummy
+	 */
 	public JoanaVertex getDummyVertex(){
 		return this.dummyVertex;
 	}
 	
+	/**
+	 * Get the vertex this dummy vertex is connected with.
+	 * @return the vertex this dummy vertex is connected with.
+	 */
 	public JoanaVertex getConnectedVertex(){
 		return this.connectedVertex;
 	}
@@ -90,6 +91,10 @@ public class InterproceduralVertex extends JoanaVertex{
 		return this.direction;
 	}
 	
+	/**
+	 * The EdgeKind of the edge that will be constructed later between this InterproceduralVertex and the vertex that is connected with the dummy.
+	 * @return the EdgeKind of the edge between the dummy and the vertex connected with it
+	 */
 	public EdgeKind getEdgeKind(){
 		return this.edgeKind;
 	}
