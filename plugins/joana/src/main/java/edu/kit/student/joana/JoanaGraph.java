@@ -112,6 +112,10 @@ public abstract class JoanaGraph
     public Set<JoanaVertex> removeFilteredVertices(Set<JoanaVertex> vertices) {
         return vertices.stream().filter(v -> vertexFilter.stream().allMatch(f -> f.getPredicate().negate().test(v))).collect(Collectors.toSet());
     }
+    
+    public Set<InterproceduralVertex> removeFilteredVerticesIV(Set<InterproceduralVertex> vertices) {
+        return vertices.stream().filter(v -> vertexFilter.stream().allMatch(f -> f.getPredicate().negate().test(v))).collect(Collectors.toSet());
+    }
 
     @Override
     public void removeVertexFilter(VertexFilter filter) {

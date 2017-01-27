@@ -86,7 +86,7 @@ public class MethodGraph extends JoanaGraph {
     		idToIVs.get(iv.getConnectedVertex().getID()).add(iv);
     	}
     	this.interprocVertices = idToIVs;
-    	this.calcLeftRightMarginNew();
+    	this.calcLeftRightMarginNew(this.interprocVertices);//first setting of leftRightMargin assumes that no interprocedural vertex nor its edge nor its connected vertex has been filtered yet.
     }
     
     public Map<Integer,Set<InterproceduralVertex>> getInterprocVertices(){
@@ -99,25 +99,56 @@ public class MethodGraph extends JoanaGraph {
      * Every InterproceduralVertex should be assigned X- and Y-coordinated, as well as every edge should have a valid EdgePath.
      * These vertices and edges won't be layouted later, they are added to an already layouted MethodGraph.
      * 
+     * Note: it is possible that there are vertices in the given set, that aren't connected with any edge
+     * 
      * @param vertices interprocedural vertices that are connected with vertices already in the graph. Should have correct X- and Y-coordinates set!
-     * @param edges edges between normal vertices and interprocedural ones. Shuld have a valid EdgePath!
+     * @param edges edges between normal vertices and interprocedural ones. Edges should have a valid EdgePath!
      */
-    public void addInterproceduralEdges(Set<JoanaEdge> edges){
-//    	this.graph.addAllVertices(vertices);//TODO: why this doesn't work????????
-    	
-    	this.interprocVertices.values().stream().forEach(set->set.forEach(v->this.graph.addVertex(v)));
-    	this.graph.addAllEdges(edges);
+    public void addInterproceduralEdges(Set<InterproceduralVertex> vertices, Set<JoanaEdge> edges){
+    	for(JoanaVertex iv : vertices){//add vertices to graph
+    		assert(iv.getX() >= 0 && iv.getY() >= 0);
+    		this.graph.addVertex(iv);
+    	}
+    	for(JoanaEdge e : edges){//add edges to graph
+    		assert(vertices.contains(e.getSource()) ^ vertices.contains(e.getTarget()));
+    		this.graph.addEdge(e);
+    	}
+    	//TODO: move this to MethodGraphLayout.
+    	//removeFiltered... returns valid vertices/edges, just modifies the given set (giving a copy back), does not set the valid vertices!!!
+    	//do a recalculation of vertices' leftRightMargin here, called from MethodGraphLayout and the remaining dummies (edges will be drawn depending on each dummy, one edge per dummy)
+    	//IV edge, nur wenn IV nicht gefiltert wurde, und edge nicht zu den gefilterten gehört
+    	//IV nur wenn V nicht gefiltert wurde
     }
     
     /**
      * removes interprocedural edges from this graph and also the dummies of it.
+     * This is used before relayouting of the graph
      */
     public void removeInterproceduralEdges(){
-    	
+    	Set<InterproceduralVertex> allIVs = new HashSet<InterproceduralVertex>();
+    	this.interprocVertices.values().forEach(ivs->allIVs.addAll(ivs));
+    	Set<JoanaEdge> graphEdges = this.graph.getEdgeSet();
+    	Set<JoanaEdge> interprocEdges = new HashSet<JoanaEdge>();//temporary set for edges that have to be removed later
+    	for(JoanaEdge graphEdge : graphEdges){
+    		if(allIVs.contains(graphEdge.getSource()) ^ allIVs.contains(graphEdge.getTarget())){
+    			interprocEdges.add(graphEdge);
+    		}
+    	}
+    	interprocEdges.forEach(e->this.graph.removeEdge(e));
+    	for(InterproceduralVertex iv : allIVs){
+    		if(this.graph.contains(iv)){
+    			this.graph.removeVertex(iv);
+    		}
+    	}
     }
     
-    //calcs for vertices with InterproceduralEdges their leftRightMargin new because they need more space in later layouting.
-    private void calcLeftRightMarginNew(){
+    /**
+     * Calcs for vertices with InterproceduralEdges their leftRightMargin new because they need more space in later layouting.
+     * Can also be used to calculate the margins new in case that any InterproceduralVertex has been filtered.
+     * 
+     * @param idToIVs The given map of vertex id to the set of interprocedural vertices that are connected with it.
+     */
+    public void calcLeftRightMarginNew(Map<Integer,Set<InterproceduralVertex>> idToIVs){
     	for(JoanaVertex v : this.getVertexSet()){
     		if(this.getInterprocVertices().containsKey(v.getID())){
     			Set<InterproceduralVertex> ivs = this.getInterprocVertices().get(v.getID());

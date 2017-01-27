@@ -53,8 +53,8 @@ public class InterproceduralVertex extends JoanaVertex{
 	
 	@Override
 	public List<GAnsProperty<?>> getProperties(){//new properties are : graph name, dummy label(already contains id and its kind)
-		List<GAnsProperty<?>> properties = super.getProperties().subList(1, 2);//get second element of the properties (has to be the label)
-		assert(properties.get(0).getName().equals("label"));
+		List<GAnsProperty<?>> properties = super.getProperties().subList(0, 3);//get first three elements (name, label, kind)
+		assert(properties.get(1).getName().equals("label"));
 		properties.add(0, new GAnsProperty<String>("graphLabel",this.graphName));
 		return properties;
 	}

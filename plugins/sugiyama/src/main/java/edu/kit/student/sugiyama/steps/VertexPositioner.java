@@ -38,8 +38,7 @@ public class VertexPositioner implements IVertexPositioner {
 		int[] verticalHeight = new int[graph.getLayerCount()];
 		int[] verticalOffset = new int[graph.getLayerCount()];
 		int verticalSpacing = 70;
-		System.out.println("Length of:  horizontalWidth: "+horizontalWidth.length+" ,horizontalOffset: "+horizontalOffset.length+" ,verticalHeight: "+verticalHeight.length+" ,verticalOffset: "+verticalOffset.length);
-
+		
 		for (int i = 0; i < maxwidth*4; i++) {
 			segmentStarts.put(i, new LinkedList<>());
 		}

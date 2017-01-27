@@ -69,6 +69,9 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 		logger.info("Graph before: Vertices: "+graph.getVertexSet().size()+", Edges: "+graph.getEdgeSet().size());
 		this.layoutFieldAccessGraphs(graph);
 		List<FieldAccess> collapsedFAs = graph.collapseFieldAccesses();
+		
+		//remove interprocedural edges and their dummies from this graph
+		graph.removeInterproceduralEdges();
 
 	    
 	  //create absoluteLayerConstraints
@@ -631,21 +634,33 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 		//TODO: watch out that filtering still works (need possibility for just drawing some IVs of a vertex -> look at FAs and their way!)
 		//TODO: draw here the interprocedural vertices of a MethodGraph
 		Map<Integer,Set<InterproceduralVertex>> idToIVs = mg.getInterprocVertices();
-		Set<JoanaVertex> vertices = mg.getVertexSet();
-		for(JoanaVertex v : vertices){
-			if(idToIVs.containsKey(v.getID())){
-				System.out.println("Vertex " + v.getName() + " : pos("+v.getX()+","+v.getY()+"), size("+v.getSize().x+","+v.getSize().y+"), LR-Margin("+v.getLeftRightMargin().x+","+v.getLeftRightMargin().y+")");
-				Set<InterproceduralVertex> ivs = idToIVs.get(v.getID()); //IVs from this vertex
+		Map<Integer, Set<InterproceduralVertex>> newIdToIVs = new HashMap<>();
+		//adjust each vertex' interprocedural vertices depending on actual vertex filter settings
+		for(int idx : idToIVs.keySet()){
+			newIdToIVs.put(idx, mg.removeFilteredVerticesIV(idToIVs.get(idx)));
+		}
+		//calculate leftRightMargins of vertices that are connected with interprocedural vertices new
+		mg.calcLeftRightMarginNew(newIdToIVs);
+		Set<InterproceduralVertex> validIVs = new HashSet<>();
+		Set<JoanaVertex> graphVertices = mg.getVertexSet();
+		for(JoanaVertex v : graphVertices){
+			if(newIdToIVs.containsKey(v.getID()) && !newIdToIVs.get(v.getID()).isEmpty()){
+				Set<InterproceduralVertex> ivs = newIdToIVs.get(v.getID()); //not filtered IVs from this vertex
+				//vertex v has at least one not filtered interprocedural vertex so they will be added to the graph later
+				validIVs.addAll(ivs);
+//				System.out.println("Vertex " + v.getName() + " : pos("+v.getX()+","+v.getY()+"), size("+v.getSize().x+","+v.getSize().y+"), LR-Margin("+v.getLeftRightMargin().x+","+v.getLeftRightMargin().y+")");
+//				System.out.println("vertex id: " + v.getName() + " ,ivs: " + ivs.size());
 				HashSet<JoanaEdge> newEdges = new HashSet<JoanaEdge>();//new edges, created through InterproceduralVertices
 				double edgeDist = (v.getSize().y - ivs.iterator().next().getSize().y) / (ivs.size()+1);//vertical distance of 2 edges (asserting that all IVs have the same size)
 				int xVal = (int) Math.floor(v.getX()+v.getSize().x + v.getLeftRightMargin().x); //end of right margin of the vertex. Take left margin because its the same like the old right margin of this vertex
 				//set the IV's position, also create an edge between it and the vertex and draw the edge (add points to its EdgePath)
 				int idx = 1; //number of IV in the loop. First one has number 1! 
 				for(InterproceduralVertex iv : ivs){
+//					System.out.println("iv " +iv.getName() + ": kind: "+iv.getNodeKind());
 					xVal += iv.getLeftRightMargin().x;//starting position x of new vertex
 					iv.setX(xVal);
 					iv.setY((int) Math.floor(v.getY() + v.getSize().y - iv.getSize().y));//so the IV's bottom are at the same level as the vertex's bottom
-					System.out.println("IV " + iv.getName()+" : pos("+iv.getX()+","+iv.getY()+"), size("+iv.getSize().x+","+iv.getSize().y+"), LR-Margin("+iv.getLeftRightMargin().x+","+iv.getLeftRightMargin().y+")");
+//					System.out.println("IV " + iv.getName()+" : pos("+iv.getX()+","+iv.getY()+"), size("+iv.getSize().x+","+iv.getSize().y+"), LR-Margin("+iv.getLeftRightMargin().x+","+iv.getLeftRightMargin().y+")");
 					xVal += iv.getSize().x + iv.getLeftRightMargin().y;//set to the end of the actual IV's right margin
 					JoanaEdge newEdge;
 					//the IV itself represents the little dummy. IV.dummy is not needed for that!
@@ -658,15 +673,15 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 					path.addPoint(new DoublePoint(v.getX()+v.getSize().x,iv.getY() - idx*edgeDist));//first point: on the Vertex's right side
 					path.addPoint(new DoublePoint(iv.getX() + iv.getSize().x / 2,iv.getY() - idx*edgeDist));//second point: above the middle of the IV's top
 					path.addPoint(new DoublePoint(iv.getX() + iv.getSize().x / 2,iv.getY())); //third point: middle on top of the IV's top
-					System.out.println("path: "+path.getNodes().get(0).toString() + " | " + path.getNodes().get(1).toString() + " | " + path.getNodes().get(2).toString());
+//					System.out.println("path: "+path.getNodes().get(0).toString() + " | " + path.getNodes().get(1).toString() + " | " + path.getNodes().get(2).toString());
 					if(iv.getEdgeDirection() == EdgeDirection.FROM){//wrong direction: turn EdgePath
 						Collections.reverse(path.getNodes());
 					}
 					newEdges.add(newEdge);
 					idx++;
 				}
-				//finally add new vertices and edges to the graph's vertex- and edgeset
-				mg.addInterproceduralEdges(newEdges);
+				//finally add the not filtered vertices and the edges, but filter the edges before adding them!
+				mg.addInterproceduralEdges(validIVs,mg.removeFilteredEdges(newEdges));
 			}
 		}
 	}
