@@ -25,6 +25,7 @@ public class DefaultVertex implements ViewableVertex {
 	private GAnsProperty<String> label;
 	private int x;
 	private int y;
+	private IntegerPoint leftRightMargin;
 	private int link = 0;
 	private List<GAnsProperty<?>> data;
 	private IntegerPoint leftRightMargin;
