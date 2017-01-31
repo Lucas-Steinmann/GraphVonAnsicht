@@ -15,6 +15,6 @@ public class PluginManagerTest {
     public void testPluginLoad() {
         PluginManager mgr = PluginManager.getPluginManager();
 
-        assertTrue(mgr.getPlugins().size() == 4);
+        assertTrue(mgr.getPlugins().size() == 5);
     }
 }
