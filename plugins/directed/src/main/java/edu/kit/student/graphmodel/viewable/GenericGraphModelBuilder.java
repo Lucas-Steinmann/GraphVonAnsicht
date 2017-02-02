@@ -9,18 +9,18 @@ import edu.kit.student.graphmodel.builder.IGraphModelBuilder;
 
 public class GenericGraphModelBuilder implements IGraphModelBuilder {
 
-	List<DirectedViewableGraphBuilder> builders;
+	List<DirectedViewableGraphBuilder> graphBuilders;
 	GenericWorkspace ws;
 	
 	public GenericGraphModelBuilder(GenericWorkspace ws) {
 		this.ws = ws;
+		graphBuilders = new LinkedList<>();
 	}
 
 	@Override
 	public IGraphBuilder getGraphBuilder(String graphID) {
-		builders = new LinkedList<>();
 		DirectedViewableGraphBuilder builder = new DirectedViewableGraphBuilder(graphID);
-		builders.add(builder);
+		graphBuilders.add(builder);
 		return builder;
 	}
 	
@@ -34,7 +34,7 @@ public class GenericGraphModelBuilder implements IGraphModelBuilder {
 	@Override
 	public GenericGraphModel build() throws GraphBuilderException {
 		GenericGraphModel model = new GenericGraphModel();
-		for (DirectedViewableGraphBuilder builder : builders){
+		for (DirectedViewableGraphBuilder builder : graphBuilders){
 			DirectedViewableGraph graph = builder.build();
 			model.addRootGraph(graph);
 			addSubgraphsToModel(model, builder);

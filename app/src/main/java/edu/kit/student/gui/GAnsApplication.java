@@ -1,9 +1,6 @@
 package edu.kit.student.gui;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import java.io.*;
 import java.text.ParseException;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -11,6 +8,7 @@ import java.util.stream.Collectors;
 import edu.kit.student.graphmodel.GraphModel;
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.ViewableGraph;
+import edu.kit.student.graphmodel.builder.GraphBuilderException;
 import edu.kit.student.objectproperty.GAnsProperty;
 import edu.kit.student.parameter.Settings;
 import edu.kit.student.plugin.Exporter;
@@ -295,7 +293,7 @@ public class GAnsApplication {
 							.map(st -> st.getClassName() + ": " + st.getMethodName() + "(" + st.getLineNumber() + ")")
 							.reduce("", (s,n) -> s + n + "\n"));
             return;
-        } catch (FileNotFoundException e) {
+        } catch (IOException e) {
             showErrorDialog(e.getMessage());
         }
 		
@@ -344,11 +342,11 @@ public class GAnsApplication {
 			this.graphViewTabPane.getTabs().clear();
 			showErrorDialog(e.getMessage() + "\nat\n" + e.getStackTrace());
 			return;
-		} catch (FileNotFoundException e) {
+		}  catch (IOException e) {
 			this.graphViewTabPane.getTabs().clear();
 			showErrorDialog(e.getMessage());
-		} 
-	    
+		}
+
 	}
 
 	private void exportClicked() {

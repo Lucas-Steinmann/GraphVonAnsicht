@@ -4,6 +4,7 @@ package edu.kit.student.tests;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.text.ParseException;
 import java.util.Arrays;
 import java.util.Collections;
@@ -318,7 +319,7 @@ public class JoanaGraphTester {
                 try {
                     System.out.println("Parsing: " + file.getName());
                     importer.importGraph(new JoanaGraphModelBuilder(ws), new FileInputStream(file));
-                } catch (FileNotFoundException | ParseException e) {
+                } catch (IOException | ParseException e) {
                     e.printStackTrace();
                     return null;
                 }

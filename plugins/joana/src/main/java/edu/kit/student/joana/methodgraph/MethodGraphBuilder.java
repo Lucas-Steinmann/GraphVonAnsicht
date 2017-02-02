@@ -1,6 +1,8 @@
 package edu.kit.student.joana.methodgraph;
 
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import edu.kit.student.graphmodel.builder.GraphBuilderException;
@@ -22,6 +24,7 @@ public class MethodGraphBuilder implements IGraphBuilder {
     String name;
     Set<JoanaVertex> vertices = new HashSet<JoanaVertex>();
     Set<String> vertexIds = new HashSet<>();
+    Map<String, String> data = new HashMap<>();
     Set<JoanaEdge> edges = new HashSet<>();
     Set<JoanaVertexBuilder> vertexBuilders = new HashSet<>();
     Set<JoanaEdgeBuilder> edgeBuilders = new HashSet<>();
@@ -56,14 +59,24 @@ public class MethodGraphBuilder implements IGraphBuilder {
         return null;
     }
 
+    @Override
+    public String getId() {
+        return this.name;
+    }
+
+    @Override
+    public void addData(String keyname, String value) throws IllegalArgumentException {
+        this.data.put(keyname, value);
+    }
+
     public boolean containsVertexWithId(String vertexId) {
         return vertexIds.contains(vertexId);
     }
 
     /**
-     * Builds the method graph, which has been described before this method is called.
-     * @return the built methodgraph
-     * @throws GraphBuilderException
+     * Builds the {@link MethodGraph}, which has been described before this method is called.
+     * @return the built {@link MethodGraph}
+     * @throws GraphBuilderException if the {@link MethodGraph} could not be build.
      */
     public MethodGraph build() throws GraphBuilderException {
         for (JoanaVertexBuilder builder : vertexBuilders) {	

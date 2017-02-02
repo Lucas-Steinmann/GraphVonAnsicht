@@ -3,6 +3,7 @@ package edu.kit.student.plugin;
 import edu.kit.student.graphmodel.builder.IGraphModelBuilder;
 
 import java.io.FileInputStream;
+import java.io.IOException;
 import java.text.ParseException;
 
 /**
@@ -19,7 +20,7 @@ public interface Importer {
      * 
      * @return the supported file ending without a dot at the beginning.
      */
-    public String getSupportedFileEndings();
+    String getSupportedFileEndings();
 
     /**
      * This method parses an FileInputStream into an {@link IGraphModelBuilder}.
@@ -27,8 +28,8 @@ public interface Importer {
      * 
      * @param builder that the values are parsed into
      * @param filestream from which the values are parsed
-     * @throws ParseException 
+     * @throws ParseException if the file could not be parsed, and the parse process was aborted
      */
-    public void importGraph(IGraphModelBuilder builder, FileInputStream filestream) throws ParseException; 
+    void importGraph(IGraphModelBuilder builder, FileInputStream filestream) throws ParseException, IOException;
 
 }

@@ -2,6 +2,7 @@ package edu.kit.student.joana.callgraph;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
 
 import edu.kit.student.graphmodel.builder.GraphBuilderException;
@@ -23,6 +24,7 @@ import edu.kit.student.joana.methodgraph.MethodGraphBuilder;
  */
 public class CallGraphBuilder implements IGraphBuilder {
 
+    Map<String, String> data = new HashMap<>();
     Set<MethodGraphBuilder> methodGraphBuilders = new HashSet<>();
     Set<MethodGraph> methodGraphs = new HashSet<>();
     Set<JoanaEdgeBuilder> callEdgeBuilders = new HashSet<>();
@@ -57,11 +59,21 @@ public class CallGraphBuilder implements IGraphBuilder {
         methodGraphBuilders.add(builder);
         return builder;
     }
-    
+
+    @Override
+    public String getId() {
+        return this.name;
+    }
+
+    @Override
+    public void addData(String keyname, String value) throws IllegalArgumentException {
+        this.data.put(keyname, value);
+    }
+
     /**
-     * Builds a new CallGraph with the given information, added before this call.
-     * @return the callgraph
-     * @throws Exception
+     * Builds a new {@link CallGraph} with the given information, added before this call.
+     * @return the {@link CallGraph}
+     * @throws GraphBuilderException if the {@link CallGraph} could not be build.
      */
     public CallGraph build() throws GraphBuilderException {
         for (MethodGraphBuilder b : methodGraphBuilders) {
@@ -77,7 +89,7 @@ public class CallGraphBuilder implements IGraphBuilder {
         for (MethodGraph methodGraph : methodGraphs) {
             vertices.put(methodGraph.getID(), new CallGraphVertex(methodGraph.getName(), methodGraph.getName(), methodGraph));
             vertexPool.addAll(methodGraph.getVertexSet());
-            connections.put(vertices.get(methodGraph.getID()), new HashSet<CallGraphVertex>());
+            connections.put(vertices.get(methodGraph.getID()), new HashSet<>());
         }
 
         // Build the calledges in the method graphs.

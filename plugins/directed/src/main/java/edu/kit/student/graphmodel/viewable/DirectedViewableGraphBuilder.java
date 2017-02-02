@@ -1,14 +1,7 @@
 package edu.kit.student.graphmodel.viewable;
 
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import edu.kit.student.graphmodel.DefaultVertex;
@@ -26,6 +19,7 @@ public class DirectedViewableGraphBuilder implements IGraphBuilder {
 	List<DirectedEdgeBuilder> edgeBuilders = new LinkedList<>();
 	List<DefaultVertexBuilder> vertexBuilders = new LinkedList<>();
 	List<DirectedViewableGraphBuilder> subraphBuilders = new LinkedList<>();
+	private Map<String, String> data = new HashMap<>();
 	private Map<DirectedViewableGraphBuilder, List<DirectedEdgeBuilder>> edgesIntoGraphs = new HashMap<>();
 	private Map<DirectedViewableGraphBuilder, List<DirectedEdgeBuilder>> edgesFromGraphs = new HashMap<>();
 	private Map<DirectedViewableGraphBuilder, List<DirectedEdgeBuilder>> edgesBetweenGraphsSource = new HashMap<>();
@@ -90,8 +84,18 @@ public class DirectedViewableGraphBuilder implements IGraphBuilder {
 		subraphBuilders.add(sgb);
 		return sgb;
 	}
-	
-	
+
+	@Override
+	public String getId() {
+	    return this.name;
+	}
+
+	@Override
+	public void addData(String keyname, String value) throws IllegalArgumentException {
+	    this.data.put(keyname, value);
+	}
+
+
 	private List<DirectedEdgeBuilder> resolveEdgeLocations() throws GraphBuilderException {
 		List<DirectedEdgeBuilder> flatEdges = new LinkedList<>();
 		for (DirectedEdgeBuilder edgeBuilder : edgeBuilders) {
@@ -123,30 +127,28 @@ public class DirectedViewableGraphBuilder implements IGraphBuilder {
 					// Edge fully contained in subgraph
 					sourcesgb.edgeBuilders.add(edgeBuilder);
 				} else if (sourcesgb == null) {
-					assert (targetsgb != null); // else wise the edge would be flat
 					if (edgesIntoGraphs.containsKey(targetsgb)) {
 						edgesIntoGraphs.get(targetsgb).add(edgeBuilder);
 					} else {
-						edgesIntoGraphs.put(targetsgb, new LinkedList<>(Arrays.asList(edgeBuilder)));
+						edgesIntoGraphs.put(targetsgb, new LinkedList<>(Collections.singletonList(edgeBuilder)));
 					}
 				} else if (targetsgb == null) {
-					assert (sourcesgb != null);
 					if (edgesFromGraphs.containsKey(sourcesgb)) {
 						edgesFromGraphs.get(sourcesgb).add(edgeBuilder);
 					} else {
-						edgesFromGraphs.put(sourcesgb, new LinkedList<>(Arrays.asList(edgeBuilder)));
+						edgesFromGraphs.put(sourcesgb, new LinkedList<>(Collections.singletonList(edgeBuilder)));
 					}
 				} else {
 					// Edge from one subgraph into an other.
 					if (edgesBetweenGraphsSource.containsKey(sourcesgb)) {
 						edgesBetweenGraphsSource.get(sourcesgb).add(edgeBuilder);
 					} else {
-						edgesBetweenGraphsSource.put(sourcesgb, new LinkedList<>(Arrays.asList(edgeBuilder)));
+						edgesBetweenGraphsSource.put(sourcesgb, new LinkedList<>(Collections.singletonList(edgeBuilder)));
 					}
 					if (edgesBetweenGraphsTarget.containsKey(targetsgb)) {
 						edgesBetweenGraphsTarget.get(targetsgb).add(edgeBuilder);
 					} else {
-						edgesBetweenGraphsTarget.put(targetsgb, new LinkedList<>(Arrays.asList(edgeBuilder)));
+						edgesBetweenGraphsTarget.put(targetsgb, new LinkedList<>(Collections.singletonList(edgeBuilder)));
 					}
 
 				}
