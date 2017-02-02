@@ -12,7 +12,6 @@ import edu.kit.student.joana.JoanaEdge.EdgeKind;
  */
 public class JoanaEdgeBuilder implements IEdgeBuilder {
 
-    boolean edgeForCallGraph;
     String source;
     String target;
     EdgeKind edgeKind;

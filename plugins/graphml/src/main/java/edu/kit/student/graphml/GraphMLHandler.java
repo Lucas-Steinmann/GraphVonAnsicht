@@ -141,17 +141,27 @@ public class GraphMLHandler extends DefaultHandler {
                 }
             }
             String attrName = attributes.getValue(GmlToken.ATTRNAME.getXmlTag());
-            declaredKeys.add(new Key(id, attrName, keyForToken, attrTypeToken));
+            currentKey = new Key(id, attrName, keyForToken, attrTypeToken, dynamic);
+            declaredKeys.add(currentKey);
 
         } else if (qName.equalsIgnoreCase(GmlToken.GRAPH.getXmlTag())) {
-            // TODO: add support for <desc>
+            // Graph:
+            // Fields:
+            //    Requires: edgedirected {undirected,directed}
+            //    Optional: ID
+            // Elements:
+            //    node, edge, data
+            //    Not supported: hyperedge
+            currentObject = GmlToken.GRAPH;
+
+            // Handle ID
             String id = "Graph";
             if (attributes.getValue(GmlToken.ID.getXmlTag()) != null) {
                 id = attributes.getValue(GmlToken.ID.getXmlTag());
             }
 
             logger.debug("New Graph: " + id);
-            // Edgedirection in graph
+            // Handle edge direction in graph
             isDirected = true;
             String direction = attributes.getValue(GmlToken.EDGEDEFAULT.getXmlTag());
             if (direction == null) {
@@ -164,7 +174,6 @@ public class GraphMLHandler extends DefaultHandler {
                 throwInvalidField(GmlToken.GRAPH, GmlToken.EDGEDEFAULT, direction);
             }
 
-            currentObject = GmlToken.GRAPH;
             if (currentGraph == null) {
                 // get a root IGraphBuilder from the IGraphModelBuilder
                 currentGraph = modelBuilder.getGraphBuilder(id);
@@ -182,6 +191,7 @@ public class GraphMLHandler extends DefaultHandler {
                 // get a new IGraphBuilder.
                 currentGraph = currentGraph.getGraphBuilder(id);
             }
+
         } else if (qName.equalsIgnoreCase(GmlToken.NODE.getXmlTag())) {
             // Node:
             // Fields:
@@ -191,14 +201,16 @@ public class GraphMLHandler extends DefaultHandler {
             //   data  [0,unbounded]
             //   graph [0,1]
             //   Not supported: desc, port, locators
+            currentObject = GmlToken.NODE;
             currentData = new HashMap<>();
+
+            // Handle required ID
             String id = attributes.getValue(GmlToken.ID.getXmlTag());
             if (id == null) {
                 throwMissingField(GmlToken.NODE, GmlToken.ID);
             } else {
                 currentId = id;
             }
-            currentObject = GmlToken.NODE;
 
         } else if (qName.equalsIgnoreCase(GmlToken.EDGE.getXmlTag())) {
             // Edge:
@@ -209,12 +221,12 @@ public class GraphMLHandler extends DefaultHandler {
             // Elements:
             //   data [0,unbounded]
             //   Not supported: desc, graph
+            currentObject = GmlToken.EDGE;
+            currentData = new HashMap<>();
 
+            // Handle required source
             String source = attributes.getValue(GmlToken.SOURCE.getXmlTag());
             String target = attributes.getValue(GmlToken.TARGET.getXmlTag());
-            String id = attributes.getValue(GmlToken.ID.getXmlTag());
-
-            currentData = new HashMap<>();
             if (source == null) {
                 throwMissingField(GmlToken.EDGE, GmlToken.SOURCE);
             } else if (target == null) {
@@ -223,14 +235,16 @@ public class GraphMLHandler extends DefaultHandler {
                 currentSource = source;
                 currentTarget = target;
             }
-            if (id == null) {
+
+            // Handle ID
+            String id = attributes.getValue(GmlToken.ID.getXmlTag());
+            if (id == null)
                 currentId = "edge";
-            } else {
+            else
                 currentId = id;
-            }
-            currentObject = GmlToken.EDGE;
         }
         else if (qName.equalsIgnoreCase(GmlToken.DATA.getXmlTag())) {
+            // Handle key
             String keyID = attributes.getValue(GmlToken.KEY.getXmlTag());
             if (keyID == null) {
                 throwMissingField(GmlToken.DATA, GmlToken.KEY);
@@ -242,7 +256,7 @@ public class GraphMLHandler extends DefaultHandler {
                         currentKey = key;
                 }
                 if (currentKey == null) {
-                    String message = "Found data element with invalid key.";
+                    String message = "Found data element in " + this.currentId + " with invalid key: " + keyID;
                     logger.error(message);
                     throw  new SAXException(message);
                 }
@@ -278,7 +292,7 @@ public class GraphMLHandler extends DefaultHandler {
         }
         else { // Unknown tags
             if (currentKey != null) {
-                // -> Below <data> tag -> probably extra data type, which is not supported.
+                // -> Below <data> tag or <key> tag -> probably extra data type, which is not supported.
                 if (!foundExtraData) {
                     logger.warn("GraphML data extension found. Data extensions are not supported. Skipping data..");
                     foundExtraData = true;
@@ -296,13 +310,13 @@ public class GraphMLHandler extends DefaultHandler {
     public void endElement(String uri, String localName, String qName) throws SAXException {
         if (qName.equalsIgnoreCase(GmlToken.GRAPH.getXmlTag())) {
             currentGraph  = parentGraphs.empty()   ? null : parentGraphs.pop();
-            currentId     = parentNodes.empty()    ? null :  parentNodes.pop();
+            currentId     = parentNodes.empty()    ? null : parentNodes.pop();
             currentData   = nodeBackupData.empty() ? null : nodeBackupData.pop();
             currentObject = parentGraphs.empty()   ? GmlToken.GRAPHML : GmlToken.NODE;
 
         } else if (qName.equalsIgnoreCase(GmlToken.DATA.getXmlTag())) {
             if (currentObject.equals(GmlToken.GRAPH))
-                currentGraph.addData(currentKey.name, currentValue);
+                currentGraph.addData(currentKey.getName(), currentValue);
             else if (currentObject == GmlToken.GRAPHML)
                 graphMLData.put(currentKey, currentValue);
             else
@@ -316,25 +330,36 @@ public class GraphMLHandler extends DefaultHandler {
             }
             IVertexBuilder vertexBuilder = currentGraph.getVertexBuilder(currentId);
             for (Map.Entry<Key, String> entry : currentData.entrySet())
-                vertexBuilder.addData(entry.getKey().name, entry.getValue());
+                vertexBuilder.addData(entry.getKey().getName(), entry.getValue());
+            // Set default values
+            for (Key key : declaredKeys) {
+                if (key.defaultValue != null && !currentData.containsKey(key)) {
+                    vertexBuilder.addData(key.getName(), key.defaultValue);
+                }
+            }
             currentData = null;
             currentId = null;
             currentObject = GmlToken.GRAPH;
 
         } else if (qName.equalsIgnoreCase(GmlToken.EDGE.getXmlTag())) {
-            if (blackList.contains(currentSource) || blackList.contains(currentTarget)) {
+            if (blackList.contains(currentSource) || blackList.contains(currentTarget))
                 return;
-            }
+
             IEdgeBuilder edgeBuilder = currentGraph.getEdgeBuilder(currentSource, currentTarget);
             edgeBuilder.newEdge(currentSource, currentTarget);
             edgeBuilder.setID(currentId);
             for (Map.Entry<Key, String> entry : currentData.entrySet())
-                edgeBuilder.addData(entry.getKey().name, entry.getValue());
-            currentId = null;
-            currentData = null;
+                edgeBuilder.addData(entry.getKey().getName(), entry.getValue());
+            currentId     = null;
+            currentData   = null;
             currentSource = null;
             currentTarget = null;
             currentObject = GmlToken.GRAPH;
+        } else if (qName.equalsIgnoreCase(GmlToken.KEY.getXmlTag())) {
+            currentKey = null;
+        } else if (qName.equalsIgnoreCase(GmlToken.DEFAULT.getXmlTag())) {
+            currentKey.defaultValue = currentValue;
+            currentValue = null;
         }
     }
 
@@ -364,12 +389,19 @@ public class GraphMLHandler extends DefaultHandler {
         private final String name;
         private final GmlToken forToken;
         private final GmlToken typeToken;
+        private final boolean dynamic;
+        private String defaultValue = null;
 
-        private Key(String id, String name, GmlToken forToken, GmlToken typeToken) {
+        private Key(String id, String name, GmlToken forToken, GmlToken typeToken, boolean dynamic) {
             this.id = id;
-            this.name = (name == null) ? id : name;
+            this.name = name;
             this.forToken = forToken;
+            this.dynamic = dynamic;
             this.typeToken = typeToken;
+        }
+
+        public String getName() {
+            return name == null ? id : name;
         }
     }
 }

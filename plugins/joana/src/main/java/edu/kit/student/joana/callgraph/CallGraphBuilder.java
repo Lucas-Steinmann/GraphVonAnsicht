@@ -17,12 +17,16 @@ import edu.kit.student.joana.JoanaEdgeBuilder;
 import edu.kit.student.joana.JoanaVertex;
 import edu.kit.student.joana.methodgraph.MethodGraph;
 import edu.kit.student.joana.methodgraph.MethodGraphBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The CallGraphBuilder implements an {@link IGraphBuilder} and builds 
  * one {@link CallGraph}.
  */
 public class CallGraphBuilder implements IGraphBuilder {
+
+    private final Logger logger = LoggerFactory.getLogger(CallGraphBuilder.class);
 
     Map<String, String> data = new HashMap<>();
     Set<MethodGraphBuilder> methodGraphBuilders = new HashSet<>();
@@ -78,6 +82,7 @@ public class CallGraphBuilder implements IGraphBuilder {
     public CallGraph build() throws GraphBuilderException {
         for (MethodGraphBuilder b : methodGraphBuilders) {
             methodGraphs.add(b.build());
+            logger.debug("Build MethodGraph " + b.getId());
         }
         HashMap<Integer, CallGraphVertex> vertices = new HashMap<>();
         HashMap<CallGraphVertex, Set<CallGraphVertex>> connections = new HashMap<>();
@@ -107,7 +112,7 @@ public class CallGraphBuilder implements IGraphBuilder {
         //edges between two MethodGraphs. All interprocEdges can be found in callEdges, these are also edges not from the same MethodGraph
         //search in callEdges for interproceduralEdges, create a new InterproceduralVertex for both MethodGraphs the edge connects and add them to a set
         //later split this set of InterproceduralVertices and add every MethodGraph its own InterproceduralVertices from this set
-        HashMap<Integer,Set<InterproceduralVertex>> mgIdToIVSet = new HashMap<Integer,Set<InterproceduralVertex>>();
+        HashMap<Integer,Set<InterproceduralVertex>> mgIdToIVSet = new HashMap<>();
         for(JoanaEdge callEdge : callEdges){
         	boolean containsSource, containsTarget;
         	int mgGraphId;
@@ -137,7 +142,7 @@ public class CallGraphBuilder implements IGraphBuilder {
         			assert(dummyGraphId != -1);
         			//add new InterproceduralVertex to mapping
         			if(!mgIdToIVSet.containsKey(mgGraphId)){
-        				mgIdToIVSet.put(mgGraphId, new HashSet<InterproceduralVertex>());
+        				mgIdToIVSet.put(mgGraphId, new HashSet<>());
         			}
         			mgIdToIVSet.get(mgGraphId).add(new InterproceduralVertex(dummy.getName(), dummy.getLabel(),dummy,normalVertex,dummyGraphId,dummyGraphName,containsSource,callEdge.getEdgeKind()));
         		}
@@ -185,34 +190,7 @@ public class CallGraphBuilder implements IGraphBuilder {
                 connections.get(vertices.get(sourceID)).add(vertices.get(targetID));
             }
         }
-       // // Add call edges between vertices.
-       // for (MethodGraph methodGraph : methodGraphs) {
-       //     JoanaCompoundVertex source = vertices.get(methodGraph.getID());
-       //     edges.put(source, new HashSet<JoanaEdge>());
+        return new CallGraph(this.name, new HashSet<>(vertices.values()), edges);
 
-       //     // Search for method calls.
-       //     for (JoanaEdge e : methodGraph.getEdgeSet()) {
-       //         if (e.getEdgeKind() == edu.kit.student.joana.JoanaEdge.Kind.CL) {
-       //             if (vertices.containsKey(e.getID())) {
-       //                 JoanaCompoundVertex target = vertices.get(e.getID());
-       //                 if (edges.get(source).contains(target)) {
-       //                     // Second call from this function. Skip.
-       //                     continue;
-       //                 }
-       //                 JoanaEdge edge = new JoanaEdge(e.getName(), e.getLabel(), source, target, e.getEdgeKind());
-       //                 edges.get(source).add(edge);
-       //             } 
-       //         }
-       //     }
-       // }
-       // HashSet<JoanaEdge> merged = new HashSet<>();
-       // for (Set<JoanaEdge> edgeSet : connections.values()) {
-       //     merged.addAll(edgeSet);
-       //     
-       // }
-        CallGraph graph = new CallGraph(this.name, 
-                new HashSet<CallGraphVertex>(vertices.values()), edges);
-
-        return graph;
     }
 }
