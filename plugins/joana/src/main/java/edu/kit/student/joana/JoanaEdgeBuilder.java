@@ -1,5 +1,6 @@
 package edu.kit.student.joana;
 
+import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
@@ -42,12 +43,12 @@ public class JoanaEdgeBuilder implements IEdgeBuilder {
     }
 
     /**
-     * Builds a new JoanaEdge as described before this call.
-     * @param vertexPool to check if Edge is valid
+     * Builds a new {@link JoanaEdge} as described before this call.
+     * @param vertexPool to pool of vertices, which contains this edge's endpoints
      * 
-     * @return the built JoanaEdge or null
+     * @return the built {@link JoanaEdge} or null if the
      */
-    public JoanaEdge build(Set<JoanaVertex> vertexPool) {
+    public JoanaEdge build(Map<String, JoanaVertex> vertexPool) {
         if (source == null || target == null) {
             return null;
         }
@@ -57,11 +58,12 @@ public class JoanaEdgeBuilder implements IEdgeBuilder {
             throw new IllegalArgumentException("Joana edge " + source + "->" + target + " needs an edgeKind.");
         }
 
-        Optional<JoanaVertex> sourceVertex = vertexPool.stream().filter(joanaVertex -> joanaVertex.getName().equals(source)).findFirst();
-        Optional<JoanaVertex> targetVertex = vertexPool.stream().filter(joanaVertex -> joanaVertex.getName().equals(target)).findFirst();
 
-        if (sourceVertex.isPresent() && targetVertex.isPresent()) {
-            return new JoanaEdge(edgeKind.name(), edgeKind.name(), sourceVertex.get(), targetVertex.get(), edgeKind);
+        JoanaVertex sourceVertex = vertexPool.get(source);
+        JoanaVertex targetVertex = vertexPool.get(target);
+
+        if (sourceVertex != null && targetVertex != null) {
+            return new JoanaEdge(edgeKind.name(), edgeKind.name(), sourceVertex, targetVertex, edgeKind);
         }
 
         return null;

@@ -80,22 +80,31 @@ public class CallGraphBuilder implements IGraphBuilder {
      * @throws GraphBuilderException if the {@link CallGraph} could not be build.
      */
     public CallGraph build() throws GraphBuilderException {
+        HashMap<String, JoanaVertex> vertexPool = new HashMap<>();
+
+        long startTime = System.currentTimeMillis();
+
         for (MethodGraphBuilder b : methodGraphBuilders) {
             methodGraphs.add(b.build());
-            logger.debug("Build MethodGraph " + b.getId());
+            vertexPool.putAll(b.getVertexPool());
         }
+        long stopTime = System.currentTimeMillis();
+        logger.info("Building MethodGraphs took " + (stopTime - startTime));
+        startTime = stopTime;
+
         HashMap<Integer, CallGraphVertex> vertices = new HashMap<>();
         HashMap<CallGraphVertex, Set<CallGraphVertex>> connections = new HashMap<>();
         Set<JoanaEdge> edges = new HashSet<>();
-        Set<JoanaVertex> vertexPool = new HashSet<>();
 
         // Generate Callgraph
-        // Generate method vertices.
+        // Generate CallGraphVertices for every method.
         for (MethodGraph methodGraph : methodGraphs) {
             vertices.put(methodGraph.getID(), new CallGraphVertex(methodGraph.getName(), methodGraph.getName(), methodGraph));
-            vertexPool.addAll(methodGraph.getVertexSet());
             connections.put(vertices.get(methodGraph.getID()), new HashSet<>());
         }
+        stopTime = System.currentTimeMillis();
+        logger.info("Building CallGraphVertices took " + (stopTime - startTime));
+        startTime = stopTime;
 
         // Build the calledges in the method graphs.
         // This should be temporary. Better would be if they would really get built in the method graph builder.
@@ -108,7 +117,11 @@ public class CallGraphBuilder implements IGraphBuilder {
                 callEdges.add(edge);
             }       
         }
-        
+
+        stopTime = System.currentTimeMillis();
+        logger.info("Building CallEdges in MethodGraphs took " + (stopTime - startTime));
+        startTime = stopTime;
+
         //edges between two MethodGraphs. All interprocEdges can be found in callEdges, these are also edges not from the same MethodGraph
         //search in callEdges for interproceduralEdges, create a new InterproceduralVertex for both MethodGraphs the edge connects and add them to a set
         //later split this set of InterproceduralVertices and add every MethodGraph its own InterproceduralVertices from this set
@@ -148,13 +161,19 @@ public class CallGraphBuilder implements IGraphBuilder {
         		}
         	}
         }
+        stopTime = System.currentTimeMillis();
+        logger.info("Building enterprocedural edges took " + (stopTime - startTime));
+        startTime = stopTime;
         //set the interprocedural vertices of a method graph
         for(MethodGraph mg : methodGraphs){
         	if(mgIdToIVSet.containsKey(mg.getID())){
         		mg.setInterprocVertices(mgIdToIVSet.get(mg.getID()));
         	}
         }
-        
+        stopTime = System.currentTimeMillis();
+        logger.info("Setting interprocedural vertices took " + (stopTime - startTime));
+        startTime = stopTime;
+
         //TODO: some checks if all mg's contain the right amount of IV's and the correct ones!
         
         //search for call loops
@@ -166,30 +185,34 @@ public class CallGraphBuilder implements IGraphBuilder {
                 }
             }
         }
-        
-        if (!callEdges.isEmpty()) {
-            for (JoanaEdge callEdge : callEdges) {
-                if (callEdge.getEdgeKind() != EdgeKind.CL)
-                    continue;
-                int sourceID = 0;
-                int targetID = 0;
-                // Find which methodgraph contains the target and the source vertex for the callEdge
-                for (MethodGraph methodGraph : methodGraphs) {
-                    if (methodGraph.getVertexSet().contains(callEdge.getSource())) {
-                        sourceID = methodGraph.getID();
-                    }
-                    if (methodGraph.getVertexSet().contains(callEdge.getTarget())) {
-                        targetID = methodGraph.getID();
-                    }
+        stopTime = System.currentTimeMillis();
+        logger.info("Searching calloops vertices took " + (stopTime - startTime));
+        startTime = stopTime;
+
+        for (JoanaEdge callEdge : callEdges) {
+            if (callEdge.getEdgeKind() != EdgeKind.CL)
+                continue;
+            int sourceID = 0;
+            int targetID = 0;
+            // Find which methodgraph contains the target and the source vertex for the callEdge
+            for (MethodGraph methodGraph : methodGraphs) {
+                if (methodGraph.getVertexSet().contains(callEdge.getSource())) {
+                    sourceID = methodGraph.getID();
                 }
-                if (connections.get(vertices.get(sourceID)).contains(vertices.get(targetID))) {
-                    // Second call from this function. Skip.
-                    continue;
+                if (methodGraph.getVertexSet().contains(callEdge.getTarget())) {
+                    targetID = methodGraph.getID();
                 }
-                edges.add(new JoanaEdge(callEdge.getName(), callEdge.getLabel(), vertices.get(sourceID), vertices.get(targetID), EdgeKind.CL));
-                connections.get(vertices.get(sourceID)).add(vertices.get(targetID));
             }
+            if (connections.get(vertices.get(sourceID)).contains(vertices.get(targetID))) {
+                // Second call from this function. Skip.
+                continue;
+            }
+            edges.add(new JoanaEdge(callEdge.getName(), callEdge.getLabel(), vertices.get(sourceID), vertices.get(targetID), EdgeKind.CL));
+            connections.get(vertices.get(sourceID)).add(vertices.get(targetID));
         }
+        stopTime = System.currentTimeMillis();
+        logger.info("Building joanaedges for calledges took " + (stopTime - startTime));
+        startTime = stopTime;
         return new CallGraph(this.name, new HashSet<>(vertices.values()), edges);
 
     }
