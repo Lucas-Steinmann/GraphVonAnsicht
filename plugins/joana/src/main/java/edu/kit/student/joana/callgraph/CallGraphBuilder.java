@@ -136,43 +136,25 @@ public class CallGraphBuilder implements IGraphBuilder {
         //search in callEdges for interproceduralEdges, create a new InterproceduralVertex for both MethodGraphs the edge connects and add them to a set
         //later split this set of InterproceduralVertices and add every MethodGraph its own InterproceduralVertices from this set
         HashMap<Integer,Set<InterproceduralVertex>> mgIdToIVSet = new HashMap<>();
+        //add a mapping of MethodGraph id to set of interproc vertices. (its done for all MethodGraphs)
+        for(MethodGraph mg : vertexIDToMG.values()){
+        	mgIdToIVSet.put(mg.getID(), new HashSet<>());
+        }
         for(JoanaEdge callEdge : callEdges){
-        	boolean containsSource, containsTarget;
-        	int mgGraphId;
-        	for(MethodGraph mg : methodGraphs){
-        		containsSource = mg.getVertexSet().contains(callEdge.getSource());
-        		containsTarget = mg.getVertexSet().contains(callEdge.getTarget());
-        		mgGraphId = mg.getID();
-        		if(containsSource ^ containsTarget){
-        			JoanaVertex normalVertex,dummy;
-        			if(containsSource){
-        				normalVertex = callEdge.getSource();
-        				dummy = callEdge.getTarget();
-        			}else{
-        				normalVertex = callEdge.getTarget();
-        				dummy = callEdge.getSource();
-        			}
-        			int dummyGraphId = -1; //should not stay at -1
-        			String dummyGraphName = "";
-        			//search for the graphid of the MethodGraph that contains the dummy vertex
-        			for(MethodGraph mg2 : methodGraphs){
-        				if(mg2.getVertexSet().contains(dummy)){
-        					dummyGraphId = mg2.getID();
-        					dummyGraphName = mg2.getName();
-        					break;
-        				}
-        			}
-        			assert(dummyGraphId != -1);
-        			//add new InterproceduralVertex to mapping
-        			if(!mgIdToIVSet.containsKey(mgGraphId)){
-        				mgIdToIVSet.put(mgGraphId, new HashSet<>());
-        			}
-        			mgIdToIVSet.get(mgGraphId).add(new InterproceduralVertex(dummy.getName(), dummy.getLabel(),dummy,normalVertex,dummyGraphId,dummyGraphName,containsSource,callEdge.getEdgeKind()));
-        		}
-        	}
+        	JoanaVertex source = callEdge.getSource();
+        	JoanaVertex target = callEdge.getTarget();
+        	MethodGraph sourceMG = vertexIDToMG.get(source.getName());
+        	MethodGraph targetMG = vertexIDToMG.get(target.getName());
+        	String sourceMGname = sourceMG.getName();
+        	String targetMGname = targetMG.getName();
+        	int sourceMGid = sourceMG.getID();
+        	int targetMGid = targetMG.getID();
+        	//adding two interproc vertices to MG of source, and target respectively
+        	mgIdToIVSet.get(sourceMGid).add(new InterproceduralVertex(target,source,targetMGid,targetMGname,true,callEdge.getEdgeKind()));
+        	mgIdToIVSet.get(targetMGid).add(new InterproceduralVertex(source,target,sourceMGid,sourceMGname,false,callEdge.getEdgeKind()));
         }
         stopTime = System.currentTimeMillis();
-        logger.info("Building enterprocedural edges took " + (stopTime - startTime));
+        logger.info("Building interprocedural edges took " + (stopTime - startTime));
         startTime = stopTime;
         //set the interprocedural vertices of a method graph
         for(MethodGraph mg : methodGraphs){

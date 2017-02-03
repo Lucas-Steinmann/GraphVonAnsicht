@@ -33,8 +33,8 @@ public class InterproceduralVertex extends JoanaVertex{
 	 * @param graphId id of the graph the dummyVertex links to (corresponding vertex in graph graphId with same id as dummyVertex)
 	 * @param isTarget true if the edge that connects dummyVertex and connectedVertex goes from connectedVertex --> dummyVertex, false in other direction
 	 */
-	public InterproceduralVertex(String name, String label, JoanaVertex dummyVertex, JoanaVertex connectedVertex, int graphId, String graphName, boolean isTarget, EdgeKind edgeKind){
-		super(name, label, dummyVertex.getNodeKind());
+	public InterproceduralVertex(JoanaVertex dummyVertex, JoanaVertex connectedVertex, int graphId, String graphName, boolean isTarget, EdgeKind edgeKind){
+		super(dummyVertex.getName(), dummyVertex.getLabel(), dummyVertex.getNodeKind());
 		this.dummyVertex = dummyVertex;
 		this.connectedVertex = connectedVertex;
 		this.graphId = graphId;
