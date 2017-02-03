@@ -139,7 +139,7 @@ public class GroupManager {
 		VBox root = new VBox(groupList, buttonBox);
 		
 		dialog.getDialogPane().setContent(root);
-		dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK);
+		dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.APPLY);
 		dialog.setTitle(LanguageManager.getInstance().get("wind_group_title"));
 		dialog.setHeaderText(null);
 		dialog.setGraphic(null);
@@ -151,10 +151,17 @@ public class GroupManager {
 		for(Integer id : groupMap.keySet()) {
 			groupColorAbortBackup.put(id,groupMap.get(id).getColor());
 		}
-		
+		final Button btApply = (Button) dialog.getDialogPane().lookupButton(ButtonType.APPLY);
+        btApply.addEventFilter(ActionEvent.ACTION, event -> {
+		 	removedGroups.forEach(groupId -> groupMap.remove(groupId).uncolorVertices());
+			removedGroups.clear();
+			//TODO: maybe check for made changes and only apply them.
+			applyGroups();
+            event.consume();
+         });
 		Optional<ButtonType> result = dialog.showAndWait();
 		if(result.isPresent()) {
-			if(result.get() == ButtonType.OK) {
+			if(result.get() == ButtonType.OK || result.get() == ButtonType.APPLY) {
 				removedGroups.forEach(groupId -> groupMap.remove(groupId).uncolorVertices());
 				removedGroups.clear();
 				//TODO: maybe check for made changes and only apply them.
