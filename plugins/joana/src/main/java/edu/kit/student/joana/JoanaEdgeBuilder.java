@@ -13,20 +13,17 @@ import edu.kit.student.joana.JoanaEdge.EdgeKind;
  */
 public class JoanaEdgeBuilder implements IEdgeBuilder {
 
-    String source;
-    String target;
-    EdgeKind edgeKind;
-    String name = "";
-    
+    private String source;
+    private String target;
+    private EdgeKind edgeKind;
+
     public JoanaEdgeBuilder() {
         source = null;
         target = null;
     }
     
     @Override
-    public void setID(String id) {
-        this.name = id;
-    }
+    public void setID(String id) { } // Ignore content. Name will be derived from edgeKind.
 
 
     @Override

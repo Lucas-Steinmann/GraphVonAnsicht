@@ -28,11 +28,11 @@ public class CallGraphBuilder implements IGraphBuilder {
 
     private final Logger logger = LoggerFactory.getLogger(CallGraphBuilder.class);
 
-    Map<String, String> data = new HashMap<>();
-    Set<MethodGraphBuilder> methodGraphBuilders = new HashSet<>();
-    Set<MethodGraph> methodGraphs = new HashSet<>();
-    Set<JoanaEdgeBuilder> callEdgeBuilders = new HashSet<>();
-    String name;
+    private Map<String, String> data = new HashMap<>();
+    private Set<MethodGraphBuilder> methodGraphBuilders = new HashSet<>();
+    private Set<MethodGraph> methodGraphs = new HashSet<>();
+    private Set<JoanaEdgeBuilder> callEdgeBuilders = new HashSet<>();
+    private String name;
     
     public CallGraphBuilder(String name) {
         this.name = name;
@@ -212,7 +212,7 @@ public class CallGraphBuilder implements IGraphBuilder {
         }
         stopTime = System.currentTimeMillis();
         logger.info("Building joanaedges for calledges took " + (stopTime - startTime));
-        startTime = stopTime;
+
         return new CallGraph(this.name, new HashSet<>(vertices.values()), edges);
 
     }

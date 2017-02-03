@@ -120,11 +120,9 @@ public class MethodGraphBuilder implements IGraphBuilder {
             }
         }
         if (name.equals("")) {
-            //TODO: throw exception
+            throw new GraphBuilderException(GraphBuilderException.BuilderType.GRAPH, "Found MethodGraph without ENTR Vertex.");
         }
 
-        MethodGraph methodGraph = new MethodGraph(new HashSet<>(vertices.values()), edges, name);
-        
-        return methodGraph;
+        return new MethodGraph(new HashSet<>(vertices.values()), edges, name);
     }
 }
