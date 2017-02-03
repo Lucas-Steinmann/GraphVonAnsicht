@@ -90,6 +90,10 @@ public class MethodGraphBuilder implements IGraphBuilder {
         return this.vertices;
     }
 
+    public Set<String> getVertexIds() {
+        return this.vertexIds;
+    }
+
     /**
      * Builds the {@link MethodGraph}, which has been described before this method is called.
      * @return the built {@link MethodGraph}
