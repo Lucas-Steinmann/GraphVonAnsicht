@@ -42,7 +42,7 @@ public class MethodGraphBuilder implements IGraphBuilder {
     
     @Override
     public IEdgeBuilder getEdgeBuilder(String sourceId, String targetId) {
-        JoanaEdgeBuilder builder = new JoanaEdgeBuilder();
+        JoanaEdgeBuilder builder = new JoanaEdgeBuilder(sourceId, targetId);
         edgeBuilders.add(builder);
         return builder;
     }
@@ -102,12 +102,7 @@ public class MethodGraphBuilder implements IGraphBuilder {
         }
         
         for (JoanaEdgeBuilder builder : edgeBuilders) {
-            JoanaEdge edge = builder.build(vertices);
-            
-            //check if edge exists
-            if (edge != null) {
-                edges.add(edge);
-            } 
+            edges.add(builder.build(vertices));
         }
 
         String name = "";

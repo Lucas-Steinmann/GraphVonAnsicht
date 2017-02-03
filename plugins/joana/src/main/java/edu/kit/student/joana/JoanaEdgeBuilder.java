@@ -1,40 +1,36 @@
 package edu.kit.student.joana;
 
 import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
 
+import edu.kit.student.graphmodel.builder.GraphBuilderException;
 import edu.kit.student.graphmodel.builder.IEdgeBuilder;
 import edu.kit.student.joana.JoanaEdge.EdgeKind;
 
 /**
- * The JoanaEdgeBuilder is a {@link IEdgeBuilder}, specifically for building
- * {@link JoanaEdge}.
+ * The JoanaEdgeBuilder is an {@link IEdgeBuilder}, to build {@link JoanaEdge}s.
  */
 public class JoanaEdgeBuilder implements IEdgeBuilder {
 
-    private String source;
-    private String target;
+    private final String sourceId;
+    private final String targetId;
     private EdgeKind edgeKind;
 
-    public JoanaEdgeBuilder() {
-        source = null;
-        target = null;
+    /**
+     * Constructs a new {@link JoanaEdgeBuilder} and sets sourceId and targetId IDs.
+     * @param sourceId the id of the sourceId vertex
+     * @param targetId the id of the targetId vertex
+     */
+    public JoanaEdgeBuilder(String sourceId, String targetId) {
+        this.sourceId = sourceId;
+        this.targetId = targetId;
     }
     
     @Override
     public void setID(String id) { } // Ignore content. Name will be derived from edgeKind.
 
-
     @Override
-    public void newEdge(String source, String target) {
-        this.source = source;
-        this.target = target;
-    }
-
-    @Override
-    public void addData(String keyname, String value) {
-        if (keyname.equals("edgeKind")) {
+    public void addData(String key, String value) {
+        if (key.equals("edgeKind")) {
             this.edgeKind = EdgeKind.valueOf(value);
         }
     }
@@ -45,24 +41,26 @@ public class JoanaEdgeBuilder implements IEdgeBuilder {
      * 
      * @return the built {@link JoanaEdge} or null if the
      */
-    public JoanaEdge build(Map<String, JoanaVertex> vertexPool) {
-        if (source == null || target == null) {
-            return null;
+    public JoanaEdge build(Map<String, JoanaVertex> vertexPool) throws GraphBuilderException {
+        if (sourceId == null || targetId == null) {
+            throw new GraphBuilderException(GraphBuilderException.BuilderType.EDGE,
+                    "Found JoanaEdge missing source or target vertex.");
         }
         
         //throw error
         if (edgeKind == null) {
-            throw new IllegalArgumentException("Joana edge " + source + "->" + target + " needs an edgeKind.");
+            throw new GraphBuilderException(GraphBuilderException.BuilderType.EDGE,
+                    "Joana edge " + sourceId + "->" + targetId + " needs an edgeKind.");
         }
 
-
-        JoanaVertex sourceVertex = vertexPool.get(source);
-        JoanaVertex targetVertex = vertexPool.get(target);
+        JoanaVertex sourceVertex = vertexPool.get(sourceId);
+        JoanaVertex targetVertex = vertexPool.get(targetId);
 
         if (sourceVertex != null && targetVertex != null) {
             return new JoanaEdge(edgeKind.name(), edgeKind.name(), sourceVertex, targetVertex, edgeKind);
+        } else {
+            throw new GraphBuilderException(GraphBuilderException.BuilderType.EDGE,
+                    "Found JoanaEdge with an invalid source or target vertex.");
         }
-
-        return null;
     }
 }

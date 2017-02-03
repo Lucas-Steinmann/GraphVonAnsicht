@@ -66,7 +66,7 @@ public class DirectedViewableGraphBuilder implements IGraphBuilder {
 	@Override
 	public IEdgeBuilder getEdgeBuilder(String sourceId, String targetId) {
 		// marks if source/target is inside this graph (flat) or in a subgraph
-		DirectedEdgeBuilder b =  new DirectedEdgeBuilder();
+		DirectedEdgeBuilder b =  new DirectedEdgeBuilder(sourceId, targetId);
 		this.edgeBuilders.add(b);
 		return b;
 	}
@@ -185,8 +185,7 @@ public class DirectedViewableGraphBuilder implements IGraphBuilder {
 			if (edgesFromGraphs.containsKey(sb)) {
 				for (DirectedEdgeBuilder eb : edgesFromGraphs.get(sb)) {
 					// Transform direct edge to edge to alias vertex
-					DirectedEdgeBuilder aliasEb = new DirectedEdgeBuilder();
-					aliasEb.newEdge(v.getName(), eb.getTarget());
+					DirectedEdgeBuilder aliasEb = new DirectedEdgeBuilder(v.getName(), eb.getTarget());
 					for (Entry<String, String> keyValue : eb.getEdgeData().entrySet()) {
 						aliasEb.addData(keyValue.getKey(), keyValue.getValue());
 					}
@@ -197,8 +196,7 @@ public class DirectedViewableGraphBuilder implements IGraphBuilder {
 			if (edgesIntoGraphs.containsKey(sb)) {
 				for (DirectedEdgeBuilder eb : edgesIntoGraphs.get(sb)) {
 					// Transform direct edge to edge to alias vertex
-					DirectedEdgeBuilder aliasEb = new DirectedEdgeBuilder();
-					aliasEb.newEdge(eb.getSource(), v.getName());
+					DirectedEdgeBuilder aliasEb = new DirectedEdgeBuilder(eb.getSource(), v.getName());
 					for (Entry<String, String> keyValue : eb.getEdgeData().entrySet()) {
 						aliasEb.addData(keyValue.getKey(), keyValue.getValue());
 					}
@@ -208,12 +206,12 @@ public class DirectedViewableGraphBuilder implements IGraphBuilder {
 			}
 			if (edgesBetweenGraphsSource.containsKey(sb)) {
 				for (DirectedEdgeBuilder eb : edgesBetweenGraphsSource.get(sb)) {
-					eb.newEdge(v.getName(), eb.getTarget());
+					eb.setEndpoints(v.getName(), eb.getTarget());
 				}
 			}
 			if (edgesBetweenGraphsTarget.containsKey(sb)) {
 				for (DirectedEdgeBuilder eb : edgesBetweenGraphsTarget.get(sb)) {
-					eb.newEdge(eb.getSource(), v.getName());
+					eb.setEndpoints(eb.getSource(), v.getName());
 				}
 			}
 		}

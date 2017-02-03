@@ -346,7 +346,6 @@ public class GraphMLHandler extends DefaultHandler {
                 return;
 
             IEdgeBuilder edgeBuilder = currentGraph.getEdgeBuilder(currentSource, currentTarget);
-            edgeBuilder.newEdge(currentSource, currentTarget);
             edgeBuilder.setID(currentId);
             for (Map.Entry<Key, String> entry : currentData.entrySet())
                 edgeBuilder.addData(entry.getKey().getName(), entry.getValue());

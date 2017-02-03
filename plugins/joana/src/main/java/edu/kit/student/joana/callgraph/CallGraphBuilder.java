@@ -46,7 +46,7 @@ public class CallGraphBuilder implements IGraphBuilder {
             }
         }
         // Found edge between two method graphs
-        JoanaEdgeBuilder eBuilder = new JoanaEdgeBuilder();
+        JoanaEdgeBuilder eBuilder = new JoanaEdgeBuilder(sourceId, targetId);
         callEdgeBuilders.add(eBuilder);
         return eBuilder;
     }
@@ -110,12 +110,7 @@ public class CallGraphBuilder implements IGraphBuilder {
         // This should be temporary. Better would be if they would really get built in the method graph builder.
         Set<JoanaEdge> callEdges = new HashSet<>();
         for (JoanaEdgeBuilder builder : callEdgeBuilders) {
-            JoanaEdge edge = builder.build(vertexPool);
-            
-            //check if edge exists
-            if (edge != null) {
-                callEdges.add(edge);
-            }       
+            callEdges.add(builder.build(vertexPool));
         }
 
         stopTime = System.currentTimeMillis();

@@ -17,6 +17,11 @@ public class DirectedEdgeBuilder implements IEdgeBuilder {
 	private String target;
     private Map<String, String> edgeData = new HashMap<>();
 
+	public DirectedEdgeBuilder(String source, String target) {
+		this.source = source;
+		this.target = target;
+	}
+
     public String getId() {
 		return id;
 	}
@@ -38,15 +43,14 @@ public class DirectedEdgeBuilder implements IEdgeBuilder {
 		this.id = id;
 	}
 
-	@Override
-	public void newEdge(String source, String target) {
+	public void setEndpoints(String source, String target) {
 		this.source = source;
 		this.target = target;
 	}
 
 	@Override
-	public void addData(String keyname, String value) {
-		edgeData.put(keyname, value);
+	public void addData(String key, String value) {
+		edgeData.put(key, value);
 	}
 
     public DefaultDirectedEdge<DefaultVertex> build(Set<DefaultVertex> vertexPool) throws GraphBuilderException {

@@ -106,7 +106,7 @@ public class JoanaPlugin extends AbstractPluginBase {
                 return this.ws.getSettings();
             }
         };
-        LinkedList<WorkspaceOption> wsOptions = new LinkedList<WorkspaceOption>();
+        LinkedList<WorkspaceOption> wsOptions = new LinkedList<>();
         wsOptions.add(joanaws);
         return wsOptions;
     }
