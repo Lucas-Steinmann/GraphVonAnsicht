@@ -44,7 +44,7 @@ public class CallGraphVertex extends JoanaVertex {
 	}
 
 	@Override
-	public String getNodeOperation() {
+	public Operation getNodeOperation() {
 		return methodGraph.getEntryVertex().getNodeOperation();
 	}
 

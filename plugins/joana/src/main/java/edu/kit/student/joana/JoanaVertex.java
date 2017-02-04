@@ -17,7 +17,7 @@ public class JoanaVertex extends DefaultVertex implements ViewableVertex {
     private GAnsProperty<VertexKind> nodeKind;
     private GAnsProperty<JavaSource> nodeSource;
     private GAnsProperty<Integer> nodeProc;
-    private GAnsProperty<String> nodeOperation;
+    private GAnsProperty<Operation> nodeOperation;
     private GAnsProperty<String> nodeBcName;
     private GAnsProperty<Integer> nodeBcIndex;
     private GAnsProperty<Integer> nodeSr;
@@ -39,11 +39,11 @@ public class JoanaVertex extends DefaultVertex implements ViewableVertex {
      * @param kind  the kind (type)
      */
     public JoanaVertex(String name, String label, VertexKind kind) {
-        this(name, label, kind,null, 0, "", "", 0, 0, 0, 0, 0, "", "");
+        this(name, label, kind,null, 0, Operation.EMPTY, "", 0, 0, 0, 0, 0, "", "");
     }
 
     public JoanaVertex(String name, String label, VertexKind nodeKind, JavaSource source,
-            int nodeProc, String nodeOperation, String nodeBcName, int nodeBcIndex, int nodeSr, 
+            int nodeProc, Operation nodeOperation, String nodeBcName, int nodeBcIndex, int nodeSr,
             int nodeSc, int nodeEr, int nodeEc,
             String nodeLocalDef, String nodeLocalUse) {
 
@@ -79,8 +79,10 @@ public class JoanaVertex extends DefaultVertex implements ViewableVertex {
 		properties.add(nodeSc);
 		properties.add(nodeEr);
 		properties.add(nodeEc);
-		properties.add(nodeLocalDef);
-		properties.add(nodeLocalUse);
+		if (nodeLocalDef.getValue() != null)
+            properties.add(nodeLocalDef);
+        if (nodeLocalUse.getValue() != null)
+            properties.add(nodeLocalUse);
 		return properties;
 	}
 
@@ -116,7 +118,7 @@ public class JoanaVertex extends DefaultVertex implements ViewableVertex {
      * 
      * @return The nodeOperation of the JoanaVertex.
      */
-    public String getNodeOperation() {
+    public Operation getNodeOperation() {
         return nodeOperation.getValue();
     }
 
@@ -193,7 +195,7 @@ public class JoanaVertex extends DefaultVertex implements ViewableVertex {
     }
 
 
-        @Override
+    @Override
 	public DoublePoint getSize() {
 		// TODO: calculating size with different max/min values depending on KIND
 		if(this.sizeSet){
@@ -214,34 +216,25 @@ public class JoanaVertex extends DefaultVertex implements ViewableVertex {
 	}
     
     public enum VertexKind {
-        NORM, CALL, EXIT, ENTR,
-        ACTI, ACTO, FRMO, FRMI,
-        EXPR, PRED, SYNC, FOLD,
-        SUMMARY, FIELDACCESS, UNKNOWN;
-    	
+        NORM(Color.web("0xFFC125")), CALL(Color.web("0xBFEFFF")), EXIT(Color.web("0xFFC125")),
+        ENTR(Color.web("0xCBCBCB")), ACTI(Color.web("0x87CEFA")), ACTO(Color.web("0x00BFFF")),
+        FRMO(Color.web("0x00EE00")), FRMI(Color.web("0x98FB98")), EXPR(Color.web("0xFFFF00")),
+        PRED(Color.web("0xFFC125")), SYNC(Color.web("0xFFC125")), FOLD(Color.BROWN),
+        SUMMARY(Color.BROWN), FIELDACCESS(Color.LIGHTGREEN);
+
+        public final Color backgroundColor;
+
+        VertexKind(Color backgroundColor) {
+            this.backgroundColor = backgroundColor;
+        }
+
     	@Override
     	public String toString() {
     		return this.name();
     	}
         
         public Color color() {
-        	switch(this) {
-        	case NORM: return Color.web("0xFFC125");
-        	case CALL: return Color.web("0xBFEFFF");
-        	case EXIT: return Color.web("0xFFC125");
-        	case ENTR: return Color.web("0xCBCBCB");
-        	case ACTI: return Color.web("0x87CEFA");
-        	case ACTO: return Color.web("0x00BFFF");
-        	case FRMO: return Color.web("0x00EE00");
-        	case FRMI: return Color.web("0x98FB98");
-        	case EXPR: return Color.web("0xFFFF00");
-        	case PRED: return Color.web("0xFFC125");
-        	case SYNC: return Color.web("0xFFC125");
-        	case FOLD: return Color.BROWN;
-        	case SUMMARY: return Color.BROWN;
-        	case FIELDACCESS: return Color.LIGHTGREEN;
-        	default: return Color.BEIGE;
-        	}
+            return this.backgroundColor;
         }
         
         public VertexPriority priority() {
@@ -249,6 +242,81 @@ public class JoanaVertex extends DefaultVertex implements ViewableVertex {
         	case FIELDACCESS: return VertexPriority.LOW;
         	default: return VertexPriority.HIGH;
         	}
+        }
+    }
+
+    public enum Operation {
+
+        EMPTY("empty", VertexKind.EXPR, VertexKind.FOLD), //
+        INT_CONST("intconst", VertexKind.EXPR, VertexKind.PRED, VertexKind.ACTI),
+        FLOAT_CONST("floatconst", VertexKind.EXPR),
+        CHAR_CONST("charconst", VertexKind.EXPR),
+        STRING_CONST("stringconst", VertexKind.EXPR),
+        FUNCTION_CONST("functionconst", VertexKind.EXPR),
+        SHORTCUT("shortcut", VertexKind.EXPR, VertexKind.PRED, VertexKind.ACTI), // && ||
+        QUESTION("question", VertexKind.EXPR), // ? :
+        BINARY("binary", VertexKind.EXPR, VertexKind.PRED),
+        UNARY("unary", VertexKind.EXPR),
+        //			//	     | "lookup"
+        DEREFER("derefer", VertexKind.EXPR, VertexKind.PRED, VertexKind.ACTI),
+        REFER("refer", VertexKind.EXPR, VertexKind.PRED, VertexKind.ACTI),
+        ARRAY("array", VertexKind.EXPR),
+        SELECT("select", VertexKind.EXPR),
+        REFERENCE("reference", VertexKind.EXPR, VertexKind.PRED, VertexKind.ACTI),
+        DECLARATION("declaration", VertexKind.NORM),
+        MODIFY("modify", VertexKind.EXPR, VertexKind.PRED), // ++ --
+        MODASSIGN("modassign", VertexKind.EXPR), // += etc.
+        ASSIGN("assign", VertexKind.EXPR),
+        IF("IF", VertexKind.PRED, VertexKind.NORM),
+        LOOP("loop", VertexKind.NORM),
+        JUMP("jump", VertexKind.NORM),
+        COMPOUND("compound", VertexKind.NORM),
+        CALL("call", VertexKind.CALL),
+        ENTRY("entry", VertexKind.ENTR),
+        EXIT("exit", VertexKind.EXIT),
+        FORMAL_IN("form-in", VertexKind.FRMI),
+        FORMAL_ELLIP("form-ellip", VertexKind.FRMI), // Ellipse-Parameter "..."
+        FORMAL_OUT("form-out", VertexKind.FRMO),
+        ACTI("act-in", VertexKind.ACTI),
+        ACTUAL_OUT("act-out", VertexKind.ACTO),
+        //		NONE("None"
+        MONITOR("monitor", VertexKind.SYNC),
+        SUMMARY("summary", VertexKind.SUMMARY);
+
+        private final String value;
+        private final VertexKind[] kind;
+
+        Operation(String s, VertexKind k) { value = s; kind = new VertexKind[]{k}; }
+
+        Operation(String s, VertexKind k1, VertexKind k2) {
+            value = s;
+            kind = new VertexKind[]{k1, k2};
+        }
+
+        Operation(String s, VertexKind k1, VertexKind k2, VertexKind k3) {
+            value = s;
+            kind = new VertexKind[]{k1, k2, k3};
+        }
+
+        public VertexKind getKind(int i) {
+            return kind[i];
+        }
+
+        public String toString() {
+            return value;
+        }
+
+        VertexKind[] getCorrespondingKind() {
+            return kind;
+        }
+
+        public static Operation getOperationByValue(String value) {
+            for (Operation op : values()) {
+                if (op.value.equals(value)) {
+                    return op;
+                }
+            }
+            return null;
         }
     }
 

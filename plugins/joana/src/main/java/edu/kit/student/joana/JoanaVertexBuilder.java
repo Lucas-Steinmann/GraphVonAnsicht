@@ -1,5 +1,6 @@
 package edu.kit.student.joana;
 
+import edu.kit.student.graphmodel.builder.GraphBuilderException;
 import edu.kit.student.graphmodel.builder.IVertexBuilder;
 
 /**
@@ -13,7 +14,7 @@ public class JoanaVertexBuilder implements IVertexBuilder {
     private JoanaVertex.VertexKind kind;
     private JavaSource javaSource = null;
     private int proc;
-    private String operation = "";
+    private JoanaVertex.Operation operation;
     private String bcName = "";
     private int bcIndex;
     private int sr;
@@ -41,7 +42,7 @@ public class JoanaVertexBuilder implements IVertexBuilder {
               this.javaSource = joanaObjectPool.getJavaSource(value);
               break;
           case "nodeOperation":
-              operation = value;
+              operation = JoanaVertex.Operation.getOperationByValue(value);
               break;
           case "nodeLabel":
               label = value;
@@ -86,10 +87,11 @@ public class JoanaVertexBuilder implements IVertexBuilder {
     /**
      * Builds JoanaVertex from the given data.
      * @return the built vertex
+     * @throws GraphBuilderException if the {@link JoanaVertex.VertexKind} was not set.
      */
-    public JoanaVertex build() {
+    public JoanaVertex build() throws GraphBuilderException {
         if (kind == null) {
-            throw new IllegalArgumentException("JoanaVertex " + name + " needs a NodeKind");
+            throw new GraphBuilderException(GraphBuilderException.BuilderType.VERTEX, "JoanaVertex " + name + " needs a NodeKind");
         }
 
         //TODO Check relations nodeKind-nodeOperation and maybe others
