@@ -9,11 +9,8 @@ import edu.kit.student.graphmodel.builder.GraphBuilderException;
 import edu.kit.student.graphmodel.builder.IEdgeBuilder;
 import edu.kit.student.graphmodel.builder.IGraphBuilder;
 import edu.kit.student.graphmodel.builder.IVertexBuilder;
-import edu.kit.student.joana.JoanaEdge;
-import edu.kit.student.joana.JoanaEdgeBuilder;
-import edu.kit.student.joana.JoanaVertex;
+import edu.kit.student.joana.*;
 import edu.kit.student.joana.JoanaVertex.VertexKind;
-import edu.kit.student.joana.JoanaVertexBuilder;
 
 /**
  * The MethodGraphBuilder is a {@link IGraphBuilder}, specifically for building
@@ -24,22 +21,26 @@ public class MethodGraphBuilder implements IGraphBuilder {
     private String name;
     private Map<String, String> data = new HashMap<>();
 
+    private final JoanaObjectPool joanaObjectPool;
+
     private Set<JoanaVertexBuilder> vertexBuilders = new HashSet<>();
     private Set<String> vertexIds = new HashSet<>();
     private HashMap<String, JoanaVertex> vertices = new HashMap<>();
 
     private Set<JoanaEdge> edges = new HashSet<>();
     private Set<JoanaEdgeBuilder> edgeBuilders = new HashSet<>();
-    
+
+
     /**
      * Constructor for {@link MethodGraphBuilder} which is created by a {@link edu.kit.student.joana.callgraph.CallGraphBuilder}.
      * 
      * @param name of the {@link MethodGraph}
      */
-    public MethodGraphBuilder(String name) {
+    public MethodGraphBuilder(String name, JoanaObjectPool pool) {
         this.name = name;
+        this.joanaObjectPool = pool;
     }
-    
+
     @Override
     public IEdgeBuilder getEdgeBuilder(String sourceId, String targetId) {
         JoanaEdgeBuilder builder = new JoanaEdgeBuilder(sourceId, targetId);
@@ -49,7 +50,7 @@ public class MethodGraphBuilder implements IGraphBuilder {
 
     @Override
     public IVertexBuilder getVertexBuilder(String vertexId) {
-        JoanaVertexBuilder builder = new JoanaVertexBuilder(vertexId);
+        JoanaVertexBuilder builder = new JoanaVertexBuilder(vertexId, joanaObjectPool);
         vertexIds.add(vertexId);
         vertexBuilders.add(builder);
         return builder;

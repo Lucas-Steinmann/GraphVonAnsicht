@@ -160,7 +160,6 @@ public class GraphMLHandler extends DefaultHandler {
                 id = attributes.getValue(GmlToken.ID.getXmlTag());
             }
 
-            logger.debug("New Graph: " + id);
             // Handle edge direction in graph
             isDirected = true;
             String direction = attributes.getValue(GmlToken.EDGEDEFAULT.getXmlTag());

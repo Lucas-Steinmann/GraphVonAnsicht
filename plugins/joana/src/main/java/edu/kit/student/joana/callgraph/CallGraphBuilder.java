@@ -25,30 +25,29 @@ public class CallGraphBuilder implements IGraphBuilder {
     private final Logger logger = LoggerFactory.getLogger(CallGraphBuilder.class);
 
     private final Map<String, String> data = new HashMap<>();
+
     private final Map<String, MethodGraphBuilder> vertexIDToMGBuilder = new HashMap<>();
     private final Set<MethodGraphBuilder> methodGraphBuilders = new HashSet<>();
     // contains all MethodGraphBuilder whose vertices have not been added to this vertexIDToMGBuilder mapping.
-    private final Set<MethodGraphBuilder> collectedMGBuilder = new HashSet<>();
+    private final Set<MethodGraphBuilder> newMGBuilders = new HashSet<>();
+
+    private final JoanaObjectPool joanaObjectPool;
     private final Set<MethodGraph> methodGraphs = new HashSet<>();
     private final Set<JoanaEdgeBuilder> callEdgeBuilders = new HashSet<>();
     private String name;
 
-    public CallGraphBuilder(String name) {
+    public CallGraphBuilder(String name, JoanaObjectPool pool) {
         this.name = name;
+        this.joanaObjectPool = pool;
     }
 
     @Override
     public IEdgeBuilder getEdgeBuilder(String sourceId, String targetId) {
-        for (MethodGraphBuilder builder : collectedMGBuilder) {
-            for (String vId : builder.getVertexIds()) {
-                vertexIDToMGBuilder.put(vId, builder);
-            }
-        }
-        collectedMGBuilder.clear();
-
+        collectMethodGraphBuilders();
         MethodGraphBuilder sourceMG = vertexIDToMGBuilder.get(sourceId);
         MethodGraphBuilder targetMG = vertexIDToMGBuilder.get(targetId);
         if (sourceMG != null && sourceMG == targetMG) {
+            // Return edge between to vertices in one method graph
             return sourceMG.getEdgeBuilder(sourceId, targetId);
         }
         // Found edge between two method graphs
@@ -65,10 +64,25 @@ public class CallGraphBuilder implements IGraphBuilder {
 
     @Override
     public IGraphBuilder getGraphBuilder(String graphId) {
-        MethodGraphBuilder builder = new MethodGraphBuilder(graphId);
+        MethodGraphBuilder builder = new MethodGraphBuilder(graphId, joanaObjectPool);
         methodGraphBuilders.add(builder);
-        collectedMGBuilder.add(builder);
+        newMGBuilders.add(builder);
         return builder;
+    }
+
+    /**
+     * Collects all MethodGraphBuilder who have been added since
+     * the last call of this function or the construction of this CallGrahBuilder.
+     * Collecting means currently adding them to the mapping from vertexIds to MethodGraphBuilder.
+     */
+    private void collectMethodGraphBuilders() {
+        for (MethodGraphBuilder builder : newMGBuilders) {
+            for (String vId : builder.getVertexIds()) {
+                vertexIDToMGBuilder.put(vId, builder);
+            }
+        }
+        newMGBuilders.clear();
+
     }
 
     @Override
@@ -140,6 +154,7 @@ public class CallGraphBuilder implements IGraphBuilder {
         for(MethodGraph mg : vertexIDToMG.values()){
         	mgIdToIVSet.put(mg.getID(), new HashSet<>());
         }
+        logger.info(callEdges.size() + " callEdges to process.");
         for(JoanaEdge callEdge : callEdges){
         	JoanaVertex source = callEdge.getSource();
         	JoanaVertex target = callEdge.getTarget();

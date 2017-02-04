@@ -11,6 +11,7 @@ public class JoanaVertexBuilder implements IVertexBuilder {
     String name = "";
     String label = "";
     JoanaVertex.VertexKind kind;
+    JavaSource javaSource = null;
     private String source = "";
     private int proc;
     private String operation = "";
@@ -22,10 +23,12 @@ public class JoanaVertexBuilder implements IVertexBuilder {
     private int ec;
     private String localDef;
     private String localUse;
+    private JoanaObjectPool joanaObjectPool;
     
-    public JoanaVertexBuilder(String id) {
+    public JoanaVertexBuilder(String id, JoanaObjectPool pool) {
         // The id in the persistent data is the name of the joana vertex.
         this.name = id;
+        this.joanaObjectPool = pool;
     }
     
     
@@ -35,8 +38,9 @@ public class JoanaVertexBuilder implements IVertexBuilder {
           case "nodeKind":
               kind = JoanaVertex.VertexKind.valueOf(value);
               break;
-          case "nodeSource": 
-              this.source = value;
+          case "nodeSource":
+              source = value;
+              this.javaSource = joanaObjectPool.getJavaSource(value);
               break;
           case "nodeOperation":
               operation = value;
@@ -90,7 +94,7 @@ public class JoanaVertexBuilder implements IVertexBuilder {
             throw new IllegalArgumentException("JoanaVertex " + name + " needs a NodeKind");
         }
         
-        JoanaVertex vertex = new JoanaVertex(name, label, kind, source, proc, 
+        JoanaVertex vertex = new JoanaVertex(name, label, kind, source, javaSource, proc,
                                              operation, bcName, bcIndex, sr, sc, er, ec, localDef, localUse);
         //TODO Check relations nodeKind-nodeOperation and maybe others
         return vertex;

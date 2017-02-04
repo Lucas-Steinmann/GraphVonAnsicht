@@ -1,7 +1,6 @@
 package edu.kit.student.joana;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import edu.kit.student.graphmodel.GraphModel;
 import edu.kit.student.graphmodel.builder.GraphBuilderException;
@@ -15,12 +14,12 @@ import edu.kit.student.joana.methodgraph.MethodGraphBuilder;
  * The JoanaGraphModelBuilder implements the {@link IGraphModelBuilder} and
  * creates a {@link JoanaGraphModel}.
  */
-public class JoanaGraphModelBuilder implements IGraphModelBuilder {
+public class JoanaGraphModelBuilder implements IGraphModelBuilder, JoanaObjectPool {
 
     private JoanaWorkspace workspace;
-    CallGraphBuilder callBuilder;
-    List<MethodGraphBuilder> methodBuilders = new LinkedList<MethodGraphBuilder>();
-    
+    private CallGraphBuilder callBuilder;
+    private Map<String, JavaSource> fileNamesToJavaSource = new HashMap<>();
+
     public JoanaGraphModelBuilder(JoanaWorkspace workspace) {
         this.workspace = workspace;
     }
@@ -29,7 +28,7 @@ public class JoanaGraphModelBuilder implements IGraphModelBuilder {
     public IGraphBuilder getGraphBuilder(String graphId) {
         //check if callgraphbuilder
         if (graphId.equals("callgraph")) {
-            callBuilder = new CallGraphBuilder(graphId);
+            callBuilder = new CallGraphBuilder(graphId, this);
             return callBuilder;
         }
         return null;
@@ -41,5 +40,20 @@ public class JoanaGraphModelBuilder implements IGraphModelBuilder {
         JoanaGraphModel model = new JoanaGraphModel(callGraph);
         workspace.setGraphModel(model);
         return model;
+    }
+
+    @Override
+    public Set<JavaSource> getJavaSources() {
+        return new HashSet<>(fileNamesToJavaSource.values());
+    }
+
+    @Override
+    public JavaSource getJavaSource(String sourceName) {
+        if (fileNamesToJavaSource.containsKey(sourceName))
+            return fileNamesToJavaSource.get(sourceName);
+
+        JavaSource source = new JavaSource(sourceName);
+        fileNamesToJavaSource.put(sourceName, source);
+        return source;
     }
 }

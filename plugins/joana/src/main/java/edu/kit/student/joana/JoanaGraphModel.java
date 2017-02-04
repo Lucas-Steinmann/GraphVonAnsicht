@@ -1,8 +1,6 @@
 package edu.kit.student.joana;
 
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import edu.kit.student.graphmodel.GraphModel;
 import edu.kit.student.graphmodel.ViewableGraph;
@@ -13,16 +11,21 @@ import edu.kit.student.joana.methodgraph.MethodGraph;
  * A Joana specific {@link GraphModel}. It can only contain {@link MethodGraph}
  * and {@link CallGraph}.
  */
-public class JoanaGraphModel extends GraphModel {
+public class JoanaGraphModel extends GraphModel implements  JoanaObjectPool {
 
     /**
      * The CallGraph of this GraphModel. All further information can be retrieved from this Graph (e.g. MethodGraphs).
      */
 	private CallGraph callgraph;
-	
+
+	/**
+	 * A mapping from the names of all Java source files occurring in this JoanaGraphModel to the {@link JavaSource} objects.
+	 */
+	private Set<JavaSource> javaSources = new HashSet<>();
+
 	/**
 	 * Constructs a new JoanaGraphModel with the specified callgraph and the specified MethodGraphs
-	 * @param callgraph
+	 * @param callgraph the {@link CallGraph} of this model
 	 */
 	public JoanaGraphModel(CallGraph callgraph) {
 		this.callgraph = callgraph;
@@ -56,6 +59,22 @@ public class JoanaGraphModel extends GraphModel {
 	 */
 	private void setCallGraph(CallGraph callgraph) {
 		this.callgraph = callgraph;
+	}
+
+
+	public Set<JavaSource> getJavaSources() {
+		return new HashSet<>(this.javaSources);
+	}
+
+	@Override
+	public JavaSource getJavaSource(String sourceName) {
+	    Optional<JavaSource> sourceOptional = this.javaSources.stream().filter(js -> js.getFileName().equals(sourceName)).findFirst();
+	    if (sourceOptional.isPresent()) {
+	    	return sourceOptional.get();
+		}
+		JavaSource source = new JavaSource(sourceName);
+	    this.javaSources.add(source);
+	    return source;
 	}
 
 	@Override
