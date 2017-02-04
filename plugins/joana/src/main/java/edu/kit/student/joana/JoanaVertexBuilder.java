@@ -7,12 +7,11 @@ import edu.kit.student.graphmodel.builder.IVertexBuilder;
  * creates a {@link JoanaVertex}.
  */
 public class JoanaVertexBuilder implements IVertexBuilder {
-    
-    String name = "";
-    String label = "";
-    JoanaVertex.VertexKind kind;
-    JavaSource javaSource = null;
-    private String source = "";
+
+    private String name = "";
+    private String label = "";
+    private JoanaVertex.VertexKind kind;
+    private JavaSource javaSource = null;
     private int proc;
     private String operation = "";
     private String bcName = "";
@@ -39,7 +38,6 @@ public class JoanaVertexBuilder implements IVertexBuilder {
               kind = JoanaVertex.VertexKind.valueOf(value);
               break;
           case "nodeSource":
-              source = value;
               this.javaSource = joanaObjectPool.getJavaSource(value);
               break;
           case "nodeOperation":
@@ -93,11 +91,10 @@ public class JoanaVertexBuilder implements IVertexBuilder {
         if (kind == null) {
             throw new IllegalArgumentException("JoanaVertex " + name + " needs a NodeKind");
         }
-        
-        JoanaVertex vertex = new JoanaVertex(name, label, kind, source, javaSource, proc,
-                                             operation, bcName, bcIndex, sr, sc, er, ec, localDef, localUse);
+
         //TODO Check relations nodeKind-nodeOperation and maybe others
-        return vertex;
+        return new JoanaVertex(name, label, kind, javaSource, proc,
+                                             operation, bcName, bcIndex, sr, sc, er, ec, localDef, localUse);
     }
 
     @Override

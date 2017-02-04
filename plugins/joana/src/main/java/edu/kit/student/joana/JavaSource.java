@@ -37,4 +37,9 @@ public class JavaSource {
         return Objects.hash(fileName);
     }
 
+    @Override
+    public String toString() {
+        return fileName;
+    }
+
 }

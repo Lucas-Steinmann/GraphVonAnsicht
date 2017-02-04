@@ -15,7 +15,7 @@ import javafx.scene.paint.Color;
 public class JoanaVertex extends DefaultVertex implements ViewableVertex {
 
     private GAnsProperty<VertexKind> nodeKind;
-    private GAnsProperty<String> nodeSource;
+    private GAnsProperty<JavaSource> nodeSource;
     private GAnsProperty<Integer> nodeProc;
     private GAnsProperty<String> nodeOperation;
     private GAnsProperty<String> nodeBcName;
@@ -26,7 +26,6 @@ public class JoanaVertex extends DefaultVertex implements ViewableVertex {
     private GAnsProperty<Integer> nodeEc;
     private GAnsProperty<String>  nodeLocalDef;
     private GAnsProperty<String>  nodeLocalUse;
-    private JavaSource source;
 
     private DoublePoint setSize;
     private boolean sizeSet;
@@ -40,29 +39,28 @@ public class JoanaVertex extends DefaultVertex implements ViewableVertex {
      * @param kind  the kind (type)
      */
     public JoanaVertex(String name, String label, VertexKind kind) {
-        this(name, label, kind, "", null, 0, "", "", 0, 0, 0, 0, 0, "", "");
+        this(name, label, kind,null, 0, "", "", 0, 0, 0, 0, 0, "", "");
     }
 
-    public JoanaVertex(String name, String label, VertexKind nodeKind, String nodeSource, JavaSource source,
+    public JoanaVertex(String name, String label, VertexKind nodeKind, JavaSource source,
             int nodeProc, String nodeOperation, String nodeBcName, int nodeBcIndex, int nodeSr, 
             int nodeSc, int nodeEr, int nodeEc,
             String nodeLocalDef, String nodeLocalUse) {
 
         super(name, label);
 
-        this.source = source;
-        this.nodeKind = new GAnsProperty<VertexKind>("nodeKind", nodeKind);
-        this.nodeSource = new GAnsProperty<String>("nodeSource", nodeSource);
-        this.nodeProc = new GAnsProperty<Integer>("nodeProc", nodeProc);
-        this.nodeOperation = new GAnsProperty<String>("nodeOperation", nodeOperation);
-        this.nodeBcName = new GAnsProperty<String>("nodeBcName", nodeBcName);
-        this.nodeBcIndex = new GAnsProperty<Integer>("nodeBCIndex", nodeBcIndex);
-        this.nodeSr = new GAnsProperty<Integer>("nodeSr", nodeSr);
-        this.nodeSc = new GAnsProperty<Integer>("nodeSc", nodeSc);
-        this.nodeEr = new GAnsProperty<Integer>("nodeEr", nodeEr);
-        this.nodeEc = new GAnsProperty<Integer>("nodeEc", nodeEc);
-        this.nodeLocalDef = new GAnsProperty<String>("nodeLocalDef", nodeLocalDef);
-        this.nodeLocalUse = new GAnsProperty<String>("nodeLocalUse", nodeLocalUse);
+        this.nodeKind = new GAnsProperty<>("nodeKind", nodeKind);
+        this.nodeSource = new GAnsProperty<>("nodeSource", source);
+        this.nodeProc = new GAnsProperty<>("nodeProc", nodeProc);
+        this.nodeOperation = new GAnsProperty<>("nodeOperation", nodeOperation);
+        this.nodeBcName = new GAnsProperty<>("nodeBcName", nodeBcName);
+        this.nodeBcIndex = new GAnsProperty<>("nodeBCIndex", nodeBcIndex);
+        this.nodeSr = new GAnsProperty<>("nodeSr", nodeSr);
+        this.nodeSc = new GAnsProperty<>("nodeSc", nodeSc);
+        this.nodeEr = new GAnsProperty<>("nodeEr", nodeEr);
+        this.nodeEc = new GAnsProperty<>("nodeEc", nodeEc);
+        this.nodeLocalDef = new GAnsProperty<>("nodeLocalDef", nodeLocalDef);
+        this.nodeLocalUse = new GAnsProperty<>("nodeLocalUse", nodeLocalUse);
         this.sizeSet = false;
         this.nodeLabel = label;
     }
@@ -100,7 +98,7 @@ public class JoanaVertex extends DefaultVertex implements ViewableVertex {
      * 
      * @return The nodeSource of the JoanaVertex.
      */
-    public String getNodeSource() {
+    public JavaSource getNodeSource() {
         return nodeSource.getValue();
     }
 
@@ -175,8 +173,27 @@ public class JoanaVertex extends DefaultVertex implements ViewableVertex {
     public Integer getNodeEc() {
         return nodeEc.getValue();
     }
-    
-	@Override
+
+    /**
+     * Returns the nodeLocalDef of the JoanaVertex.
+     *
+     * @return The nodeLocalDef of the JoanaVertex.
+     */
+    public String getNodelLocalDef() {
+        return nodeLocalDef.getValue();
+    }
+
+    /**
+     * Returns the nodeLocalUse of the JoanaVertex.
+     *
+     * @return The nodeLocalUse of the JoanaVertex.
+     */
+    public String getNodeLocalUse() {
+        return nodeLocalUse.getValue();
+    }
+
+
+        @Override
 	public DoublePoint getSize() {
 		// TODO: calculating size with different max/min values depending on KIND
 		if(this.sizeSet){

@@ -10,7 +10,12 @@ public class CallGraphVertex extends JoanaVertex {
     private MethodGraph methodGraph;
 
 	public CallGraphVertex(String name, String label, MethodGraph graph) {
-		super(name, label, graph.getEntryVertex().getNodeKind());
+		super(name, label, graph.getEntryVertex().getNodeKind(), graph.getEntryVertex().getNodeSource(),
+				graph.getEntryVertex().getNodeProc(), graph.getEntryVertex().getNodeOperation(),
+				graph.getEntryVertex().getNodeBcName(), graph.getEntryVertex().getNodeBcIndex(),
+				graph.getEntryVertex().getNodeSr(), graph.getEntryVertex().getNodeSc(),
+				graph.getEntryVertex().getNodeEr(), graph.getEntryVertex().getNodeEc(),
+				graph.getEntryVertex().getNodelLocalDef(), graph.getEntryVertex().getNodeLocalUse());
 		this.methodGraph = graph;
 	}
 
@@ -29,7 +34,7 @@ public class CallGraphVertex extends JoanaVertex {
 	}
 
 	@Override
-	public String getNodeSource() {
+	public JavaSource getNodeSource() {
 		return methodGraph.getEntryVertex().getNodeSource();
 	}
 
