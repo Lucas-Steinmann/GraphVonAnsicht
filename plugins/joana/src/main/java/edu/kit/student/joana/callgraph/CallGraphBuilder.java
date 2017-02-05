@@ -106,6 +106,7 @@ public class CallGraphBuilder implements IGraphBuilder {
         long startTime = System.currentTimeMillis();
 
         final HashMap<String, MethodGraph> vertexIDToMG = new HashMap<>();
+        logger.info(methodGraphBuilders.size() + " MethodGraphs to build.");
         for (MethodGraphBuilder b : methodGraphBuilders) {
             MethodGraph mg = b.build();
             methodGraphs.add(mg);
@@ -199,17 +200,9 @@ public class CallGraphBuilder implements IGraphBuilder {
         for (JoanaEdge callEdge : callEdges) {
             if (callEdge.getEdgeKind() != EdgeKind.CL)
                 continue;
-            int sourceID = 0;
-            int targetID = 0;
             // Find which methodgraph contains the target and the source vertex for the callEdge
-            for (MethodGraph methodGraph : methodGraphs) {
-                if (methodGraph.getVertexSet().contains(callEdge.getSource())) {
-                    sourceID = methodGraph.getID();
-                }
-                if (methodGraph.getVertexSet().contains(callEdge.getTarget())) {
-                    targetID = methodGraph.getID();
-                }
-            }
+            int sourceID = vertexIDToMG.get(callEdge.getSource().getName()).getID();
+            int targetID = vertexIDToMG.get(callEdge.getTarget().getName()).getID();
             if (connections.get(vertices.get(sourceID)).contains(vertices.get(targetID))) {
                 // Second call from this function. Skip.
                 continue;
