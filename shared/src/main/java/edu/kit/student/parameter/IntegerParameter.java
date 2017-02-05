@@ -1,16 +1,16 @@
 package edu.kit.student.parameter;
 
 /**
- * IntegerParameters are parameters with an integer valueId space.
+ * IntegerParameters are parameters with an integer value space.
  */
 public class IntegerParameter extends Parameter<IntegerParameter, Integer> {
     private int min;
     private int max;
 
     /**
-     * Constructs a new IntegerParameter, sets its name, its default valueId and boundaries.
+     * Constructs a new IntegerParameter, sets its name, its default value and boundaries.
      * @param name The name of the parameter.
-     * @param value The valueId of the parameter.
+     * @param value The value of the parameter.
      * @param min The minimum boundary of the parameter.
      * @param max The maximum boundary of the parameter.
      */

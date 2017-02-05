@@ -375,7 +375,7 @@ public class GraphMLHandler extends DefaultHandler {
 
     private void throwInvalidField(GmlToken element, GmlToken field, String value) throws SAXException {
         SAXException exception = new SAXException("Found GraphML-Element \"" + element.getXmlTag() + "\" "
-                                                + "with invalid valueId \"" + value
+                                                + "with invalid value \"" + value
                                                 + "\" in field \"" + field.getXmlTag() + "\".");
         logger.error(exception.getMessage());
         throw  exception;

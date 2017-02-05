@@ -15,7 +15,7 @@ public class Selector {
 
 	/**
 	 * Gets the String which is used to select the subgraph
-	 * @return valueId Selector String
+	 * @return value Selector String
 	 */
 	public String getValue() {
 	 	 return value; 

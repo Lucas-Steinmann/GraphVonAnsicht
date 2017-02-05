@@ -9,7 +9,7 @@ public interface IVertexBuilder {
 	 * Sets the ID of the vertex build by this.
 	 * 
 	 * @param id
-	 *           valueId to which the id is set
+	 *           value to which the id is set
 	 */
 	// TODO: Inconsistency in naming scheme (should be called set name or have type of integer)
 	public abstract void setID(String id);

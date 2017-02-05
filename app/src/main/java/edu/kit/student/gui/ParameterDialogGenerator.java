@@ -237,7 +237,7 @@ public class ParameterDialogGenerator extends ParameterVisitor {
 
 			@Override
 			public String toString(Double value) {
-				// If the specified valueId is null, return a zero-length String
+				// If the specified value is null, return a zero-length String
 				if (value == null)
 					return "";
 				return df.format(value);
@@ -246,7 +246,7 @@ public class ParameterDialogGenerator extends ParameterVisitor {
 			@Override
 			public Double fromString(String value) {
 				try {
-					// If the specified valueId is null or zero-length, return
+					// If the specified value is null or zero-length, return
 					// null
 					if (value == null)
 						return null;

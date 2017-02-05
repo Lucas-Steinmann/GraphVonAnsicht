@@ -50,12 +50,12 @@ public interface IGraphBuilder {
 
 	/**
 	 * Adds additional data to this graph.
-	 * The implementation needs to decide how to save and process the valueId.
+	 * The implementation needs to decide how to save and process the value.
 	 *
 	 * @param keyname name of the attribute
-	 * @param value   valueId of the attribute
+	 * @param value   value of the attribute
 	 *
-	 * @throws IllegalArgumentException if the key valueId combination is illegal
+	 * @throws IllegalArgumentException if the key value combination is illegal
 	 * 					or incompatible with earlier information provided through this interface.
 	 */
 	public abstract void addData(String keyname, String value) throws IllegalArgumentException;

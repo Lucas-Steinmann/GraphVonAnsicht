@@ -202,7 +202,7 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 			DoublePoint boxCross = null;
 			int layerToAddDummy = 0;
 			JoanaDummyVertex tempDummy;
-			Double yAddition = 0.0;	//adds this valueId to the new set y-coordinate of the new dummy(another valueId than 0 just needed on bottom of FA-box)
+			Double yAddition = 0.0;	//adds this value to the new set y-coordinate of the new dummy(another value than 0 just needed on bottom of FA-box)
 			//vertex boxes are not accurate so that the entry point in box is the same point as drawn by EdgeDrawer
 			//in addition new dummy position is left on top, move them all half its length to the left!
 			//on bottom: move them also it's length up!
@@ -682,9 +682,9 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 	}
 	
 	/**
-	 * Get index of valueId in list.
+	 * Get index of value in list.
 	 * Index 0 is the first index.
-	 * -1 is returned, if valueId is not contained in list.
+	 * -1 is returned, if value is not contained in list.
 	 */
 	private int getIndex(List<Double> list, Double value){
 		int index = 0;

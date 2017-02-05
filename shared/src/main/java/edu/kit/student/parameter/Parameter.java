@@ -4,8 +4,8 @@ import edu.kit.student.objectproperty.GAnsProperty;
 
 /**
  * An abstract parameter class.
- * A Parameter contains a valueId and a name. The valueId can be transformed into a string.
- * Clients can set Listeners to track changes of the valueId.
+ * A Parameter contains a value and a name. The value can be transformed into a string.
+ * Clients can set Listeners to track changes of the value.
  * Classes inheriting from this class can visited by a ParameterVisitor.
  * @param <T> 
  * @param <V> 
@@ -15,12 +15,12 @@ public abstract class Parameter<T, V extends Object> extends GAnsProperty<V> {
 	private V tempValue;
 	
 	/**
-	 * Constructor, setting the name and valueId of the property.
+	 * Constructor, setting the name and value of the property.
 	 * 
 	 * @param name
 	 *            The string will be set as the name of the GAnsProperty.
 	 * @param value
-	 *            The valueId that will be set in the GAnsProperty.
+	 *            The value that will be set in the GAnsProperty.
 	 */
 	public Parameter(String name, V value) {
 		super(name, value);
@@ -34,17 +34,17 @@ public abstract class Parameter<T, V extends Object> extends GAnsProperty<V> {
     public abstract void accept(ParameterVisitor visitor);
     
     /**
-     * Caches the current valueId in a variable.
+     * Caches the current value in a variable.
      * This has to be called before reset() is called, 
-     * otherwise the cached valueId is the initial valueId of the parameter.
+     * otherwise the cached value is the initial value of the parameter.
      */
     public void cacheCurrentValue() {
     	tempValue = this.getValue();
     }
     
     /**
-     * Sets the valueId of the parameter to the valueId cached via cacheCurrentValue().
-     * If no valueId is cached, the initial valueId of the parameter is set.
+     * Sets the value of the parameter to the value cached via cacheCurrentValue().
+     * If no value is cached, the initial value of the parameter is set.
      */
     public void reset() {
     	this.setValue(tempValue);

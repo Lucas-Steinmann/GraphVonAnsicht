@@ -52,8 +52,8 @@ public class JoanaEdge implements DirectedEdge {
     }
     
     /**
-     * Returns the valueId of the source of this edge before it was changed.
-     * Always has the valueId of the last change.
+     * Returns the value of the source of this edge before it was changed.
+     * Always has the value of the last change.
      * If there were no changes, returns the normal source of this.
      * 
      * @return the source of this edge before one call of setVertices
@@ -63,8 +63,8 @@ public class JoanaEdge implements DirectedEdge {
     }
     
     /**
-     * Returns the valueId of the target of this edge before it was changed.
-     * Always has the valueId of the last change.
+     * Returns the value of the target of this edge before it was changed.
+     * Always has the value of the last change.
      * If there were no changes, returns the normal target of this.
      * 
      * @return the target of this edge before one call of setVertices
