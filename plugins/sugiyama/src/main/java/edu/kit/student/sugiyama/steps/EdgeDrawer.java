@@ -292,7 +292,7 @@ public class EdgeDrawer implements IEdgeDrawer {
 			double upperLowest = Integer.MIN_VALUE;	//lowest point in upper layer. (point on the bottom of the vertex-box)
 			double lowerHighest = Integer.MAX_VALUE;	//highest point in lower layer. (point on top of the vertex-box)
 			for(ISugiyamaVertex v : upper){
-				if(v.getY() + v.getSize().y > upperLowest){	//need the bottom of this vertex box so add its height to y-value
+				if(v.getY() + v.getSize().y > upperLowest){	//need the bottom of this vertex box so add its height to y-valueId
 					upperLowest = v.getY() + v.getSize().y;
 				}
 			}

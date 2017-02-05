@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * MultipleChoiceParameter are parameters with an predefined String value space.
+ * MultipleChoiceParameter are parameters with an predefined String valueId space.
  */
 public class MultipleChoiceParameter extends Parameter<MultipleChoiceParameter, String> {
 	private int selectedIndex;
@@ -36,8 +36,8 @@ public class MultipleChoiceParameter extends Parameter<MultipleChoiceParameter, 
 
 	/**
 	 * Overloads the setValue of GAnsProperty. Sets the String at position
-	 * selected in values as the value of the Parameter.
-	 * @param selected The position in values that has been selected and will be set as value.
+	 * selected in values as the valueId of the Parameter.
+	 * @param selected The position in values that has been selected and will be set as valueId.
 	 */
 	public void setValue(int selected) {
 		this.selectedIndex = selected;

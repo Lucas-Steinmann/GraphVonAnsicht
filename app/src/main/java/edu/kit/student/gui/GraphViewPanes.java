@@ -122,7 +122,7 @@ public class GraphViewPanes {
 	 *            The scale of the InnerPane.
 	 */
     public void setPivot( double x, double y, double scale) {
-        // note: pivot value must be untransformed, i. e. without scaling
+        // note: pivot valueId must be untransformed, i. e. without scaling
     	innerPane.setTranslateX(innerPane.getTranslateX() - x);
     	innerPane.setTranslateY(innerPane.getTranslateY() - y);
     	innerPaneScale.set(scale);

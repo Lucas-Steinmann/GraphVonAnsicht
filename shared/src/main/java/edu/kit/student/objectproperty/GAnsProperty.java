@@ -1,8 +1,15 @@
 package edu.kit.student.objectproperty;
 
+import com.sun.istack.internal.NotNull;
+import javafx.beans.WeakListener;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
+import javafx.beans.value.ObservableValue;
+import javafx.beans.value.WeakChangeListener;
+
+import java.lang.ref.WeakReference;
 
 
 /**
@@ -16,29 +23,36 @@ import javafx.beans.value.ChangeListener;
  * 
  * @author Nicolas
  */
-public class GAnsProperty<T extends Object> {
+public class GAnsProperty<T> {
 
 	/**
 	 * A string with whom, factories or other elements from the GUI, can
 	 * reference to the name/identifier of the value.
 	 */
-	public final static String name = "name";
+	public final static String nameId = "name";
 
 	/**
 	 * A string with whom, factories or other elements from the GUI, can
 	 * reference to the value.
 	 */
-	public final static String value = "value";
+	public final static String valueId = "value";
 
 	/**
 	 * A string with whom, factories or other elements from the GUI, can
 	 * reference to the string-representation of the value.
 	 */
-	public final static String valueAsString = "valueAsString";
+	public final static String valueAsStringId = "valueAsStringId";
 
-	private StringProperty nameProperty;
-	private GAnsObjectProperty<T> valueProperty;
-	private StringProperty valueAsStringProperty;
+	private WeakReference<StringProperty> namePropertyRef;
+	private WeakReference<GAnsObjectProperty<T>> valuePropertyRef;
+	private WeakReference<StringProperty> valueAsStringPropertyRef;
+
+	private WeakChangeListener<String> namePropertyListener;
+    private WeakChangeListener<T> valuePropertyListener;
+    private WeakChangeListener<String> valueAsStringPropertyListener;
+
+	private String name;
+	private T value;
 
 	/**
 	 * Constructor, setting the name and value of the property.
@@ -61,9 +75,13 @@ public class GAnsProperty<T extends Object> {
 	 *         GAnsProperty.
 	 */
 	public StringProperty propertyNameProperty() {
-		if (nameProperty == null)
-			nameProperty = new SimpleStringProperty(this, name);
-		return nameProperty;
+		if (namePropertyRef == null || namePropertyRef.get() == null) {
+			StringProperty nameProp = new SimpleStringProperty(this, nameId);
+			nameProp.set(this.name);
+            namePropertyRef = new WeakReference<>(nameProp);
+            nameProp.addListener(new WeakChangeListener<>((observable, oldValue, newValue) ->  this.name = newValue ));
+        }
+		return namePropertyRef.get();
 	}
 
 	/**
@@ -73,11 +91,13 @@ public class GAnsProperty<T extends Object> {
 	 * @return The property which contains the value in the GAnsProperty.
 	 */
 	public GAnsObjectProperty<T> propertyValue() {
-		if (valueProperty == null) {
-			valueProperty = new GAnsObjectProperty<T>(this, value);
-			propertyValueAsString().bind(valueProperty.asString());
+		if (valuePropertyRef == null || valuePropertyRef.get() == null) {
+            GAnsObjectProperty<T> valueProp = new GAnsObjectProperty<>(this, valueId);
+		    valueProp.addListener(new WeakChangeListener<>((observable, oldValue, newValue) -> { this.value = newValue; }));
+            valuePropertyRef = new WeakReference<>(valueProp);
+			propertyValueAsString().bind(valueProp.asString());
 		}
-		return valueProperty;
+		return valuePropertyRef.get();
 	}
 
 	/**
@@ -88,19 +108,32 @@ public class GAnsProperty<T extends Object> {
 	 *         the value of the GAnsProperty.
 	 */
 	public StringProperty propertyValueAsString() {
-		if (valueAsStringProperty == null)
-			valueAsStringProperty = new SimpleStringProperty(this, valueAsString);
-		return valueAsStringProperty;
+		if (valueAsStringPropertyRef == null || valueAsStringPropertyRef.get() == null) {
+            StringProperty valueAsStringProp = new SimpleStringProperty(this, valueAsStringId);
+            valueAsStringProp.set(this.value.toString());
+            valueAsStringPropertyRef = new WeakReference<>(valueAsStringProp);
+
+            // TODO: Decide what to do if value as string was changed
+            // Optimally would be a superclass of GAnsProperty, which is read only
+            // and WritableGAnsProperties would need a handler for changing the property value as string.
+            valueAsStringProp.addListener(new WeakChangeListener<>((observable, oldValue, newValue) -> {
+                return;
+            }));
+        }
+		return valueAsStringPropertyRef.get();
 	}
 
 	/**
 	 * Sets the name/identifier of the GAnsProperty.
 	 * 
-	 * @param value
-	 *            The string will be set as the name of the GAnsProperty.
+	 * @param name The string will be set as the name of the GAnsProperty.
 	 */
-	public void setName(String value) {
-		propertyNameProperty().set(value);
+	public void setName(String name) {
+	    if (namePropertyRef == null || this.namePropertyRef.get() == null) {
+	        this.name = name;
+        } else {
+            propertyNameProperty().set(name);
+        }
 	}
 
 	/**
@@ -109,17 +142,20 @@ public class GAnsProperty<T extends Object> {
 	 * @return The name/identifier of the GAnsProperty.
 	 */
 	public String getName() {
-		return propertyNameProperty().get();
+	    return this.name;
 	}
 
 	/**
 	 * Sets the value and its string-representation of the GAnsProperty.
 	 * 
-	 * @param value
-	 *            The value that will be set in the GAnsProperty.
+	 * @param value The value that will be set in the GAnsProperty.
 	 */
 	public void setValue(T value) {
-		propertyValue().setValue(value);
+        if (valuePropertyRef == null || this.valuePropertyRef.get() == null) {
+            this.value = value;
+        } else {
+            propertyValue().setValue(value);
+        }
 	}
 
 	/**
@@ -128,7 +164,7 @@ public class GAnsProperty<T extends Object> {
 	 * @return The value of the GAnsProperty.
 	 */
 	public T getValue() {
-		return propertyValue().getValue();
+	    return this.value;
 	}
 
 	/**
@@ -143,8 +179,7 @@ public class GAnsProperty<T extends Object> {
 	/**
 	 * Adds a ChangeListener to the value of the property.
 	 * 
-	 * @param listener
-	 *            The listener that will be added.
+	 * @param listener The listener that will be added.
 	 */
 	public void addListenerToValue(ChangeListener<T> listener) {
 		propertyValue().addListener(listener);
@@ -153,8 +188,7 @@ public class GAnsProperty<T extends Object> {
 	/**
 	 * Removes a ChangeListener from the value of the property.
 	 * 
-	 * @param listener
-	 *            The listener that will be removed.
+	 * @param listener The listener that will be removed.
 	 */
 	public void removeListenerFromValue(ChangeListener<T> listener) {
 		propertyValue().removeListener(listener);
@@ -162,6 +196,6 @@ public class GAnsProperty<T extends Object> {
 	
 	@Override
 	public String toString() {
-		return "Property: " + this.getName() + ", " + this.getValueAsString(); 
+		return "Property: " + this.name + ", " + this.value.toString();
 	}
 }

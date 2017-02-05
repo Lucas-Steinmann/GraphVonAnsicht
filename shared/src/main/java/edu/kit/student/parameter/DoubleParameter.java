@@ -1,7 +1,7 @@
 package edu.kit.student.parameter;
 
 /**
- * DoubleParameters are parameters with an double value space.
+ * DoubleParameters are parameters with an double valueId space.
  */
 public class DoubleParameter extends Parameter<DoubleParameter, Double> {
 	private Double min;
@@ -9,9 +9,9 @@ public class DoubleParameter extends Parameter<DoubleParameter, Double> {
 	private Double amoutPerStep;
 	
     /**
-     * Constructs a new DoubleParameter, sets its name, its default value and boundaries.
+     * Constructs a new DoubleParameter, sets its name, its default valueId and boundaries.
      * @param name The name of the parameter.
-     * @param value The value of the parameter.
+     * @param value The valueId of the parameter.
      * @param min The minimum boundary of the parameter.
      * @param max The maximum boundary of the parameter.
      * @param amoutPerStep 

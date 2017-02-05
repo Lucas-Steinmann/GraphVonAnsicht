@@ -14,7 +14,7 @@ import javafx.scene.paint.Color;
 public interface Vertex {
 
 	/**
-	 * Returns the name of the vertex. A descriptive name of the vertex.
+	 * Returns the nameId of the vertex. A descriptive nameId of the vertex.
 	 * Multiple vertices with equal name in one graph are allowed. Therefore
 	 * don't use this as identifier, instead use {@code getID()}.
 	 * 

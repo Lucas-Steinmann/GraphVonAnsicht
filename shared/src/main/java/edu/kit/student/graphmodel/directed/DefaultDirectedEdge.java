@@ -57,7 +57,7 @@ public class DefaultDirectedEdge<V extends Vertex> implements DirectedEdge {
 	 * @param label of the new edge
      * @param source source vertex
      * @param target target vertex
-     * @param data additional data as key-value pairs
+     * @param data additional data as key-valueId pairs
      */
     public DefaultDirectedEdge(String name, String label, V source, V target, Map<String, ?> data) {  
         this.name = new GAnsProperty<String>("name", name);

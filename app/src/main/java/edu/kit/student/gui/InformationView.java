@@ -5,7 +5,6 @@ import edu.kit.student.util.LanguageManager;
 import javafx.collections.ObservableList;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
-import javafx.scene.control.cell.PropertyValueFactory;
 
 /**
  * The InformationView shows a given set of properties from the selected
@@ -21,24 +20,24 @@ public class InformationView extends TableView<GAnsProperty<?>> {
 	 * automatically creates the tablecells. The function will be called
 	 * whenever the selection of the {@link GraphView} changes.
 	 * 
-	 * @param informations
+	 * @param information
 	 *            List with {@link GAnsProperty} elements which define the
 	 *            content of the InformationView
 	 */
-	@SuppressWarnings("unchecked")
-	public void setInformations(ObservableList<GAnsProperty<?>> informations) {
-		setItems(informations);
+	public void setInformation(ObservableList<GAnsProperty<?>> information) {
+		setItems(information);
 		// Implementation in diesem Stil: (siehe
 		// https://docs.oracle.com/javase/8/javafx/api/javafx/scene/control/TableView.html)
-		TableColumn<GAnsProperty<?>, String> propertyNameCol = new TableColumn<GAnsProperty<?>, String>(LanguageManager.getInstance().get("inf_prop"));
-		propertyNameCol.setCellValueFactory(new PropertyValueFactory<GAnsProperty<?>, String>(GAnsProperty.name));
-		TableColumn<GAnsProperty<?>, String> propertyValueCol = new TableColumn<GAnsProperty<?>, String>(LanguageManager.getInstance().get("inf_value"));
-		propertyValueCol.setCellValueFactory(new PropertyValueFactory<GAnsProperty<?>, String>(GAnsProperty.valueAsString));
-        
+		TableColumn<GAnsProperty<?>, String> propertyNameCol = new TableColumn<>(LanguageManager.getInstance().get("inf_prop"));
+		propertyNameCol.setCellValueFactory(p -> p.getValue().propertyNameProperty());
+		TableColumn<GAnsProperty<?>, String> propertyValueCol = new TableColumn<>(LanguageManager.getInstance().get("inf_value"));
+        propertyValueCol.setCellValueFactory(p -> p.getValue().propertyValueAsString());
+
 		propertyNameCol.prefWidthProperty().bind(this.widthProperty().divide(2));
         propertyValueCol.prefWidthProperty().bind(this.widthProperty().divide(2));
-		
-        getColumns().setAll(propertyNameCol, propertyValueCol);
+
+        getColumns().add(propertyNameCol);
+        getColumns().add(propertyValueCol);
 
 		refresh();
 	}

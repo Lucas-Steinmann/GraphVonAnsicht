@@ -8,7 +8,6 @@ import java.util.stream.Collectors;
 import edu.kit.student.graphmodel.GraphModel;
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.ViewableGraph;
-import edu.kit.student.graphmodel.builder.GraphBuilderException;
 import edu.kit.student.objectproperty.GAnsProperty;
 import edu.kit.student.parameter.Settings;
 import edu.kit.student.plugin.Exporter;
@@ -50,7 +49,6 @@ import javafx.scene.layout.Priority;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
-import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
 
@@ -119,7 +117,7 @@ public class GAnsApplication {
 					ViewableGraph graph = model.getGraphFromId(GAnsApplication.this.structureView.getIdOfSelectedItem());
 					
 					ObservableList<GAnsProperty<?>> statistics = FXCollections.observableList(graph.getStatistics());
-					informationView.setInformations(statistics);
+					informationView.setInformation(statistics);
 					mouseEvent.consume();
 				}
 			}
@@ -332,7 +330,7 @@ public class GAnsApplication {
 			Importer importer = importerList.get(supportedFileExtensions.indexOf(fileExtension));
 			importer.importGraph(workspace.getGraphModelBuilder(), inputStream);
 			this.graphViewTabPane.getTabs().clear();
-			this.informationView.setInformations(FXCollections.observableList(new LinkedList<GAnsProperty<?>>()));
+			this.informationView.setInformation(FXCollections.observableList(new LinkedList<GAnsProperty<?>>()));
 			this.model = workspace.getGraphModel();
 			ViewableGraph currentGraph = this.model.getRootGraphs().get(0);
 			openGraph(currentGraph);
@@ -424,7 +422,7 @@ public class GAnsApplication {
 				}
 				
 				ObservableList<GAnsProperty<?>> properties = FXCollections.observableList(tmp);
-				informationView.setInformations(properties);
+				informationView.setInformation(properties);
 			}
 		});
 	}

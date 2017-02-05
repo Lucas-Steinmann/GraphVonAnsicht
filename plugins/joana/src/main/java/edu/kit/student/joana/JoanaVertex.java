@@ -32,9 +32,9 @@ public class JoanaVertex extends DefaultVertex implements ViewableVertex {
     private String nodeLabel;
     
     /**
-     * Constructs a new JoanaVertex, giving it a name,
+     * Constructs a new JoanaVertex, giving it a nameId,
      * label and setting what kind of joana vertex it is.
-     * @param name  the name
+     * @param name  the nameId
      * @param label the label
      * @param kind  the kind (type)
      */

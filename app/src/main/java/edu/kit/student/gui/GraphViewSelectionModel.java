@@ -245,7 +245,7 @@ public class GraphViewSelectionModel {
 					menu.hide();
 					double delta = 1.2d;
 
-	                double scale = viewPanes.getScale(); // currently we only use Y, same value is used for X
+	                double scale = viewPanes.getScale(); // currently we only use Y, same valueId is used for X
 	                double oldScale = scale;
 
 	                viewPanes.setDeltaY(event.getDeltaY()); 
@@ -297,7 +297,7 @@ public class GraphViewSelectionModel {
 			return shapes;
 		}
 		
-		// Clamps the given value between the given min and max
+		// Clamps the given valueId between the given min and max
 		private double clamp(double value, double min, double max) {
 			if (Double.compare(value, min) < 0)
 				return min;

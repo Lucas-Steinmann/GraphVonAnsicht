@@ -29,14 +29,14 @@ public class JoanaEdge implements DirectedEdge {
 	private OrthogonalEdgePath path;
 
     public JoanaEdge(String name, String label, Integer id, JoanaVertex source, JoanaVertex target, EdgeKind kind) {
-        this.edgeKind = new GAnsProperty<EdgeKind>("edgeKind", kind);
+        this.edgeKind = new GAnsProperty<>("edgeKind", kind);
         this.target = target;
         this.source = source;
         this.lastSource = source;
         this.lastTarget = target;
-        this.name = new GAnsProperty<String>("name", name);
-        this.label = new GAnsProperty<String>("label", label);
-        this.id = id.intValue();
+        this.name = new GAnsProperty<>("nameId", name);
+        this.label = new GAnsProperty<>("label", label);
+        this.id = id;
         this.path = new OrthogonalEdgePath();
     }
     
@@ -52,8 +52,8 @@ public class JoanaEdge implements DirectedEdge {
     }
     
     /**
-     * Returns the value of the source of this edge before it was changed.
-     * Always has the value of the last change.
+     * Returns the valueId of the source of this edge before it was changed.
+     * Always has the valueId of the last change.
      * If there were no changes, returns the normal source of this.
      * 
      * @return the source of this edge before one call of setVertices
@@ -63,8 +63,8 @@ public class JoanaEdge implements DirectedEdge {
     }
     
     /**
-     * Returns the value of the target of this edge before it was changed.
-     * Always has the value of the last change.
+     * Returns the valueId of the target of this edge before it was changed.
+     * Always has the valueId of the last change.
      * If there were no changes, returns the normal target of this.
      * 
      * @return the target of this edge before one call of setVertices
@@ -174,7 +174,7 @@ public class JoanaEdge implements DirectedEdge {
 
     @Override
     public void addToFastGraphAccessor(FastGraphAccessor fga) {
-	    fga.addEdgeForAttribute(this, "name", this.name.toString());
+	    fga.addEdgeForAttribute(this, "nameId", this.name.toString());
 	    fga.addEdgeForAttribute(this, "id", this.id);
 	    fga.addEdgeForAttribute(this, "label", this.label.toString());
 

@@ -4,7 +4,7 @@ import javafx.beans.property.SimpleObjectProperty;
 
 /**
  * A JavaFX object property which in toString() returns the toString() of the
- * value.
+ * valueId.
  * 
  * @author Nicolas
  * @param <T> 
@@ -17,7 +17,7 @@ public class GAnsObjectProperty<T> extends SimpleObjectProperty<T> {
 	 * @param parent
 	 *            object that contains the GAnsObjectProperty.
 	 * @param name
-	 *            name that will be given to the SimpleObjectProperty
+	 *            nameId that will be given to the SimpleObjectProperty
 	 *            constructor.
 	 */
 	public GAnsObjectProperty(Object parent, String name) {
