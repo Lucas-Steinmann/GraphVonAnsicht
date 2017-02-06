@@ -245,6 +245,34 @@ public class JoanaVertex extends DefaultVertex implements ViewableVertex {
         }
     }
 
+    @Override
+    public int getLink() {
+        return -1;
+    }
+
+    public void setSize(DoublePoint newSize){
+        this.setSize = newSize;
+        this.sizeSet = true;
+    }
+
+    @Override
+    public VertexPriority getPriority() {
+        return this.nodeKind.getValue().priority();
+    }
+
+
+
+    /**
+     * The following section was taken from the Joana IFC project in compliance
+     * with the authors of the project.
+     * The following disclaimer was copied from the file, the section has been extracted from:
+     *
+     * This file is part of the Joana IFC project. It is developed at the
+     * Programming Paradigms Group of the Karlsruhe Institute of Technology.
+     *
+     * For further details on licensing please read the information at
+     * http://joana.ipd.kit.edu or contact the authors.
+     */
     public enum Operation {
 
         EMPTY("empty", VertexKind.EXPR, VertexKind.FOLD), //
@@ -319,20 +347,4 @@ public class JoanaVertex extends DefaultVertex implements ViewableVertex {
             return null;
         }
     }
-
-    @Override
-    public int getLink() {
-        return -1;
-    }
-    
-    public void setSize(DoublePoint newSize){
-    	this.setSize = newSize;
-    	this.sizeSet = true;
-    }
-
-	@Override
-	public VertexPriority getPriority() {
-		return this.nodeKind.getValue().priority();
-	}
-    
 }
