@@ -1,12 +1,8 @@
 package edu.kit.student.objectproperty;
 
-import com.sun.istack.internal.NotNull;
-import javafx.beans.WeakListener;
-import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 import javafx.beans.value.ChangeListener;
-import javafx.beans.value.ObservableValue;
 import javafx.beans.value.WeakChangeListener;
 
 import java.lang.ref.WeakReference;
