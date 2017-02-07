@@ -1,22 +1,14 @@
 package edu.kit.student.graphml;
 
 import edu.kit.student.graphmodel.builder.GraphBuilderException;
-import edu.kit.student.graphmodel.builder.IEdgeBuilder;
-import edu.kit.student.graphmodel.builder.IGraphBuilder;
 import edu.kit.student.graphmodel.builder.IGraphModelBuilder;
-import edu.kit.student.graphmodel.builder.IVertexBuilder;
 import edu.kit.student.plugin.Importer;
 
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
 import org.xml.sax.*;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.text.ParseException;
-import java.util.Objects;
 
 import javax.xml.parsers.*;
 

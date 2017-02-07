@@ -363,7 +363,10 @@ public class GraphMLHandler extends DefaultHandler {
 
     @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
-        currentValue = String.copyValueOf(ch, start, length).trim();
+        if (currentValue == null)
+            currentValue = String.copyValueOf(ch, start, length).trim();
+        else
+            currentValue += String.copyValueOf(ch, start, length).trim();
     }
 
     private void throwMissingField(GmlToken element, GmlToken field) throws SAXException {
