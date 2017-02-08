@@ -139,6 +139,7 @@ public class LayerAssigner implements ILayerAssigner {
 				graph.reverseEdge(edge);
 			}
 		}
+		logger.info("created " + graph.getLayerCount() + " layers");
 
 		//for printing the layers after layer assigning
 		//graph.getLayers().forEach(iSugiyamaVertices -> logger.debug(iSugiyamaVertices.stream().map(iSugiyamaVertex -> iSugiyamaVertex.getName()).collect(Collectors.joining(", "))));

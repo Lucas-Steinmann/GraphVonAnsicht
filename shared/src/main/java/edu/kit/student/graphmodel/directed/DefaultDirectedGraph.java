@@ -11,6 +11,8 @@ import java.util.stream.Collectors;
 
 import edu.kit.student.graphmodel.FastGraphAccessor;
 import edu.kit.student.graphmodel.Vertex;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A {@link DefaultDirectedGraph} is a specific Graph which only contains
@@ -66,16 +68,11 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
 	 * @param edge the edge to add
 	 */
 	public void addEdge(E edge) {
-        if (!containsAll(Arrays.asList(edge.getSource(), edge.getTarget()))) {
-	        throw new IllegalArgumentException("Cannot add edge to a graph without the Vertex being present");
-	    } else {
-	        vertexToEdge.get(edge.getSource()).add(edge);
-	        revVertexToEdge.get(edge.getTarget()).add(edge);
-
-			if (edge.getSource().getID().equals(edge.getTarget().getID())) {
-				this.vertexToSelfLoops.get(edge.getSource()).add(edge);
-			}
-	    }
+	    assert(containsAll(Arrays.asList(edge.getSource(), edge.getTarget())));
+        vertexToEdge.get(edge.getSource()).add(edge);
+        revVertexToEdge.get(edge.getTarget()).add(edge);
+        if (edge.getSource().getID().equals(edge.getTarget().getID()))
+            this.vertexToSelfLoops.get(edge.getSource()).add(edge);
 	}
 
 	/**
@@ -178,7 +175,7 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
      * @return true if the vertex is contained in this graph, false otherwise.
      */
     public boolean contains(Vertex vertex) {
-        return this.getVertexSet().contains(vertex);
+        return this.getUnsecureVertexSet().contains(vertex);
     }
 
     /**
@@ -187,7 +184,8 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
      * @return true if the vertices are contained in this graph, false otherwise.
      */
     public boolean containsAll(Collection<Vertex> vertices) {
-        return this.getVertexSet().containsAll(vertices);
+        return this.getUnsecureVertexSet().containsAll(vertices); //the set won't be modified, so we can take the (faster) original set
+
     }
 
 	@Override
@@ -195,10 +193,18 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
 		return new HashSet<>(vertexToEdge.keySet());
 	}
 
+	/**
+	 * Gives a set of the original vertices, not just a copy of them.
+	 * @return a set of the original vertices of this graph
+	 */
+    private Set<V> getUnsecureVertexSet(){
+    	return this.vertexToEdge.keySet();
+	}
+
 	@Override
 	public Set<E> getEdgeSet() {
 	    Set<E> edges = new  HashSet<>();
-	    for (V vertex : this.getVertexSet()) {
+	    for (V vertex : this.getUnsecureVertexSet()) {
 	        edges.addAll(this.outgoingEdgesOf(vertex));
 	        edges.addAll(this.incomingEdgesOf(vertex));
 	    }
@@ -207,8 +213,8 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
 
 	@Override
 	public Integer outdegreeOf(Vertex vertex) {
-		return vertexToEdge.get(vertex).size();
-	}
+        return vertexToEdge.get(vertex).size();
+    }
 
 	@Override
 	public Integer indegreeOf(Vertex vertex) {
@@ -290,7 +296,7 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
 
 	@Override
 	public void addToFastGraphAccessor(FastGraphAccessor fga) {
-		for (Vertex v : getVertexSet()) {
+		for (Vertex v : getUnsecureVertexSet()) {
 			v.addToFastGraphAccessor(fga);
 		}
 		for (DirectedEdge e : getEdgeSet()) {
@@ -300,7 +306,7 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
 
 	@Override
 	public String toString(){
-	    String vertices = getVertexSet().stream()
+	    String vertices = getUnsecureVertexSet().stream()
 	                                    .map(Vertex::getName)
 	                                    .collect(Collectors.joining(",", "Vertices: {", "}\n"));
 	    String edges = getEdgeSet().stream()

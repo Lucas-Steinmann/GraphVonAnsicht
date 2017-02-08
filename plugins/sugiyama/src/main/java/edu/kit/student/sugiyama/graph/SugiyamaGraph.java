@@ -24,7 +24,9 @@ import edu.kit.student.graphmodel.directed.DirectedEdge;
 import edu.kit.student.graphmodel.directed.DirectedGraph;
 import edu.kit.student.objectproperty.GAnsProperty;
 import edu.kit.student.util.DoublePoint;
+import edu.kit.student.util.IdGenerator;
 import edu.kit.student.util.IntegerPoint;
+import edu.kit.student.util.Settings;
 import javafx.scene.paint.Color;
 
 
@@ -340,15 +342,15 @@ public class SugiyamaGraph
 
 	@Override
 	public DummyVertex createDummy(String name, String label, int layer) {
-		DummyVertex dummyVertex = new DummyVertex(name, label, layer);
-		this.addVertex(dummyVertex);
-		return dummyVertex;
-	}
+        DummyVertex dummyVertex = new DummyVertex(name, label, layer);
+        this.addVertex(dummyVertex);
+        return dummyVertex;
+    }
 
 	@Override
 	public SupplementEdge createSupplementEdge(String name, String label, ISugiyamaVertex source, ISugiyamaVertex target) {
 		SupplementEdge supplementEdge = new SupplementEdge(name, label, source, target);
-		this.addEdge(supplementEdge);
+        this.addEdge(supplementEdge);
 		return supplementEdge;
 	}
 
@@ -367,8 +369,8 @@ public class SugiyamaGraph
 		graph.addEdge(edge);
 	}
 
-	private void addVertex(ISugiyamaVertex edge) {
-		graph.addVertex(edge);
+	private void addVertex(ISugiyamaVertex vertex) {
+		graph.addVertex(vertex);
 	}
 
 	@Override
@@ -643,33 +645,77 @@ public class SugiyamaGraph
 	/**
 	 * A supplement vertex which is part of a {@link SupplementPath}.
 	 */
-	public class DummyVertex extends DefaultVertex implements ISugiyamaVertex {
+	public class DummyVertex implements ISugiyamaVertex {
 
+		private String name;
+		private String label;
 		private final boolean custom;
 		private DoublePoint size;
 		private int id;
-		
-		public DummyVertex(String name, String label, int layer) {
-			super(name, label);
+		private int x;
+		private int y;
+
+        public DummyVertex(String name, String label, int layer) {
+			//super(name, label);
 			layering.addVertex(this, layer);
+            this.name = name;
+            this.label = label;
+            this.id = IdGenerator.getInstance().createId();
 			custom = false;
 		}
 		
 		//custom dummy if size and id were set before creating a dummy
 		public DummyVertex(String name, String label, int layer, DoublePoint size, int id){
-			super(name, label);
+			//super(name, label);
 			layering.addVertex(this, layer);
+			this.name = name;
+			this.label = label;
 			this.size = size;
 			this.id = id;
 			custom = true;
 		}
-		
-		public Integer getID(){
-			return custom ? this.id : super.getID();
+
+		@Override
+		public String getName() {
+			return this.name;
 		}
-		
+
+		public Integer getID(){
+			return this.id;
+		}
+
+		@Override
+		public String getLabel() {
+			return this.label;
+		}
+
+		@Override
+		public int getX() {
+			return this.x;
+		}
+
+		@Override
+		public int getY() {
+			return this.y;
+		}
+
 		public DoublePoint getSize(){
-			return custom ? this.size : super.getSize();
+			return custom ? this.size : Settings.getSize(this.label,true);
+		}
+
+		@Override
+		public void setLeftRightMargin(IntegerPoint newMargin) {
+            //not needed here
+		}
+
+		@Override
+		public IntegerPoint getLeftRightMargin() {
+			return new IntegerPoint(2,2);
+		}
+
+		@Override
+		public Color getColor() {
+			return null;    //don't need a color for these vertices
 		}
 
 		public boolean isDummy() {
@@ -684,6 +730,26 @@ public class SugiyamaGraph
 		@Override
 		public int getLayer() {
 			return layering.getLayerFromVertex(this);
+		}
+
+		@Override
+		public void setX(int x) {
+            this.x = x;
+		}
+
+		@Override
+		public void setY(int y) {
+            this.y = y;
+		}
+
+		@Override
+		public void addToFastGraphAccessor(FastGraphAccessor fga) {
+
+		}
+
+		@Override
+		public List<GAnsProperty<?>> getProperties() {
+			return null;    //a dummy vertex has no GAnsProperties
 		}
 
 		@Override

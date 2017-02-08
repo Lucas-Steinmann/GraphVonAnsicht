@@ -150,9 +150,8 @@ public class CrossMinimizer implements ICrossMinimizer {
 	 * @param graph input graph to add dummy vertices and supplement edges to
 	 */
 	private void addDummyAndEdges(ICrossMinimizerGraph graph) {
-		Set<ISugiyamaVertex> vertices = graph.getVertexSet();
+		int dummyCtr = 0;
 		Set<ISugiyamaEdge> edges = graph.getEdgeSet();
-		Set<ISugiyamaEdge> newEdges = new HashSet<ISugiyamaEdge>();
 		Set<ISugiyamaEdge> replacedEdges = new HashSet<ISugiyamaEdge>();
 
 		for(ISugiyamaEdge edge : edges){
@@ -170,7 +169,7 @@ public class CrossMinimizer implements ICrossMinimizer {
 			assert(graph.getLayer(lowerLayer).contains(source));
 			assert(graph.getLayer(upperLayer).contains(target));
 
-			if(diff>1){	//need to add #diff dummy vertices
+			if(diff>1){	//need to add #diff-1 dummy vertices
 				List<ISugiyamaVertex> dummies = new LinkedList<>();
 				List<ISugiyamaEdge> supplementEdges = new LinkedList<>();
 				replacedEdges.add(edge);		// the  distance of both vertices of this edge is greater than 1 so it must be replaced
@@ -184,31 +183,32 @@ public class CrossMinimizer implements ICrossMinimizer {
 
 					if(l==lowerLayer+1){
 						nv = graph.createDummy("d"+c+ '(' +source.getName()+"->"+target.getName()+ ')', "", lowerLayer + 1);	//first dummy vertex created
+                        dummyCtr++;
 						dummy = nv;
 						ne = graph.createSupplementEdge(edge.getName()+ '(' +c+ ')', "", source, nv);	//first dummy edge created
 						supplementEdges.add(ne);
-						((SugiyamaGraph) graph).assignToLayer(nv, l);
+						graph.assignToLayer(nv, l);
 					}else if(l==upperLayer){
 						ne = graph.createSupplementEdge(edge.getName() + "(e" + c + ')', "", nv, target);
 						supplementEdges.add(ne);
 					}else{
 						ISugiyamaVertex temp = nv;	//temporary ISugiyamaVertex so that the new created vertex is always the one with the variable nv
 						nv = graph.createDummy("d"+c+ '(' +source.getName()+"->"+target.getName()+ ')', "", c);
+						dummyCtr++;
 						dummy = nv;
 						ne = graph.createSupplementEdge(edge.getName()+ '(' +c+ ')', "", temp, nv);
 						supplementEdges.add(ne);
-						((SugiyamaGraph) graph).assignToLayer(nv, l);
+						graph.assignToLayer(nv, l);
 					}
 
 					if (dummy != null) {
 						dummies.add(dummy);
 					}
 				}
-
 				graph.createSupplementPath(edge, dummies, supplementEdges);
 			}
 		}
-
+        logger.info("created " + dummyCtr + " dummy vertices");
 		edges.removeAll(replacedEdges);	//remove all replaced edges from the original edge set
 	}
 
@@ -265,7 +265,7 @@ public class CrossMinimizer implements ICrossMinimizer {
 	}
 
 	private enum Direction {
-		UP, DOWN;
+		UP, DOWN
 	}
 
 	public static int crossings(SugiyamaGraph graph) {

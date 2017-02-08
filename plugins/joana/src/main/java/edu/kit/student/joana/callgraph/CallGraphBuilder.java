@@ -197,9 +197,11 @@ public class CallGraphBuilder implements IGraphBuilder {
         logger.info("Searching calloops vertices took " + (stopTime - startTime));
         startTime = stopTime;
 
+        int joanaEdgeCtr = 0;
         for (JoanaEdge callEdge : callEdges) {
             if (callEdge.getEdgeKind() != EdgeKind.CL)
                 continue;
+            joanaEdgeCtr++;
             // Find which methodgraph contains the target and the source vertex for the callEdge
             int sourceID = vertexIDToMG.get(callEdge.getSource().getName()).getID();
             int targetID = vertexIDToMG.get(callEdge.getTarget().getName()).getID();
@@ -211,7 +213,7 @@ public class CallGraphBuilder implements IGraphBuilder {
             connections.get(vertices.get(sourceID)).add(vertices.get(targetID));
         }
         stopTime = System.currentTimeMillis();
-        logger.info("Building joanaedges for calledges took " + (stopTime - startTime));
+        logger.info("Building " + joanaEdgeCtr + " joanaedges for calledges took " + (stopTime - startTime));
 
         return new CallGraph(this.name, new HashSet<>(vertices.values()), edges);
 
