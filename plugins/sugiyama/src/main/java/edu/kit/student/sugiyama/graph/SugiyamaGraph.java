@@ -1118,13 +1118,17 @@ public class SugiyamaGraph
 
 	@Override
 	public void setPositionsOnLayer(int layer, List<ISugiyamaVertex> newLayer) {
-		int x = 0;
-		for (ISugiyamaVertex vertex : newLayer) {
-			if (!(this.layering.getLayerFromVertex(vertex) == layer)) {
-				throw new IllegalArgumentException("All vertices have to be on the specified layer, when calling setPositionOnLayer");
-			}
-			this.layering.setPosition(vertex, new IntegerPoint(x, layer));
-			x++;
-		}
+		List<Integer> newOrder = new LinkedList<>();
+		newLayer.forEach(v->newOrder.add(this.layering.getPosition(v).x));
+		this.layering.swapVertices(layer, newOrder);
+
+		//int x = 0;
+		//for (ISugiyamaVertex vertex : newLayer) {
+		//	if (!(this.layering.getLayerFromVertex(vertex) == layer)) {
+		//		throw new IllegalArgumentException("All vertices have to be on the specified layer, when calling setPositionOnLayer");
+		//	}
+		//	this.layering.setPosition(vertex, new IntegerPoint(x, layer));
+		//	x++;
+		//}
 	}
 }
