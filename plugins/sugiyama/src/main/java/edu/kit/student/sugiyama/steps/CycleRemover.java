@@ -18,14 +18,14 @@ import java.util.stream.Collectors;
 public class CycleRemover implements ICycleRemover {
 	private DefaultDirectedGraph<ISugiyamaVertex, ISugiyamaEdge> DDGraph;
 	
-    final Logger logger = LoggerFactory.getLogger(CycleRemover.class);
+    private final Logger logger = LoggerFactory.getLogger(CycleRemover.class);
 	
 	@Override
 	public void removeCycles(ICycleRemoverGraph graph) {
 		logger.info("CycleRemover.removeCycles():");
 		initialize(graph);
 
-		Set<ISugiyamaEdge> DAGEdges = new HashSet<ISugiyamaEdge>();
+		Set<ISugiyamaEdge> DAGEdges = new HashSet<>();
 		Set<ISugiyamaVertex> DDVertices = DDGraph.getVertexSet();
 		Set<ISugiyamaEdge> DDEdges = DDGraph.getEdgeSet();
 
@@ -123,19 +123,16 @@ public class CycleRemover implements ICycleRemover {
 		Set<ISugiyamaEdge> outgoingEdges = getCorrectedOutcomingEdges(vertex, graphEdges);
 		Set<ISugiyamaEdge> incomingEdges = getCorrectedIncomingEdges(vertex, graphEdges);
 
-		if (outgoingEdges.size() + incomingEdges.size() == 0) {
-			return true;
-		}
+		return outgoingEdges.size() + incomingEdges.size() == 0;
 
-		return false;
 	}
 
 	private Set<ISugiyamaEdge> getCorrectedOutcomingEdges(ISugiyamaVertex vertex, Set<ISugiyamaEdge> graphEdges) {
-		return DDGraph.outgoingEdgesOf(vertex).stream().filter(edge -> graphEdges.contains(edge)).collect(Collectors.toSet());
+		return DDGraph.outgoingEdgesOf(vertex).stream().filter(graphEdges::contains).collect(Collectors.toSet());
 	}
 
 	private Set<ISugiyamaEdge> getCorrectedIncomingEdges(ISugiyamaVertex vertex, Set<ISugiyamaEdge> graphEdges) {
-		return DDGraph.incomingEdgesOf(vertex).stream().filter(edge -> graphEdges.contains(edge)).collect(Collectors.toSet());
+		return DDGraph.incomingEdgesOf(vertex).stream().filter(graphEdges::contains).collect(Collectors.toSet());
 	}
 	
 	/**
@@ -144,7 +141,7 @@ public class CycleRemover implements ICycleRemover {
 	 * @return the edges that have to be turned in order to remove the cycles in the original graph
 	 */
 	private Set<ISugiyamaEdge> getEdgesToTurn(Set<ISugiyamaEdge> DAGEdges, Set<ISugiyamaEdge> graphEdges){
-		Set<ISugiyamaEdge> result = new HashSet<ISugiyamaEdge>();
+		Set<ISugiyamaEdge> result = new HashSet<>();
 		for(ISugiyamaEdge edge: graphEdges){
 			if(!DAGEdges.contains(edge)){
 				result.add(edge);
@@ -166,8 +163,8 @@ public class CycleRemover implements ICycleRemover {
 		graphVertices = graph.getVertexSet();
 		graphEdges = graph.getEdgeSet();
 		
-		Set<ISugiyamaVertex> DDVertices = new HashSet<ISugiyamaVertex>();
-		Set<ISugiyamaEdge> DDEdges = new HashSet<ISugiyamaEdge>();
+		Set<ISugiyamaVertex> DDVertices = new HashSet<>();
+		Set<ISugiyamaEdge> DDEdges = new HashSet<>();
 		
 		for(ISugiyamaVertex vertex : graphVertices){
 			DDVertices.add(vertex);

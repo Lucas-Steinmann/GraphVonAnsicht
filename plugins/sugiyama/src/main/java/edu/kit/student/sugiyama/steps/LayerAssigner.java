@@ -11,6 +11,7 @@ import edu.kit.student.sugiyama.graph.ISugiyamaVertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Comparator;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -22,14 +23,12 @@ import java.util.stream.Collectors;
  */
 public class LayerAssigner implements ILayerAssigner {
 	private DefaultDirectedGraph<ISugiyamaVertex, ISugiyamaEdge> DDGraph;
-	private Set<ISugiyamaVertex> graphVertices;
-	private Set<ISugiyamaEdge> graphEdges;
 	private Set<RelativeLayerConstraint> relativeConstraints;
 	private Set<AbsoluteLayerConstraint> absoluteConstraints;
 	private List<LayerContainsOnlyConstraint> layerContainsOnlyConstraints;
 	private Set<ISugiyamaVertex> ignoredVertices;
 
-    final Logger logger = LoggerFactory.getLogger(LayerAssigner.class);
+    private final Logger logger = LoggerFactory.getLogger(LayerAssigner.class);
 
 	public LayerAssigner() {
 		relativeConstraints = new HashSet<>();
@@ -110,7 +109,7 @@ public class LayerAssigner implements ILayerAssigner {
 			ignoredVertices.clear();
 		}
 
-		layerContainsOnlyConstraints.sort(((o1, o2) -> o1.getLayer() - o2.getLayer()));
+		layerContainsOnlyConstraints.sort((Comparator.comparingInt(LayerContainsOnlyConstraint::getLayer)));
 
 		for (LayerContainsOnlyConstraint onlyConstraint : this.layerContainsOnlyConstraints) {
 			for (ISugiyamaVertex vertex : graph.getLayer(onlyConstraint.getLayer())) {
@@ -152,7 +151,7 @@ public class LayerAssigner implements ILayerAssigner {
 
 		int currentLayer = graph.getLayer(vertex);
 		int targetLayer = currentLayer + amount;
-		Set<ISugiyamaVertex> affectedVertices = graph.outgoingEdgesOf(vertex).stream().map(edge -> edge.getTarget()).collect(Collectors.toSet());
+		Set<ISugiyamaVertex> affectedVertices = graph.outgoingEdgesOf(vertex).stream().map(ISugiyamaEdge::getTarget).collect(Collectors.toSet());
 		graph.assignToLayer(vertex, targetLayer);
 		ignoredVertices.add(vertex);
 
@@ -190,7 +189,7 @@ public class LayerAssigner implements ILayerAssigner {
 	) {
 		Set<ISugiyamaEdge> incomingEdges = graph.incomingEdgesOf(vertex);
 		Set<ISugiyamaEdge> selfLoops = graph.selfLoopsOf(vertex);
-		Set<ISugiyamaEdge> tempEdges = new HashSet<ISugiyamaEdge>(incomingEdges); //necessary in order don't to get a
+		Set<ISugiyamaEdge> tempEdges = new HashSet<>(incomingEdges); //necessary in order don't to get a
 
 
 		for (ISugiyamaEdge edge : tempEdges) {
@@ -211,17 +210,17 @@ public class LayerAssigner implements ILayerAssigner {
 	 * @param graph original graph to build a DefaultDirectedGraph from
 	 */
 	private void initialize(ILayerAssignerGraph graph){
-		this.graphVertices = graph.getVertexSet();
-		this.graphEdges = graph.getEdgeSet();
+		Set<ISugiyamaVertex> graphVertices = graph.getVertexSet();
+		Set<ISugiyamaEdge> graphEdges = graph.getEdgeSet();
 		
-		Set<ISugiyamaVertex> DDVertices = new HashSet<ISugiyamaVertex>();
-		Set<ISugiyamaEdge> DDEdges = new HashSet<ISugiyamaEdge>();
+		Set<ISugiyamaVertex> DDVertices = new HashSet<>();
+		Set<ISugiyamaEdge> DDEdges = new HashSet<>();
 		
-		for(ISugiyamaVertex vertex : this.graphVertices){
+		for(ISugiyamaVertex vertex : graphVertices){
 			DDVertices.add(vertex);
 		}
 
-		for(ISugiyamaEdge edge: this.graphEdges){
+		for(ISugiyamaEdge edge: graphEdges){
 			DDEdges.add(edge);
 		}
 		this.DDGraph = new DefaultDirectedGraph<>(DDVertices, DDEdges);

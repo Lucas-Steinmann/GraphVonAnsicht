@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.Vector;
 import java.util.stream.Collectors;
@@ -112,7 +113,7 @@ public class SugiyamaGraph
 //			System.out.println("yval: "+vertex.getY());
 		}
 //		System.out.println("yvals size: "+yValsOfVertices.size());
-		yValsOfVertices.sort((y1,y2)->Integer.compare(y1, y2));	//sorts y vals in ascending order
+		yValsOfVertices.sort(Integer::compare);	//sorts y vals in ascending order
 		//assign every vertex a layer, vertices on first or last layer are normal SugiyamaVertex though they have a negative id
 		//dummies will be assigned at the path building
 		for(Vertex v : vertices){
@@ -394,7 +395,7 @@ public class SugiyamaGraph
 
 	@Override
 	public Set<ISugiyamaEdge> getReversedEdges() {
-		Set<ISugiyamaEdge> result = new HashSet<ISugiyamaEdge>();
+		Set<ISugiyamaEdge> result = new HashSet<>();
 		for(ISugiyamaEdge edge : this.getEdgeSet()){
 			if(isReversed(edge)){
 				result.add(edge);
@@ -423,7 +424,7 @@ public class SugiyamaGraph
 		return getLayerById(vertex.getID());
 	}
 
-	public IntegerPoint getPosition(Vertex vertex) {
+	public IntegerPoint getPosition(ISugiyamaVertex vertex) {
 		return layering.getPosition(vertex);
 	}
 
@@ -464,7 +465,7 @@ public class SugiyamaGraph
 		private final List<ISugiyamaVertex> dummies;
 		private final List<ISugiyamaEdge> supplementEdges;
 
-		public SupplementPath(ISugiyamaEdge replacedEdge, List<ISugiyamaVertex> dummies, List<ISugiyamaEdge> supplementEdges) {
+		SupplementPath(ISugiyamaEdge replacedEdge, List<ISugiyamaVertex> dummies, List<ISugiyamaEdge> supplementEdges) {
 			this.replacedEdge = replacedEdge;
 			this.dummies = dummies;
 			this.supplementEdges = supplementEdges;
@@ -475,7 +476,7 @@ public class SugiyamaGraph
 		 * @return the length of the path
 		 */
 		public int getLength() {
-			return dummies.size();
+			return dummies.size() + 2;
 		}
 
 		/**
@@ -507,7 +508,7 @@ public class SugiyamaGraph
 		 */
 		public void reverse(){	//TODO: test if correct or not!!
 			Collections.reverse(this.dummies);
-			this.supplementEdges.forEach(e->e.reverse());
+			this.supplementEdges.forEach(ISugiyamaEdge::reverse);
 			Collections.reverse(this.supplementEdges);
 			this.replacedEdge.reverse();
 		}
@@ -530,13 +531,13 @@ public class SugiyamaGraph
 		private boolean isReversed;
 		private EdgePath path;
 
-		public SupplementEdge(String name, String label) {
+		SupplementEdge(String name, String label) {
 			this.name=name;
 			this.label=label;
 			this.path = new OrthogonalEdgePath();
 		}
 
-		public SupplementEdge(String name, String label, ISugiyamaVertex source, ISugiyamaVertex target) {
+		SupplementEdge(String name, String label, ISugiyamaVertex source, ISugiyamaVertex target) {
 			this(name,label);
 			this.source=source;
 			this.target=target;
@@ -571,7 +572,7 @@ public class SugiyamaGraph
 
 		@Override
 		public List<ISugiyamaVertex> getVertices() {
-			List<ISugiyamaVertex> list = new LinkedList<ISugiyamaVertex>();
+			List<ISugiyamaVertex> list = new LinkedList<>();
 			list.add(this.source);
 			list.add(this.target);
 			return list;
@@ -655,7 +656,7 @@ public class SugiyamaGraph
 		private int x;
 		private int y;
 
-        public DummyVertex(String name, String label, int layer) {
+        DummyVertex(String name, String label, int layer) {
 			//super(name, label);
 			layering.addVertex(this, layer);
             this.name = name;
@@ -665,7 +666,7 @@ public class SugiyamaGraph
 		}
 		
 		//custom dummy if size and id were set before creating a dummy
-		public DummyVertex(String name, String label, int layer, DoublePoint size, int id){
+		DummyVertex(String name, String label, int layer, DoublePoint size, int id){
 			//super(name, label);
 			layering.addVertex(this, layer);
 			this.name = name;
@@ -768,8 +769,8 @@ public class SugiyamaGraph
 		    if(!(o instanceof ISugiyamaVertex)){
 		    	return false;
 		    }
-		    
-		    return ((ISugiyamaVertex) o).getID() == this.getID();
+
+		    return Objects.equals(((ISugiyamaVertex) o).getID(), this.getID());
 		}
 
 		@Override
@@ -785,7 +786,7 @@ public class SugiyamaGraph
 	public class SugiyamaVertex implements ISugiyamaVertex {
 		private final Vertex vertex;
 
-		public SugiyamaVertex(Vertex vertex) {
+		SugiyamaVertex(Vertex vertex) {
 			this.vertex = vertex;
 			layering.addVertex(this, 0);
 		}
@@ -891,7 +892,7 @@ public class SugiyamaGraph
 		    	return false;
 		    }
 		    
-		    return ((ISugiyamaVertex) o).getID() == this.getID();
+		    return Objects.equals(((ISugiyamaVertex) o).getID(), this.getID());
 		}
 
         @Override
@@ -1009,7 +1010,7 @@ public class SugiyamaGraph
 
 		@Override
 		public List<ISugiyamaVertex> getVertices() {
-			List<ISugiyamaVertex> vertices = new LinkedList<ISugiyamaVertex>();
+			List<ISugiyamaVertex> vertices = new LinkedList<>();
 			vertices.add(source);
 			vertices.add(target);
 			return vertices;

@@ -2,6 +2,7 @@ package edu.kit.student.sugiyama.graph;
 
 import edu.kit.student.sugiyama.graph.SugiyamaGraph.DummyVertex;
 import edu.kit.student.sugiyama.graph.SugiyamaGraph.SupplementEdge;
+import edu.kit.student.util.IntegerPoint;
 
 import java.util.List;
 import java.util.Set;
@@ -42,6 +43,13 @@ public interface ICrossMinimizerGraph extends ISugiyamaStepGraph {
 	 * @return       the layer number from this vertex
 	 */
 	public int getLayer(ISugiyamaVertex vertex);
+
+    /**
+     * Get the relative position of the vertex on the layer
+     * @param vertex vertex to get its position
+     * @return position of the vertex
+     */
+	public IntegerPoint getPosition(ISugiyamaVertex vertex);
 	
 	/**
 	 * Get all vertices from a certain layer.
