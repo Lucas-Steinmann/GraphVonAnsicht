@@ -796,7 +796,7 @@ public class MethodGraph extends JoanaGraph {
     //TODO: change names of the checkers and maybe add additional criterions
     private boolean isNormCompoundBase(JoanaVertex vertex) {
         if (vertex.getNodeKind() == JoanaVertex.VertexKind.NORM 
-                && vertex.getNodeOperation().equals("compound") 
+                && vertex.getNodeOperation().equals(JoanaVertex.Operation.COMPOUND)
                 && vertex.getLabel().contains("base")) {//check before:   .equals("base")
             return true;
         } else {
@@ -806,7 +806,7 @@ public class MethodGraph extends JoanaGraph {
     
     private boolean isNormCompoundField(JoanaVertex vertex) {
         if (vertex.getNodeKind() == JoanaVertex.VertexKind.NORM 
-                && vertex.getNodeOperation().equals("compound") 
+                && vertex.getNodeOperation().equals(JoanaVertex.Operation.COMPOUND)
                 && vertex.getLabel().contains("field")) {//check before:   .matches("field\\s.*") TODO: actual check sufficient ?
             return true;
         } else {
@@ -816,7 +816,7 @@ public class MethodGraph extends JoanaGraph {
     
     private boolean isNormCompoundIndex(JoanaVertex vertex) {
         if (vertex.getNodeKind() == JoanaVertex.VertexKind.NORM 
-                && vertex.getNodeOperation().equals("compound") 
+                && vertex.getNodeOperation().equals(JoanaVertex.Operation.COMPOUND)
                 && vertex.getLabel().contains("index")) {//check before:   .equals("index")
             return true;
         } else {
@@ -826,7 +826,7 @@ public class MethodGraph extends JoanaGraph {
     
     private boolean isExprReference(JoanaVertex vertex) {
         if (vertex.getNodeKind() == JoanaVertex.VertexKind.EXPR
-                && vertex.getNodeOperation().equals("reference")) { 
+                && vertex.getNodeOperation().equals(JoanaVertex.Operation.REFERENCE)) {
             return true;
         } else {
             return false;
@@ -835,7 +835,7 @@ public class MethodGraph extends JoanaGraph {
     
     private boolean isExprModify(JoanaVertex vertex) {
         if (vertex.getNodeKind() == JoanaVertex.VertexKind.EXPR
-                && vertex.getNodeOperation().equals("modify")) { 
+                && vertex.getNodeOperation().equals(JoanaVertex.Operation.MODIFY)) {
             return true;
         } else {
             return false;
