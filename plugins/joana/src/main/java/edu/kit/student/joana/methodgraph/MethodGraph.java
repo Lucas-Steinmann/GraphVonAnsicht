@@ -62,7 +62,7 @@ public class MethodGraph extends JoanaGraph {
         }
         //TODO: Search for method calls etc.
         this.fieldAccesses = this.searchFieldAccesses();
-        this.fieldAccessCount = new GAnsProperty<Integer>(LanguageManager.getInstance().get("stat_fieldacc"), this.fieldAccesses.size());
+        this.fieldAccessCount = new GAnsProperty<>(LanguageManager.getInstance().get("stat_fieldacc"), this.fieldAccesses.size());
 
         Map<JoanaEdge, DirectedOnionPath<JoanaEdge, JoanaCompoundVertex>> onionEdges = new HashMap<>();
         this.fcollapser = new FieldAccessCollapser(graph, onionEdges);
@@ -131,10 +131,10 @@ public class MethodGraph extends JoanaGraph {
      * This is used before relayouting of the graph
      */
     public void removeInterproceduralEdges(){
-    	Set<InterproceduralVertex> allIVs = new HashSet<InterproceduralVertex>();
-    	this.interprocVertices.values().forEach(ivs->allIVs.addAll(ivs));
+    	Set<InterproceduralVertex> allIVs = new HashSet<>();
+    	this.interprocVertices.values().forEach(allIVs::addAll);
     	Set<JoanaEdge> graphEdges = this.graph.getEdgeSet();
-    	Set<JoanaEdge> interprocEdges = new HashSet<JoanaEdge>();//temporary set for edges that have to be removed later
+    	Set<JoanaEdge> interprocEdges = new HashSet<>();//temporary set for edges that have to be removed later
     	for(JoanaEdge graphEdge : graphEdges){
     		if(allIVs.contains(graphEdge.getSource()) ^ allIVs.contains(graphEdge.getTarget())){
     			interprocEdges.add(graphEdge);
@@ -238,7 +238,7 @@ public class MethodGraph extends JoanaGraph {
             // c) vertices are disjoint of all field access or all intersected field accesses are subsets -> collapse
             List<FieldAccess> cuttedFAs = new LinkedList<>();
             for (FieldAccess fa : this.getFieldAccesses()) {
-                if (fa.getGraph().getVertexSet().stream().anyMatch(v -> vertices.contains(v))) {
+                if (fa.getGraph().getVertexSet().stream().anyMatch(vertices::contains)) {
                     cuttedFAs.add(fa);
                 }
             } 
@@ -355,7 +355,7 @@ public class MethodGraph extends JoanaGraph {
 	}
 
 	public JoanaCollapsedVertex collapse(Set<? extends ViewableVertex> subset) {
-        Set<JoanaVertex> directedSubset = new HashSet<JoanaVertex>();
+        Set<JoanaVertex> directedSubset = new HashSet<>();
 	    for (Vertex v : subset) {
 	        if (!graph.contains(v)) {
                 throw new IllegalArgumentException("Cannot collapse vertices, not contained in this graph.");
@@ -363,8 +363,7 @@ public class MethodGraph extends JoanaGraph {
 	            directedSubset.add(graph.getVertexById(v.getID()));
 	        }
 	    }
-	    JoanaCollapsedVertex collapsed = collapser.collapse(directedSubset);
-		return collapsed;
+        return collapser.collapse(directedSubset);
 	}
 	
     public Set<JoanaVertex> expand(JoanaCollapsedVertex vertex) {
@@ -403,8 +402,7 @@ public class MethodGraph extends JoanaGraph {
 
     @Override
     public Set<JoanaVertex> getVertexSet() {
-        Set<JoanaVertex> result = removeFilteredVertices(graph.getVertexSet());
-        return result;
+        return removeFilteredVertices(graph.getVertexSet());
     }
 
     @Override
@@ -420,7 +418,7 @@ public class MethodGraph extends JoanaGraph {
     @Override
     public Set<? extends InlineSubGraph> getInlineSubGraphs() {
         return getFieldAccesses().stream()
-                                 .map(fa -> fa.getGraph())
+                                 .map(FieldAccess::getGraph)
                                  .collect(Collectors.toSet());
     }
     
@@ -511,7 +509,7 @@ public class MethodGraph extends JoanaGraph {
     //private method to search all Fieldaccesses in the graph
     private Set<FieldAccess> searchFieldAccesses() {
         
-        Set<FieldAccess> fieldAccesses = new HashSet<FieldAccess>();
+        Set<FieldAccess> fieldAccesses = new HashSet<>();
         
         for (JoanaVertex v1 : this.getVertexSet()) {
    
@@ -574,8 +572,8 @@ public class MethodGraph extends JoanaGraph {
                             //System.out.println("field-get: " + v1.getName() + " : " + v2.getName() + " : " + v3.getName());
                             
                             //create FieldAccess
-                            Set<JoanaVertex> vertices = new LinkedHashSet<JoanaVertex>();
-                            Set<JoanaEdge> edges = new LinkedHashSet<JoanaEdge>();                   
+                            Set<JoanaVertex> vertices = new LinkedHashSet<>();
+                            Set<JoanaEdge> edges = new LinkedHashSet<>();
                             vertices.add(v1);
                             vertices.add(v2);
                             vertices.add(v3);
@@ -610,8 +608,8 @@ public class MethodGraph extends JoanaGraph {
                             //System.out.println("field-set: " + v1.getName() + " : " + v2.getName() + " : " + v3.getName());
                             
                             //create FieldAccess
-                            Set<JoanaVertex> vertices = new LinkedHashSet<JoanaVertex>();
-                            Set<JoanaEdge> edges = new LinkedHashSet<JoanaEdge>();                   
+                            Set<JoanaVertex> vertices = new LinkedHashSet<>();
+                            Set<JoanaEdge> edges = new LinkedHashSet<>();
                             vertices.add(v1);
                             vertices.add(v2);
                             vertices.add(v3);
@@ -647,8 +645,8 @@ public class MethodGraph extends JoanaGraph {
                       //System.out.println("static field-get: " + v1.getName() + " : " + v2.getName());
                       
                       //create FieldAccess
-                      Set<JoanaVertex> vertices = new LinkedHashSet<JoanaVertex>();
-                      Set<JoanaEdge> edges = new LinkedHashSet<JoanaEdge>();                   
+                      Set<JoanaVertex> vertices = new LinkedHashSet<>();
+                      Set<JoanaEdge> edges = new LinkedHashSet<>();
                       vertices.add(v1);
                       vertices.add(v2);
                       edges.add(e1);
@@ -679,8 +677,8 @@ public class MethodGraph extends JoanaGraph {
                       //System.out.println("static field-set: " + v1.getName() + " : " + v2.getName());
                       
                       //create FieldAccess
-                      Set<JoanaVertex> vertices = new LinkedHashSet<JoanaVertex>();
-                      Set<JoanaEdge> edges = new LinkedHashSet<JoanaEdge>();                   
+                      Set<JoanaVertex> vertices = new LinkedHashSet<>();
+                      Set<JoanaEdge> edges = new LinkedHashSet<>();
                       vertices.add(v1);
                       vertices.add(v2);
                       edges.add(e1);
@@ -717,8 +715,8 @@ public class MethodGraph extends JoanaGraph {
                                         //System.out.println("array field-get: " + v1.getName() + " : " + v2.getName() + " : " + v3.getName()+ " : " + v4.getName());
                                         
                                         //create FieldAccess
-                                        Set<JoanaVertex> vertices = new LinkedHashSet<JoanaVertex>();
-                                        Set<JoanaEdge> edges = new LinkedHashSet<JoanaEdge>();                   
+                                        Set<JoanaVertex> vertices = new LinkedHashSet<>();
+                                        Set<JoanaEdge> edges = new LinkedHashSet<>();
                                         vertices.add(v1);
                                         vertices.add(v2);
                                         vertices.add(v3);
@@ -751,8 +749,8 @@ public class MethodGraph extends JoanaGraph {
                                         //System.out.println("array field-set: " + v1.getName() + " : " + v2.getName() + " : " + v3.getName()+ " : " + v4.getName());
                                         
                                         //create FieldAccess
-                                        Set<JoanaVertex> vertices = new LinkedHashSet<JoanaVertex>();
-                                        Set<JoanaEdge> edges = new LinkedHashSet<JoanaEdge>();                   
+                                        Set<JoanaVertex> vertices = new LinkedHashSet<>();
+                                        Set<JoanaEdge> edges = new LinkedHashSet<>();
                                         vertices.add(v1);
                                         vertices.add(v2);
                                         vertices.add(v3);
@@ -795,51 +793,34 @@ public class MethodGraph extends JoanaGraph {
     
     //TODO: change names of the checkers and maybe add additional criterions
     private boolean isNormCompoundBase(JoanaVertex vertex) {
-        if (vertex.getNodeKind() == JoanaVertex.VertexKind.NORM 
+        //check before:   .equals("base")
+        return vertex.getNodeKind() == VertexKind.NORM
                 && vertex.getNodeOperation().equals(JoanaVertex.Operation.COMPOUND)
-                && vertex.getLabel().contains("base")) {//check before:   .equals("base")
-            return true;
-        } else {
-            return false;
-        }
+                && vertex.getLabel().contains("base");
     }
     
     private boolean isNormCompoundField(JoanaVertex vertex) {
-        if (vertex.getNodeKind() == JoanaVertex.VertexKind.NORM 
+        //check before:   .matches("field\\s.*") TODO: actual check sufficient ?
+        return vertex.getNodeKind() == VertexKind.NORM
                 && vertex.getNodeOperation().equals(JoanaVertex.Operation.COMPOUND)
-                && vertex.getLabel().contains("field")) {//check before:   .matches("field\\s.*") TODO: actual check sufficient ?
-            return true;
-        } else {
-            return false;
-        }
+                && vertex.getLabel().contains("field");
     }
     
     private boolean isNormCompoundIndex(JoanaVertex vertex) {
-        if (vertex.getNodeKind() == JoanaVertex.VertexKind.NORM 
+        //check before:   .equals("index")
+        return vertex.getNodeKind() == VertexKind.NORM
                 && vertex.getNodeOperation().equals(JoanaVertex.Operation.COMPOUND)
-                && vertex.getLabel().contains("index")) {//check before:   .equals("index")
-            return true;
-        } else {
-            return false;
-        }
+                && vertex.getLabel().contains("index");
     }
     
     private boolean isExprReference(JoanaVertex vertex) {
-        if (vertex.getNodeKind() == JoanaVertex.VertexKind.EXPR
-                && vertex.getNodeOperation().equals(JoanaVertex.Operation.REFERENCE)) {
-            return true;
-        } else {
-            return false;
-        }
+        return vertex.getNodeKind() == VertexKind.EXPR
+                && vertex.getNodeOperation().equals(JoanaVertex.Operation.REFERENCE);
     }
     
     private boolean isExprModify(JoanaVertex vertex) {
-        if (vertex.getNodeKind() == JoanaVertex.VertexKind.EXPR
-                && vertex.getNodeOperation().equals(JoanaVertex.Operation.MODIFY)) {
-            return true;
-        } else {
-            return false;
-        }
+        return vertex.getNodeKind() == VertexKind.EXPR
+                && vertex.getNodeOperation().equals(JoanaVertex.Operation.MODIFY);
     }
 
 	/**
