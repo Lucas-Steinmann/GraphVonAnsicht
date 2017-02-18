@@ -12,7 +12,7 @@ import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
 import edu.kit.student.joana.FieldAccess;
 import edu.kit.student.joana.FieldAccessCollapser;
 import edu.kit.student.joana.FieldAccessGraph;
-import edu.kit.student.joana.InterproceduralVertex;
+import edu.kit.student.joana.InterproceduralEdge;
 import edu.kit.student.joana.JoanaCollapsedVertex;
 import edu.kit.student.joana.JoanaCollapser;
 import edu.kit.student.joana.JoanaEdge;
@@ -44,8 +44,8 @@ public class MethodGraph extends JoanaGraph {
     
     private FieldAccessCollapser fcollapser;
     private JoanaCollapser collapser;
-    
-    private Map<Integer,Set<InterproceduralVertex>> interprocVertices = new HashMap<>();
+
+    private Map<Integer, Set<InterproceduralEdge>> interprocEdges = new HashMap<>();
 
     public MethodGraph(Set<JoanaVertex> vertices, Set<JoanaEdge> edges, 
             String methodName) {
@@ -73,99 +73,104 @@ public class MethodGraph extends JoanaGraph {
 
 
     /**
-     * Sets the interprocedural vertices of this MethodGraph.
-     * Also calculates a mapping of vertex id to the interprocedural vertices that are connected with this vertex with its ID.
+     * Sets the interprocedural edges of this MethodGraph.
+     * Also calculates a mapping of vertex id to the interprocedural edges that are connected with this vertex with its ID.
      * 
-     * @param interprocVertices the interprocedural vertices to be set for this MethodGraph
+     * @param interprocEdges the interprocedural edges to be set for this MethodGraph
      */
-    public void setInterprocVertices(Set<InterproceduralVertex> interprocVertices){
-    	Map<Integer,Set<InterproceduralVertex>> idToIVs = new HashMap<>();
-    	for(InterproceduralVertex iv : interprocVertices){
-    		assert(this.getVertexSet().contains(iv.getConnectedVertex()));//has to be fulfilled!!!
-    		if(!idToIVs.containsKey(iv.getConnectedVertex().getID())){
-    			idToIVs.put(iv.getConnectedVertex().getID(), new HashSet<>());
+    public void setInterproceduralEdges(Set<InterproceduralEdge> interprocEdges){
+    	Map<Integer,Set<InterproceduralEdge>> idToIEs = new HashMap<>();
+    	for(InterproceduralEdge ie : interprocEdges){
+    		assert(this.getVertexSet().contains(ie.getNormalVertex()));//has to be fulfilled!!!
+    		if(!idToIEs.containsKey(ie.getNormalVertex().getID())){
+    			idToIEs.put(ie.getNormalVertex().getID(), new HashSet<>());
     		}
-    		idToIVs.get(iv.getConnectedVertex().getID()).add(iv);
+    		idToIEs.get(ie.getNormalVertex().getID()).add(ie);
     	}
-    	this.interprocVertices = idToIVs;
-    	this.calcLeftRightMarginNew(this.interprocVertices);//first setting of leftRightMargin assumes that no interprocedural vertex nor its edge nor its connected vertex has been filtered yet.
+    	this.interprocEdges = idToIEs;
+    	this.calcLeftRightMarginNew(this.interprocEdges); //initial setting of left/right margins of vertices that are connected with interprocedural edges
     }
     
     /**
      * 
-     * @return the mapping of vertex id and the interprocedural vertices that are connected with them in this MethodGraph.
+     * @return the mapping of vertex id and the interprocedural edges that are connected with them in this MethodGraph.
      */
-    public Map<Integer,Set<InterproceduralVertex>> getInterprocVertices(){
-    	return this.interprocVertices;
+    Map<Integer,Set<InterproceduralEdge>> getInterproceduralEdges(){
+    	return this.interprocEdges;
     }
     
     /**
-     * Adds interprocedural edges to this MethodGraph. An edge contains a JoanaVertex and an InterproceduralVertex.
-     * The JoanaVertex is already contained in the graph, so only the interprocedural ones should be passed. 
-     * Every InterproceduralVertex should be assigned X- and Y-coordinated, as well as every edge should have a valid EdgePath.
+     * Adds interprocedural edges to this MethodGraph. An edge contains a JoanaVertex and an ForeignGraphDummyVertex as dummy.
+     * The JoanaVertex is already contained in the graph, so only the dummies will be added.
+     * Every dummy vertex of an InterproceduralEdge should be assigned X- and Y-coordinates, as well as every edge should have a valid EdgePath.
      * These vertices and edges won't be layouted later, they are added to an already layouted MethodGraph.
      * 
-     * Note: it is possible that there are vertices in the given set, that aren't connected with any edge
-     * 
-     * @param vertices interprocedural vertices that are connected with vertices already in the graph. Should have correct X- and Y-coordinates set!
-     * @param edges edges between normal vertices and interprocedural ones. Edges should have a valid EdgePath!
+     * Note: for now it is not possible to add dummy vertices without an edge to another vertex
+     *
+     * Adds the given interprocedural edges to the graph if they are not currently filtered. Also adds the dummies of the given, not filtered edges.
+     *
+     * @param interprocEdges interprocedural edges to be added to the graph
      */
-    public void addInterproceduralEdges(Set<InterproceduralVertex> vertices, Set<JoanaEdge> edges){
-    	for(JoanaVertex iv : vertices){//add vertices to graph
+    void addInterproceduralEdges(Set<InterproceduralEdge> interprocEdges){
+        //TODO: filtering is done yet in MethodGraphLayout so it might be not necessary here
+        Set<JoanaVertex> dummyVertices = interprocEdges.stream().map(InterproceduralEdge::getDummyVertex).collect(Collectors.toSet());
+        Set<JoanaVertex> dummiesNotFiltered = this.removeFilteredVertices(dummyVertices);
+    	for(JoanaVertex iv : dummiesNotFiltered){//add vertices to graph
     		assert(iv.getX() >= 0 && iv.getY() >= 0);
     		this.graph.addVertex(iv);
     	}
-    	for(JoanaEdge e : edges){//add edges to graph
-    		assert(vertices.contains(e.getSource()) ^ vertices.contains(e.getTarget()));
+    	Set<JoanaEdge> edges = new HashSet<>(interprocEdges);
+    	Set<JoanaEdge> edgesNotFiltered = this.removeFilteredEdges(edges);
+    	for(JoanaEdge e : edgesNotFiltered){//add edges to graph
+            assert(!e.getPath().getNodes().isEmpty());
     		this.graph.addEdge(e);
     	}
-    	//TODO: move this to MethodGraphLayout.
-    	//removeFiltered... returns valid vertices/edges, just modifies the given set (giving a copy back), does not set the valid vertices!!!
-    	//do a recalculation of vertices' leftRightMargin here, called from MethodGraphLayout and the remaining dummies (edges will be drawn depending on each dummy, one edge per dummy)
-    	//IV edge, nur wenn IV nicht gefiltert wurde, und edge nicht zu den gefilterten gehört
-    	//IV nur wenn V nicht gefiltert wurde
     }
     
     /**
      * removes interprocedural edges from this graph and also the dummies of it.
      * This is used before relayouting of the graph
      */
-    public void removeInterproceduralEdges(){
-    	Set<InterproceduralVertex> allIVs = new HashSet<>();
-    	this.interprocVertices.values().forEach(allIVs::addAll);
-    	Set<JoanaEdge> graphEdges = this.graph.getEdgeSet();
-    	Set<JoanaEdge> interprocEdges = new HashSet<>();//temporary set for edges that have to be removed later
-    	for(JoanaEdge graphEdge : graphEdges){
-    		if(allIVs.contains(graphEdge.getSource()) ^ allIVs.contains(graphEdge.getTarget())){
-    			interprocEdges.add(graphEdge);
-    		}
-    	}
-    	interprocEdges.forEach(e->this.graph.removeEdge(e));
-    	for(InterproceduralVertex iv : allIVs){
-    		if(this.graph.contains(iv)){
-    			this.graph.removeVertex(iv);
-    		}
-    	}
+    void removeInterproceduralEdges(){
+    	Set<InterproceduralEdge> allIEs = new HashSet<>();
+    	this.interprocEdges.values().forEach(allIEs::addAll);
+    	for(InterproceduralEdge ie : allIEs){
+    	    if(this.graph.contains(ie.getDummyVertex())) {
+                this.graph.removeEdge(ie);
+                this.graph.removeVertex(ie.getDummyVertex());
+            }
+        }
     }
     
     /**
-     * Calcs for vertices with InterproceduralEdges their leftRightMargin new because they need more space in later layouting.
-     * Can also be used to calculate the margins new in case that any InterproceduralVertex has been filtered.
+     * Calculates for vertices with InterproceduralEdges their leftRightMargin new because they need more space in later layouting.
+     * Can also be used to calculate the margins new in case that any InterproceduralEdges have been filtered.
+     * Interprocedural edges coming into the normal vertex are drawn left of it, ones with incoming edges are drawn right of the normal vertex.
      * 
-     * @param idToIVs The given map of vertex id to the set of interprocedural vertices that are connected with it.
+     * @param idToIEs The given map of vertex id to the set of interprocedural edges that are connected with it.
      */
-    public void calcLeftRightMarginNew(Map<Integer,Set<InterproceduralVertex>> idToIVs){
-    	for(JoanaVertex v : this.getVertexSet()){
-    		if(this.getInterprocVertices().containsKey(v.getID())){
-    			Set<InterproceduralVertex> ivs = this.getInterprocVertices().get(v.getID());
-    			int rightMargin = v.getLeftRightMargin().x;//left margin is the same as right. Later we will also access the vertex' original right margin through it's left margin
-    			for(InterproceduralVertex iv : ivs){
-    				rightMargin += iv.getLeftRightMargin().x + iv.getSize().x + iv.getLeftRightMargin().y;
-    			}
-    			rightMargin += 5;//bit more distance to other following vertices on the right side
-    			v.setLeftRightMargin(new IntegerPoint(v.getLeftRightMargin().x,rightMargin));
-    		}
-    	}
+    void calcLeftRightMarginNew(Map<Integer,Set<InterproceduralEdge>> idToIEs){
+        for(int normalVertexId : idToIEs.keySet()){
+            Set<InterproceduralEdge> ieSet = idToIEs.get(normalVertexId);
+            if(ieSet.isEmpty()) continue;
+            JoanaVertex normalVertex = ieSet.iterator().next().getNormalVertex();
+            Set<InterproceduralEdge> sourceIEs = ieSet.stream().filter(ie->ie.getDummyLocation() == InterproceduralEdge.DummyLocation.SOURCE).collect(Collectors.toSet());
+            Set<InterproceduralEdge> targetIEs = ieSet.stream().filter(ie->ie.getDummyLocation() == InterproceduralEdge.DummyLocation.TARGET).collect(Collectors.toSet());
+            int newLeftMargin = normalVertex.getLeftRightMargin().x;
+            int newRightMargin = normalVertex.getLeftRightMargin().y;
+            for(InterproceduralEdge ie : sourceIEs){ //increase new left margin
+                assert(Objects.equals(ie.getNormalVertex().getID(), normalVertexId)); //every vertex in this set should have the same normal vertex
+                InterproceduralEdge.ForeignGraphDummyVertex dummyVertex = ie.getDummyVertex();
+                newLeftMargin += dummyVertex.getLeftRightMargin().x + dummyVertex.getSize().x + dummyVertex.getLeftRightMargin().y;
+            }
+            for(InterproceduralEdge ie : targetIEs){
+                assert(Objects.equals(ie.getNormalVertex().getID(), normalVertexId)); //every vertex in this set should have the same connected vertex
+                InterproceduralEdge.ForeignGraphDummyVertex dummyVertex = ie.getDummyVertex();
+                newRightMargin += dummyVertex.getLeftRightMargin().x + dummyVertex.getSize().x + dummyVertex.getLeftRightMargin().y;
+            }
+            //TODO: maybe add ~5 to each newLeftMargin and newRightMargin in order to have a bit more space to nearby vertices
+            normalVertex.setLeftRightMargin(new IntegerPoint(newLeftMargin,newRightMargin));
+        }
     }
     
     /**
@@ -195,7 +200,7 @@ public class MethodGraph extends JoanaGraph {
      * 
      * @return A list of all {@link FieldAccess} in the MethodGraph.
      */
-    public List<FieldAccess> getFieldAccesses() { 
+    List<FieldAccess> getFieldAccesses() {
         return fieldAccesses.stream()
                             .filter(fa -> fa.getGraph().getVertexSet().size() != 0)
                             .filter(fa -> fa.getGraph().getVertexSet().stream()
@@ -342,7 +347,7 @@ public class MethodGraph extends JoanaGraph {
 	 * @param fieldAccesses list of all fieldAccesses
 	 * @return all expanded field accesses
 	 */
-	public List<FieldAccess> expandFieldAccesses(List<FieldAccess> fieldAccesses) {
+	List<FieldAccess> expandFieldAccesses(List<FieldAccess> fieldAccesses) {
 	    List<FieldAccess> collapsedFas = new LinkedList<>();
 	    for (FieldAccess fa : fieldAccesses) {
 	        // If field access is contained in the graph (and not collapsed for example) it is expanded

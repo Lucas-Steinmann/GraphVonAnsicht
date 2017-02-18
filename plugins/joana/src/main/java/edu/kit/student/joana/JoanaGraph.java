@@ -35,10 +35,10 @@ public abstract class JoanaGraph
     
 
     public JoanaGraph(String name, Set<JoanaVertex> vertices, Set<JoanaEdge> edges) {
-        this.name = new GAnsProperty<String>(LanguageManager.getInstance().get("stat_name"), name);
+        this.name = new GAnsProperty<>(LanguageManager.getInstance().get("stat_name"), name);
         this.id = IdGenerator.getInstance().createId();    
-        this.edgeCount = new GAnsProperty<Integer>(LanguageManager.getInstance().get("stat_edge"), edges.size());
-        this.vertexCount = new GAnsProperty<Integer>(LanguageManager.getInstance().get("stat_vertex"), vertices.size());
+        this.edgeCount = new GAnsProperty<>(LanguageManager.getInstance().get("stat_edge"), edges.size());
+        this.vertexCount = new GAnsProperty<>(LanguageManager.getInstance().get("stat_vertex"), vertices.size());
         this.vertexFilter = new LinkedList<>();
         this.edgeFilter = new LinkedList<>();
     }
@@ -55,7 +55,7 @@ public abstract class JoanaGraph
     
     @Override
     public List<GAnsProperty<?>> getStatistics() {
-    	List<GAnsProperty<?>> statistics = new LinkedList<GAnsProperty<?>>();
+    	List<GAnsProperty<?>> statistics = new LinkedList<>();
     	statistics.add(name);
     	statistics.add(this.vertexCount);
     	statistics.add(this.edgeCount);
@@ -109,16 +109,20 @@ public abstract class JoanaGraph
         return vertexFiltered;
     }
 
-    public Set<JoanaVertex> removeFilteredVertices(Set<JoanaVertex> vertices) {
-        return vertices.stream().filter(v -> vertexFilter.stream().allMatch(f -> f.getPredicate().negate().test(v))).collect(Collectors.toSet());
+    public Set<InterproceduralEdge> removeFilteredInterproceduralEdges(Set<InterproceduralEdge> edges){
+        Set<InterproceduralEdge> edgeFiltered = edges.stream().filter(e -> edgeFilter.stream().allMatch(f -> f.getPredicate().negate().test(e))).collect(Collectors.toSet());
+        Set<InterproceduralEdge> vertexFiltered = new HashSet<>(edgeFiltered);
+        for (InterproceduralEdge edge : edgeFiltered) {
+            JoanaVertex dummy = edge.getDummyVertex();
+            JoanaVertex normal = edge.getNormalVertex();
+            if (vertexFilter.stream().anyMatch(f -> f.getPredicate().test(dummy) || f.getPredicate().test(normal))) {
+                vertexFiltered.remove(edge);
+            }
+        }
+        return vertexFiltered;
     }
-    
-    /**
-     * Removes interprocedural vertices that match the actual filter settings.
-     * @param vertices vertices to test their kind against the filters
-     * @return vertices whose kind does not match with any filter
-     */
-    public Set<InterproceduralVertex> removeFilteredVerticesIV(Set<InterproceduralVertex> vertices) {
+
+    public Set<JoanaVertex> removeFilteredVertices(Set<JoanaVertex> vertices) {
         return vertices.stream().filter(v -> vertexFilter.stream().allMatch(f -> f.getPredicate().negate().test(v))).collect(Collectors.toSet());
     }
 

@@ -72,7 +72,7 @@ public class CallGraphBuilder implements IGraphBuilder {
 
     /**
      * Collects all MethodGraphBuilder who have been added since
-     * the last call of this function or the construction of this CallGrahBuilder.
+     * the last call of this function or the construction of this CallGraphBuilder.
      * Collecting means currently adding them to the mapping from vertexIds to MethodGraphBuilder.
      */
     private void collectMethodGraphBuilders() {
@@ -147,13 +147,12 @@ public class CallGraphBuilder implements IGraphBuilder {
         logger.info("Building CallEdges in MethodGraphs took " + (stopTime - startTime));
         startTime = stopTime;
 
-        //edges between two MethodGraphs. All interprocEdges can be found in callEdges, these are also edges not from the same MethodGraph
-        //search in callEdges for interproceduralEdges, create a new InterproceduralVertex for both MethodGraphs the edge connects and add them to a set
-        //later split this set of InterproceduralVertices and add every MethodGraph its own InterproceduralVertices from this set
-        HashMap<Integer,Set<InterproceduralVertex>> mgIdToIVSet = new HashMap<>();
-        //add a mapping of MethodGraph id to set of interproc vertices. (its done for all MethodGraphs)
+        //edges between two MethodGraphs. All InterproceduralEdges can be found in callEdges, these are also edges not from the same MethodGraph.
+        //search in callEdges for interproceduralEdges, create a new InterproceduralEdge for both MethodGraphs the edge connects
+        HashMap<Integer,Set<InterproceduralEdge>> mgIdToIESet = new HashMap<>();
+        //add a mapping of MethodGraph id to set of interprocedural edges. (its done for all MethodGraphs)
         for(MethodGraph mg : vertexIDToMG.values()){
-        	mgIdToIVSet.put(mg.getID(), new HashSet<>());
+        	mgIdToIESet.put(mg.getID(), new HashSet<>());
         }
         logger.info(callEdges.size() + " callEdges to process.");
         for(JoanaEdge callEdge : callEdges){
@@ -165,24 +164,23 @@ public class CallGraphBuilder implements IGraphBuilder {
         	String targetMGname = targetMG.getName();
         	int sourceMGid = sourceMG.getID();
         	int targetMGid = targetMG.getID();
-        	//adding two interproc vertices to MG of source, and target respectively
-        	mgIdToIVSet.get(sourceMGid).add(new InterproceduralVertex(target,source,targetMGid,targetMGname,true,callEdge.getEdgeKind()));
-        	mgIdToIVSet.get(targetMGid).add(new InterproceduralVertex(source,target,sourceMGid,sourceMGname,false,callEdge.getEdgeKind()));
+        	//adding two interproc edges to MG of source vertex, and target respectively
+            mgIdToIESet.get(sourceMGid).add(new InterproceduralEdge(callEdge,sourceMGid,sourceMGname, InterproceduralEdge.DummyLocation.TARGET));
+            mgIdToIESet.get(targetMGid).add(new InterproceduralEdge(callEdge,targetMGid,targetMGname, InterproceduralEdge.DummyLocation.SOURCE));
         }
         stopTime = System.currentTimeMillis();
         logger.info("Building interprocedural edges took " + (stopTime - startTime));
         startTime = stopTime;
-        //set the interprocedural vertices of a method graph
+        //set the interprocedural edges of a method graph
         for(MethodGraph mg : methodGraphs){
-        	if(mgIdToIVSet.containsKey(mg.getID())){
-        		mg.setInterprocVertices(mgIdToIVSet.get(mg.getID()));
+        	if(mgIdToIESet.containsKey(mg.getID())){
+        		mg.setInterproceduralEdges(mgIdToIESet.get(mg.getID()));
         	}
         }
         stopTime = System.currentTimeMillis();
         logger.info("Setting interprocedural vertices took " + (stopTime - startTime));
         startTime = stopTime;
 
-        //TODO: some checks if all mg's contain the right amount of IV's and the correct ones!
         
         //search for call loops
         //maybe there is a better/faster solution without searching through all edges
