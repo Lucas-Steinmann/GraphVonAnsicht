@@ -107,23 +107,16 @@ public class MethodGraph extends JoanaGraph {
      * 
      * Note: for now it is not possible to add dummy vertices without an edge to another vertex
      *
-     * Adds the given interprocedural edges to the graph if they are not currently filtered. Also adds the dummies of the given, not filtered edges.
+     * Adds the given interprocedural edges to the graph if they are not currently filtered. Also adds the dummies of the given, not filtered edges if the dummy itself in currently not filtered.
      *
      * @param interprocEdges interprocedural edges to be added to the graph
      */
     void addInterproceduralEdges(Set<InterproceduralEdge> interprocEdges){
-        //TODO: filtering is done yet in MethodGraphLayout so it might be not necessary here
-        Set<JoanaVertex> dummyVertices = interprocEdges.stream().map(InterproceduralEdge::getDummyVertex).collect(Collectors.toSet());
-        Set<JoanaVertex> dummiesNotFiltered = this.removeFilteredVertices(dummyVertices);
-    	for(JoanaVertex iv : dummiesNotFiltered){//add vertices to graph
-    		assert(iv.getX() >= 0 && iv.getY() >= 0);
-    		this.graph.addVertex(iv);
-    	}
-    	Set<JoanaEdge> edges = new HashSet<>(interprocEdges);
-    	Set<JoanaEdge> edgesNotFiltered = this.removeFilteredEdges(edges);
-    	for(JoanaEdge e : edgesNotFiltered){//add edges to graph
-            assert(!e.getPath().getNodes().isEmpty());
-    		this.graph.addEdge(e);
+        Set<InterproceduralEdge> notFilteredIEs = this.removeFilteredInterproceduralEdges(interprocEdges);
+    	for(InterproceduralEdge ie : notFilteredIEs){//add edges to graph
+            assert(!ie.getPath().getNodes().isEmpty());
+            this.graph.addVertex(ie.getDummyVertex());
+    		this.graph.addEdge(ie);
     	}
     }
     

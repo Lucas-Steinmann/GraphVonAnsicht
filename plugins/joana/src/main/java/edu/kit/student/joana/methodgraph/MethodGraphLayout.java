@@ -123,7 +123,7 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 		collapsedFAs.forEach(fa->drawEdgesNew(graph, fa));	//new version
 		
 		//draws interprocedural vertices of this graph. 
-		drawAllInterproceduralEdges(graph);
+		drawInterproceduralEdges(graph);
 	}
 	
 	/**
@@ -633,7 +633,7 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
      * InterproceduralEdges going into a normal vertex are drawn left of the normal vertex, IE's with incoming edges are drawn on the right.
 	 * 
 	 */
-	private void drawAllInterproceduralEdges(MethodGraph mg){
+	private void drawInterproceduralEdges(MethodGraph mg){
 		Map<Integer, Set<InterproceduralEdge>> idToIEs = mg.getInterproceduralEdges();
 		Map<Integer, Set<InterproceduralEdge>> newIdToIEs = new HashMap<>();
 		//adjust each normal vertex' interprocedural edges depending on actual vertex filter settings
@@ -648,14 +648,14 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
             if(normalVertex.getNodeKind() == JoanaVertex.VertexKind.FRMI || normalVertex.getNodeKind() == JoanaVertex.VertexKind.FRMO || normalVertex.getNodeKind() == JoanaVertex.VertexKind.EXIT){
                 actPosition = Position.TOP;
             }
-            this.drawInterproceduralEdges(ies,actPosition);
+            this.drawInterproceduralEdgesAtPosition(ies,actPosition);
             mg.addInterproceduralEdges(ies);
         }
 	}
 
 	//draws interprocedural edges, for every edge: set its edgepath and the position of its dummy vertex
     //all interprocedural edges of this set have the same normal vertex
-	private void drawInterproceduralEdges(Set<InterproceduralEdge> ieSet, Position position){
+	private void drawInterproceduralEdgesAtPosition(Set<InterproceduralEdge> ieSet, Position position){
 	    assert(!ieSet.isEmpty());
 	    ieSet.forEach(ie->ie.getPath().clear()); //clears edgepath before relayouting
 	    JoanaVertex normalVertex = ieSet.iterator().next().getNormalVertex();
@@ -670,7 +670,7 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
             rightEdgeDist = (normalVertex.getSize().y - targetIEs.iterator().next().getDummyVertex().getSize().y) / (targetIEs.size()+1);//vertical distance between 2 edges on right side (asserting that all dummies have the same size)
         }
         int xVal = normalVertex.getX();
-        int yVal = 0;
+        int yVal;
         int idx = 1; //number of IE in the loop. First one has number 1!
         for(InterproceduralEdge ie : sourceIEs){//draw IE's with source dummy to the left of the normalVertex
             JoanaVertex dummyVertex = ie.getDummyVertex();

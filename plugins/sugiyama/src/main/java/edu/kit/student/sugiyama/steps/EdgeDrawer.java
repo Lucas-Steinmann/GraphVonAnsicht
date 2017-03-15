@@ -409,6 +409,7 @@ public class EdgeDrawer implements IEdgeDrawer {
             int topIdx = drawSelfLoopsNew(i); //drawing self loops and adjusting index
             topIdx = drawSameLayerEdgesNew(i,topIdx); //drawing same layer edges and adjusting index
             for(ISugiyamaVertex v : layer){ //iterate over vertices of this layer and draw its edges from left to right,
+                if(!this.vertexToEdges.containsKey(v.getID())) continue; //isolated vertices have no vertex to edge mapping
                 List<ISugiyamaEdge> outEdges = this.vertexToEdges.get(v.getID()).get(1);
                 for(ISugiyamaEdge e : outEdges){
                     ISugiyamaVertex source = e.getSource();
