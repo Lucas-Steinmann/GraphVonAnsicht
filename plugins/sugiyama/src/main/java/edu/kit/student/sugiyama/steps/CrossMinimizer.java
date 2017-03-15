@@ -95,7 +95,7 @@ public class CrossMinimizer implements ICrossMinimizer {
 			oldCrossings = crossings((SugiyamaGraph) graph);
 		}
 
-		while (counter < maxRuns) { //TODO: false &&counter < maxRuns  , for testing VertexPositioner
+		while (counter < maxRuns) {
 			List<List<ISugiyamaVertex>> undo = new ArrayList<>();
 
 			for (List<ISugiyamaVertex> layer : graph.getLayers()) {

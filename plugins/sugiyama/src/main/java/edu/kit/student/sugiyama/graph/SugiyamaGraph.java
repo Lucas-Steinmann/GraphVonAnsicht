@@ -530,11 +530,13 @@ public class SugiyamaGraph
 		private ISugiyamaVertex target;
 		private boolean isReversed;
 		private EdgePath path;
+		private int id;
 
 		SupplementEdge(String name, String label) {
 			this.name=name;
 			this.label=label;
 			this.path = new OrthogonalEdgePath();
+			this.id = IdGenerator.getInstance().createId();
 		}
 
 		SupplementEdge(String name, String label, ISugiyamaVertex source, ISugiyamaVertex target) {
@@ -585,8 +587,7 @@ public class SugiyamaGraph
 
 		@Override
 		public Integer getID() {
-			return -1;
-			//TODO check if it is necessary to give a SupplementEdge an ID, maybe better return null instead of -1
+			return this.id;
 		}
 
 		@Override
@@ -612,7 +613,7 @@ public class SugiyamaGraph
 			ISugiyamaVertex tmp = source;
 			source = target;
 			target = tmp;
-			this.isReversed=!this.isReversed;
+			this.isReversed = !this.isReversed;
 		}
 
 		@Override

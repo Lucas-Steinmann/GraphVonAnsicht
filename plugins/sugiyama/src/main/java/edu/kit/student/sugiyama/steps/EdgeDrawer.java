@@ -2,19 +2,23 @@ package edu.kit.student.sugiyama.steps;
 
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import edu.kit.student.graphmodel.Edge;
+import edu.kit.student.graphmodel.Vertex;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import edu.kit.student.graphmodel.EdgePath;
-//import edu.kit.student.joana.JoanaEdge;
 import edu.kit.student.sugiyama.graph.IEdgeDrawerGraph;
 import edu.kit.student.sugiyama.graph.ISugiyamaEdge;
 import edu.kit.student.sugiyama.graph.ISugiyamaVertex;
@@ -32,54 +36,52 @@ public class EdgeDrawer implements IEdgeDrawer {
 	private Set<SupplementPath> paths;
 	private Set<ISugiyamaVertex> graphVertices;                        // all vertices of the graph, with dummy vertices
 	private Set<ISugiyamaEdge> graphEdges;                             // all edges of the graph, with supplement edges
-	
-	private Set<ISugiyamaEdge> sugiEdges;                              // edges that are not supplementEdges
+
 	private Set<ISugiyamaEdge> selfLoopEdges;	                       // edges with same source and target vertex
 	private Set<ISugiyamaEdge> sameLayerEdges;	                       // edges that connect two vertices of the same layer, (for now without selfloops!)
 	private Set<ISugiyamaEdge> normalEdges;	                           // edges that are not (supplement edges, selfLoopEdges or sameLayerEdges)
-	
+
+    private double[][] layerYoffset;                                   //describes lowest and highest y-coordiante of a vertex in a layer.
 	private double[] spaceBetweenLayers;
 	private double[] distancePerEdgeInLayer;
-	
-	private Set<DoublePoint> points;
-	private Set<DoublePoint> inOutPointsTest;
+
 	
 	private Map<Integer,int[]> inOutDeg;                               // maps vertex id, to an array, containing the indegree on index 0 and outdegree on index 1
 	private Map<Integer, List<List<DoublePoint>>> inOutPoints;         // maps vertex id to Lists of incoming and outgoing points
 	private Map<Integer, List<List<ISugiyamaVertex>>> inOutVertices;   // maps vertex id to incoming and outgoing vertices
+	private Map<Integer, List<List<ISugiyamaEdge>>> vertexToEdges;	   // maps vertex id to incoming and outgoing edges
+	private Map<Integer, List<DoublePoint>> edgeToInOutPoints;
 	
-    final Logger logger = LoggerFactory.getLogger(EdgeDrawer.class);
+    private final Logger logger = LoggerFactory.getLogger(EdgeDrawer.class);
 
 	@Override
 	public void drawEdges(IEdgeDrawerGraph graph) {
-        inOutDeg = new HashMap<Integer,int[]>();
-        inOutPoints = new HashMap<Integer, List<List<DoublePoint>>>();
-        inOutVertices = new HashMap<Integer, List<List<ISugiyamaVertex>>>();
-	    points = new HashSet<DoublePoint>();
-	    inOutPointsTest = new HashSet<DoublePoint>();
+        inOutDeg = new HashMap<>();
+        inOutPoints = new HashMap<>();
+        inOutVertices = new HashMap<>();
+        vertexToEdges = new HashMap<>();
+        edgeToInOutPoints = new HashMap<>();
 
 		logger.info("EdgeDrawer.drawEdges():");
 		if(graph.getEdgeSet() == null || graph.getEdgeSet().isEmpty() || graph.getVertexSet() == null || graph.getVertexSet().isEmpty()){
 			return;
 		}
 		initialize(graph);            //initializes the graph and it's sets, needed in the whole class!
-//		test();
-//		sortLayers();	              //sorts the vertices in every layer in ascending order of their X-coordinate
 		fillInOutDeg();               //fills mapping of vertex to degrees
 		fillInOutPoints();            //fills mapping of vertex to points where edges come in or are going out
 		fillInOutVertices();          //fills mapping of vertex to incoming and outgoing vertices
 		sortInOutVertices();          //sorts the lists of in- and out vertices in ascending order of their X-coordinate
+        calcLayerYoffset();
 		calcSpaceBetweenLayers();     //fills the array that contains the space between two layers
 		calcDistancePerEdgeInLayer(); //fills the array that contains the distance between two kinking edges. (if all edges are kinking, the distance between two adjacency edges is constant)
-//		test();
-//		testEdgePaths();
-		
-		this.normalEdges.forEach(edge->this.drawNormalEdge(edge));
-		this.sameLayerEdges.forEach(edge->this.drawSameLayerEdge(edge));
-		this.selfLoopEdges.forEach(loop->this.drawSelfLoop(loop));
-		this.paths.forEach(path->this.drawSupplementPath(path));
-		this.graphEdges.stream().filter(edge->edge.isReversed()).forEach(edge->this.reverseEdgePath(edge));	//reverses edge paths from reversed edges
-		this.graphEdges.stream().filter(edge->edge.isReversed()).forEach(edge->edge.reverse());
+
+        fillVertexToEdges();
+        fillEdgeToInOutPoints();
+        drawAllEdges();
+        adjustSupplementPaths();
+
+		this.graphEdges.stream().filter(ISugiyamaEdge::isReversed).forEach(this::reverseEdgePath);	//reverses edge paths from reversed edges
+		this.graphEdges.stream().filter(ISugiyamaEdge::isReversed).forEach(ISugiyamaEdge::reverse);
 		for(SupplementPath p : this.paths){	//reverses edgepath of replaced edges in supplement paths
 			ISugiyamaEdge e = p.getReplacedEdge();
 			if(e.isReversed()){
@@ -87,109 +89,65 @@ public class EdgeDrawer implements IEdgeDrawer {
 				p.reverse();
 			}
 		}
-		
 	    inOutDeg.clear();
 	    inOutPoints.clear();
 	    inOutVertices.clear();
-
+	    vertexToEdges.clear();
+	    edgeToInOutPoints.clear();
 	}
 	
-	
-//	private void test(){
-////		//layer of source layer must be lower than target vertex
-////		logger.debug("isolated vertices: " + this.isolatedVertices.size());
-////		for(ISugiyamaEdge e : this.graphEdges.stream().filter(edge->!this.selfLoopEdges.contains(edge)).collect(Collectors.toList())){
-////			assert(e.getSource().getLayer() < e.getTarget().getLayer());
-////		}
-////		for(ISugiyamaEdge e : this.selfLoopEdges){
-////			logger.debug("loop: "+e.getSource().getID());
-////			assert(e.getSource().getLayer() == e.getTarget().getLayer());
-////		}
-////		for(SupplementPath p: this.paths){
-////			assert(p.getReplacedEdge().getSource().getLayer() < p.getReplacedEdge().getTarget().getLayer());
-////		}
-////		
-//		
-////		prints vertices with coordinates on every layer
-////		for(List<ISugiyamaVertex> list : this.graph.getSortedLayers()){
-////			for(ISugiyamaVertex v : list){
-////				System.out.print("["+v.getID()+"]("+v.getX()+","+v.getY()+")size:("+v.getSize().x+","+v.getSize().y+");" );
-////			}
-////			System.out.print('\n');
-////		}
-//		
-////		//checks if there are vertices overlapping in an layer
-//		for(List<ISugiyamaVertex> list : this.graph.getSortedLayers()){
-//			for(int i =0; i<list.size() - 1;i++){
-//				ISugiyamaVertex first = list.get(i);
-//				ISugiyamaVertex second = list.get(i + 1);
-//				System.out.println("first: "+first.getID()+", second: "+second.getID());
-//				assert(first.getX() + first.getSize().x < second.getX());
-//			}
-//		}
-//		
-//		for(ISugiyamaEdge e : this.graphEdges.stream().filter(e->!this.selfLoopEdges.contains(e) && !this.sameLayerEdges.contains(e)).collect(Collectors.toSet())){
-////			System.out.println("source: id: "+e.getSource().getID()+"dummy: "+e.getSource().isDummy()+", target: id: "+e.getTarget().getID()+"dummy: "+e.getTarget().isDummy());
-//			assert(e.getSource().getLayer() < e.getTarget().getLayer());
-//			assert(e.getSource().getY() < e.getTarget().getY());
-//		}
-////		
-////		
-////		//prints map inOutDeg
-////		for(int i : this.inOutDeg.keySet()){
-////			int[] degs = this.inOutDeg.get(i);
-////			System.out.println("ID: "+i+"; vals: "+degs[0]+","+degs[1]);
-////		}
-////		
-////		//tests the order of the supplement edges in supplement paths
-//		for(SupplementPath p : this.paths){
-//			ISugiyamaEdge replaced = p.getReplacedEdge();
-//			assert(replaced.getSource().getLayer() < replaced.getTarget().getLayer());
-//			assert(replaced.getSource().getY() < replaced.getTarget().getY());
-//			assert(!this.graphVertices.addAll(p.getDummyVertices()));
-//			for(ISugiyamaEdge e : p.getSupplementEdges()){
-//				assert(e.getSource().getLayer() < e.getTarget().getLayer());
-//				assert(e.getSource().getY() < e.getTarget().getY());
-////				System.out.print("("+e.getSource().getX()+","+e.getSource().getY()+")->("+e.getTarget().getX()+","+e.getTarget().getY()+"); ");
-//			}
-////			System.out.print('\n');
-//		}
-//	}
-	
 	//tests every edge if its edgepath describes an orthogonal edge
-//	private void testEdgePaths(){
-//		Set<DoublePoint> points = new HashSet<DoublePoint>();
-//		for(ISugiyamaEdge e : this.graphEdges.stream().filter(edge -> !this.selfLoopEdges.contains(edge)).collect(Collectors.toList())){
-//			List<DoublePoint> l = e.getPath().getNodes();
-//			
-//			for(DoublePoint p : l){
-//				assert(points.add(p));
-//			}
-//			
-//			DoublePoint first = l.get(0);
-//			DoublePoint second;
-//			for(int i = 1; i < l.size(); i++){
-//				second = l.get(i);
-//				assert(dEquals(first.x, second.x) ^ dEquals(first.y,second.y));
-//				first=second;
-//			}
-//		}
-//	}
+	private void testEdgePaths(){
+		for(ISugiyamaEdge e : this.graphEdges){
+			List<DoublePoint> l = e.getPath().getNodes();
+			assert(l.size() % 2 == 0);
+			DoublePoint first = l.get(0);
+			System.out.println("first: " + first.toString());
+			DoublePoint second;
+			for(int i = 1; i < l.size(); i++){
+				second = l.get(i);
+				System.out.println(second.toString());
+				assert(dEquals(first.x, second.x) ^ dEquals(first.y,second.y));
+				first=second;
+			}
+		}
+	}
 
-	/**
-	 * Sorts the vertices in every layer in ascending order of their X-coordinate.
-	 */
-//	private void sortLayers(){//!!!!!!!
-////		this.graph.getLayers().forEach(list->list.stream().sorted((v1,v2)->Double.compare(v1.getX(),v2.getX())));
-//		this.graph.getLayers().forEach(list->list.sort((v1,v2)->Integer.compare(v1.getX(),v2.getX())));
-//	}
+	private void printVertices(){
+	    for(int i = 0; i < graph.getLayerCount() - 1; i++){
+	        List<ISugiyamaVertex> vertices = graph.getSortedLayer(i);
+	        String out = "";
+	        for(ISugiyamaVertex v : vertices){
+	            out += "pos:[" + v.getX() + "," + v.getY() + "] size:(" + v.getSize().x + "," + v.getSize().y + "); ";
+            }
+            System.out.println(out);
+        }
+    }
+
+    private void printEdgePaths(){
+		List<ISugiyamaEdge> edges = new LinkedList<>();
+		edges.addAll(this.normalEdges);
+		edges.addAll(this.selfLoopEdges);
+		edges.addAll(this.sameLayerEdges);
+		this.paths.forEach(p->edges.add(p.getReplacedEdge()));
+		for(ISugiyamaEdge e : edges){
+			String out = "";
+			out += "("+e.getSource().getName() + "->" + e.getTarget().getName()+")";
+			out += e.getPath().getNodes().size() + "[";
+			for(DoublePoint p : e.getPath().getNodes()){
+				out += "(" + p.x + "," + p.y + ")|";
+			}
+			out += "]";
+			System.out.println(out);
+		}
+	}
 	
 	/**
 	 * Fills the mapping of Integer vertex-id to an Integer array.
 	 * The array size is 2. In the index 0 is the indegree of this vertex, in the index 1 its outdegree.
 	 */
 	private void fillInOutDeg(){
-		for(ISugiyamaEdge e :this.graphEdges){
+        for(ISugiyamaEdge e :this.graphEdges){
 			ISugiyamaVertex source = e.getSource();
 			ISugiyamaVertex target = e.getTarget();
 			if(!this.inOutDeg.containsKey(source.getID())){	//add source vertex to map, if not contained
@@ -199,12 +157,16 @@ public class EdgeDrawer implements IEdgeDrawer {
 				this.inOutDeg.put(target.getID(), new int[2]);
 			}
 			this.inOutDeg.get(source.getID())[1]++;	//source vertex got one outgoing edge more
-//			logger.debug("added source: "+source.getID() +" one out(target: "+target.getID()+")");
-			if(!this.selfLoopEdges.contains(e)){	//if edge describes a selfloop just add an outdegree for that vertex, because this edge is drawn under this vertex
-				this.inOutDeg.get(target.getID())[0]++;	//target vertex got one incoming edge more
-//				logger.debug("added target: "+target.getID() +" one in(source: "+source.getID()+")");
-			}
+            if(Objects.equals(source.getID(), target.getID())){ //selfloop: add additional out point for source vertex. Will later be used as in point
+                this.inOutDeg.get(source.getID())[1]++;
+            }else if(source.getLayer() == target.getLayer()){ //same layer edge: add an outpoint to target vertex. Will later be used as an in point
+                this.inOutDeg.get(target.getID())[1]++;
+            }else{  //normal edge: add an in point for target vertex
+                this.inOutDeg.get(target.getID())[0]++;
+            }
 		}
+		//possibly isolated vertices
+		//maybe simplify by searching for isolated vertices before
 		for(ISugiyamaVertex v : this.graphVertices){
 			if(!this.inOutDeg.containsKey(v.getID())){
 				this.inOutDeg.put(v.getID(), new int[2]);
@@ -219,21 +181,13 @@ public class EdgeDrawer implements IEdgeDrawer {
 	 */
 	private void fillInOutPoints(){
 		for(ISugiyamaVertex v : this.graphVertices){
-//			logger.info("Processing vertex: "+v.getID()+", is dummy: " + v.isDummy());
 				List<DoublePoint> inPoints = this.getInPoints(v);
 				List<DoublePoint> outPoints = this.getOutPoints(v);
-				List<List<DoublePoint>> list = new ArrayList<List<DoublePoint>>(2);
+				List<List<DoublePoint>> list = new ArrayList<>(2);
 				list.add(inPoints);
 				list.add(outPoints);
 				assert(!this.inOutPoints.containsKey(v.getID()));
 				this.inOutPoints.put(v.getID(),list);
-//				logger.debug("added vertex: "+v.getID()+", in: "+inPoints.size()+", out: "+outPoints.size());
-				for(DoublePoint p : inPoints){
-					assert(this.inOutPointsTest.add(p));
-				}
-				for(DoublePoint p : outPoints){
-					assert(this.inOutPointsTest.add(p));
-				}
 		}
 	}
 	
@@ -243,27 +197,21 @@ public class EdgeDrawer implements IEdgeDrawer {
 	 */
 	private void fillInOutVertices(){
 		for(ISugiyamaEdge e : this.graphEdges){
-			if(!this.inOutVertices.containsKey(e.getSource().getID())){	// add new entry for source id
-				List<List<ISugiyamaVertex>> list = new LinkedList<List<ISugiyamaVertex>>();
-				List<ISugiyamaVertex> inVertices = new LinkedList<ISugiyamaVertex>();
-				List<ISugiyamaVertex> outVertices = new LinkedList<ISugiyamaVertex>();
-				list.add(inVertices);
-				list.add(outVertices);
+			if(!this.inOutVertices.containsKey(e.getSource().getID())){	// add new entry(in- and out- lists) for source id
+				List<List<ISugiyamaVertex>> list = new LinkedList<>();
+				list.add(new LinkedList<>());
+				list.add(new LinkedList<>());
 				this.inOutVertices.put(e.getSource().getID(), list);
 			}
-			if(!this.inOutVertices.containsKey(e.getTarget().getID())){ // add new entry for target id
-				List<List<ISugiyamaVertex>> list = new LinkedList<List<ISugiyamaVertex>>();
-				List<ISugiyamaVertex> inVertices = new LinkedList<ISugiyamaVertex>();
-				List<ISugiyamaVertex> outVertices = new LinkedList<ISugiyamaVertex>();
-				list.add(inVertices);
-				list.add(outVertices);
+			if(!this.inOutVertices.containsKey(e.getTarget().getID())){ // add new entry(in- and out- lists) for target id
+				List<List<ISugiyamaVertex>> list = new LinkedList<>();
+				list.add(new LinkedList<>());
+				list.add(new LinkedList<>());
 				this.inOutVertices.put(e.getTarget().getID(), list);
 			}
 			this.inOutVertices.get(e.getSource().getID()).get(1).add(e.getTarget());	//source vertex got one outgoing vertex, the target of this edge
-//			logger.debug("adding to source "+e.getSource().getID()+": "+ e.getTarget().getID());
-			if(!this.selfLoopEdges.contains(e)){	//at a selfloop the vertex just got an outgoing edge, no incoming, the point will be calculated later
+			if(e.getSource().getLayer() != e.getTarget().getLayer()){	//no selfloop, no same layer edge
 				this.inOutVertices.get(e.getTarget().getID()).get(0).add(e.getSource());	//target vertex got one incoming vertex, the source of this edge
-//				logger.debug("adding to target "+e.getTarget().getID()+ ": "+ e.getSource().getID());
 			}
 		}
 	}
@@ -273,10 +221,24 @@ public class EdgeDrawer implements IEdgeDrawer {
 	 */
 	private void sortInOutVertices(){
 		for(List<List<ISugiyamaVertex>> list : this.inOutVertices.values()){
-			list.get(0).sort((v1,v2)->Integer.compare(v1.getX(),v2.getX()));
-			list.get(1).sort((v1,v2)->Integer.compare(v1.getX(),v2.getX()));
+			list.get(0).sort(Comparator.comparingInt(Vertex::getX));
+			list.get(1).sort(Comparator.comparingInt(Vertex::getX));
 		}
 	}
+
+	private void calcLayerYoffset(){
+        for(int i = 0; i < graph.getLayerCount(); i++) {
+            List<ISugiyamaVertex> layer = graph.getSortedLayer(i);
+            double lowest = Integer.MAX_VALUE; //lowest y-point in layer
+            double highest = Integer.MIN_VALUE; //highest y-point in layer
+            for (ISugiyamaVertex v : layer) {
+                highest = Math.max(highest, v.getY() + v.getSize().y);
+                lowest = Math.min(lowest, v.getY());
+            }
+            this.layerYoffset[i][0] = lowest;
+            this.layerYoffset[i][1] = highest;
+        }
+    }
 	
 	/**
 	 * Calculates the space between two layers that are among themselves. 
@@ -286,24 +248,10 @@ public class EdgeDrawer implements IEdgeDrawer {
 	 * The first entry in the array spaceBetweenLayers with index 0 describes the space between layer 0 and 1, and so on.
 	 */
 	private void calcSpaceBetweenLayers(){
-		for(int i = 1; i < graph.getLayerCount(); i++){
-			List<ISugiyamaVertex> upper = graph.getSortedLayer(i - 1);
-			List<ISugiyamaVertex> lower = graph.getSortedLayer(i);
-			double upperLowest = Integer.MIN_VALUE;	//lowest point in upper layer. (point on the bottom of the vertex-box)
-			double lowerHighest = Integer.MAX_VALUE;	//highest point in lower layer. (point on top of the vertex-box)
-			for(ISugiyamaVertex v : upper){
-				if(v.getY() + v.getSize().y > upperLowest){	//need the bottom of this vertex box so add its height to y-value
-					upperLowest = v.getY() + v.getSize().y;
-				}
-			}
-			for(ISugiyamaVertex v : lower){
-				if(v.getY() < lowerHighest){
-					lowerHighest = v.getY();
-				}
-			}
-			this.spaceBetweenLayers[i-1] = lowerHighest - upperLowest;	// coordinate (0,0) is in the corner left on the top. so a vertex further down got greater y-coord
-			assert(spaceBetweenLayers[i-1]>0);	//space between layers must be greater than zero
-		}
+	    for(int i = 0; i < graph.getLayerCount() - 1; i++){
+	        this.spaceBetweenLayers[i] = this.layerYoffset[i+1][0] - this.layerYoffset[i][1];
+	        assert(spaceBetweenLayers[i] > 0);
+        }
 	}
 	
 	/**
@@ -311,238 +259,250 @@ public class EdgeDrawer implements IEdgeDrawer {
 	 * If all edges are going horizontally above each other, the distance between two neighbor edges is always the same.
 	 */
 	private void calcDistancePerEdgeInLayer(){
-		int[] layerInOutTest = new int[this.graph.getLayerCount() - 1]; 
+	    //As in out deg was modified, samelayer and selfloops have 2 points on upper layer but just one edge will be drawn.
+        //-> between two layers are: sum(indeg lower layer) + (sum(outdeg upper layer) - sum(indeg lower layer)) / 2 edges!
 		for(int i = 0; i <= graph.getLayerCount() - 2; i++){
-			List<ISugiyamaVertex> list = graph.getSortedLayer(i);
-//			int layerIn = 0 ;
-			int layerOut = 0 ;
-			for(ISugiyamaVertex v : list){
-				int[] inOut = this.inOutDeg.get(v.getID());
-//				layerIn +=  inOut[0];
-				layerOut += inOut[1];
+			List<ISugiyamaVertex> upperLayer = graph.getSortedLayer(i);
+			List<ISugiyamaVertex> lowerLayer = graph.getSortedLayer(i+1);
+			int edgesCount;
+			int upperLayerOutCount = 0;
+			int lowerLayerInCount = 0;
+            for(ISugiyamaVertex u : upperLayer){
+                upperLayerOutCount += this.inOutDeg.get(u.getID())[1];
+            }
+			for(ISugiyamaVertex l : lowerLayer){
+                lowerLayerInCount += this.inOutDeg.get(l.getID())[0];
 			}
-			layerInOutTest[i] = layerOut;
-//			if(i>0){
-//				assert(layerInOutTest[i-1] == layerIn);
-//			}
-//			//this assertion is no longer possible through selfLoops
-			this.distancePerEdgeInLayer[i] = (this.spaceBetweenLayers[i]/(layerOut + 1.0));
+			assert((upperLayerOutCount - lowerLayerInCount) % 2 == 0); //on upper layer there are 2 outpoints for each selfloop and same layer edge. These points have no corresponding in point in lower layer.
+			edgesCount = lowerLayerInCount + (upperLayerOutCount - lowerLayerInCount) / 2;
+			this.distancePerEdgeInLayer[i] = (this.spaceBetweenLayers[i] / (edgesCount + 1.0));
 		}
 	}
-	
-	private void drawNormalEdge(ISugiyamaEdge edge){
-//		logger.debug("drawing: source: id: " + edge.getSource().getID()+", coord: "+edge.getSource().getX()+","+edge.getSource().getY()+" ,target: id: "+edge.getTarget().getID()+", coord: "+edge.getTarget().getX()+","+edge.getTarget().getY());
-		edge.getPath().clear();	//clears edge path before setting it again
-		ISugiyamaVertex source = edge.getSource();
-		ISugiyamaVertex target = edge.getTarget();
-		EdgePath path = edge.getPath();
-		//add here the correct out point of source vertex for this edge and target vertex!
-		int index = -1;
-		boolean found = false;
-		for(ISugiyamaVertex v : this.inOutVertices.get(source.getID()).get(1)){	//searches for the correct Point at the bottom of source
-			index++;
-//			logger.debug("searched target: "+v.getID()+", edge target: "+target.getID());
-			if(v.getID().equals(target.getID()) && !this.points.contains(this.inOutPoints.get(source.getID()).get(1).get(index))){
-				found = true;
-				break;
-			}
-		}
-//		logger.debug("source index: "+index + "| "+this.inOutPoints.get(source.getID()).get(1).get(index));
-		assert(found);
-		
-		int pointPosition = pointsBeforeVertex(source) + index +1;	//relative Y-position of this edge if it has to kink horizontally. (multiplied by distancePerEdgeLayer)
-		double edgeDistances = this.distancePerEdgeInLayer[source.getLayer()];
-		double edgeKinkY = pointPosition * edgeDistances;
-		DoublePoint sPoint = this.inOutPoints.get(source.getID()).get(1).get(index);
-		boolean added = this.points.add(sPoint);
-		assert(added);	//sPoint must not be in the graph at all
-		path.addPoint(sPoint);
-		
-		//search here for the Point incoming in the target vertex!
-		index = -1;
-		found = false;
-		for(ISugiyamaVertex v : this.inOutVertices.get(target.getID()).get(0)){	//searches for the correct Point on top of the target
-			index++;
-			if(v.getID().equals(source.getID()) && !this.points.contains(this.inOutPoints.get(target.getID()).get(0).get(index))){	//between two vertices can exist more than one edege!
-				found = true;
-				break;
-			}
-		}
-//		logger.debug("target index: "+index + "| " +this.inOutPoints.get(target.getID()).get(0).get(index));
-		assert(found);
-		
-		DoublePoint tPoint = this.inOutPoints.get(target.getID()).get(0).get(index);
-		
-		//now draw edge between sPoint and tPoint!!!!!
-		if(!dEquals(sPoint.x, tPoint.x)){	//need to kink edge
-			double newY = tPoint.y - edgeKinkY;
-			assert(newY > source.getY() + source.getSize().y);
-			assert(newY < target.getY());
-			DoublePoint t1 = new DoublePoint(sPoint.x, newY);
-			DoublePoint t2 = new DoublePoint(tPoint.x, newY);
-			boolean added1 = this.points.add(t1);
-			assert(added1);
-			boolean added2 = this.points.add(t2);
-			assert(added2);
-			path.addPoint(t1);
-			path.addPoint(t2);
-		}
-		added = this.points.add(tPoint);
-		assert(added);	//tPoint must not be in the graph at all
-		path.addPoint(tPoint);	//finally add the point where the edge goes into the target vertex
-	}
-	
-	//draw self loops on the bottom of the vertex
-	private void drawSelfLoop(ISugiyamaEdge loop){
-		loop.getPath().clear();//clears edgepath before setting it again
-		assert(this.selfLoopEdges.contains(loop));
-		assert(loop.getSource().getID().equals(loop.getTarget().getID()));	//just for being very sure
-		ISugiyamaVertex vertex = loop.getSource();	//doesn't matter if source or target
-		EdgePath path = loop.getPath();
-		
-		int index = -1;
-		boolean found = false;
-		for(ISugiyamaVertex v : this.inOutVertices.get(vertex.getID()).get(1)){	//searches for the correct Point at the bottom of source
-			index++;
-			if(v.getID().equals(vertex.getID()) && !this.points.contains(this.inOutPoints.get(vertex.getID()).get(1).get(index))){ //there can be more than one self loop
-				found = true;
-				break;
-			}
-		}
-		assert(found);
-		
-		double dist;
-		DoublePoint out = this.inOutPoints.get(vertex.getID()).get(1).get(index);
-		if(index + 1 < this.inOutPoints.get(vertex.getID()).get(1).size()){	//in point is not the point rightmost
-			dist = (this.inOutPoints.get(vertex.getID()).get(1).get(index + 1).x - out.x) / 2;
-		} else{	//he is the point rightmost
-			dist = vertex.getX() + vertex.getSize().x - out.x;
-		}
-		
-		int pointPosition = pointsBeforeVertex(vertex) + index +1;	//relative Y-position of this edge if it has to kink horizontally. (multiplied by distancePerEdgeLayer)
-		double edgeDistances = this.distancePerEdgeInLayer[vertex.getLayer()];
-		double edgeKinkY = pointPosition * edgeDistances;
-		double newY = out.y + edgeKinkY;
-		if(edgeKinkY > 5 ){
-			newY-=5;
-		}
-		double newX = out.x + dist;
-		
-		path.addPoint(out);
-		DoublePoint t1 = new DoublePoint(out.x, newY);
-		DoublePoint t2 = new DoublePoint(newX, newY);
-		DoublePoint t3 = new DoublePoint(newX, out.y);
-		assert(this.points.add(out));
-		assert(this.points.add(t1));
-		assert(this.points.add(t2));
-		assert(this.points.add(t3));
-		path.addPoint(t1);
-		path.addPoint(t2);
-		path.addPoint(t3);
 
+    //vertex to normal edges(no selfloops, no same layer edges)
+	private void fillVertexToEdges(){
+	    //use normal edges(sugy edges without self loops and same layer edges) and supplement edges (from supplement paths) only.
+        //watch out, through this there will be more points in point mapping than edges. so the normal edges take points from left, the other edges take the remaining points from right later
+		for(ISugiyamaEdge e : this.graphEdges){
+		    if(e.getSource().getLayer() == e.getTarget().getLayer()) continue; //vertex to edges mapping just filled for edges that don't have their vertices on the same layer(no selfloops, no same layer edges)
+			ISugiyamaVertex source = e.getSource();
+			ISugiyamaVertex target = e.getTarget();
+			if(!this.vertexToEdges.containsKey(source.getID())){
+				List<List<ISugiyamaEdge>> list = new LinkedList<>();
+				list.add(new LinkedList<>());
+				list.add(new LinkedList<>());
+				this.vertexToEdges.put(source.getID(),list);
+			}
+			if(!this.vertexToEdges.containsKey(target.getID())){
+				List<List<ISugiyamaEdge>> list = new LinkedList<>();
+				list.add(new LinkedList<>());
+				list.add(new LinkedList<>());
+				this.vertexToEdges.put(target.getID(),list);
+			}
+			this.vertexToEdges.get(source.getID()).get(1).add(e);
+			this.vertexToEdges.get(target.getID()).get(0).add(e);
+		}
+		//first sorting edges by their id then stable by their source or targets x-coordinates.
+        //incoming edges sorted by their source's x-coordinate, and outgoing edges sorted by their target's x-coordinate.
+		//sorting also by id is necessary for many edges having the same source and target vertex
+		for(List<List<ISugiyamaEdge>> lists : this.vertexToEdges.values()){
+			lists.get(0).sort(Comparator.comparingInt(Edge::getID));
+			lists.get(0).sort(Comparator.comparingInt(e -> e.getSource().getX()));
+			lists.get(1).sort(Comparator.comparingInt(Edge::getID));
+			lists.get(1).sort(Comparator.comparingInt(e -> e.getTarget().getX()));
+		}
 	}
-	
-	//draw edges that connect two vertices from the same layer
-	private void drawSameLayerEdge(ISugiyamaEdge edge){
-		// draw edge if the edge connects two vertices in the same layer
-		//first just draw the path normal under the vertices on this layer then project the incoming point down to the bottom of the target vertex
-		//not very good nor finished yet!!!!!
-		edge.getPath().clear();	//clears edge path before setting it again
-		ISugiyamaVertex source = edge.getSource();
-		ISugiyamaVertex target = edge.getTarget();
-		EdgePath path = edge.getPath();
-		//add here the correct out point of source vertex for this edge and target vertex!
-		int index = -1;
-		boolean found = false;
-		for(ISugiyamaVertex v : this.inOutVertices.get(source.getID()).get(1)){	//searches for the correct Point at the bottom of source
-			index++;
-			if(v.getID().equals(target.getID()) && !this.points.contains(this.inOutPoints.get(source.getID()).get(1).get(index))){
-				found = true;
-				break;
-			}
-		}
-		assert(found);
-		
-		int pointPosition = pointsBeforeVertex(source) + index +1;	//relative Y-position of this edge if it has to kink horizontally. (multiplied by distancePerEdgeLayer)
-		double edgeDistances = this.distancePerEdgeInLayer[source.getLayer()];
-		double edgeKinkY = pointPosition * edgeDistances;
-		DoublePoint sPoint = this.inOutPoints.get(source.getID()).get(1).get(index);
-		assert(this.points.add(sPoint));	//sPoint must not be in the graph at all
-		path.addPoint(sPoint);
-		
-		//search here for the Point incoming in the target vertex!
-		index = -1;
-		found = false;
-		for(ISugiyamaVertex v : this.inOutVertices.get(target.getID()).get(0)){	//searches for the correct Point on top of the target
-			index++;
-			if(v.getID().equals(source.getID()) && !this.points.contains(this.inOutPoints.get(target.getID()).get(0).get(index))){	//between two vertices can exist more than one edege!
-				found = true;
-				break;
-			}
-		}
-		assert(found);
 
-		
-		DoublePoint tPoint = this.inOutPoints.get(target.getID()).get(0).get(index);
-		DoublePoint projected = new DoublePoint(tPoint.x, tPoint.y + target.getSize().y);	//!!!!! set project target point down on bottom of target vertex !!!!!!!
-		
-		//now draw edge between sPoint and projected!!!!!
-		// search for the y-coordinate one layer below
-		List<DoublePoint> targetOut = this.inOutPoints.get(target.getID()).get(1);
-		DoublePoint p;
-		for(int i = 0; i<targetOut.size(); i++){
-			p = targetOut.get(i);
-			if(dEquals(p.x, projected.x) && dEquals(p.y, projected.y)){	//point, projected from top of vertex on its bottom collided with another point on the bottom
-				double dist;
-				if(i + 1 < targetOut.size()){
-					dist = (targetOut.get(i + 1).x - p.x) / 2.0;
-				} else{
-					dist = target.getX() + target.getSize().x - p.x;
-				}
-				projected = new DoublePoint(projected.x + dist, projected.y);
-				break;
+	private void printVertexToEdgeMapping(){
+	    for(ISugiyamaVertex v : this.graphVertices){
+	        if(!this.vertexToEdges.containsKey(v.getID())) continue;
+	        String out = "[";
+	        for(ISugiyamaEdge e : vertexToEdges.get(v.getID()).get(0)){
+	            out+=e.getID() + ",";
+            }
+            out = out.substring(0,out.length()-1);
+	        out += "](" + v.getID() + ")[";
+	        for(ISugiyamaEdge e : vertexToEdges.get(v.getID()).get(1)){
+                out+=e.getID() + ",";
+            }
+            out = out.substring(0,out.length()-1);
+	        out += "]";
+            System.out.println(out);
+        }
+    }
+
+	private void fillEdgeToInOutPoints(){
+        //edges like (samelayer edges, selfloops) should not be added in the first loop, map them to points in another if clause
+        //for every vertex add for its incoming edges the inpoint to the mapping, and for the outgoing edges the correct out point to the corresponding edge
+		for(ISugiyamaVertex v : this.graphVertices){
+		    if(!this.vertexToEdges.containsKey(v.getID())) continue;
+            //List<List<ISugiyamaEdge>> edgeLists : this.vertexToEdges.values()
+			List<ISugiyamaEdge> inEdges = this.vertexToEdges.get(v.getID()).get(0);//edges going into the vertex
+			List<ISugiyamaEdge> outEdges = this.vertexToEdges.get(v.getID()).get(1); //edges coming out of this vertex
+			if(!inEdges.isEmpty()){
+				//now map the sourceOutPoint to the edges in sourceEdges in the same order
+				List<DoublePoint> inPoints = this.inOutPoints.get(v.getID()).get(0);
+				assert(inEdges.size() <= inPoints.size()); //possibly there are more out points at source vertex than outgoing edges, because some out points are in points for same layer edges or loops.
+                Iterator<ISugiyamaEdge> edgeIt = inEdges.iterator();
+                Iterator<DoublePoint> pointIt = inPoints.iterator();
+                while(edgeIt.hasNext()){
+                    ISugiyamaEdge tmpEdge = edgeIt.next();
+                    DoublePoint tmpPoint = pointIt.next();
+                    if(!this.edgeToInOutPoints.containsKey(tmpEdge.getID())){
+                        this.edgeToInOutPoints.put(tmpEdge.getID(),new LinkedList<>());
+                    }
+                    this.edgeToInOutPoints.get(tmpEdge.getID()).add(0,tmpPoint);//edge goes into the vertex, so its the edge's in point
+                }
 			}
+			if(!outEdges.isEmpty()){
+			    //now map targetOutPoint to the edges in targetEdges in the same order
+                List<DoublePoint> outPoints = this.inOutPoints.get(v.getID()).get(1);
+                assert(outEdges.size() <= outPoints.size());
+                Iterator<ISugiyamaEdge> edgeIt = outEdges.iterator();
+                Iterator<DoublePoint> pointIt = outPoints.iterator();
+                while(edgeIt.hasNext()){
+                    ISugiyamaEdge tmpEdge = edgeIt.next();
+                    DoublePoint tmpPoint = pointIt.next();
+                    if(!this.edgeToInOutPoints.containsKey(tmpEdge.getID())){
+                        this.edgeToInOutPoints.put(tmpEdge.getID(),new LinkedList<>());
+                    }
+                    this.edgeToInOutPoints.get(tmpEdge.getID()).add(tmpPoint);//edge goes out of the vertex, so its the edge's out point. Add it at the back of the list
+                }
+            }
 		}
-		
-		double newY = target.getLayer() + 1 < graph.getLayerCount() ? this.graph.getSortedLayers().get(target.getLayer() + 1).get(0).getY() - edgeKinkY : projected.y + target.getSize().y + edgeKinkY;
-		DoublePoint t1 = new DoublePoint(sPoint.x, newY);
-		DoublePoint t2 = new DoublePoint(projected.x, newY);
-		assert(this.points.add(t1));
-		assert(this.points.add(t2));
-		path.addPoint(t1);
-		path.addPoint(t2);
-		assert(this.points.add(tPoint));	//tPoint must not be in the graph at all
-		path.addPoint(projected);	//finally add the point where the edge goes into the target vertex
+        //TODO: think, if its necessary that normal edges also remove the taken points from the vertex to points mapping(not really necessary but would be more consistent)
+		for(ISugiyamaEdge loop : this.selfLoopEdges){
+		    assert(Objects.equals(loop.getSource().getID(), loop.getTarget().getID()));
+		    if(!this.edgeToInOutPoints.containsKey(loop.getID())){
+                this.edgeToInOutPoints.put(loop.getID(),new LinkedList<>());
+            }
+            List<DoublePoint> points = this.inOutPoints.get(loop.getSource().getID()).get(1);
+            //now take the 2 rightmost points, map it to the edgeToPoint mapping and remove them. Because after all loops the same layer edges can take the rightmost point remaining
+            this.edgeToInOutPoints.get(loop.getID()).add(points.get(points.size()-1));
+            this.edgeToInOutPoints.get(loop.getID()).add(points.get(points.size()-2));
+            points.remove(points.size()-1);
+            points.remove(points.size()-1);
+        }
+        for(ISugiyamaEdge slEdge : this.sameLayerEdges){ //take from source the rightmost outpoint and from target the rightmost outpoint
+            if(!this.edgeToInOutPoints.containsKey(slEdge.getID())){
+                this.edgeToInOutPoints.put(slEdge.getID(),new LinkedList<>());
+            }
+		    ISugiyamaVertex source = slEdge.getSource();
+		    ISugiyamaVertex target = slEdge.getTarget();
+		    List<DoublePoint> sourceOutPoints = this.inOutPoints.get(source.getID()).get(1);
+		    List<DoublePoint> targetOutPoints = this.inOutPoints.get(target.getID()).get(1);
+		    this.edgeToInOutPoints.get(slEdge.getID()).add(targetOutPoints.get(targetOutPoints.size() - 1));
+		    this.edgeToInOutPoints.get(slEdge.getID()).add(sourceOutPoints.get(sourceOutPoints.size() - 1));
+		    sourceOutPoints.remove(sourceOutPoints.size() - 1);
+		    targetOutPoints.remove(targetOutPoints.size() - 1);
+        }
 	}
-	
-	private void drawSupplementPath(SupplementPath path){
-		assert(this.paths.contains(path));
-		EdgePath replacedEdgePath = path.getReplacedEdge().getPath();
-		replacedEdgePath.clear();
-		List<ISugiyamaEdge> sEdges =  path.getSupplementEdges();
-		List<DoublePoint> points = new LinkedList<DoublePoint>();
-		sEdges.forEach(edge->this.drawNormalEdge(edge));	//sets edgePath for every supplement edge
-		sEdges.forEach(edge->points.addAll(edge.getPath().getNodes()));	//puts together all edge paths
-		points.forEach(point->replacedEdgePath.addPoint(point));
-	}
-	
-	private int pointsBeforeVertex(ISugiyamaVertex vertex){
-		int num = 0;
-		for(ISugiyamaVertex v : this.graph.getSortedLayer(vertex.getLayer())){
-			if(v.getID().equals(vertex.getID())){
-				break;
-			}
-			num += this.inOutDeg.get(v.getID())[1];	//#outdeg points exist in this vertex on its bottom
-		}
-		return num;
-	}
-	
-	/**
+
+
+
+
+	//drawn from left to right. No influence on drawing of selfloops or samelayer edges.
+	private void drawAllEdges(){
+        for(int i = 0; i < graph.getLayerCount() - 1; i++){
+            List<ISugiyamaVertex> layer = graph.getSortedLayer(i);
+            int bottomIdx = 1;
+            int topIdx = drawSelfLoopsNew(i); //drawing self loops and adjusting index
+            topIdx = drawSameLayerEdgesNew(i,topIdx); //drawing same layer edges and adjusting index
+            for(ISugiyamaVertex v : layer){ //iterate over vertices of this layer and draw its edges from left to right,
+                List<ISugiyamaEdge> outEdges = this.vertexToEdges.get(v.getID()).get(1);
+                for(ISugiyamaEdge e : outEdges){
+                    ISugiyamaVertex source = e.getSource();
+                    ISugiyamaVertex target = e.getTarget();
+                    assert(target.getLayer() - source.getLayer() == 1);
+                    EdgePath path = e.getPath();
+                    path.clear();
+                    DoublePoint sPoint = this.edgeToInOutPoints.get(e.getID()).get(1);
+                    DoublePoint tPoint = this.edgeToInOutPoints.get(e.getID()).get(0);
+                    assert(dEquals(sPoint.y,source.getY()+source.getSize().y));
+                    assert(dEquals(tPoint.y, target.getY()));
+                    double yKink;
+                    if(sPoint.x < tPoint.x){ //draw such edges from bottom to top
+                        yKink = this.layerYoffset[i+1][0] - bottomIdx * this.distancePerEdgeInLayer[i];
+                        bottomIdx++;
+                    }else{ //draw from top to bottom
+                        yKink = this.layerYoffset[i][1] + topIdx * this.distancePerEdgeInLayer[i];
+                        topIdx++;
+                    }
+                    path.addPoint(sPoint);
+                    if(!dEquals(sPoint.x, tPoint.x)){ //otherwise don't need to kink
+                        path.addPoint(new DoublePoint(sPoint.x,yKink));
+                        path.addPoint(new DoublePoint(tPoint.x,yKink));
+                    }
+                    path.addPoint(tPoint);
+                }
+            }
+        }
+    }
+
+    //draws selfloops of the given layer num in descending order of the corresponding vertex' x-coordinate from top to bottom
+    //gives back the last index a selfloop was drawn to +1 (~ #selfloops in the given layer + 1)
+    private int drawSelfLoopsNew(int layer){
+        List<ISugiyamaEdge> loops = this.selfLoopEdges.stream().filter(sl->sl.getSource().getLayer() == layer).collect(Collectors.toList()); //selfloops of this layer
+        loops.sort(Comparator.comparingInt(l->l.getSource().getX()));
+        Collections.reverse(loops);
+        int idx = 1;
+        for(ISugiyamaEdge l : loops){
+            assert(Objects.equals(l.getSource().getID(), l.getTarget().getID()));
+            assert(l.getSource().getLayer() == l.getTarget().getLayer());
+            EdgePath path = l.getPath();
+            path.clear();
+            DoublePoint sPoint = this.edgeToInOutPoints.get(l.getID()).get(1);
+            DoublePoint tPoint = this.edgeToInOutPoints.get(l.getID()).get(0);
+            double yKink = sPoint.y + idx * this.distancePerEdgeInLayer[layer];
+            path.addPoint(sPoint);
+            path.addPoint(new DoublePoint(sPoint.x,yKink));
+            path.addPoint(new DoublePoint(tPoint.x,yKink));
+            path.addPoint(tPoint);
+            idx++;
+        }
+        return idx;
+    }
+
+    //draws same layer edges of the given layer num in descending order of their targets x-coordinate from top to bottom starting at the given index
+    //gives back the last index a same layer edge was drawn to +1 (~ #same layer edges in the given layer + 1)
+    private int drawSameLayerEdgesNew(int layer, int index){
+        List<ISugiyamaEdge> slEdges = this.sameLayerEdges.stream().filter(sle->sle.getSource().getLayer() == layer).collect(Collectors.toList());
+        slEdges.sort(Comparator.comparingInt(sle->sle.getTarget().getX()));
+        Collections.reverse(slEdges);
+        for(ISugiyamaEdge sle : slEdges){
+            assert(sle.getSource().getLayer() == sle.getTarget().getLayer());
+            EdgePath path = sle.getPath();
+            path.clear();
+            DoublePoint sPoint = this.edgeToInOutPoints.get(sle.getID()).get(1);
+            DoublePoint tPoint = this.edgeToInOutPoints.get(sle.getID()).get(0);
+            double yKink = sPoint.y + index * this.distancePerEdgeInLayer[layer];
+            path.addPoint(sPoint);
+            path.addPoint(new DoublePoint(sPoint.x,yKink));
+            path.addPoint(new DoublePoint(tPoint.x,yKink));
+            path.addPoint(tPoint);
+            index++;
+        }
+        return index;
+    }
+
+    //sums up the paths of supplement paths' supplement edges
+    private void adjustSupplementPaths(){
+        for(SupplementPath path : this.paths){
+            EdgePath replacedEdgePath = path.getReplacedEdge().getPath();
+            replacedEdgePath.clear();
+            List<ISugiyamaEdge> sEdges =  path.getSupplementEdges();
+            List<DoublePoint> points = new LinkedList<>();
+            sEdges.forEach(edge->points.addAll(edge.getPath().getNodes()));	//puts together all edge paths
+            points.forEach(replacedEdgePath::addPoint);
+        }
+    }
+
+    /**
 	 * Returns the points on top of a vertex-box where the incoming edges go into this vertex.
 	 * Points are sorted from left to right.
 	 */
 	private List<DoublePoint> getInPoints(ISugiyamaVertex vertex){
-		List<DoublePoint> points = new LinkedList<DoublePoint>();
+		List<DoublePoint> points = new LinkedList<>();
 		double width = vertex.getSize().x;
 		int x = vertex.getX();
 		int y = vertex.getY();
@@ -558,7 +518,7 @@ public class EdgeDrawer implements IEdgeDrawer {
 	 * Points are sorted from left to right.
 	 */
 	private List<DoublePoint> getOutPoints(ISugiyamaVertex vertex){
-		List<DoublePoint> points = new LinkedList<DoublePoint>();
+		List<DoublePoint> points = new LinkedList<>();
 		double width = vertex.getSize().x;
 		double height = vertex.getSize().y;
 		int x = vertex.getX();
@@ -591,27 +551,24 @@ public class EdgeDrawer implements IEdgeDrawer {
 		this.paths = graph.getSupplementPaths();
 		this.graphVertices = this.graph.getVertexSet();	//all graph vertices, with dummy vertices
 		this.graphEdges = this.graph.getEdgeSet();	//all graph edges, with supplement edges
-//		logger.debug("amount: "+graphVertices.size()+","+graphEdges.size());
-		
-//		Set<ISugiyamaVertex> sugyVertices = graphVertices.stream().filter(v->!v.isDummy()).collect(Collectors.toSet());
-		this.selfLoopEdges = new HashSet<ISugiyamaEdge>();
-		this.sameLayerEdges = new HashSet<ISugiyamaEdge>();
-//		this.graphVertices.stream().filter(vertex->graph.selfLoopNumberOf(vertex)>0).forEach(vertex->this.selfLoopEdges.addAll(graph.selfLoopsOf(vertex)));//fills selfloops
-		this.sugiEdges = this.graphEdges.stream().filter(edge->!edge.isSupplementEdge()).collect(Collectors.toSet()); //edges that are not supplementEdges
-		for(ISugiyamaEdge e : this.sugiEdges){
-			if(e.getSource().equals(e.getTarget())){	//selfloop
+
+		this.selfLoopEdges = new HashSet<>();
+		this.sameLayerEdges = new HashSet<>();
+		Set<ISugiyamaEdge> sugiEdges = this.graphEdges.stream().filter(edge -> !edge.isSupplementEdge()).collect(Collectors.toSet()); //edges without supplement edges (also without their replaced edges)
+
+		for(ISugiyamaEdge e : sugiEdges){
+			if(e.getSource().equals(e.getTarget())){//selfloop //TODO: maybe get selfloops from graph.selfLoopsOf(vertex)
 				this.selfLoopEdges.add(e);
 			}
 			if(e.getSource().getLayer() == e.getTarget().getLayer() && !e.getSource().equals(e.getTarget())){	//source and target on same layer, but no selfloops!
 				this.sameLayerEdges.add(e);
 			}
 		}
-		this.normalEdges = this.sugiEdges.stream().filter(edge->!this.selfLoopEdges.contains(edge)&&!this.sameLayerEdges.contains(edge)).collect(Collectors.toSet());//edge that is not supplement edge(because sugi edge is used), selfLoopEdge or sameLayerEdge
+		this.normalEdges = sugiEdges.stream().filter(edge->!this.selfLoopEdges.contains(edge)&&!this.sameLayerEdges.contains(edge)).collect(Collectors.toSet());//edge that is not supplement edge(because sugi edge is used), selfLoopEdge or sameLayerEdge
 		
 		this.spaceBetweenLayers = new double[graph.getLayerCount()];
 		this.distancePerEdgeInLayer = new double[graph.getLayerCount()];
-		this.points.clear();	//necessary ?
-		this.inOutPointsTest.clear();
+		this.layerYoffset = new double[graph.getLayerCount()][2];
 		assert(sugiEdges.size() == selfLoopEdges.size() + sameLayerEdges.size() + normalEdges.size());
 	}
 }

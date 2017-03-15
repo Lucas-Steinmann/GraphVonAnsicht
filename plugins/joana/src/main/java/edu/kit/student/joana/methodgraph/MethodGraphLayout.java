@@ -367,12 +367,6 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 						distancePoints.remove(i);
 						distancePoints.add(i,d1+distBetweenDummies+tmp.getSize().x);
 					}
-//					freeSpace = 0.0;
-//					for(int i = 0; i < distancePoints.size() - 1; i+=2){//added one dummy for every segment, now adjust distances!
-//						freeSpace += distancePoints.get(i + 1) - distancePoints.get(i);
-//					}
-//					freeSpace-=dummySize.x * tempDummyCount;
-//					distBetweenDummies = freeSpace/(tempDummyCount + 2 * noDummies.size());
 				}
 			}
 			
@@ -543,10 +537,8 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 		this.sugiyamaLayoutAlgorithm.drawEdgesNew(vertices, edges, paths);
 		//now add the additional EdgePath to fromOutEdges
 		for(JoanaEdge e : fromOutEdges){
-//			System.out.println("from out id: "+e.getID()+", source: "+e.getSource().getID()+", target: "+e.getTarget().getID());
 			List<DoublePoint> points = e.getPath().getNodes();
 			Vertex dummy = edgeToDummy.get(e.getID());
-//			System.out.println("dummy id: "+dummy.getID());
 			assert(vertices.contains(dummy));
 			Vertex source = null;
 			Vertex target = null;
@@ -570,59 +562,63 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 			}else{
 				assert(false);
 			}
+			//merge EdgePath from edges in the FieldAccess and edges going from out into the FieldAccess
+			List<DirectedEdge> faEdges = new LinkedList<>();
+			faEdges.addAll(edges);
+			paths.forEach(p->faEdges.add(p.getReplacedEdge()));
+			//TODO: merge both for loops together, if possible. Maybe find better solution instead of searching the right in out edges
+			//TODO: also dajust EdgePath so there is no unnecessary kink on top or bottom of the FieldAccess
 			for(DirectedSupplementEdgePath p : paths){	//look here for matching and finding correct drawn edges for every fromOutEdge!!!
 				DirectedEdge replaced = p.getReplacedEdge();
-//				System.out.println("replaced id:"+replaced.getID()+", source: "+replaced.getSource().getID()+", target: "+replaced.getTarget().getID());
 				if(replaced.getSource().getID().equals(dummy.getID()) || replaced.getTarget().getID().equals(dummy.getID())){
-//					System.out.println("found some!!!!!!!!!");
-					DoublePoint newPoint;
 					EdgePath op = e.getPath();
 					EdgePath np = replaced.getPath();
-					if(newPathInsertionAfter){
-						newPoint = new DoublePoint(op.getNodes().get(op.getNodes().size() - 1).x, np.getNodes().get(0).y);
-						op.addPoint(newPoint);
-						np.getNodes().forEach(point->op.addPoint(point));
-//						np.getNodes().forEach(point->e.getPath().addPoint(point));// insert new points behind
-					} else{
-						List<DoublePoint> newPoints = new LinkedList<>();
-						newPoint = new DoublePoint(np.getNodes().get(np.getNodes().size() - 1).x, op.getNodes().get(0).y);
-						newPoints.addAll(np.getNodes());
-						newPoints.add(newPoint);
-						newPoints.addAll(points);
-						e.getPath().clear();
-						newPoints.forEach(point->op.addPoint(point));
-					}
+					mergeEdgePaths(np,op,newPathInsertionAfter);
 				}
 			}
 			for(DirectedEdge de : edges){
 				if(dummy.getID().equals(de.getSource().getID()) && target.getID().equals(de.getTarget().getID())
 						|| dummy.getID().equals(de.getTarget().getID()) && source.getID().equals(de.getSource().getID())){
-//					System.out.println("found match!");
-					DoublePoint newPoint;
 					EdgePath op = e.getPath();
 					EdgePath np = de.getPath();
-                    newPoint = new DoublePoint(op.getNodes().get(op.getNodes().size() - 1).x, np.getNodes().get(0).y);
-					if(newPathInsertionAfter){
-						newPoint = new DoublePoint(op.getNodes().get(op.getNodes().size() - 1).x, np.getNodes().get(0).y);
-						op.addPoint(newPoint);
-						np.getNodes().forEach(point->op.addPoint(point));
-//						np.getNodes().forEach(point->e.getPath().addPoint(point));// insert new points behind
-					} else{
-						List<DoublePoint> newPoints = new LinkedList<>();
-						newPoint = new DoublePoint(np.getNodes().get(np.getNodes().size() - 1).x, op.getNodes().get(0).y);
-						newPoints.addAll(np.getNodes());
-						newPoints.add(newPoint);
-						newPoints.addAll(points);
-						e.getPath().clear();
-						newPoints.forEach(point->op.addPoint(point));
-					}
+					mergeEdgePaths(np,op,newPathInsertionAfter);
 				}
 			}
 		}
 	}
+
+	/**
+	 * Merges both EdgePaths together.
+	 * Boolean tells if new path has to be added behind the old path, or the old path behind new path.
+	 * In addition adjusts the x coordinate of the last two points of the first path with the x-coordinate of the first point of the second path, so there is no unnecessary kink.
+	 */
+	private void mergeEdgePaths(EdgePath newPath, EdgePath oldPath, boolean newPathInsertionAfter){
+		assert(newPath.getSegmentsCount() >= 2);
+		assert(oldPath.getSegmentsCount() >= 2);
+		DoublePoint np1,np2;
+		if(newPathInsertionAfter){ //also replace np's first two elements
+			np1 = new DoublePoint(oldPath.getNodes().get(oldPath.getNodes().size()-1).x,newPath.getNodes().get(0).y);
+			np2 = new DoublePoint(oldPath.getNodes().get(oldPath.getNodes().size()-1).x,newPath.getNodes().get(1).y);
+			newPath.getNodes().remove(0);
+			newPath.getNodes().remove(0);
+			oldPath.addPoint(np1);
+			oldPath.addPoint(np2);
+			newPath.getNodes().forEach(oldPath::addPoint);
+		} else{ //also replace np's last two elements
+			List<DoublePoint> newPoints = new LinkedList<>();
+			np1 = new DoublePoint(oldPath.getNodes().get(0).x,newPath.getNodes().get(newPath.getNodes().size() - 2).y);
+			np2 = new DoublePoint(oldPath.getNodes().get(0).x,newPath.getNodes().get(newPath.getNodes().size() - 1).y);
+			newPoints.addAll(newPath.getNodes().subList(0,newPath.getNodes().size() - 2)); //remove last two elements
+			newPoints.add(np1);
+			newPoints.add(np2);
+			newPoints.addAll(oldPath.getNodes());
+			oldPath.clear();
+			newPoints.forEach(oldPath::addPoint);
+		}
+	}
 	
 	/**
-	 * Draws every InterproceduralEdges of this MethodGraph.
+	 * Draws every InterproceduralEdge of this MethodGraph.
 	 * There is enough space right and left from every normal vertex that is connected with dummy vertices of InterproceduralEdges
 	 * Dummies of a InterproceduralEdge are drawn as following: (Example of two normal vertices with each having 3 dummies)
 	 * __   __   ____   __         ____
@@ -856,7 +852,7 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 		    it.next();
 		    while (it.hasNext()) {
 		        DoublePoint p = it.next();
-                assert (! first.equals(p));
+                assert (!first.equals(p));
 		    }
 		}
 		return fas;
