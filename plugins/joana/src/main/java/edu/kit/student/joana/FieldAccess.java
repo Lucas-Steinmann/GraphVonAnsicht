@@ -42,7 +42,21 @@ public class FieldAccess extends JoanaCompoundVertex {
         return null;
     }
 
+    @Override
     public DoublePoint getSize() {
         return graph.getSize();
     }
+
+    @Override
+    public void setX(int x){
+        super.setX(x);
+        graph.setX(x);
+    }
+
+    @Override
+    public void setY(int y){
+        super.setY(y);
+        graph.setY(y);
+    }
+
 }

@@ -5,11 +5,15 @@ import javafx.scene.paint.Color;
 
 public interface InlineSubGraph extends ViewableGraph {
     
-    public abstract Color getBackgroundColor();
+    Color getBackgroundColor();
 
-    public abstract DoublePoint getSize();
+    DoublePoint getSize();
     
-    public abstract Double getX();
+    double getX();
 
-    public abstract Double getY();
+    double getY();
+
+    void setX(double x);
+
+    void setY(double y);
 }

@@ -1,11 +1,12 @@
 package edu.kit.student.joana;
 
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
+import java.util.OptionalDouble;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -31,8 +32,10 @@ public class FieldAccessGraph extends JoanaGraph implements InlineSubGraph {
 
     private DefaultDirectedGraph<JoanaVertex, JoanaEdge> graph;
     private JoanaVertex fieldEntry;
-	public static double paddingx = 40;
-	public static double paddingy = 50;
+    private DoublePoint size = DoublePoint.zero();
+    private double x = 0d,y = 0d;
+	public static double paddingx = 80;
+	public static double paddingy = 120;
 
     private JoanaCollapser collapser;
     
@@ -160,45 +163,78 @@ public class FieldAccessGraph extends JoanaGraph implements InlineSubGraph {
 
     @Override
     public DoublePoint getSize() {
-        if (this.getVertexSet().isEmpty()) {
-            return new DoublePoint(0, 0);
-        }
-        Set<JoanaVertex> fagVertices = this.getVertexSet();
-        Set<JoanaEdge> fagEdges = this.getEdgeSet();
-        
-        double minX, minY, maxX, maxY;
-		minX = fagVertices.stream().mapToDouble(DefaultVertex::getX).min().getAsDouble();
-		maxX = fagVertices.stream().mapToDouble(vertex->vertex.getX() + vertex.getSize().x).max().getAsDouble();
-		minY = fagVertices.stream().mapToDouble(DefaultVertex::getY).min().getAsDouble();
-		maxY = fagVertices.stream().mapToDouble(vertex->vertex.getY() + vertex.getSize().y).max().getAsDouble();
-		for(JoanaEdge e : fagEdges){	//look if there are some edges more right or left than a vertex.
-			minX = Math.min(e.getPath().getNodes().stream().mapToDouble(point->(point.x)).min().getAsDouble(), minX);
-			maxX = Math.max(e.getPath().getNodes().stream().mapToDouble(point->(point.x)).max().getAsDouble(), maxX);
-			minY = Math.min(e.getPath().getNodes().stream().mapToDouble(point->(point.y)).min().getAsDouble(), minY);
-			maxY = Math.max(e.getPath().getNodes().stream().mapToDouble(point->(point.y)).max().getAsDouble(), maxY);
-		}
-		
-		
-		// set now the new size of the representing vertex appropriated to the layouted FieldAccessGraphs
-		return new DoublePoint(maxX - minX + paddingx, maxY - minY + paddingy);	
+        if(!this.size.equals(DoublePoint.zero())) return this.size;
+        DoublePoint min = this.getMinCoordinate();
+        DoublePoint max = this.getMaxCoordinate();
+        DoublePoint ret = new DoublePoint(max.x - min.x + paddingx, max.y - min.y + paddingy);
+        this.size = ret;
+        return ret;
     }
 
 
     @Override
-    public Double getX() {
-        if (getVertexSet().isEmpty()) {
-            return 0d;
-        }
-        return (double) getVertexSet().stream().min(Comparator.comparing(DefaultVertex::getX)).get().getX() - paddingx/2;
+    public double getX() {
+        if(!Objects.equals(this.x,0d)) return this.x;
+        double ret = this.getMinCoordinate().x - paddingx / 2;
+        this.x = ret;
+        return ret;
     }
 
 
     @Override
-    public Double getY() {
-        if (getVertexSet().isEmpty()) {
-            return 0d;
+    public double getY() {
+        if(!Objects.equals(this.y,0d)) return this.y;
+        double ret = this.getMinCoordinate().y - paddingx / 2;
+        this.y = ret;
+        return ret;
+    }
+
+    @Override
+    public void setX(double x){
+        this.x = x;
+    }
+
+    @Override
+    public void setY(double y){
+        this.y = y;
+    }
+
+    //minimum x and y coordinate of vertices and edges in this graph
+    private DoublePoint getMinCoordinate(){
+        if(this.getVertexSet().isEmpty()) return DoublePoint.zero();
+        double minx = Double.MAX_VALUE;
+        double miny = Double.MAX_VALUE;
+        OptionalDouble tmpx = this.getVertexSet().stream().mapToDouble(DefaultVertex::getX).min();
+        OptionalDouble tmpy = this.getVertexSet().stream().mapToDouble(DefaultVertex::getY).min();
+        if(tmpx.isPresent()) minx = Math.min(minx,tmpx.getAsDouble());
+        if(tmpy.isPresent()) miny = Math.min(miny,tmpy.getAsDouble());
+        for(JoanaEdge e : this.getEdgeSet()){
+            tmpx = e.getPath().getNodes().stream().mapToDouble(p->p.x).min();
+            tmpy = e.getPath().getNodes().stream().mapToDouble(p->p.y).min();
+            if(tmpx.isPresent()) minx = Math.min(minx,tmpx.getAsDouble());
+            if(tmpy.isPresent()) miny = Math.min(miny,tmpy.getAsDouble());
         }
-        return (double) getVertexSet().stream().min(Comparator.comparing(DefaultVertex::getY)).get().getY() - paddingy/2;
+
+        return new DoublePoint(minx,miny);
+    }
+
+    //maximum x and y coordinate of vertices and edges in this graph
+    private DoublePoint getMaxCoordinate(){
+        if(this.getVertexSet().isEmpty()) return DoublePoint.zero();
+        double maxx = Double.MIN_VALUE;
+        double maxy = Double.MIN_VALUE;
+        OptionalDouble tmpx = this.getVertexSet().stream().mapToDouble(DefaultVertex::getX).max();
+        OptionalDouble tmpy = this.getVertexSet().stream().mapToDouble(DefaultVertex::getY).max();
+        if(tmpx.isPresent()) maxx = Math.max(maxx,tmpx.getAsDouble());
+        if(tmpy.isPresent()) maxy = Math.max(maxy,tmpy.getAsDouble());
+        for(JoanaEdge e : this.getEdgeSet()){
+            tmpx = e.getPath().getNodes().stream().mapToDouble(p->p.x).max();
+            tmpy = e.getPath().getNodes().stream().mapToDouble(p->p.y).max();
+            if(tmpx.isPresent()) maxx = Math.max(maxx,tmpx.getAsDouble());
+            if(tmpy.isPresent()) maxy = Math.max(maxy,tmpy.getAsDouble());
+        }
+
+        return new DoublePoint(maxx,maxy);
     }
     
 }
