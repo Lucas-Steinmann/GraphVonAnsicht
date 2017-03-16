@@ -9,6 +9,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import edu.kit.student.graphmodel.DefaultVertex;
 import edu.kit.student.graphmodel.FastGraphAccessor;
 import edu.kit.student.graphmodel.InlineSubGraph;
 import edu.kit.student.graphmodel.Vertex;
@@ -46,7 +47,7 @@ public class FieldAccessGraph extends JoanaGraph implements InlineSubGraph {
     }
 
 	public JoanaCollapsedVertex collapse(Set<? extends ViewableVertex> subset, JoanaCollapsedVertex collapse) {
-        Set<JoanaVertex> directedSubset = new HashSet<JoanaVertex>();
+        Set<JoanaVertex> directedSubset = new HashSet<>();
 	    for (Vertex v : subset) {
 	        if (!graph.contains(v)) {
                 throw new IllegalArgumentException("Cannot collapse vertices, not contained in this graph.");
@@ -54,8 +55,7 @@ public class FieldAccessGraph extends JoanaGraph implements InlineSubGraph {
 	            directedSubset.add(graph.getVertexById(v.getID()));
 	        }
 	    }
-	    JoanaCollapsedVertex collapsed = collapser.collapse(directedSubset);
-		return collapsed;
+        return collapser.collapse(directedSubset);
 	}
     
     public Set<JoanaVertex> expand(JoanaCollapsedVertex vertex) {
@@ -167,9 +167,9 @@ public class FieldAccessGraph extends JoanaGraph implements InlineSubGraph {
         Set<JoanaEdge> fagEdges = this.getEdgeSet();
         
         double minX, minY, maxX, maxY;
-		minX = fagVertices.stream().mapToDouble(vertex->vertex.getX()).min().getAsDouble();
+		minX = fagVertices.stream().mapToDouble(DefaultVertex::getX).min().getAsDouble();
 		maxX = fagVertices.stream().mapToDouble(vertex->vertex.getX() + vertex.getSize().x).max().getAsDouble();
-		minY = fagVertices.stream().mapToDouble(vertex->vertex.getY()).min().getAsDouble();
+		minY = fagVertices.stream().mapToDouble(DefaultVertex::getY).min().getAsDouble();
 		maxY = fagVertices.stream().mapToDouble(vertex->vertex.getY() + vertex.getSize().y).max().getAsDouble();
 		for(JoanaEdge e : fagEdges){	//look if there are some edges more right or left than a vertex.
 			minX = Math.min(e.getPath().getNodes().stream().mapToDouble(point->(point.x)).min().getAsDouble(), minX);
@@ -189,7 +189,7 @@ public class FieldAccessGraph extends JoanaGraph implements InlineSubGraph {
         if (getVertexSet().isEmpty()) {
             return 0d;
         }
-        return (double) getVertexSet().stream().min(Comparator.comparing(v -> v.getX())).get().getX() - paddingx/2;
+        return (double) getVertexSet().stream().min(Comparator.comparing(DefaultVertex::getX)).get().getX() - paddingx/2;
     }
 
 
@@ -198,7 +198,7 @@ public class FieldAccessGraph extends JoanaGraph implements InlineSubGraph {
         if (getVertexSet().isEmpty()) {
             return 0d;
         }
-        return (double) getVertexSet().stream().min(Comparator.comparing(v -> v.getY())).get().getY() - paddingy/2;
+        return (double) getVertexSet().stream().min(Comparator.comparing(DefaultVertex::getY)).get().getY() - paddingy/2;
     }
     
 }

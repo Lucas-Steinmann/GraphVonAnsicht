@@ -138,7 +138,8 @@ public class EdgeDrawer implements IEdgeDrawer {
 				out += "(" + p.x + "," + p.y + ")|";
 			}
 			out += "]";
-			System.out.println(out);
+			if(e.getPath().getNodes().isEmpty())
+				System.out.println(out);
 		}
 	}
 	
@@ -277,6 +278,7 @@ public class EdgeDrawer implements IEdgeDrawer {
 			edgesCount = lowerLayerInCount + (upperLayerOutCount - lowerLayerInCount) / 2;
 			this.distancePerEdgeInLayer[i] = (this.spaceBetweenLayers[i] / (edgesCount + 1.0));
 		}
+		this.distancePerEdgeInLayer[graph.getLayerCount() - 1] = 5; //under the last layer there is no normal edge, but selfloops are possible
 	}
 
     //vertex to normal edges(no selfloops, no same layer edges)
@@ -403,11 +405,11 @@ public class EdgeDrawer implements IEdgeDrawer {
 
 	//drawn from left to right. No influence on drawing of selfloops or samelayer edges.
 	private void drawAllEdges(){
-        for(int i = 0; i < graph.getLayerCount() - 1; i++){
+        for(int i = 0; i < graph.getLayerCount(); i++){ //normal vertices on last layer have no outgoing edges, but selfloops in last layer might be possible
             List<ISugiyamaVertex> layer = graph.getSortedLayer(i);
             int bottomIdx = 1;
-            int topIdx = drawSelfLoopsNew(i); //drawing self loops and adjusting index
-            topIdx = drawSameLayerEdgesNew(i,topIdx); //drawing same layer edges and adjusting index
+            int topIdx = drawSelfLoops(i); //drawing self loops and adjusting index
+            topIdx = drawSameLayerEdges(i,topIdx); //drawing same layer edges and adjusting index
             for(ISugiyamaVertex v : layer){ //iterate over vertices of this layer and draw its edges from left to right,
                 if(!this.vertexToEdges.containsKey(v.getID())) continue; //isolated vertices have no vertex to edge mapping
                 List<ISugiyamaEdge> outEdges = this.vertexToEdges.get(v.getID()).get(1);
@@ -442,7 +444,7 @@ public class EdgeDrawer implements IEdgeDrawer {
 
     //draws selfloops of the given layer num in descending order of the corresponding vertex' x-coordinate from top to bottom
     //gives back the last index a selfloop was drawn to +1 (~ #selfloops in the given layer + 1)
-    private int drawSelfLoopsNew(int layer){
+    private int drawSelfLoops(int layer){
         List<ISugiyamaEdge> loops = this.selfLoopEdges.stream().filter(sl->sl.getSource().getLayer() == layer).collect(Collectors.toList()); //selfloops of this layer
         loops.sort(Comparator.comparingInt(l->l.getSource().getX()));
         Collections.reverse(loops);
@@ -466,7 +468,7 @@ public class EdgeDrawer implements IEdgeDrawer {
 
     //draws same layer edges of the given layer num in descending order of their targets x-coordinate from top to bottom starting at the given index
     //gives back the last index a same layer edge was drawn to +1 (~ #same layer edges in the given layer + 1)
-    private int drawSameLayerEdgesNew(int layer, int index){
+    private int drawSameLayerEdges(int layer, int index){
         List<ISugiyamaEdge> slEdges = this.sameLayerEdges.stream().filter(sle->sle.getSource().getLayer() == layer).collect(Collectors.toList());
         slEdges.sort(Comparator.comparingInt(sle->sle.getTarget().getX()));
         Collections.reverse(slEdges);
@@ -558,10 +560,10 @@ public class EdgeDrawer implements IEdgeDrawer {
 		Set<ISugiyamaEdge> sugiEdges = this.graphEdges.stream().filter(edge -> !edge.isSupplementEdge()).collect(Collectors.toSet()); //edges without supplement edges (also without their replaced edges)
 
 		for(ISugiyamaEdge e : sugiEdges){
-			if(e.getSource().equals(e.getTarget())){//selfloop //TODO: maybe get selfloops from graph.selfLoopsOf(vertex)
+			if(e.getSource().getID().equals(e.getTarget().getID())){//selfloop //TODO: maybe get selfloops from graph.selfLoopsOf(vertex)
 				this.selfLoopEdges.add(e);
 			}
-			if(e.getSource().getLayer() == e.getTarget().getLayer() && !e.getSource().equals(e.getTarget())){	//source and target on same layer, but no selfloops!
+			if(e.getSource().getLayer() == e.getTarget().getLayer() && !e.getSource().getID().equals(e.getTarget().getID())){	//source and target on same layer, but no selfloops!
 				this.sameLayerEdges.add(e);
 			}
 		}
