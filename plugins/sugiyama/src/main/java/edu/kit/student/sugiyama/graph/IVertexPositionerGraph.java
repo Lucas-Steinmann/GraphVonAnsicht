@@ -22,7 +22,7 @@ public interface IVertexPositionerGraph extends ISugiyamaStepGraph {
 	 * @param vertex the vertex to position
 	 * @param x 	 the x-coordinate
 	 */
-	public void setX(ISugiyamaVertex vertex, int x);
+	public void setX(ISugiyamaVertex vertex, double x);
 
 
 	/**

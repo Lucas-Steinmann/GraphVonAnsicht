@@ -167,7 +167,7 @@ public class DefaultGraphLayering<V extends Vertex> implements GraphLayering<V> 
             return new LinkedList<>();
         }
     	List<V> result = new LinkedList<>(layers.get(layerIndex));
-    	result.sort(Comparator.comparingInt(Vertex::getX));
+    	result.sort(Comparator.comparingDouble(Vertex::getX));
         return result;
     }
     
@@ -184,7 +184,7 @@ public class DefaultGraphLayering<V extends Vertex> implements GraphLayering<V> 
         for (List<V> layer : layers) {
             copy.add(new LinkedList<V>(layer));
         }
-        copy.forEach(l->l.sort(Comparator.comparingInt(Vertex::getX)));
+        copy.forEach(l->l.sort(Comparator.comparingDouble(Vertex::getX)));
         return copy;
     }
     

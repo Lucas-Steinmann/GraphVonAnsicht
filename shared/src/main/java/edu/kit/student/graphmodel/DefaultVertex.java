@@ -23,8 +23,8 @@ public class DefaultVertex implements ViewableVertex {
     private GAnsProperty<String> name;
 	private Integer id;
 	private GAnsProperty<String> label;
-	private int x;
-	private int y;
+	private double x;
+	private double y;
 	private IntegerPoint leftRightMargin;
 	private int link = 0;
 	private List<GAnsProperty<?>> data;
@@ -84,22 +84,22 @@ public class DefaultVertex implements ViewableVertex {
 	}
 
 	@Override
-	public int getX() {
+	public double getX() {
 		return x;
 	}
 
 	@Override
-	public int getY() {
+	public double getY() {
 		return y;
 	}
 
     @Override
-    public void setX(int x) {
+    public void setX(double x) {
 		this.x = x;
     }
 
     @Override
-    public void setY(int y) {
+    public void setY(double y) {
         this.y = y;
     }
 

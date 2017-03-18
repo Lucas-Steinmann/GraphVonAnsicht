@@ -75,7 +75,7 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 		graph.removeInterproceduralEdges();
 
 	    
-	  //create absoluteLayerConstraints
+	  	//create absoluteLayerConstraints
         Set<AbsoluteLayerConstraint> absoluteLayerConstraints = new HashSet<>();
 		Set<LayerContainsOnlyConstraint> layerContainsOnlyConstraints = new HashSet<>();
         
@@ -119,7 +119,7 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 		
 		logger.info("Graph after: Vertices: "+graph.getVertexSet().size()+", Edges: "+graph.getEdgeSet().size());
 		expandFieldAccesses(graph, collapsedFAs);
-//		System.out.println("now drawing field access edges new !!!!!!!!!!!!!!!!!!!!!!");
+
 		collapsedFAs.forEach(fa->drawEdgesNew(graph, fa));	//new version
 		
 		//draws interprocedural vertices of this graph. 
@@ -151,19 +151,19 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 		//maybe split more functionality into private methods
 		double boxYtop = fa.getY();
 		double boxYbottom = fa.getY() + fa.getSize().y;
-		List<JoanaVertex> faVertices = new ArrayList<>(fa.getGraph().getVertexSet());
-		List<JoanaEdge> faEdges = new ArrayList<>(fa.getGraph().getEdgeSet());
+		List<JoanaVertex> faVertices = new ArrayList<>(graph.removeFilteredVertices(fa.getGraph().getVertexSet()));
+		List<JoanaEdge> faEdges = new ArrayList<>(graph.removeFilteredEdges(fa.getGraph().getEdgeSet()));
 		Set<DirectedEdge> newFAedges = new HashSet<>();	//new edges from outside to the next layer, not describing a path
-		faVertices.sort(Comparator.comparingInt(DefaultVertex::getY));	//sort vertices in ascending order of y values
+		faVertices.sort(Comparator.comparingDouble(DefaultVertex::getY));	//sort vertices in ascending order of y values
 		Map<Integer, List<Vertex>> layerNumToVertices = new HashMap<>();
 		Map<Integer, Vertex> edgeToDummy = new HashMap<>();
-		Set<JoanaEdge> fromOutEdges = this.getEdgesFromOutside(graph, fa);	//edges from out in representing vertex
+		Set<JoanaEdge> fromOutEdges = graph.removeFilteredEdges(getEdgesFromOutside(graph, fa));	//edges from out in representing vertex
 		List<Double> layerYvals = new ArrayList<>();
 		//add y vals for layers
 		layerYvals.add(boxYtop);
 		for(Vertex v : faVertices){
-			if(getIndex(layerYvals,(double) v.getY()) == -1){
-				layerYvals.add((double) v.getY());
+			if(getIndex(layerYvals,v.getY()) == -1){
+				layerYvals.add(v.getY());
 			}
 		}
 		layerYvals.add(boxYbottom);
@@ -172,59 +172,54 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 			layerNumToVertices.put(i, new ArrayList<>());
 		}
 		for(JoanaVertex v : faVertices){	//add field access vertices to mapping of layers
-			int index = getIndex(layerYvals, (double)v.getY());
+			int index = getIndex(layerYvals,v.getY());
 			assert(index != -1);
 			layerNumToVertices.get(index).add(v);
 		}
 		//now add for every layer enough dummies and sort the lists afterwards
 		for(JoanaEdge e : faEdges){	//add dummies for normal edges in this field access
-			Double start = (double) Math.min(e.getSource().getY(), e.getTarget().getY());
-			Double end = (double) Math.max(e.getSource().getY(), e.getTarget().getY());
+			double start = Math.min(e.getSource().getY(), e.getTarget().getY());
+			double end = Math.max(e.getSource().getY(), e.getTarget().getY());
 			int index1 = getIndex(layerYvals, start);
 			int index2 = getIndex(layerYvals, end);
 			
 			assert(index1 != -1 && index2 != -1);	//start and end have to be found in this list!!!
 			for(int i = index1 + 1; i < index2; i++){
-				Double layerVertexSize = layerNumToVertices.get(i).get(0).getSize().y;//every vertex in the FA got a layer,edges are not from outside!
-				layerNumToVertices.get(i).add(new JoanaDummyVertex("","", getDummyID(), new DoublePoint(3, layerVertexSize)));
+				double layerVertexHeight = layerNumToVertices.get(i).get(0).getSize().y;//height from first vertex in layer. Asserting the height is the same from all vertices in this layer!
+				layerNumToVertices.get(i).add(new JoanaDummyVertex("","", getDummyID(), new DoublePoint(2, layerVertexHeight)));
 			}
 		}
-		for(JoanaEdge e : fromOutEdges){	//add dummy vertices for vertices from outside on every necessary layer
+		for(JoanaEdge e : fromOutEdges){	//add dummy vertices for vertices from outside on top and bottom layer
 			List<DoublePoint> points = e.getPath().getNodes();
-//			System.out.println("box left top: "+"("+fa.getX()+","+boxYtop+")"+", box right bottom: "+"("+(fa.getX()+fa.getSize().x)+","+boxYbottom+"), ");
-//			System.out.println("edge: source: "+e.getSource().getLabel()+", target: "+e.getTarget().getLabel());
-//			System.out.print("path: ");
-//			points.forEach(p->System.out.print("("+p.x+","+p.y+"), "));
-//			System.out.print('\n');
 			DoublePoint borderDummySize = new DoublePoint(2, 5);//just a simple size for dummies on first or last layer
 			//cases: top of box and bottom, in and out of the box.
-			Double start = null;
-			Double end = null;
+			double start = -1;
+			double end = -1;
 			DoublePoint boxCross = null;
 			int layerToAddDummy = 0;
 			JoanaDummyVertex tempDummy;
-			Double yAddition = 0.0;	//adds this value to the new set y-coordinate of the new dummy(another value than 0 just needed on bottom of FA-box)
+			double yAddition = 0.0;	//adds this value to the new set y-coordinate of the new dummy(an other value than 0 is just needed on bottom of FA-box)
 			//vertex boxes are not accurate so that the entry point in box is the same point as drawn by EdgeDrawer
 			//in addition new dummy position is left on top, move them all half its length to the left!
 			//on bottom: move them also it's length up!
 			if(dEquals(points.get(points.size() - 1).y, boxYtop)){ //edge into box from top
 				start = boxYtop;
-				end = (double) e.getTarget().getY();
+				end = e.getTarget().getY();
 				boxCross = points.get(points.size() - 1);
 				layerToAddDummy = 0;	//add to first layer
 			}else if(dEquals(points.get(0).y, boxYtop)){//edge out of box from top
 				start = boxYtop;
-				end = (double) e.getSource().getY();
+				end = e.getSource().getY();
 				boxCross = points.get(0);
 				layerToAddDummy = 0;	//add to first layer
 			}else if(dEquals(points.get(0).y, boxYbottom)){//edge out of box from bottom
-				start = (double) e.getSource().getY();
+				start = e.getSource().getY();
 				end = boxYbottom;
 				boxCross = points.get(0);
 				layerToAddDummy = layerYvals.size() - 1;	//add to last layer
 				yAddition = - borderDummySize.y;
 			}else if(dEquals(points.get(points.size() - 1).y, boxYbottom)){//edge into box from bottom
-				start = (double) e.getTarget().getY();
+				start = e.getTarget().getY();
 				end = boxYbottom;
 				boxCross = points.get(points.size() - 1);
 				layerToAddDummy = layerYvals.size() - 1;	//add to last layer
@@ -233,8 +228,8 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 				assert(false);
 			}
 			tempDummy = new JoanaDummyVertex("", "", getDummyID(), borderDummySize);
-			tempDummy.setX((int) (boxCross.x - borderDummySize.x/2));
-			tempDummy.setY((int) Math.floor(boxCross.y + yAddition));
+			tempDummy.setX((boxCross.x - borderDummySize.x / 2));
+			tempDummy.setY(boxCross.y + yAddition);
 			layerNumToVertices.get(layerToAddDummy).add(tempDummy);	//adds new dummy vertex on correct position 
 			//add mapping of edge id to dummy that represents the new source or target on top or bottom of box!!!!!!
 			edgeToDummy.put(e.getID(), tempDummy);
@@ -243,11 +238,11 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 			int index2 = getIndex(layerYvals, end);
 			assert(index1 != -1 && index2 != -1);	//start and end have to be found in this list!!!
 			for(int i = index1 + 1; i < index2; i++){
-				Double layerVertexSize = layerNumToVertices.get(i).get(0).getSize().y;//every vertex in the FA got a layer,edges are not from outside!
+				double layerVertexSize = layerNumToVertices.get(i).get(0).getSize().y;//every vertex in the FA got a layer,edges are not from outside!
 				layerNumToVertices.get(i).add(new JoanaDummyVertex("","", getDummyID(), new DoublePoint(2, layerVertexSize)));
 			}
 		}
-		layerNumToVertices.values().forEach(l->l.sort(Comparator.comparingInt(Vertex::getX)));//sort all layers
+		layerNumToVertices.values().forEach(l->l.sort(Comparator.comparingDouble(Vertex::getX)));//sort all layers
 		
 		//now set the coordinates of dummies from layer 1...(max-1)
 //		System.out.println("now assigning coordinates to dummies!");
@@ -262,10 +257,10 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 //		}
 		
 		//now build paths, in the correct direction of the edge. edges will be turned later, if necessary
-		Set<DirectedSupplementEdgePath> paths =getRandomPaths(fa, newFAedges, fromOutEdges, layerNumToVertices, edgeToDummy, layerYvals);
+		Set<DirectedSupplementEdgePath> paths = getRandomPaths(graph,fa, newFAedges, fromOutEdges, layerNumToVertices, edgeToDummy, layerYvals);
 		
 		//now draw edges and adjust their edgepaths
-		drawAndAdjustFieldAccessEdges(fa, newFAedges , paths, fromOutEdges, edgeToDummy);
+		drawAndAdjustFieldAccessEdges(graph,fa, newFAedges , paths, fromOutEdges, edgeToDummy);
 	}
 	
 	//assigns every vertex with id <0(dummy vertex) in the given list that represents vertices in this layer a x- and y-coordinate
@@ -277,113 +272,69 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 	 * 
 	 * @param layer all vertices contained in this layer. Contains at least one normal vertex(id >= 0) and any amount of dummies(id < 0)
 	 * @param fa the FieldAccess. Necessary because of its x- and y-coordinates
-	 * @return a list of vertices containing the same vertices as given in parameter layer but with every dummy assigned a x- and y-coordinate.
-	 * 		also the vertices are sorted in ascending order of their x-coordinate
 	 */
-	private List<Vertex> assignCoordinatesToDummiesOnLayer(FieldAccess fa, List<Vertex> layer){
+	private void assignCoordinatesToDummiesOnLayer(FieldAccess fa, List<Vertex> layer){
 		//watch out that the boxes are placed correctly (coordinates are left on top!!!)
+        //calc positions of dummies with a bit less distance between each other
 		List<Vertex> dummies = layer.stream().filter(v->v.getID() < 0).collect(Collectors.toList());
-		if(dummies.isEmpty()){
-			return new LinkedList<>();
-		}
+		if(dummies.isEmpty()) return;
 		int dummyCount = dummies.size();
-		DoublePoint dummySize = dummies.get(0).getSize();
-		List<Vertex> noDummies = layer.stream().filter(v->v.getID() >= 0).collect(Collectors.toList());
-		List<Double> distancePoints = new ArrayList<>();
-		distancePoints.add((double) fa.getX());
-		for(Vertex v : noDummies){
-			distancePoints.add((double) v.getX() - 2*dummySize.x);
-			distancePoints.add(v.getX() + v.getSize().x);
+		System.out.println("dummies: " + dummyCount);
+		DoublePoint dummySize = dummies.get(0).getSize(); //dummy size is the same for all dummies without set x- and y-coordinates!
+		List<Vertex> normalVertices = layer.stream().filter(v->v.getID() >= 0).collect(Collectors.toList());
+		normalVertices.sort(Comparator.comparingDouble(Vertex::getX));
+		assert(!normalVertices.isEmpty()); //each layer should have at least one normal vertex!
+		List<Double> distancePoints = new ArrayList<>(2 * normalVertices.size() + 2); //points describing free space for positioning dummies. space between points with indices (2n) and (2n+1) is free, space between (2n+1) and (2n) occupied!
+		distancePoints.add(fa.getX() + 1);
+		for(Vertex v : normalVertices){
+			distancePoints.add(v.getX() - 1);
+			distancePoints.add(v.getX() + v.getSize().x + 1);
 		}
-		distancePoints.add(fa.getX() + fa.getSize().x - 2*dummySize.x);
-		Double freeSpace = 0.0;
-		for(int i = 0; i < distancePoints.size(); i+=2){//count the width of total available space in this layer for positioning dummies
-			freeSpace += distancePoints.get(i + 1) - distancePoints.get(i);
+		distancePoints.add(fa.getX() + fa.getSize().x - 1);
+        //calculate for every space between two points how much dummies there should be (dependent on size of the space, use percentages of space size from whole free space size)
+		double freeSpace = 0.0; //amount of total free space horizontally in this layer
+		double[] freeSegmentsSpace = new double[distancePoints.size() / 2];
+		int[] amountDummiesPerSegment = new int[distancePoints.size() / 2];
+		for(int i = 0; i < distancePoints.size() / 2; i++){
+			freeSegmentsSpace[i] = distancePoints.get(2 * i + 1) - distancePoints.get(2 * i);
+			freeSpace += freeSegmentsSpace[i];//count the width of total available space in this layer for positioning dummies
 		}
-		freeSpace-=dummySize.x * dummyCount;
-		Double distBetweenDummies = freeSpace/(dummyCount + 2 * noDummies.size());//size between two dummies or dummy and left or right border
-		int tempDummyCount = dummyCount;
-//		System.out.println("Dummies total: " + tempDummyCount+ "; Distance points total: "+distancePoints.size());
-		while(tempDummyCount > 0){//assign now every dummy vertex a x- and y-coordinate
-//			System.out.println("test;D");
-//			if(distancePoints.size() != 0){
-//				System.out.println("dummy count: "+tempDummyCount+ "; distance points: "+distancePoints.size());
-//				System.out.print("Segments: ");
-//				distancePoints.forEach(d->System.out.print(d+", "));
-//				System.out.print('\n');
-//			}
-			boolean adjustedDistancePoints = false;
-			for(int i = 0; i < distancePoints.size() - 1; i+=2){//count the width of total available space in this layer for positioning dummies
-				assert(distancePoints.size() >= 2);
-				Double d1 = distancePoints.get(i);
-				Double d2 = distancePoints.get(i+1);
-				if(distancePoints.size() > 2 && (d2 - d1 < distBetweenDummies / 2 || d1 > d2)){//space too small, remove this space segment
-//					System.out.println("segment to small!");
-					distancePoints.remove(i+1);
-					distancePoints.remove(i);
-					adjustedDistancePoints = true;
-				}else if(distancePoints.size() > 2 && d2 - d1 < distBetweenDummies && d2 - d1 > distBetweenDummies / 2){//space for exact one dummy in this segment
-//					System.out.println("one in segment!");
-					Vertex tmp = dummies.get(tempDummyCount - 1);
-//					System.out.println("assigned dummy: "+tmp.getID());
-					tmp.setX((int) Math.round(Math.ceil(d1 + (d2 - d1)/2 - tmp.getSize().x/2)));
-					tmp.setY(noDummies.get(0).getY());
-					tempDummyCount -= 1;
-					distancePoints.remove(i+1);
-					distancePoints.remove(i);
-					adjustedDistancePoints = true;
-				}
-				if(adjustedDistancePoints){//some segments vanished, now calc spaces new
-					freeSpace = 0.0;
-					for(int j = 0; j < distancePoints.size() - 1; j+=2){
-						freeSpace += distancePoints.get(j + 1) - distancePoints.get(j);
-					}
-					freeSpace-=dummySize.x * tempDummyCount;
-					distBetweenDummies = freeSpace/(tempDummyCount + 2 * noDummies.size());
-					break;
-				}
-			}
-			if(!adjustedDistancePoints){//big segment
-				if(distancePoints.size() == 2){//just one segment
-//					System.out.println("first!");
-					Double d1 = distancePoints.get(0);
-					Vertex tmp = dummies.get(tempDummyCount - 1);
-//					System.out.println("assigned dummy: "+tmp.getID());
-					tmp.setX((int) Math.round(Math.ceil(d1+distBetweenDummies)));
-					tmp.setY(noDummies.get(0).getY());
-					tempDummyCount -= 1;
-					distancePoints.remove(0);
-					distancePoints.add(0,d1+distBetweenDummies+tmp.getSize().x/2);
-				}else if(distancePoints.size() > 2 && distancePoints.size() % 2 == 0){//more than one segment, 
-//					System.out.println("second!");
-					for(int i = 0; i < distancePoints.size() - 1 && tempDummyCount > 0; i+=2){//draw one dummy in each segment and adjust distances
-						Double d1 = distancePoints.get(i);
-						Vertex tmp = dummies.get(tempDummyCount - 1);
-//						System.out.println("assigned dummy: "+tmp.getID());
-						tmp.setX((int) Math.round(Math.ceil(d1+distBetweenDummies)));
-						tmp.setY(noDummies.get(0).getY());
-						tempDummyCount -= 1;
-						//now adjust the first point of this segment
-						distancePoints.remove(i);
-						distancePoints.add(i,d1+distBetweenDummies+tmp.getSize().x);
-					}
-				}
-			}
-			
-		}
+		int assignedDummies = 0;
+		for(int i = 0; i < freeSegmentsSpace.length - 1; i++){
+		    amountDummiesPerSegment[i] = Math.toIntExact(Math.round((freeSegmentsSpace[i] / freeSpace) * dummyCount));
+		    assignedDummies += amountDummiesPerSegment[i];
+        }
+        amountDummiesPerSegment[amountDummiesPerSegment.length - 1] = dummyCount - assignedDummies; //to be sure there was no dummy lost through rounding
+        //calculate for every free space distances between dummies and thus there positions! (maybe set dummies x-size to 1)
+        double yVal = normalVertices.get(0).getY(); //y-coord from all normal vertices on the layer should be the same. Also used for setting dummies' y-coordinate
+        int dummyIdx = 0; //index for access in dummy list
+        for(int i = 0; i < distancePoints.size() / 2; i++){
+            double xVal = distancePoints.get(2 * i); //most left x-value of the free space segment
+            double newFreeSpace = freeSegmentsSpace[i] - amountDummiesPerSegment[i] * dummySize.x;
+            double distBetweenDummies = newFreeSpace / (amountDummiesPerSegment[i] + 1.0);
+            for(int j = 1; j <= amountDummiesPerSegment[i]; j++){
+                xVal += distBetweenDummies;
+                Vertex dummy = dummies.get(dummyIdx);
+                dummy.setX(xVal);
+                dummy.setY(yVal);
+                xVal += dummy.getSize().x;
+                dummyIdx++;
+            }
+        }
+        assert(dummyIdx == dummies.size()); //because dummyIdx is increased after the last dummy was processed
+
 		//finally sort the layer again according to their x-values
-		layer.sort(Comparator.comparingInt(Vertex::getX));
+		layer.sort(Comparator.comparingDouble(Vertex::getX));
 //		System.out.println("layer: ");
-//		layer.forEach(v->System.out.print(("["+v.getID()+"]("+v.getX()+","+v.getY()+")size:("+v.getSize().x+"); ")));
+//		layer.forEach(v->System.out.print(("["+v.getID()+"]("+v.getX()+","+v.getY()+")size:("+v.getSize().x+ ","+v.getSize().y +"); ")));
 //		System.out.print('\n');
-		//TODO: check if the following works correctly!
-		for(int i =0; i<layer.size() - 1;i++){
+		//TODO: assertion might be not possible in FA's with many edges. The size of a FA should be set according to the number of edges in it!
+/*		for(int i = 0; i < layer.size() - 1;i++){
 			Vertex first = layer.get(i);
 			Vertex second = layer.get(i + 1);
-//			System.out.println("first: "+first.getID()+", second: "+second.getID());
+			System.out.println("first: "+first.getID()+", second: "+second.getID());
 			assert(first.getX() + first.getSize().x < second.getX());
-		}
-		return layer;
+		}*/
 	}
 	
 	/**
@@ -402,10 +353,10 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 	 * @param layerYvals y-values of all layers
 	 * @return a set of all SupplementPath that have been built
 	 */
-	private Set<DirectedSupplementEdgePath> getRandomPaths(FieldAccess fa, Set<DirectedEdge> newFAedges, Set<JoanaEdge> fromOutEdges, Map<Integer, List<Vertex>> layerNumToVertices, Map<Integer, Vertex> edgeToDummy ,List<Double> layerYvals){
+	private Set<DirectedSupplementEdgePath> getRandomPaths(MethodGraph graph, FieldAccess fa, Set<DirectedEdge> newFAedges, Set<JoanaEdge> fromOutEdges, Map<Integer, List<Vertex>> layerNumToVertices, Map<Integer, Vertex> edgeToDummy ,List<Double> layerYvals){
 		double boxYtop = fa.getY();
 		double boxYbottom = fa.getY() + fa.getSize().y;
-		Set<JoanaEdge> faEdges = fa.getGraph().getEdgeSet();
+		Set<JoanaEdge> faEdges = graph.removeFilteredEdges(fa.getGraph().getEdgeSet());
 		Set<DirectedSupplementEdgePath> paths = new HashSet<>();
 		List<List<Vertex>> tempLayerNumToVertices = new ArrayList<>();
 		for(int i = 0; i<layerNumToVertices.size(); i++){	//init temp layering for removing them in it
@@ -414,8 +365,8 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 			tempLayerNumToVertices.add(newList);
 		}
 		for(JoanaEdge e : faEdges){
-			Double start = (double) e.getSource().getY();
-			Double end = (double) e.getTarget().getY();
+			double start = e.getSource().getY();
+            double end = e.getTarget().getY();
 			int upOrDown = start < end ? 1 : -1;
 			int index1 = getIndex(layerYvals, start);
 			int index2 = getIndex(layerYvals, end);
@@ -440,32 +391,32 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 		}
 		for(JoanaEdge e : fromOutEdges){
 			List<DoublePoint> points = e.getPath().getNodes();
-			Double start = null;
-			Double end = null;
+            double start = 0;
+            double end = 0;
 			int upOrDown = 0;	//+1 is down (increase layer), -1 is up(decrease layer)
 			Vertex source = null;	//one of these will be a dummy instead of being a
 			Vertex target = null;	//source or target because the vertex out of the fa is replaced by a dummy while layouting
 			if(dEquals(points.get(points.size() - 1).y, boxYtop)){ //edge into box from top
 				start = boxYtop;
-				end = (double) e.getTarget().getY();
+				end = e.getTarget().getY();
 				upOrDown = 1;
 				source = edgeToDummy.get(e.getID());
 				target = e.getTarget();
 			}else if(dEquals(points.get(0).y, boxYtop)){//edge out of box from top
-				start = (double) e.getSource().getY();
+				start = e.getSource().getY();
 				end = boxYtop;
 				upOrDown = -1;
 				source = e.getSource();
 				target = edgeToDummy.get(e.getID());
 			}else if(dEquals(points.get(0).y, boxYbottom)){//edge out of box from bottom
-				start = (double) e.getSource().getY();
+				start = e.getSource().getY();
 				end = boxYbottom;
 				upOrDown = 1;
 				source = e.getSource();
 				target = edgeToDummy.get(e.getID());
 			}else if(dEquals(points.get(points.size() - 1).y, boxYbottom)){//edge into box from bottom
 				start = boxYbottom;
-				end = (double) e.getTarget().getY();
+				end = e.getTarget().getY();
 				upOrDown = -1;
 				source = edgeToDummy.get(e.getID());
 				target = e.getTarget();
@@ -510,30 +461,25 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 	 * @param fromOutEdges edges from outside into or out of the FieldAccess
 	 * @param edgeToDummy mapping of edge id to the dummy that replaces the vertex being outside of the FieldAccess.
 	 */
-	private void drawAndAdjustFieldAccessEdges(FieldAccess fa, Set<DirectedEdge> newFAedges, Set<DirectedSupplementEdgePath> paths, Set<JoanaEdge> fromOutEdges, Map<Integer, Vertex> edgeToDummy){
+	private void drawAndAdjustFieldAccessEdges(MethodGraph graph, FieldAccess fa, Set<DirectedEdge> newFAedges, Set<DirectedSupplementEdgePath> paths, Set<JoanaEdge> fromOutEdges, Map<Integer, Vertex> edgeToDummy){
 //		this.printGraph(fa.getGraph().getVertexSet(), fa.getGraph().getEdgeSet());
 		double boxYtop = fa.getY();
 		double boxYbottom = fa.getY() + fa.getSize().y;
-		Set<Vertex> vertices = new HashSet<>(fa.getGraph().getVertexSet());
+		Set<Vertex> vertices = new HashSet<>(graph.removeFilteredVertices(fa.getGraph().getVertexSet()));
 		Set<DirectedEdge> edges = new HashSet<>();
-		edges.addAll(fa.getGraph().getEdgeSet());
+		edges.addAll(graph.removeFilteredEdges(fa.getGraph().getEdgeSet()));
 		edges.addAll(newFAedges);	//edges from outside going to the next vertex in FA, not describing a path (not skipping a layer)
 		for(DirectedEdge edge : newFAedges){
 			vertices.add(edge.getSource());
 			vertices.add(edge.getTarget());
 		}
 		for(DirectedSupplementEdgePath p : paths){
-//			DirectedEdge e = p.getReplacedEdge();
-//			System.out.println("old from replaced vertices: "+e.getID()+", source: "+e.getSource().getID()+", target: "+e.getTarget().getID());
 			vertices.addAll(p.getDummyVertices());
 			vertices.add(p.getReplacedEdge().getSource());
 			vertices.add(p.getReplacedEdge().getTarget());
 			edges.addAll(p.getSupplementEdges());
 			edges.remove(p.getReplacedEdge());//should not be in here !
-//			this.printGraph(p.getDummyVertices(), p.getSupplementEdges());
 		}
-//		System.out.println("vertices: "+vertices.size()+", edges: "+edges.size()+", paths: "+paths.size());
-//		this.printGraph(vertices, edges);
 		this.sugiyamaLayoutAlgorithm.drawEdgesNew(vertices, edges, paths);
 		//now add the additional EdgePath to fromOutEdges
 		for(JoanaEdge e : fromOutEdges){
@@ -566,8 +512,7 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 			List<DirectedEdge> faEdges = new LinkedList<>();
 			faEdges.addAll(edges);
 			paths.forEach(p->faEdges.add(p.getReplacedEdge()));
-			//TODO: merge both for loops together, if possible. Maybe find better solution instead of searching the right in out edges
-			//TODO: also dajust EdgePath so there is no unnecessary kink on top or bottom of the FieldAccess
+
 			for(DirectedSupplementEdgePath p : paths){	//look here for matching and finding correct drawn edges for every fromOutEdge!!!
 				DirectedEdge replaced = p.getReplacedEdge();
 				if(replaced.getSource().getID().equals(dummy.getID()) || replaced.getTarget().getID().equals(dummy.getID())){
@@ -615,6 +560,7 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 			oldPath.clear();
 			newPoints.forEach(oldPath::addPoint);
 		}
+		//TODO: later: check if point replacing/removing is still necessary or yet possible when drawing path for the first time
 	}
 	
 	/**
@@ -669,15 +615,15 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
         if(!targetIEs.isEmpty()){
             rightEdgeDist = (normalVertex.getSize().y - targetIEs.iterator().next().getDummyVertex().getSize().y) / (targetIEs.size()+1);//vertical distance between 2 edges on right side (asserting that all dummies have the same size)
         }
-        int xVal = normalVertex.getX();
-        int yVal;
+        double xVal = normalVertex.getX();
+        double yVal;
         int idx = 1; //number of IE in the loop. First one has number 1!
         for(InterproceduralEdge ie : sourceIEs){//draw IE's with source dummy to the left of the normalVertex
             JoanaVertex dummyVertex = ie.getDummyVertex();
             if(position == Position.TOP){
                 yVal = normalVertex.getY();
             }else{
-                yVal = (int) (normalVertex.getY() + normalVertex.getSize().y - dummyVertex.getSize().y);
+                yVal = normalVertex.getY() + normalVertex.getSize().y - dummyVertex.getSize().y;
             }
             xVal -= dummyVertex.getLeftRightMargin().y + dummyVertex.getSize().x; //leftmost x value of this iv
             dummyVertex.setX(xVal);
@@ -699,14 +645,14 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
             }
             idx++;
         }
-        xVal = (int) (normalVertex.getX() + normalVertex.getSize().x); //rightmost x coordinate of the normalVertex
+        xVal = (normalVertex.getX() + normalVertex.getSize().x); //rightmost x coordinate of the normalVertex
         idx = 1;
         for(InterproceduralEdge ie : targetIEs){//draw IE's with target dummy to the right side of the normalVertex
             JoanaVertex dummyVertex = ie.getDummyVertex();
             if(position == Position.TOP){
                 yVal = normalVertex.getY();
             }else{
-                yVal = (int) (normalVertex.getY() + normalVertex.getSize().y - dummyVertex.getSize().y);
+                yVal = normalVertex.getY() + normalVertex.getSize().y - dummyVertex.getSize().y;
             }
             xVal += dummyVertex.getLeftRightMargin().x; //rightmost value of dummie's left margin/its x-coordinte
             dummyVertex.setX(xVal);
@@ -734,9 +680,9 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 	 * Index 0 is the first index.
 	 * -1 is returned, if value is not contained in list.
 	 */
-	private int getIndex(List<Double> list, Double value){
+	private int getIndex(List<Double> list, double value){
 		int index = 0;
-		for(Double d : list){
+		for(double d : list){
 			if(dEquals(d, value)){
 				return index;
 			}
@@ -817,15 +763,15 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 
 		    // Offset vertices contained in field access
             for(JoanaVertex v : fa.getGraph().getVertexSet()){
-                v.setX(v.getX() + fa.getX() + (int)FieldAccessGraph.paddingx/2);
-                v.setY(v.getY() + fa.getY() + (int)FieldAccessGraph.paddingy/2);
+                v.setX(v.getX() + fa.getX() + FieldAccessGraph.paddingx/2d);
+                v.setY(v.getY() + fa.getY() + FieldAccessGraph.paddingy/2d);
             }
 			for(JoanaEdge e : fa.getGraph().getEdgeSet()){
 				List<DoublePoint> points = e.getPath().getNodes();
 				List<DoublePoint> newPoints = new LinkedList<>();
 				assert(!points.isEmpty());
-				points.forEach(p->newPoints.add(new DoublePoint(p.x + fa.getX() + FieldAccessGraph.paddingx/2, 
-				                                                p.y + fa.getY() + FieldAccessGraph.paddingy/2)));
+				points.forEach(p->newPoints.add(new DoublePoint(p.x + fa.getX() + FieldAccessGraph.paddingx/2d,
+				                                                p.y + fa.getY() + FieldAccessGraph.paddingy/2d)));
 				points.clear();
 				points.addAll(newPoints);
 			}
@@ -892,8 +838,8 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
      * For representing dummy vertices with fixed size and given id.
      */
     private static class JoanaDummyVertex implements Vertex{
-    	private int x;
-    	private int y;
+    	private double x;
+    	private double y;
     	private final int id;
     	private final String name;
     	private final String label;
@@ -922,23 +868,23 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 		}
 
 		@Override
-		public int getX() {
+		public double getX() {
 			return this.x;
 		}
 
 		@Override
-		public int getY() {
+		public double getY() {
 			return this.y;
 		}
 
 		@Override
-		public void setX(int x) {
+		public void setX(double x) {
 			this.x = x;
 			
 		}
 
 		@Override
-		public void setY(int y) {
+		public void setY(double y) {
 			this.y = y;
 			
 		}

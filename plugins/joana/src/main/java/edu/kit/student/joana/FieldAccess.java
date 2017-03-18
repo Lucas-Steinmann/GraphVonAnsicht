@@ -48,13 +48,13 @@ public class FieldAccess extends JoanaCompoundVertex {
     }
 
     @Override
-    public void setX(int x){
+    public void setX(double x){
         super.setX(x);
         graph.setX(x);
     }
 
     @Override
-    public void setY(int y){
+    public void setY(double y){
         super.setY(y);
         graph.setY(y);
     }

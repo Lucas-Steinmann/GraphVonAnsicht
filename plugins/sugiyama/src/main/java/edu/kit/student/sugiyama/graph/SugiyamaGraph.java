@@ -95,25 +95,18 @@ public class SugiyamaGraph
 		HashSet<ISugiyamaVertex> sugyVertices = new HashSet<>();	//only SugiyamaVertices
 		HashSet<ISugiyamaEdge> sugyEdges = new HashSet<>();	//only SugiyamaEdges
 		Map<Integer, ISugiyamaVertex> tmpVertexMap = new HashMap<>();
-		List<Integer> yValsOfVertices = new ArrayList<>();
+		List<Double> yValsOfVertices = new ArrayList<>();
 		layering = new DefaultGraphLayering<>(new HashSet<>());
 		layerPositions = new LinkedList<>();
 		layerPositions.add(0);
-		
-//		for(Vertex v : vertices){
-//			System.out.print(v.getID() + ", ");
-//		}
-//		System.out.print('\n');
 		
 		//add here points for later layer assigning
 		for (Vertex vertex: vertices){	//add every different position to list, to assign layers later
 			if(!yValsOfVertices.contains(vertex.getY())){
 				yValsOfVertices.add(vertex.getY());	
 			}
-//			System.out.println("yval: "+vertex.getY());
 		}
-//		System.out.println("yvals size: "+yValsOfVertices.size());
-		yValsOfVertices.sort(Integer::compare);	//sorts y vals in ascending order
+		yValsOfVertices.sort(Double::compare);	//sorts y vals in ascending order
 		//assign every vertex a layer, vertices on first or last layer are normal SugiyamaVertex though they have a negative id
 		//dummies will be assigned at the path building
 		for(Vertex v : vertices){
@@ -125,13 +118,6 @@ public class SugiyamaGraph
 						tmpVertexMap.put(v.getID(), sugiyamaVertex);
 						this.assignToLayer(sugiyamaVertex, i);
 						break;
-					}else{	//case dummy vertex
-//						assert(v.getID() < 0);
-//						DummyVertex tempDummy = new DummyVertex("","",i,v.getSize(),v.getID());
-//						dummies.add(tempDummy);
-//						tmpVertexMap.put(tempDummy.getID(), tempDummy);
-//						this.assignToLayer(tempDummy, i);
-//						break;
 					}
 				}
 			}
@@ -140,7 +126,7 @@ public class SugiyamaGraph
 		//only wrap edges that are normal edges (from or to last layer with layer diff ==1 or between two normal vertices with layer diff == 1)
 		//also yet turn the edge if it has the wrong direction
 		for(DirectedEdge edge: edges){	//given edges, wrap them to SugiyamaEdges
-//			System.out.println("edges: source y: "+edge.getSource().getY()+", id: "+edge.getSource().getID()+ ", layer: "+ tmpVertexMap.get(edge.getSource().getID()).getLayer() +", target: "+edge.getTarget().getY()+", id: "+edge.getTarget().getID()+", layer: "+tmpVertexMap.get(edge.getTarget().getID()).getLayer());        
+//			System.out.println("edges: source y: "+edge.getSource().getY()+", id: "+edge.getSource().getID()+ ", layer: "+ tmpVertexMap.get(edge.getSource().getID()).getLayer() +", target: "+edge.getTarget().getY()+", id: "+edge.getTarget().getID()+", layer: "+tmpVertexMap.get(edge.getTarget().getID()).getLayer());
 			Vertex source = edge.getSource();
 			Vertex target = edge.getTarget();
 			if(tmpVertexMap.containsKey(source.getID()) && tmpVertexMap.containsKey(target.getID())
@@ -153,48 +139,22 @@ public class SugiyamaGraph
 					sugiyamaEdge.reverse();
 				}
 			}
-//			SugiyamaEdge sugiyamaEdge = new SugiyamaEdge(edge,
-//					tmpVertexMap.get(edge.getSource().getID()),
-//					tmpVertexMap.get(edge.getTarget().getID()));
-//			System.out.println("sugiyamaEdge: source y: "+sugiyamaEdge.getSource().getY()+", id: "+sugiyamaEdge.getSource().getID()+ ", layer: "+ tmpVertexMap.get(sugiyamaEdge.getSource().getID()).getLayer() +", target: "+sugiyamaEdge.getTarget().getY()+", id: "+sugiyamaEdge.getTarget().getID()+", layer: "+tmpVertexMap.get(sugiyamaEdge.getTarget().getID()).getLayer());
-//			sugyEdges.add(sugiyamaEdge);	//fills edgeset with all wrapped edges
 		}
 		//created dummies, supplementEdges and supplementPaths are added to the graph in the method which is creating them
 		this.graph = new DefaultDirectedGraph<>(sugyVertices, sugyEdges);
-		
-//		for(ISugiyamaVertex v : graph.getVertexSet()){
-//			System.out.println("layer after graph init: "+" id: "+v.getID()+" , layer: "+v.getLayer());
-//		}
-				
+
 		//now iterate over all paths and construct the correct SupplementPath, also construct:
 		//representingVertex->sugyVertex, assign it a layer!,  dummies->dummyVertex(also add them to sugyVertices set), 
 		//supplementEdges->SupplementEdge(also add them to sugyEdges set)
 		for(DirectedSupplementEdgePath p : paths){//TODO: add dummies and supp edges and watch out for direction!
 			DirectedEdge replaced = p.getReplacedEdge();
 			List<Vertex> pathDummies = p.getDummyVertices();
-//			System.out.println("old: source y: "+replaced.getSource().getY()+", id: "+replaced.getSource().getID()+ ", layer: "+ tmpVertexMap.get(replaced.getSource().getID()).getLayer() +", target: "+replaced.getTarget().getY()+", id: "+replaced.getTarget().getID()+", layer: "+tmpVertexMap.get(replaced.getTarget().getID()).getLayer());        
 			ISugiyamaEdge tempReplacedEdge = new SugiyamaEdge(replaced, tmpVertexMap.get(replaced.getSource().getID()), tmpVertexMap.get(replaced.getTarget().getID()));
-//			System.out.println("new: source y: "+tempReplacedEdge.getSource().getY()+", id: "+ tempReplacedEdge.getSource().getID()+ ", layer: "+tempReplacedEdge.getSource().getLayer() +", target: "+tempReplacedEdge.getTarget().getY()+", id: "+tempReplacedEdge.getTarget().getID() + ", layer: "+tempReplacedEdge.getTarget().getLayer());
-			
+
 			if(tempReplacedEdge.getSource().getLayer() > tempReplacedEdge.getTarget().getLayer()){
-				//				int tempNum = source.getLayer();
-//				this.assignToLayer(source, target.getLayer());
-//				this.assignToLayer(target, tempNum);
 				tempReplacedEdge.reverse();
 				Collections.reverse(pathDummies);// reverse direction of dummies 
 			}
-//			System.out.println("new after turning: source y: "+tempReplacedEdge.getSource().getY()+", id: "+ tempReplacedEdge.getSource().getID()+ ", layer: "+tempReplacedEdge.getSource().getLayer() +", target: "+tempReplacedEdge.getTarget().getY()+", id: "+tempReplacedEdge.getTarget().getID() + ", layer: "+tempReplacedEdge.getTarget().getLayer());
-//			String res = "";
-//			for(Vertex v : p.getDummyVertices()){
-//				res+=v.getY()+", ";
-//			}
-//			System.out.println("vertices: "+res);
-//			res = "";
-//			for(DirectedEdge e : p.getSupplementEdges()){
-//				res+=e.getSource().getY() + "->" +e.getTarget().getY()+", ";
-//			}
-//			System.out.println("edges: "+res);
-//			System.out.println("dummies: "+p.getDummyVertices().size());
 			List<ISugiyamaVertex> tempDummies = new LinkedList<>();
 			int layer = tempReplacedEdge.getSource().getLayer() + 1;
 			for(Vertex v : pathDummies){
@@ -383,7 +343,7 @@ public class SugiyamaGraph
 	}
 
 	@Override
-	public void setX(ISugiyamaVertex vertex, int x) {
+	public void setX(ISugiyamaVertex vertex, double x) {
 		vertex.setX(x);
 
 	}
@@ -654,8 +614,8 @@ public class SugiyamaGraph
 		private final boolean custom;
 		private DoublePoint size;
 		private int id;
-		private int x;
-		private int y;
+		private double x;
+		private double y;
 
         DummyVertex(String name, String label, int layer) {
 			//super(name, label);
@@ -692,12 +652,12 @@ public class SugiyamaGraph
 		}
 
 		@Override
-		public int getX() {
+		public double getX() {
 			return this.x;
 		}
 
 		@Override
-		public int getY() {
+		public double getY() {
 			return this.y;
 		}
 
@@ -735,12 +695,12 @@ public class SugiyamaGraph
 		}
 
 		@Override
-		public void setX(int x) {
+		public void setX(double x) {
             this.x = x;
 		}
 
 		@Override
-		public void setY(int y) {
+		public void setY(double y) {
             this.y = y;
 		}
 
@@ -824,23 +784,23 @@ public class SugiyamaGraph
 		}
 
 		@Override
-		public int getX() {
+		public double getX() {
 			return this.vertex.getX();
 		}
 
 		@Override
-		public int getY() {
+		public double getY() {
 			return this.vertex.getY();
 		}
 
 		@Override
-		public void setX(int x) {
+		public void setX(double x) {
 			this.vertex.setX(x);
 
 		}
 
 		@Override
-		public void setY(int y) {
+		public void setY(double y) {
 			this.vertex.setY(y);
 
 		}
@@ -1020,7 +980,6 @@ public class SugiyamaGraph
 		@Override
 		public OrthogonalEdgePath getPath() {
 			return (OrthogonalEdgePath) wrappedEdge.getPath();
-			//TODO: not good !!!!!!!!!!!!!!!!!!!
 			//TODO: really not good !!!!!
 		}
 

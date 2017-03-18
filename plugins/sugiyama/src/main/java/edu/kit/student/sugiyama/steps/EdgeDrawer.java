@@ -222,16 +222,16 @@ public class EdgeDrawer implements IEdgeDrawer {
 	 */
 	private void sortInOutVertices(){
 		for(List<List<ISugiyamaVertex>> list : this.inOutVertices.values()){
-			list.get(0).sort(Comparator.comparingInt(Vertex::getX));
-			list.get(1).sort(Comparator.comparingInt(Vertex::getX));
+			list.get(0).sort(Comparator.comparingDouble(Vertex::getX));
+			list.get(1).sort(Comparator.comparingDouble(Vertex::getX));
 		}
 	}
 
 	private void calcLayerYoffset(){
         for(int i = 0; i < graph.getLayerCount(); i++) {
             List<ISugiyamaVertex> layer = graph.getSortedLayer(i);
-            double lowest = Integer.MAX_VALUE; //lowest y-point in layer
-            double highest = Integer.MIN_VALUE; //highest y-point in layer
+            double lowest = Double.MAX_VALUE; //lowest y-point in layer
+            double highest = Double.MIN_VALUE; //highest y-point in layer
             for (ISugiyamaVertex v : layer) {
                 highest = Math.max(highest, v.getY() + v.getSize().y);
                 lowest = Math.min(lowest, v.getY());
@@ -309,9 +309,9 @@ public class EdgeDrawer implements IEdgeDrawer {
 		//sorting also by id is necessary for many edges having the same source and target vertex
 		for(List<List<ISugiyamaEdge>> lists : this.vertexToEdges.values()){
 			lists.get(0).sort(Comparator.comparingInt(Edge::getID));
-			lists.get(0).sort(Comparator.comparingInt(e -> e.getSource().getX()));
+			lists.get(0).sort(Comparator.comparingDouble(e -> e.getSource().getX()));
 			lists.get(1).sort(Comparator.comparingInt(Edge::getID));
-			lists.get(1).sort(Comparator.comparingInt(e -> e.getTarget().getX()));
+			lists.get(1).sort(Comparator.comparingDouble(e -> e.getTarget().getX()));
 		}
 	}
 
@@ -446,7 +446,7 @@ public class EdgeDrawer implements IEdgeDrawer {
     //gives back the last index a selfloop was drawn to +1 (~ #selfloops in the given layer + 1)
     private int drawSelfLoops(int layer){
         List<ISugiyamaEdge> loops = this.selfLoopEdges.stream().filter(sl->sl.getSource().getLayer() == layer).collect(Collectors.toList()); //selfloops of this layer
-        loops.sort(Comparator.comparingInt(l->l.getSource().getX()));
+        loops.sort(Comparator.comparingDouble(l->l.getSource().getX()));
         Collections.reverse(loops);
         int idx = 1;
         for(ISugiyamaEdge l : loops){
@@ -470,7 +470,7 @@ public class EdgeDrawer implements IEdgeDrawer {
     //gives back the last index a same layer edge was drawn to +1 (~ #same layer edges in the given layer + 1)
     private int drawSameLayerEdges(int layer, int index){
         List<ISugiyamaEdge> slEdges = this.sameLayerEdges.stream().filter(sle->sle.getSource().getLayer() == layer).collect(Collectors.toList());
-        slEdges.sort(Comparator.comparingInt(sle->sle.getTarget().getX()));
+        slEdges.sort(Comparator.comparingDouble(sle->sle.getTarget().getX()));
         Collections.reverse(slEdges);
         for(ISugiyamaEdge sle : slEdges){
             assert(sle.getSource().getLayer() == sle.getTarget().getLayer());
@@ -507,8 +507,8 @@ public class EdgeDrawer implements IEdgeDrawer {
 	private List<DoublePoint> getInPoints(ISugiyamaVertex vertex){
 		List<DoublePoint> points = new LinkedList<>();
 		double width = vertex.getSize().x;
-		int x = vertex.getX();
-		int y = vertex.getY();
+		double x = vertex.getX();
+		double y = vertex.getY();
 		int inDeg = this.inOutDeg.get(vertex.getID())[0];
 		for(int i = 1; i <= inDeg; i++){
 			points.add(new DoublePoint(x + (i /( inDeg + 1.0)) * width, y));
@@ -524,8 +524,8 @@ public class EdgeDrawer implements IEdgeDrawer {
 		List<DoublePoint> points = new LinkedList<>();
 		double width = vertex.getSize().x;
 		double height = vertex.getSize().y;
-		int x = vertex.getX();
-		int y = vertex.getY();
+		double x = vertex.getX();
+		double y = vertex.getY();
 		int outDeg = this.inOutDeg.get(vertex.getID())[1];
 		for(int i = 1; i <= outDeg; i++){
 			points.add(new DoublePoint(x + (i / (outDeg + 1.0)) * width, y + height));

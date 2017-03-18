@@ -42,28 +42,28 @@ public interface Vertex {
 	 * 
 	 * @return The X-coordinate of this vertex.
 	 */
-	public int getX();
+	public double getX();
 
 	/**
 	 * Returns the Y-coordinate of the vertex.
 	 * 
 	 * @return The Y-coordinate of the vertex.
 	 */
-	public int getY();
+	public double getY();
 	
 	/**
      * Set the X-coordinate of the vertex.
      * 
      * @param x X-coordinate of this vertex.
      */
-    public void setX(int x);
+    public void setX(double x);
 
     /**
      * Set the Y-coordinate of the vertex.
      * 
      * @param y The Y-coordinate of the vertex.
      */
-    public void setY(int y);
+    public void setY(double y);
 
 	/**
 	 * Adds the vertex to a {@link FastGraphAccessor}.

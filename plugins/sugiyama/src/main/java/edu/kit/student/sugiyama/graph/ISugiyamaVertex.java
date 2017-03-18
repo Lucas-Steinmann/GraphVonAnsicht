@@ -18,9 +18,9 @@ public interface ISugiyamaVertex extends Vertex{
 	 */
 	public int getLayer();
 	
-	public void setX(int x);
+	public void setX(double x);
 	
-	public void setY(int y);
+	public void setY(double y);
 
 	public void setLayer(int layerNum);
 

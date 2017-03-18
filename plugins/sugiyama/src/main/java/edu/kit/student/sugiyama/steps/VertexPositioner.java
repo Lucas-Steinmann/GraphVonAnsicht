@@ -147,7 +147,8 @@ public class VertexPositioner implements IVertexPositioner {
 		}
 
 		//logger.debug("sorting segments");
-		allsegments.sort((o1, o2) -> (o1.getBoundingBox().left - o2.getBoundingBox().left) * graph.getLayerCount() + (o1.getBoundingBox().top - o2.getBoundingBox().top));
+		allsegments.sort((o1, o2) -> (int)((o1.getBoundingBox().left - o2.getBoundingBox().left) * graph.getLayerCount() + (o1.getBoundingBox().top - o2.getBoundingBox().top)));
+        //TODO: maybe avoid casting for more precise results
 
 
 		//alternate and faster method for searching for intersections and move the intersecting segments.
@@ -171,7 +172,7 @@ public class VertexPositioner implements IVertexPositioner {
 		int runs = 0; //safeguard
 		while (changes && runs < 1000) {
 			changes = false;
-			int overlapping = 0;
+			double overlapping = 0;
 			int ctr = 0;
 
 			for (Segment segment : allsegments) {
@@ -199,8 +200,9 @@ public class VertexPositioner implements IVertexPositioner {
 
 		for (Vertex vertex : graph.getVertexSet()) {
 			//logger.debug(vertex.getSize().toString());
-			horizontalWidth[vertex.getX()] = Math.max(horizontalWidth[vertex.getX()], Math.round((float) vertex.getSize().x));
-			verticalHeight[vertex.getY()] = Math.max(verticalHeight[vertex.getY()], Math.round((float) vertex.getSize().y));
+			horizontalWidth[(int)vertex.getX()] = Math.max(horizontalWidth[(int)vertex.getX()], (int)Math.round(vertex.getSize().x));
+			verticalHeight[(int)vertex.getY()] = Math.max(verticalHeight[(int)vertex.getY()], (int)Math.round(vertex.getSize().y));
+			//TODO: as getX/Y returns a double this might not be the best solution
 		}
 
 		horizontalOffset[0] = (int) Math.ceil(graph.getLayer(0).get(0).getLeftRightMargin().x);//normally the left margins of every vertex are the same
@@ -216,8 +218,8 @@ public class VertexPositioner implements IVertexPositioner {
 		}
 
 		for (Vertex vertex : graph.getVertexSet()) {
-			vertex.setX(horizontalOffset[vertex.getX()]);
-			vertex.setY(verticalOffset[vertex.getY()]);
+			vertex.setX(horizontalOffset[(int)vertex.getX()]);
+			vertex.setY(verticalOffset[(int)vertex.getY()]);
 		}
 		//adjust left and right margins of all vertices in the graph
 		this.adjustLeftAndRightMargin(graph.getLayers());
@@ -372,7 +374,7 @@ public class VertexPositioner implements IVertexPositioner {
 				ISugiyamaVertex right = layer.get(i);
 				int distBetweenVertices = left.getLeftRightMargin().y + right.getLeftRightMargin().x;//necessary space betw. vertices i-1,i
 				if(right.getX() < left.getX() + left.getSize().x + distBetweenVertices){
-					int newX = (int) (left.getX() + left.getSize().x + distBetweenVertices);//TODO: maybe getSize().x should return an int
+					double newX = (left.getX() + left.getSize().x + distBetweenVertices);
 					right.setX(newX);
 				}
 			}
@@ -442,7 +444,7 @@ public class VertexPositioner implements IVertexPositioner {
 		public boolean intersectAndMoveChildren(IVertexPositionerGraph graph){
 			boolean intersection = false;
 			if(!this.children.isEmpty()){
-				int overlapping = 0;
+				double overlapping = 0;
 				for(Segment s1 : this.children){
 					for(Segment s2: this.children){
 						overlapping = s1.overlapping(s2);
@@ -463,7 +465,7 @@ public class VertexPositioner implements IVertexPositioner {
 		}
 
         //move this segment in x direction with given amount
-		void move(int amount, IVertexPositionerGraph graph) {
+		void move(double amount, IVertexPositionerGraph graph) {
 			for (ISugiyamaVertex vertex : this.vertices) {
 				graph.setX(vertex, vertex.getX() + amount);
 			}
@@ -472,7 +474,7 @@ public class VertexPositioner implements IVertexPositioner {
 		}
 
 		void align(IVertexPositionerGraph graph) {
-			int x = this.vertices.get(0).getX();
+			double x = this.vertices.get(0).getX();
 
 			for (ISugiyamaVertex vertex : this.vertices) {
 				graph.setX(vertex, x);
@@ -545,7 +547,7 @@ public class VertexPositioner implements IVertexPositioner {
 			return getBoundingBox().intersects(other.getBoundingBox());
 		}
 
-		private int overlapping(Segment other){ return getBoundingBox().overlapping(other.getBoundingBox());}
+		private double overlapping(Segment other){ return getBoundingBox().overlapping(other.getBoundingBox());}
 
 		public int getId() {
 			return id;
@@ -553,10 +555,10 @@ public class VertexPositioner implements IVertexPositioner {
 
 		BoundingBox getBoundingBox() {
 			if (changed) {
-				int startX = Integer.MAX_VALUE;
-				int startY = Integer.MAX_VALUE;
-				int endX = 0;
-				int endY = 0;
+				double startX = Integer.MAX_VALUE;
+				double startY = Integer.MAX_VALUE;
+				double endX = 0;
+				double endY = 0;
 
 				if(this.children.isEmpty()){
                     for (ISugiyamaVertex vertex : vertices) {
@@ -591,12 +593,12 @@ public class VertexPositioner implements IVertexPositioner {
 		}
 
 		private class BoundingBox {
-			private int left;
-			private int top;
-			private int right;
-			private int bottom;
+			private double left;
+			private double top;
+			private double right;
+			private double bottom;
 
-			BoundingBox(int left, int top, int right, int bottom) {
+			BoundingBox(double left, double top, double right, double bottom) {
 				this.left = left;
 				this.top = top;
 				this.right = right;
@@ -608,7 +610,7 @@ public class VertexPositioner implements IVertexPositioner {
              *
              * @param amount amount to move this in x-direction
              */
-			void moveX(int amount){
+			void moveX(double amount){
 			    this.left += amount;
 			    this.right += amount;
             }
@@ -632,8 +634,8 @@ public class VertexPositioner implements IVertexPositioner {
             /**
              * returns amount of values both bounding boxes are overlapping
              */
-            int overlapping(BoundingBox other){
-                int dist = 0;
+            double overlapping(BoundingBox other){
+                double dist = 0;
 			    if(!intersects(other))  return dist;
                 dist = 1; //possibly both have same left and right values, then a movement of 1 is enough
                 if(other.left < this.left)  dist = other.right - this.left; //should not occur, just other will be moved and just in right direction

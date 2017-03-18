@@ -103,6 +103,16 @@ public class FastGraphAccessor {
 	}
 
 	/**
+	 * adds an {@link Vertex} for a given attribute with a given value
+	 * @param vertex vertex that has this value for the given attribute
+	 * @param name name of the attribute
+	 * @param value value of the attribute
+	 */
+	public void addVertexForAttribute(Vertex vertex, String name, double value) {
+		this.addVertexForAttribute(vertex, name, Double.toString(value));
+	}
+
+	/**
 	 * gets a {@link List} of {@link Vertex} that contains all {@link Vertex} that have the value for given attribut
 	 * @param name name of the attribute
 	 * @param value value of the attribute
