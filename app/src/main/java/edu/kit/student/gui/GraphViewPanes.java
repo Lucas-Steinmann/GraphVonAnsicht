@@ -1,28 +1,27 @@
 package edu.kit.student.gui;
 
-import javafx.animation.KeyFrame;
-import javafx.animation.KeyValue;
-import javafx.animation.Timeline;
 import javafx.beans.property.DoubleProperty;
+import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.event.EventHandler;
-import javafx.geometry.Point2D;
 import javafx.scene.Group;
-import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
-import javafx.util.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static com.sun.javafx.util.Utils.clamp;
+
 /**
  * The GraphViewPanes class encapsulates all graphical elements needed to make the GraphView behave as specified.
- * The GraphView is encapsulated in three other Panes.
- * 
+ * The GraphView is encapsulated in three other Nodes.
+ * These Nodes are used for zooming, panning
+ * and drawing control elements (such as a selection rectangle) over the graph.
+ *
  * |-----------------------------------------------|
  * |                  AnchorPane                   |
  * |   |---------------------------------------|   |
@@ -41,23 +40,21 @@ import org.slf4j.LoggerFactory;
  * |   |---------------------------------------|   |
  * |-----------------------------------------------|
  *
+ * @author Nicolas Boltz, Lucas Steinmann
  *
  */
 public class GraphViewPanes {
 
 
-    private final ScrollPane scrollPane;
-    private final Group group = new Group();
-	private final AnchorPane wrapper;
-	private final PanAndZoomPane panAndZoomPane = new PanAndZoomPane();
+    private final AnchorPane wrapper;
+    private final GraphView graphView;
 
-	private final DoubleProperty zoomProperty = new SimpleDoubleProperty(1.0d);
+    private final DoubleProperty zoomProperty = new SimpleDoubleProperty(1.0d);
 	private final DoubleProperty deltaY = new SimpleDoubleProperty(0.0d);
 
     private final Logger logger = LoggerFactory.getLogger(GraphViewPanes.class);
 
-	private GraphView graphView;
-	
+
     /**
 	 * Constructor
 	 * 
@@ -67,7 +64,7 @@ public class GraphViewPanes {
 	GraphViewPanes(GraphView graphView) {
 		this.graphView = graphView;
 
-        scrollPane = new ScrollPane();
+        ScrollPane scrollPane = new ScrollPane();
         scrollPane.setPannable(false);
 		scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 		scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
@@ -77,14 +74,16 @@ public class GraphViewPanes {
 		AnchorPane.setLeftAnchor(scrollPane, 10.0d);
 
 
-		group.getChildren().add(this.graphView);
+        final Group group = new Group();
+        group.getChildren().add(this.graphView);
 
-		zoomProperty.bind(panAndZoomPane.myScale);
+        final PanAndZoomPane panAndZoomPane = new PanAndZoomPane();
+        zoomProperty.bind(panAndZoomPane.myScale);
 		deltaY.bind(panAndZoomPane.deltaY);
 		panAndZoomPane.getChildren().add(group);
 
 
-		SceneGestures sceneGestures = new SceneGestures(panAndZoomPane);
+		final SceneGestures sceneGestures = new SceneGestures(panAndZoomPane);
 		scrollPane.setContent(panAndZoomPane);
 		panAndZoomPane.toBack();
 
@@ -97,15 +96,23 @@ public class GraphViewPanes {
 		scrollPane.addEventFilter(MouseEvent.MOUSE_DRAGGED, sceneGestures.getOnMouseDraggedEventHandler());
 		scrollPane.addEventFilter(ScrollEvent.ANY, sceneGestures.getOnScrollEventHandler());
 	}
-	
 
+
+    public ReadOnlyDoubleProperty getZoomProperty() {
+        return this.deltaY;
+    }
+
+    /**
+     * Returns the GraphView containing the actual graph elements.
+     * @return the GraphView
+     */
 	GraphView getGraphView() {
 		return graphView;
 	}
 	
 	/**
 	 * Returns the scale on which the InnerPane currently is.
-	 * 
+	 *
 	 * @return The scale of the InnerPane.
 	 */
 	double getScale() {
@@ -114,7 +121,7 @@ public class GraphViewPanes {
 
 	/**
 	 * Sets the scale of the InnerPane.
-	 * 
+	 *
 	 * @param scale
 	 *            The scale of the InnerPane.
 	 */
@@ -122,42 +129,24 @@ public class GraphViewPanes {
         zoomProperty.set(scale);
     }
 
-	Group getContentGroup() {
-		return group;
-	}
-
-	Node getScrollPane() {
-		return scrollPane;
-	}
-
+    /**
+     * Returns the outer most pane.
+     * @return the root pane of this stack of panes.
+     */
 	Pane getRoot() {
         return wrapper;
     }
 
-	Pane getCanvas() {
-        return panAndZoomPane;
-    }
-
-    public double getDeltaY() {
-        return deltaY.get();
-    }
-    
-    public void setDeltaY( double dY) {
-        deltaY.set(dY);
-    }
-
 	private class PanAndZoomPane extends Pane {
 
-		private static final double DEFAULT_DELTA = 1.5d;
+		static final double DEFAULT_DELTA = 1.3d;
+        static final double MAX_SCALE = 40d;
+        static final double MIN_SCALE = 0.1d;
 		private DoubleProperty myScale = new SimpleDoubleProperty(1.0);
 		private DoubleProperty deltaY = new SimpleDoubleProperty(0.0);
-		private Timeline timeline;
 
 
 		private PanAndZoomPane() {
-
-			this.timeline = new Timeline(60);
-
 			// add scale transform
 			scaleXProperty().bind(myScale);
 			scaleYProperty().bind(myScale);
@@ -173,16 +162,9 @@ public class GraphViewPanes {
 		}
 
 		private void setPivot(double x, double y, double scale) {
-			// note: pivot value must be untransformed, i. e. without scaling
-			// timeline that scales and moves the node
-			timeline.getKeyFrames().clear();
-			timeline.getKeyFrames().addAll(
-					new KeyFrame(Duration.millis(100), new KeyValue(translateXProperty(), getTranslateX() - x)),
-					new KeyFrame(Duration.millis(100), new KeyValue(translateYProperty(), getTranslateY() - y)),
-					new KeyFrame(Duration.millis(100), new KeyValue(myScale, scale))
-			);
-			timeline.play();
-
+            translateXProperty().setValue(getTranslateX()-x);
+            translateYProperty().setValue(getTranslateY()-y);
+			setScale(scale);
 		}
 
 		private void fitWidth() {
@@ -223,7 +205,7 @@ public class GraphViewPanes {
 	/**
 	 * Mouse drag context used for scene and nodes.
 	 */
-	class DragContext {
+	private class DragContext {
 
 		double mouseAnchorX;
 		double mouseAnchorY;
@@ -236,7 +218,7 @@ public class GraphViewPanes {
 	/**
 	 * Listeners for making the scene's canvas draggable and zoomable
 	 */
-	public class SceneGestures {
+	private class SceneGestures {
 
 		private DragContext sceneDragContext = new DragContext();
 
@@ -278,18 +260,16 @@ public class GraphViewPanes {
 
 		private EventHandler<MouseEvent> onMouseDraggedEventHandler = new EventHandler<MouseEvent>() {
 			public void handle(MouseEvent event) {
-
 			    if (event.isControlDown() && event.getButton() == MouseButton.SECONDARY) {
                     panAndZoomPane.setTranslateX(sceneDragContext.translateAnchorX + event.getX() - sceneDragContext.mouseAnchorX);
                     panAndZoomPane.setTranslateY(sceneDragContext.translateAnchorY + event.getY() - sceneDragContext.mouseAnchorY);
-
                     event.consume();
                 }
 			}
 		};
 
 		/**
-		 * Mouse wheel handler: zoom to pivot point
+         * Performs scaling with the cursor position as pivot point.
 		 */
 		private EventHandler<ScrollEvent> onScrollEventHandler = new EventHandler<ScrollEvent>() {
 
@@ -302,36 +282,30 @@ public class GraphViewPanes {
 				double oldScale = scale;
 
 				panAndZoomPane.setDeltaY(event.getDeltaY());
-				if (panAndZoomPane.deltaY.get() < 0) {
-					scale /= delta;
-				} else {
-					scale *= delta;
-				}
+				delta = (panAndZoomPane.deltaY.get() < 0) ? 1 / delta : delta;
+
+                // Clamp scaling
+                scale = clamp(PanAndZoomPane.MIN_SCALE, oldScale * delta, PanAndZoomPane.MAX_SCALE);
 
 				double f = (scale / oldScale) - 1;
 
+				// Calculate pivot point
 				double dx = (event.getX() - (panAndZoomPane.getBoundsInParent().getWidth() / 2 + panAndZoomPane.getBoundsInParent().getMinX()));
 				double dy = (event.getY() - (panAndZoomPane.getBoundsInParent().getHeight() / 2 + panAndZoomPane.getBoundsInParent().getMinY()));
 
 				panAndZoomPane.setPivot(f * dx, f * dy, scale);
 
 				event.consume();
-
 			}
 		};
 
 		/**
-		 * Mouse click handler
+         * Fits graph into viewport on double right click.
 		 */
 		private EventHandler<MouseEvent> onMouseClickedEventHandler = new EventHandler<MouseEvent>() {
 
 			@Override
 			public void handle(MouseEvent event) {
-				//if (event.getButton().equals(MouseButton.PRIMARY)) {
-				//	if (event.getClickCount() == 2) {
-				//		panAndZoomPane.resetZoom();
-				//	}
-				//}
 				if (event.getButton().equals(MouseButton.SECONDARY)) {
 					if (event.getClickCount() == 2) {
 						panAndZoomPane.fitWidth();
