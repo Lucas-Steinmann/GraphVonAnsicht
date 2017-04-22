@@ -123,6 +123,10 @@ public class GraphViewGraphFactory {
 		return vertices.keySet();
 	}
 
+	public Set<EdgeShape> getEdgeShapes() {
+		return edges.keySet();
+	}
+
 	/**
 	 * Returns the vertex element from the graph model that is being represented
 	 * by the shape. Can be null if an {@link EdgeShape} is passed.

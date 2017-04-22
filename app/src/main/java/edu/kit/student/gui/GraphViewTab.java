@@ -8,7 +8,7 @@ public class GraphViewTab extends Tab {
 	
 	public GraphViewTab(GraphViewPanes panes) {
 		this.panes = panes;
-		this.setContent(this.panes.getScrollPane());
+		this.setContent(this.panes.getWrapper());
 	}
 	
 	public GraphViewPanes getGraphViewPanes() {

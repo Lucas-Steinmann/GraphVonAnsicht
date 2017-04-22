@@ -411,9 +411,9 @@ public class GAnsApplication {
 		graphViewTabPane.getSelectionModel().select(tab);
 		
 		// Fill Information-View on change of selection
-		graphView.getSelectionModel().getSelectedItems().addListener(new SetChangeListener<VertexShape>() {
+		graphView.getSelectionModel().getSelectedVertexShapes().addListener(new SetChangeListener<VertexShape>() {
 			public void onChanged(Change<? extends VertexShape> changedItem) {
-				ObservableSet<VertexShape> selectedItems = graphView.getSelectionModel().getSelectedItems();
+				ObservableSet<VertexShape> selectedItems = graphView.getSelectionModel().getSelectedVertexShapes();
 				List<GAnsProperty<?>> tmp = new LinkedList<GAnsProperty<?>>();
 				for (VertexShape element : selectedItems) {
 					GraphViewGraphFactory factory = graphView.getFactory();

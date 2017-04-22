@@ -109,7 +109,7 @@ public class GraphView extends Pane {
 	 */
 	public void setSelectionModel(GraphViewSelectionModel selectionModel) {
 		this.selectionModel = selectionModel;
-		selectionModel.setContexMenu(this.contextMenu);
+		selectionModel.setContextMenu(this.contextMenu);
 		dynamicContextMenu();
 	}
 
@@ -135,7 +135,7 @@ public class GraphView extends Pane {
 		group.setOnAction(new EventHandler<ActionEvent>() {
 		    public void handle(ActionEvent e) {
 		    	Set<ViewableVertex> selectedVertices = new HashSet<ViewableVertex>();
-		    	GraphView.this.getSelectionModel().getSelectedItems().forEach(
+		    	GraphView.this.getSelectionModel().getSelectedVertexShapes().forEach(
 		    			shape -> selectedVertices.add(graphFactory.getVertexFromShape(shape)));
 		    	if(groupManager.openAddGroupDialog(selectedVertices)) {
 		    		openGroupDialog();
@@ -148,7 +148,7 @@ public class GraphView extends Pane {
 	}
 
 	private void dynamicContextMenu() {
-		this.selectionModel.getSelectedItems().addListener(new SetChangeListener<VertexShape>() {
+		this.selectionModel.getSelectedVertexShapes().addListener(new SetChangeListener<VertexShape>() {
 
             @Override
             public void onChanged(SetChangeListener.Change<? extends VertexShape> change) {
@@ -157,7 +157,7 @@ public class GraphView extends Pane {
 
                 Set<ViewableVertex> vertices = new HashSet<>();
                 // Display subgraph actions
-                for(VertexShape shape : getSelectionModel().getSelectedItems()) {
+                for(VertexShape shape : getSelectionModel().getSelectedVertexShapes()) {
                     vertices.add(getFactory().getVertexFromShape(shape));
                 }
                 int midx = 0;
