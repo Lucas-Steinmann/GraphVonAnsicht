@@ -6,15 +6,18 @@ import javafx.animation.Timeline;
 import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.event.EventHandler;
+import javafx.geometry.Point2D;
 import javafx.scene.Group;
+import javafx.scene.Node;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
-import javafx.scene.layout.StackPane;
 import javafx.util.Duration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * The GraphViewPanes class encapsulates all graphical elements needed to make the GraphView behave as specified.
@@ -25,7 +28,7 @@ import javafx.util.Duration;
  * |   |---------------------------------------|   |
  * |   |              ScrollPane               |   |
  * |   |   |-------------------------------|   |   |
- * |   |   |            Group          |   |   |
+ * |   |   |            Group          |   |   |   |
  * |   |   |   |-----------------------|   |   |   |
  * |   |   |   |      GraphView        |   |   |   |
  * |   |   |   |                       |   |   |   |
@@ -43,12 +46,15 @@ import javafx.util.Duration;
 public class GraphViewPanes {
 
 
+    private final ScrollPane scrollPane;
     private final Group group = new Group();
 	private final AnchorPane wrapper;
 	private final PanAndZoomPane panAndZoomPane = new PanAndZoomPane();
 
 	private final DoubleProperty zoomProperty = new SimpleDoubleProperty(1.0d);
 	private final DoubleProperty deltaY = new SimpleDoubleProperty(0.0d);
+
+    private final Logger logger = LoggerFactory.getLogger(GraphViewPanes.class);
 
 	private GraphView graphView;
 	
@@ -61,7 +67,7 @@ public class GraphViewPanes {
 	GraphViewPanes(GraphView graphView) {
 		this.graphView = graphView;
 
-        ScrollPane scrollPane = new ScrollPane();
+        scrollPane = new ScrollPane();
         scrollPane.setPannable(false);
 		scrollPane.setHbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
 		scrollPane.setVbarPolicy(ScrollPane.ScrollBarPolicy.NEVER);
@@ -81,13 +87,15 @@ public class GraphViewPanes {
 		SceneGestures sceneGestures = new SceneGestures(panAndZoomPane);
 		scrollPane.setContent(panAndZoomPane);
 		panAndZoomPane.toBack();
-		scrollPane.addEventFilter(MouseEvent.MOUSE_CLICKED, sceneGestures.getOnMouseClickedEventHandler());
+
+        wrapper = new AnchorPane();
+        wrapper.setFocusTraversable(false);
+        wrapper.getChildren().addAll(scrollPane);
+
+		scrollPane.addEventFilter(MouseEvent.MOUSE_PRESSED, sceneGestures.getOnMouseClickedEventHandler());
 		scrollPane.addEventFilter(MouseEvent.MOUSE_PRESSED, sceneGestures.getOnMousePressedEventHandler());
 		scrollPane.addEventFilter(MouseEvent.MOUSE_DRAGGED, sceneGestures.getOnMouseDraggedEventHandler());
 		scrollPane.addEventFilter(ScrollEvent.ANY, sceneGestures.getOnScrollEventHandler());
-
-        wrapper = new AnchorPane();
-		wrapper.getChildren().addAll(scrollPane);
 	}
 	
 
@@ -118,9 +126,13 @@ public class GraphViewPanes {
 		return group;
 	}
 
-	AnchorPane getWrapper() {
-		return wrapper;
+	Node getScrollPane() {
+		return scrollPane;
 	}
+
+	Pane getRoot() {
+        return wrapper;
+    }
 
 	Pane getCanvas() {
         return panAndZoomPane;
@@ -315,11 +327,11 @@ public class GraphViewPanes {
 
 			@Override
 			public void handle(MouseEvent event) {
-				if (event.getButton().equals(MouseButton.PRIMARY)) {
-					if (event.getClickCount() == 2) {
-						panAndZoomPane.resetZoom();
-					}
-				}
+				//if (event.getButton().equals(MouseButton.PRIMARY)) {
+				//	if (event.getClickCount() == 2) {
+				//		panAndZoomPane.resetZoom();
+				//	}
+				//}
 				if (event.getButton().equals(MouseButton.SECONDARY)) {
 					if (event.getClickCount() == 2) {
 						panAndZoomPane.fitWidth();

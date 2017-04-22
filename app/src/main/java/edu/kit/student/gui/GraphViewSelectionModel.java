@@ -6,7 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javafx.scene.Group;
+import javafx.geometry.Point2D;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -138,13 +138,32 @@ public class GraphViewSelectionModel {
 			rect.setStrokeLineCap(StrokeLineCap.ROUND);
 			rect.setFill(Color.LIGHTBLUE.deriveColor(0, 1.2, 1, 0.6));
 
-			viewPanes.getCanvas().addEventHandler(MouseEvent.MOUSE_PRESSED, onMousePressedEventHandler);
-			viewPanes.getCanvas().addEventHandler(MouseEvent.MOUSE_DRAGGED, onMouseDraggedEventHandler);
-			viewPanes.getCanvas().addEventHandler(MouseEvent.MOUSE_RELEASED, onMouseReleasedEventHandler);
+			viewPanes.getRoot().addEventHandler(MouseEvent.MOUSE_PRESSED, onMousePressedEventHandler);
+			viewPanes.getRoot().addEventFilter(MouseEvent.MOUSE_DRAGGED, onMouseDraggedEventHandler);
+			viewPanes.getRoot().addEventHandler(MouseEvent.MOUSE_RELEASED, onMouseReleasedEventHandler);
 		}
 
 		public void setContextMenu(ContextMenu menu) {
 			this.menu = menu;
+		}
+
+		private void setRect(double x, double y, double width, double height) {
+			rect.setX(x);
+			rect.setY(y);
+			rect.setWidth(width);
+			rect.setHeight(height);
+		}
+
+		private void showRect() {
+		    viewPanes.getRoot().getChildren().add(rect);
+		}
+
+		private void hideRect() {
+			viewPanes.getRoot().getChildren().remove(rect);
+		}
+
+		private Bounds boundsInView(Bounds bounds) {
+		    return view.sceneToLocal(viewPanes.getRoot().localToScene(bounds));
 		}
 
 		EventHandler<MouseEvent> onMousePressedEventHandler = new EventHandler<MouseEvent>() {
@@ -155,15 +174,9 @@ public class GraphViewSelectionModel {
 				dragContext.mouseAnchorY = event.getY();
 
 				if (event.getButton() == MouseButton.PRIMARY) {
-					rect.setX(dragContext.mouseAnchorX);
-					rect.setY(dragContext.mouseAnchorY);
-					rect.setWidth(0);
-					rect.setHeight(0);
-
-					view.getChildren().add(rect);
+					setRect(dragContext.mouseAnchorX, dragContext.mouseAnchorY, 0, 0);
+					showRect();
 				}
-
-				event.consume();
 			}
 		};
 
@@ -189,8 +202,7 @@ public class GraphViewSelectionModel {
 						rect.setHeight(dragContext.mouseAnchorY - rect.getY());
 					}
 				}
-
-				event.consume();
+				//event.consume();
 			}
 		};
 
@@ -209,7 +221,7 @@ public class GraphViewSelectionModel {
 						GraphViewSelectionModel.this.clear();
 					}
 					
-					Set<VertexShape> vertexShapes = intersectedVertexShapes(rect.getBoundsInParent());
+					Set<VertexShape> vertexShapes = intersectedVertexShapes(boundsInView(rect.getBoundsInParent()));
 					Set<EdgeShape> edgeShapes = new HashSet<>(); //intersectedEdgeShapes(rect.getBoundsInParent());
 					if (vertexShapes.isEmpty() && edgeShapes.isEmpty()) {
 						GraphViewSelectionModel.this.clear();
@@ -232,18 +244,15 @@ public class GraphViewSelectionModel {
 
 					GraphViewSelectionModel.this.log();
 
-					rect.setX(0);
-					rect.setY(0);
-					rect.setWidth(0);
-					rect.setHeight(0);
+					setRect(0,0,0,0);
+					hideRect();
 
-					view.getChildren().remove(rect);
 				} else if (event.getButton() == MouseButton.SECONDARY) {
 					if (!event.isControlDown()) {
 						BoundingBox clickBound = new BoundingBox(event.getX(),event.getY(),0,0);
 						//should mostly contain one item (if there are nodes on top of each other there
 						// can be more items contained)
-						Set<VertexShape> vertexShapes = intersectedVertexShapes(clickBound);
+						Set<VertexShape> vertexShapes = intersectedVertexShapes(boundsInView(clickBound));
 						Set<EdgeShape> edgeShapes = new HashSet<>(); //intersectedEdgeShapes(clickBound);
 						if (vertexShapes.isEmpty() && edgeShapes.isEmpty()) {
 							GraphViewSelectionModel.this.clear();
@@ -264,8 +273,8 @@ public class GraphViewSelectionModel {
 				event.consume();
 			}
 		};
-		
-        /**
+
+		/**
          * Returns the {@link VertexShape}s, that are intersected by the specified bound.
 		 *
          * @param bounds the bounds to intersect the {@link VertexShape}s with.
@@ -290,17 +299,8 @@ public class GraphViewSelectionModel {
 		}
 
 		private boolean intersects(Bounds bounds, GAnsGraphElement element) {
-			//mapping the position inside of the graphView to the relative position in the scrollPane
-			double x = (element.getBoundsInParent().getMinX() * viewPanes.getScale()) +
-					viewPanes.getContentGroup().getBoundsInParent().getMinX();
-			double y = (element.getBoundsInParent().getMinY() * viewPanes.getScale()) +
-					viewPanes.getContentGroup().getBoundsInParent().getMinY();
-			double w = element.getBoundsInParent().getWidth() * viewPanes.getScale();
-			double h = element.getBoundsInParent().getHeight() * viewPanes.getScale();
-			System.out.println(viewPanes.getContentGroup().parentToLocal(rect.getBoundsInParent()));
-			BoundingBox shapeBounds = new BoundingBox(x,y,w,h);
-
-			return shapeBounds.intersects(bounds);
+			Bounds elementBounds = element.getBoundsInParent();
+			return elementBounds.intersects(bounds);
 		}
 		
 		private final class DragContext {
