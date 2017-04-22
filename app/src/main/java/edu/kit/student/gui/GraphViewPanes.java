@@ -265,7 +265,7 @@ public class GraphViewPanes {
 		private EventHandler<MouseEvent> onMousePressedEventHandler = new EventHandler<MouseEvent>() {
 
 			public void handle(MouseEvent event) {
-			    if (event.isShiftDown()) {
+                if (event.isControlDown() && event.getButton() == MouseButton.SECONDARY) {
                     sceneDragContext.mouseAnchorX = event.getX();
                     sceneDragContext.mouseAnchorY = event.getY();
 
@@ -279,7 +279,7 @@ public class GraphViewPanes {
 		private EventHandler<MouseEvent> onMouseDraggedEventHandler = new EventHandler<MouseEvent>() {
 			public void handle(MouseEvent event) {
 
-			    if (event.isShiftDown()) {
+			    if (event.isControlDown() && event.getButton() == MouseButton.SECONDARY) {
                     panAndZoomPane.setTranslateX(sceneDragContext.translateAnchorX + event.getX() - sceneDragContext.mouseAnchorX);
                     panAndZoomPane.setTranslateY(sceneDragContext.translateAnchorY + event.getY() - sceneDragContext.mouseAnchorY);
 
