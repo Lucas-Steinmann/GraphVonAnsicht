@@ -38,7 +38,7 @@ public class JoanaGraphModel extends GraphModel implements  JoanaObjectPool {
 	 *         JoanaGraphModel.
 	 */
 	public List<MethodGraph> getMethodGraphs() {
-		return callgraph.getMethodgraphs();
+		return callgraph.getMethodGraphs();
 	}
 
 	/**

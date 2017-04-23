@@ -1,13 +1,6 @@
-/**
- * 
- */
 package edu.kit.student.graphmodel.viewable;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import edu.kit.student.graphmodel.*;
 import edu.kit.student.graphmodel.action.EdgeAction;
@@ -135,7 +128,7 @@ public class DirectedViewableGraph implements DirectedGraph, ViewableGraph  {
 
 	@Override
 	public List<LayoutOption> getRegisteredLayouts() {
-		return new LinkedList<>(Arrays.asList(this.getDefaultLayout()));
+		return new LinkedList<>(Collections.singletonList(this.getDefaultLayout()));
 	}
 
 	@Override
@@ -189,21 +182,21 @@ public class DirectedViewableGraph implements DirectedGraph, ViewableGraph  {
 	}
 
 	public String toString(){
-		String out = "Vertices: {";
+		StringBuilder out = new StringBuilder("Vertices: {");
 		for(Vertex v : this.getVertexSet()){
-			out+= v.getName() + ", ";
+			out.append(v.getName()).append(", ");
 		}
-		out = out.substring(0, out.length()-2);
-		out+= "}";
-		out+= '\n';
-		out+= "Edges:{";
-		out+= '\n';
+		out = new StringBuilder(out.substring(0, out.length() - 2));
+		out.append("}");
+		out.append('\n');
+		out.append("Edges:{");
+		out.append('\n');
 		for(DirectedEdge e : this.getEdgeSet()){
-			out+= e.getName() + "[" + e.getSource().getName() +"->"+ e.getTarget().getName()+"] ";
-			out+=",";
-			out+= '\n';
+			out.append(e.getName()).append("[").append(e.getSource().getName()).append("->").append(e.getTarget().getName()).append("] ");
+			out.append(",");
+			out.append('\n');
 		}
-		out=out.substring(0, out.length()-2);
+		out = new StringBuilder(out.substring(0, out.length() - 2));
 		return out + "}";
 	}
 }

@@ -26,7 +26,7 @@ public class InformationView extends TableView<GAnsProperty<?>> {
 	 */
 	public void setInformation(ObservableList<GAnsProperty<?>> information) {
 		setItems(information);
-		// Implementation in diesem Stil: (siehe
+		// Implementation as described in:
 		// https://docs.oracle.com/javase/8/javafx/api/javafx/scene/control/TableView.html)
 		TableColumn<GAnsProperty<?>, String> propertyNameCol = new TableColumn<>(LanguageManager.getInstance().get("inf_prop"));
 		propertyNameCol.setCellValueFactory(p -> p.getValue().propertyNameProperty());

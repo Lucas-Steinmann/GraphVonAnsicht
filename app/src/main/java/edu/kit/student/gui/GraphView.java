@@ -142,7 +142,7 @@ public class GraphView extends Pane {
 		}
 
         int menuIdx = 0;
-        menuIdx = addDynamicMenuItemsForActions(getFactory().getGraph().getSubGraphActions(vertices), contextMenu, menuIdx);
+        addDynamicMenuItemsForActions(getFactory().getGraph().getSubGraphActions(vertices), contextMenu, menuIdx);
         // Set menu idx to 0 to add following items to the start of the menu.
         menuIdx = 0;
         if (vertices.size() + edges.size() == 1) {
@@ -163,12 +163,12 @@ public class GraphView extends Pane {
 			} else {
 				// If said element is an edge
 				Edge edge = edges.iterator().next();
-				menuIdx = addDynamicMenuItemsForActions(getFactory().getGraph().getEdgeActions(edge), contextMenu, menuIdx);
+				addDynamicMenuItemsForActions(getFactory().getGraph().getEdgeActions(edge), contextMenu, menuIdx);
 			}
 		}
 		if (vertices.size() > 0) {
         	// Display grouping action
-			createGroupMenuItem(vertices);
+			createGroupMenuItem(vertices, menuIdx);
 		}
     };
 
@@ -184,16 +184,16 @@ public class GraphView extends Pane {
     private MenuItem createMenuItem(Action action) {
 		MenuItem item = new MenuItem(action.getName());
 		item.setOnAction(event -> {
-			GraphView.this.selectionModel.clear();
+			selectionModel.clear();
 			action.handle();
-			GraphView.this.getCurrentLayoutOption().chooseLayout();
-			GraphView.this.getCurrentLayoutOption().applyLayout();
-			GraphView.this.reloadGraph();
+			getCurrentLayoutOption().chooseLayout();
+			getCurrentLayoutOption().applyLayout();
+			reloadGraph();
 		});
 		return item;
 	}
 
-	private void createGroupMenuItem(Set<ViewableVertex> vertices) {
+	private void createGroupMenuItem(Set<ViewableVertex> vertices, int menuIdx) {
 		MenuItem group = new MenuItem(LanguageManager.getInstance().get("ctx_group"));
 		group.setOnAction(e ->
 		{
@@ -203,7 +203,7 @@ public class GraphView extends Pane {
 			}
 		});
 
-		this.contextMenu.getItems().addAll(group);
+		this.contextMenu.getItems().add(menuIdx, group);
 		this.dynamicMenuListItems.add(group);
 	}
 
@@ -243,7 +243,7 @@ public class GraphView extends Pane {
     	stage.getIcons().add(new Image("gans_icon.png"));
 		
 		Optional<ButtonType> result = dialog.showAndWait();
-		if(result.get() == ButtonType.OK &&
+		if(result.isPresent() && result.get() == ButtonType.OK &&
 		        !(listEqualsNoOrder(vertexBackup, selectedVertexFilter) &&
 		        listEqualsNoOrder(edgeBackup, selectedEdgeFilter))) 
 		{ 
@@ -255,7 +255,7 @@ public class GraphView extends Pane {
 		}
 	}
 
-    public static <T> boolean listEqualsNoOrder(List<T> l1, List<T> l2) {
+    private static <T> boolean listEqualsNoOrder(List<T> l1, List<T> l2) {
         final Set<T> s1 = new HashSet<>(l1);
         final Set<T> s2 = new HashSet<>(l2);
 

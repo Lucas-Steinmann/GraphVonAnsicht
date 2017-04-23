@@ -55,7 +55,7 @@ public class CallGraph extends JoanaGraph {
         this(name, new HashSet<>(), new HashSet<>());
     }
 
-    public List<MethodGraph> getMethodgraphs() {
+    public List<MethodGraph> getMethodGraphs() {
     	return methodGraphs;
     }
     @Override
@@ -112,7 +112,7 @@ public class CallGraph extends JoanaGraph {
         };
 	}
 	public JoanaCollapsedVertex collapse(Set<ViewableVertex> subset) {
-        Set<JoanaVertex> directedSubset = new HashSet<JoanaVertex>();
+        Set<JoanaVertex> directedSubset = new HashSet<>();
 	    for (Vertex v : subset) {
 	        if (!graph.contains(v)) {
                 throw new IllegalArgumentException("Cannot collapse vertices, not contained in this graph.");
@@ -166,8 +166,7 @@ public class CallGraph extends JoanaGraph {
 
     @Override
     public List<GAnsProperty<?>> getStatistics() {
-    	List<GAnsProperty<?>> statistics = super.getStatistics();
-    	return statistics;
+        return super.getStatistics();
     }
 
     @Override
