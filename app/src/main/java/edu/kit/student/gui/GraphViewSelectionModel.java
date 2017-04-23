@@ -172,6 +172,37 @@ class GraphViewSelectionModel {
                     rect.setWidth(0);
                     rect.setHeight(0);
 					showRect();
+				} else if (event.getButton() == MouseButton.SECONDARY) {
+					// Open menu on right mouse button click.
+					if (!event.isControlDown()) {
+						// Instead of rectangle use a small hit box at cursor position to intersect elements.
+						// Area must be greater than zero as the area of the intersection is used to determine if
+						// a collision is taking place.
+						final BoundingBox clickBound = new BoundingBox(event.getSceneX(),event.getSceneY(),1,1);
+
+						// Get all intersected elements in the graph
+						// should mostly contain one item (if there are nodes on top of each other there
+						// can be more items contained)
+						final Set<VertexShape> vertexShapes = intersectedVertexShapes(clickBound);
+						final Set<EdgeShape> edgeShapes = intersectedEdgeShapes(clickBound);
+
+						if (vertexShapes.isEmpty() && edgeShapes.isEmpty()) {
+							// If user draws empty rectangle => clear selection (even if control is pressed)
+							clear();
+						} else {
+							// If the selected element(s) is not in the set of previously selected elements
+							// clear the set
+                            if (!(getSelectedVertexShapes().containsAll(vertexShapes)
+									&& getSelectedEdgeShapes().containsAll(edgeShapes))) {
+								clear();
+							}
+
+							// Add all intersected elements to the selection
+							addAllVertices(vertexShapes);
+							addAllEdges(edgeShapes);
+							menu.show(viewPanes.getRoot(), event.getScreenX(),event.getScreenY());
+						}
+					}
 				}
 			}
 		};
@@ -256,32 +287,6 @@ class GraphViewSelectionModel {
 					rect.setHeight(0);
 					hideRect();
 
-				} else if (event.getButton() == MouseButton.SECONDARY) {
-				    // Open menu on right mouse button click.
-					if (!event.isControlDown()) {
-					    // Instead of rectangle use a small hit box at cursor position to intersect elements.
-						// Area must be greater than zero as the area of the intersection is used to determine if
-						// a collision is taking place.
-						final BoundingBox clickBound = new BoundingBox(event.getSceneX(),event.getSceneY(),1,1);
-
-						// Get all intersected elements in the graph
-						// should mostly contain one item (if there are nodes on top of each other there
-						// can be more items contained)
-						final Set<VertexShape> vertexShapes = intersectedVertexShapes(clickBound);
-						final Set<EdgeShape> edgeShapes = intersectedEdgeShapes(clickBound);
-
-						if (vertexShapes.isEmpty() && edgeShapes.isEmpty()) {
-							// If user draws empty rectangle => clear selection (even if control is pressed)
-							GraphViewSelectionModel.this.clear();
-						} else {
-							// Add all intersected elements to the selection
-                            GraphViewSelectionModel.this.clear();
-                            GraphViewSelectionModel.this.addAllVertices(vertexShapes);
-                            GraphViewSelectionModel.this.addAllEdges(edgeShapes);
-							menu.show(viewPanes.getRoot(), event.getScreenX(),event.getScreenY());
-						}
-					}
-					GraphViewSelectionModel.this.log();
 				}
 				event.consume();
 			}
