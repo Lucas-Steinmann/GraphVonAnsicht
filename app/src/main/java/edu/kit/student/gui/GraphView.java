@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
+import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.ViewableGraph;
 import edu.kit.student.graphmodel.ViewableVertex;
 import edu.kit.student.graphmodel.action.SubGraphAction;
@@ -55,7 +56,7 @@ public class GraphView extends Pane {
 	/**
 	 * Constructor.
 	 * 
-	 * @param mediator to connect with contexmenu
+	 * @param mediator to connect with context menu
 	 */
 	public GraphView(GAnsMediator mediator) {
 		this.mediator = mediator;
@@ -110,7 +111,7 @@ public class GraphView extends Pane {
 	public void setSelectionModel(GraphViewSelectionModel selectionModel) {
 		this.selectionModel = selectionModel;
 		selectionModel.setContextMenu(this.contextMenu);
-		dynamicContextMenu();
+		selectionModel.getSelectedVertexShapes().addListener(onSelectionChanged);
 	}
 
 	/**
@@ -132,101 +133,90 @@ public class GraphView extends Pane {
 	
 	private void setupContextMenu() {
 		MenuItem group = new MenuItem(LanguageManager.getInstance().get("ctx_group"));
-		group.setOnAction(new EventHandler<ActionEvent>() {
-		    public void handle(ActionEvent e) {
-		    	Set<ViewableVertex> selectedVertices = new HashSet<ViewableVertex>();
-		    	GraphView.this.getSelectionModel().getSelectedVertexShapes().forEach(
-		    			shape -> selectedVertices.add(graphFactory.getVertexFromShape(shape)));
-		    	if(groupManager.openAddGroupDialog(selectedVertices)) {
-		    		openGroupDialog();
-		    		selectionModel.clear();
-		    	}
-		    }
-	 	});
+		group.setOnAction(e ->
+		{
+            Set<ViewableVertex> selectedVertices = new HashSet<>();
+            GraphView.this.getSelectionModel().getSelectedVertexShapes().forEach(
+                    shape -> selectedVertices.add(graphFactory.getVertexFromShape(shape)));
+            if(groupManager.openAddGroupDialog(selectedVertices)) {
+                openGroupDialog();
+                selectionModel.clear();
+            }
+        });
 		 
 		this.contextMenu.getItems().addAll(group);
 	}
 
-	private void dynamicContextMenu() {
-		this.selectionModel.getSelectedVertexShapes().addListener(new SetChangeListener<VertexShape>() {
+	/**
+	 * Fetches the applicable actions from the current selection and
+	 * adds them as menu items.
+	 */
+    private SetChangeListener<VertexShape> onSelectionChanged = change -> {
+        GraphView.this.contextMenu.getItems().removeAll(dynamicMenuListItems);
+        dynamicMenuListItems.clear();
 
-            @Override
-            public void onChanged(SetChangeListener.Change<? extends VertexShape> change) {
-                GraphView.this.contextMenu.getItems().removeAll(dynamicMenuListItems);
-                dynamicMenuListItems.clear();
+        // Map the current selection shapes back to the actual GraphElements
+        Set<ViewableVertex> vertices = new HashSet<>();
+        for(VertexShape shape : getSelectionModel().getSelectedVertexShapes()) {
+            vertices.add(getFactory().getVertexFromShape(shape));
+        }
 
-                Set<ViewableVertex> vertices = new HashSet<>();
-                // Display subgraph actions
-                for(VertexShape shape : getSelectionModel().getSelectedVertexShapes()) {
-                    vertices.add(getFactory().getVertexFromShape(shape));
-                }
-                int midx = 0;
-                for (SubGraphAction action : getFactory().getGraph().getSubGraphActions(vertices)) {
-                    MenuItem item = new MenuItem(action.getName());
-                    dynamicMenuListItems.add(item);
-                    item.setOnAction(new EventHandler<ActionEvent>() {
+        int menuIdx = 0;
+        for (SubGraphAction action : getFactory().getGraph().getSubGraphActions(vertices)) {
+            // For every action applicable on the selection create a menu item.
+            MenuItem item = new MenuItem(action.getName());
+            dynamicMenuListItems.add(item);
+            System.out.println(action.getName());
+            item.setOnAction(event -> {
+                GraphView.this.selectionModel.clear();
 
-                        @Override
-                        public void handle(ActionEvent event) {
-                        	GraphView.this.selectionModel.clear();
-		    	
-                            action.handle();
-                            GraphView.this.getCurrentLayoutOption().chooseLayout();
-                            GraphView.this.getCurrentLayoutOption().applyLayout();
-                            GraphView.this.reloadGraph();
-                        }
-                    });
-                    GraphView.this.contextMenu.getItems().add(midx++, item);
-                }
-                midx = 0;
-                if (vertices.size() == 1) {
-                	ViewableVertex vertex = vertices.iterator().next();
-                    // Display link
-                    int linkId = vertex.getLink();
-                    if (linkId != -1) {
-                        MenuItem item = new MenuItem(LanguageManager.getInstance().get("ctx_open_graph"));
-                        dynamicMenuListItems.add(item);
-                        // set action to open new graph
-                        item.setOnAction(new EventHandler<ActionEvent>() {
+                action.handle();
+                // TODO: Instead of layouting always, give actions a field
+				// where they specify if they need the graph to be layouted again
+                GraphView.this.getCurrentLayoutOption().chooseLayout();
+                GraphView.this.getCurrentLayoutOption().applyLayout();
+                GraphView.this.reloadGraph();
+            });
+            GraphView.this.contextMenu.getItems().add(menuIdx++, item);
+        }
+        // Set menu idx to 0 to add following items to the start of the menu.
+        menuIdx = 0;
+        if (vertices.size() == 1) {
+            ViewableVertex vertex = vertices.iterator().next();
+            // Display link
+            int linkId = vertex.getLink();
+            if (linkId != -1) {
+                MenuItem item = new MenuItem(LanguageManager.getInstance().get("ctx_open_graph"));
+                dynamicMenuListItems.add(item);
+                // set action to open new graph
+                item.setOnAction(event -> GraphView.this.mediator.openGraph(linkId));
+                GraphView.this.contextMenu.getItems().add(menuIdx++, item);
 
-                            @Override
-                            public void handle(ActionEvent event) {
-                            	GraphView.this.mediator.openGraph(linkId);
-                            }
-                        });
-                        GraphView.this.contextMenu.getItems().add(midx++, item);
-                        
-                    }
-                    // Display vertex actions;
-                    for (VertexAction action : getFactory().getGraph().getVertexActions(vertex)) {
-                        MenuItem item = new MenuItem(action.getName());
-                        dynamicMenuListItems.add(item);
-                        item.setOnAction(new EventHandler<ActionEvent>() {
-
-                            @Override
-                            public void handle(ActionEvent event) {
-                                action.handle();
-                                GraphView.this.getCurrentLayoutOption().chooseLayout();
-                                GraphView.this.getCurrentLayoutOption().applyLayout();
-                                GraphView.this.reloadGraph();
-                            }
-                        });
-                        GraphView.this.contextMenu.getItems().add(midx++, item);
-                    }
-                }
             }
-        });
-	}
-	
+            // Display vertex actions
+            for (VertexAction action : getFactory().getGraph().getVertexActions(vertex)) {
+                MenuItem item = new MenuItem(action.getName());
+                dynamicMenuListItems.add(item);
+                item.setOnAction(event -> {
+                    action.handle();
+                    GraphView.this.getCurrentLayoutOption().chooseLayout();
+                    GraphView.this.getCurrentLayoutOption().applyLayout();
+                    GraphView.this.reloadGraph();
+                });
+                GraphView.this.contextMenu.getItems().add(menuIdx++, item);
+            }
+        }
+    };
+
 	public void openGroupDialog() {
 		groupManager.openGroupDialog();
 	}
 	
 	public void openFilterDialog() {
-		Dialog<ButtonType> dialog = new Dialog<ButtonType>();
+		Dialog<ButtonType> dialog = new Dialog<>();
 
-		List<VertexFilter> selectedVertexFilter = new LinkedList<VertexFilter>();
-		List<EdgeFilter> selectedEdgeFilter = new LinkedList<EdgeFilter>();
+		List<VertexFilter> selectedVertexFilter = new LinkedList<>();
+		List<EdgeFilter> selectedEdgeFilter = new LinkedList<>();
 		
 		TabPane tabPane = new TabPane();
 		
@@ -274,7 +264,7 @@ public class GraphView extends Pane {
 	
 	private GridPane setupVertexFilterPane(List<VertexFilter> selectedVertexFilter) {
 		List<VertexFilter> vertexFilter = PluginManager.getPluginManager().getVertexFilter();
-		List<CheckBox> vertexFilterBoxes = new LinkedList<CheckBox>();
+		List<CheckBox> vertexFilterBoxes = new LinkedList<>();
 		int column = 0;
 		int row = 0;
 		GridPane vertexFilterPane = new GridPane();
@@ -302,19 +292,16 @@ public class GraphView extends Pane {
 			}
 			CheckBox box = new CheckBox(filter.getName());
 			box.setSelected(selected);
-			box.setOnAction(new EventHandler<ActionEvent>() {
-				@Override
-				public void handle(ActionEvent event) {
-					CheckBox box = (CheckBox)event.getSource();
-					int filterIndex = vertexFilterBoxes.indexOf(box);
-					if(!box.isSelected()) {
-						selectedVertexFilter.add(vertexFilter.get(filterIndex));
-					} else {
-						selectedVertexFilter.remove(vertexFilter.get(filterIndex));
-					}
-					
-				}
-			});
+			box.setOnAction(event -> {
+                CheckBox box1 = (CheckBox)event.getSource();
+                int filterIndex = vertexFilterBoxes.indexOf(box1);
+                if(!box1.isSelected()) {
+                    selectedVertexFilter.add(vertexFilter.get(filterIndex));
+                } else {
+                    selectedVertexFilter.remove(vertexFilter.get(filterIndex));
+                }
+
+            });
 			vertexFilterBoxes.add(box);
 			vertexFilterPane.add(box, column, row);
 			column++;
@@ -325,7 +312,7 @@ public class GraphView extends Pane {
 	//Basically a copy of setupVertexFilterPane, since there is no mutual parent class
 	private GridPane setupEdgeFilterPane(List<EdgeFilter> selectedEdgeFilter) {
 		List<EdgeFilter> edgeFilter = PluginManager.getPluginManager().getEdgeFilter();
-		List<CheckBox> edgeFilterBoxes = new LinkedList<CheckBox>();
+		List<CheckBox> edgeFilterBoxes = new LinkedList<>();
 		int column = 0;
 		int row = 0;
 		GridPane edgeFilterPane = new GridPane();
@@ -353,19 +340,16 @@ public class GraphView extends Pane {
 			}
 			CheckBox box = new CheckBox(filter.getName());
 			box.setSelected(selected);
-			box.setOnAction(new EventHandler<ActionEvent>() {
-				@Override
-				public void handle(ActionEvent event) {
-					CheckBox box = (CheckBox)event.getSource();
-					int filterIndex = edgeFilterBoxes.indexOf(box);
-					if(!box.isSelected()) {
-						selectedEdgeFilter.add(edgeFilter.get(filterIndex));
-					} else {
-						selectedEdgeFilter.remove(edgeFilter.get(filterIndex));
-					}
-					
-				}
-			});
+			box.setOnAction(event -> {
+                CheckBox box1 = (CheckBox)event.getSource();
+                int filterIndex = edgeFilterBoxes.indexOf(box1);
+                if(!box1.isSelected()) {
+                    selectedEdgeFilter.add(edgeFilter.get(filterIndex));
+                } else {
+                    selectedEdgeFilter.remove(edgeFilter.get(filterIndex));
+                }
+
+            });
 			edgeFilterBoxes.add(box);
 			edgeFilterPane.add(box, column, row);
 			column++;
