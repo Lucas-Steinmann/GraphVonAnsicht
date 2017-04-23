@@ -5,6 +5,7 @@ import java.text.ParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import edu.kit.student.graphmodel.Edge;
 import edu.kit.student.graphmodel.GraphModel;
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.ViewableGraph;
@@ -290,7 +291,6 @@ public class GAnsApplication {
 					+ Arrays.stream(e.getStackTrace())
 							.map(st -> st.getClassName() + ": " + st.getMethodName() + "(" + st.getLineNumber() + ")")
 							.reduce("", (s,n) -> s + n + "\n"));
-            return;
         } catch (IOException e) {
             showErrorDialog(e.getMessage());
         }
@@ -299,7 +299,7 @@ public class GAnsApplication {
 
 	private void importClicked() {
 		List<Importer> importerList = PluginManager.getPluginManager().getImporter();
-		List<String> supportedFileExtensions = new ArrayList<String>();
+		List<String> supportedFileExtensions = new ArrayList<>();
 		importerList.forEach((importer) -> supportedFileExtensions.add(importer.getSupportedFileEndings()));
 		ExtensionFilter filter = new ExtensionFilter(LanguageManager.getInstance().get("wind_imp_ext"), supportedFileExtensions);
 		FileChooser fileChooser = new FileChooser();
@@ -325,12 +325,12 @@ public class GAnsApplication {
 			String fileName = file.getName();
 			String fileExtension = "*" + fileName.substring(fileName.lastIndexOf('.'));
             List<Importer> importerList = PluginManager.getPluginManager().getImporter();
-            List<String> supportedFileExtensions = new ArrayList<String>();
+            List<String> supportedFileExtensions = new ArrayList<>();
             importerList.forEach((importer) -> supportedFileExtensions.add(importer.getSupportedFileEndings()));
 			Importer importer = importerList.get(supportedFileExtensions.indexOf(fileExtension));
 			importer.importGraph(workspace.getGraphModelBuilder(), inputStream);
 			this.graphViewTabPane.getTabs().clear();
-			this.informationView.setInformation(FXCollections.observableList(new LinkedList<GAnsProperty<?>>()));
+			this.informationView.setInformation(FXCollections.observableList(new LinkedList<>()));
 			this.model = workspace.getGraphModel();
 			ViewableGraph currentGraph = this.model.getRootGraphs().get(0);
 			openGraph(currentGraph);
@@ -339,7 +339,6 @@ public class GAnsApplication {
 		} catch (ParseException e) {
 			this.graphViewTabPane.getTabs().clear();
 			showErrorDialog(e.getMessage() + "\nat\n" + e.getStackTrace());
-			return;
 		}  catch (IOException e) {
 			this.graphViewTabPane.getTabs().clear();
 			showErrorDialog(e.getMessage());
@@ -351,7 +350,7 @@ public class GAnsApplication {
 		Map<ExtensionFilter, Exporter> supportedFileExtensions = new HashMap<>();
 		for (Exporter exporter : PluginManager.getPluginManager().getExporter()) {
 		        StringBuilder description = new StringBuilder(exporter.getFileEndingDescription() + " (");
-                exporter.getSupportedFileEndings().forEach((fe) -> description.append("*." + fe + ", "));
+                exporter.getSupportedFileEndings().forEach((fe) -> description.append("*.").append(fe).append(", "));
                 description.delete(description.length() - 2, description.length());
                 description.append(")");
 		        supportedFileExtensions.put(new FileChooser.ExtensionFilter( 
@@ -411,27 +410,31 @@ public class GAnsApplication {
 		graphViewTabPane.getSelectionModel().select(tab);
 		
 		// Fill Information-View on change of selection
-		graphView.getSelectionModel().getSelectedVertexShapes().addListener(new SetChangeListener<VertexShape>() {
-			public void onChanged(Change<? extends VertexShape> changedItem) {
-				ObservableSet<VertexShape> selectedItems = graphView.getSelectionModel().getSelectedVertexShapes();
-				List<GAnsProperty<?>> tmp = new LinkedList<GAnsProperty<?>>();
-				for (VertexShape element : selectedItems) {
-					GraphViewGraphFactory factory = graphView.getFactory();
-					Vertex vertex = factory.getVertexFromShape(element);
-					tmp.addAll(vertex.getProperties());
-				}
-				
-				ObservableList<GAnsProperty<?>> properties = FXCollections.observableList(tmp);
-				informationView.setInformation(properties);
+		graphView.getSelectionModel().getSelectedShapes().addListener((SetChangeListener<GAnsGraphElement>) changedItem -> {
+            ObservableSet<VertexShape> selectedVertexShapes = graphView.getSelectionModel().getSelectedVertexShapes();
+			ObservableSet<EdgeShape> selectedEdgeShapes = graphView.getSelectionModel().getSelectedEdgeShapes();
+            List<GAnsProperty<?>> tmp = new LinkedList<>();
+            for (VertexShape element : selectedVertexShapes) {
+                GraphViewGraphFactory factory = graphView.getFactory();
+                Vertex vertex = factory.getVertexFromShape(element);
+                tmp.addAll(vertex.getProperties());
+            }
+			for (EdgeShape element : selectedEdgeShapes) {
+				GraphViewGraphFactory factory = graphView.getFactory();
+				Edge edge = factory.getEdgeFromShape(element);
+				tmp.addAll(edge.getProperties());
 			}
-		});
+
+            ObservableList<GAnsProperty<?>> properties = FXCollections.observableList(tmp);
+            informationView.setInformation(properties);
+        });
 	}
 	
 	private boolean openWorkspaceDialog() {
-		List<String> workspaceNames = new ArrayList<String>();
+		List<String> workspaceNames = new ArrayList<>();
 		List<WorkspaceOption> options = PluginManager.getPluginManager().getWorkspaceOptions();
 		options.forEach((option) -> workspaceNames.add(option.getName()));
-		ChoiceDialog<String> dialog = new ChoiceDialog<String>(workspaceNames.get(0), workspaceNames);
+		ChoiceDialog<String> dialog = new ChoiceDialog<>(workspaceNames.get(0), workspaceNames);
 		dialog.setTitle(LanguageManager.getInstance().get("wind_workspace_title"));
 		dialog.setHeaderText(null);
 		dialog.setGraphic(null);
@@ -483,55 +486,34 @@ public class GAnsApplication {
 	private void setupMenuBar() {
 		Menu menuFile = new Menu(LanguageManager.getInstance().get("mnu_file"));
 		MenuItem importItem = new MenuItem(LanguageManager.getInstance().get("mnu_file_import"));
-		importItem.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				importClicked();
-			}
-		});
+		importItem.setOnAction(e -> importClicked());
 		if(PluginManager.getPluginManager().getImporter().isEmpty()) {
 			importItem.setDisable(true);
 		}
 		MenuItem exportItem = new MenuItem(LanguageManager.getInstance().get("mnu_file_export"));
-		exportItem.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				exportClicked();
-			}
-		});
+		exportItem.setOnAction(e -> exportClicked());
 		if(PluginManager.getPluginManager().getExporter().isEmpty()) {
 			exportItem.setDisable(true);
 		}
 		MenuItem exitItem = new MenuItem(LanguageManager.getInstance().get("mnu_file_exit"));
-		exitItem.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				saveSettings();
-				Platform.exit();
-			}
-		});
+		exitItem.setOnAction(e -> {
+            saveSettings();
+            Platform.exit();
+        });
 		
 		
 		menuFile.getItems().addAll(importItem, exportItem, exitItem);
 		
 		// disabling the export button if there is no graphView
-		menuFile.setOnShowing(new EventHandler<Event>() {
-			@Override
-			public void handle(Event e) {
-				exportItem.setDisable(GAnsApplication.this.currentGraphView == null);
-			}
-		});
+		menuFile.setOnShowing(e -> exportItem.setDisable(GAnsApplication.this.currentGraphView == null));
 
 		Menu menuLayout = new Menu(LanguageManager.getInstance().get("mnu_layout"));
 		Menu changeLayoutItem = new Menu(LanguageManager.getInstance().get("mnu_layout_change"));
 		MenuItem layoutPropertiesItem = new MenuItem(LanguageManager.getInstance().get("mnu_layout_prop"));
-		layoutPropertiesItem.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				openLayoutSettingsDialog(currentGraphView.getCurrentLayoutOption());
-				currentGraphView.reloadGraph();
-			}
-		});
+		layoutPropertiesItem.setOnAction(e -> {
+            openLayoutSettingsDialog(currentGraphView.getCurrentLayoutOption());
+            currentGraphView.reloadGraph();
+        });
 		menuLayout.getItems().addAll(changeLayoutItem, layoutPropertiesItem);
 		
 		menuLayout.setOnShowing(new EventHandler<Event>() {
@@ -551,14 +533,11 @@ public class GAnsApplication {
 					changeLayoutItem.getItems().clear();
 					for(LayoutOption option: GAnsApplication.this.currentGraphView.getFactory().getGraph().getRegisteredLayouts()) {
 						MenuItem item = new MenuItem(option.getName());
-						item.setOnAction(new EventHandler<ActionEvent>() {
-							@Override
-							public void handle(ActionEvent e) {
-								option.chooseLayout();
-								openLayoutSettingsDialog(option);
-								currentGraphView.reloadGraph();
-							}
-						});
+						item.setOnAction(e1 -> {
+                            option.chooseLayout();
+                            openLayoutSettingsDialog(option);
+                            currentGraphView.reloadGraph();
+                        });
 						changeLayoutItem.getItems().add(item);
 					}
 				}
@@ -567,20 +546,10 @@ public class GAnsApplication {
 		
 		Menu menuOther = new Menu(LanguageManager.getInstance().get("mnu_other"));
 		MenuItem groupItem = new MenuItem(LanguageManager.getInstance().get("mnu_other_groups"));
-		groupItem.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent e) {
-				GAnsApplication.this.currentGraphView.openGroupDialog();
-			}
-		});
+		groupItem.setOnAction(e -> GAnsApplication.this.currentGraphView.openGroupDialog());
 		
 		MenuItem filterItem = new MenuItem(LanguageManager.getInstance().get("mnu_other_filter"));
-		filterItem.setOnAction(new EventHandler<ActionEvent>() {
-			@Override
-			public void handle(ActionEvent event) {
-				GAnsApplication.this.currentGraphView.openFilterDialog();
-			}
-		});
+		filterItem.setOnAction(event -> GAnsApplication.this.currentGraphView.openFilterDialog());
 		
 		Menu menuLanguage = new Menu(LanguageManager.getInstance().get("mnu_other_lang"));
 		
@@ -593,42 +562,30 @@ public class GAnsApplication {
 			
 			menuLanguage.getItems().add(languageItem);
 			
-			languageItem.setOnAction(new EventHandler<ActionEvent>() {
-				@Override
-				public void handle(ActionEvent event) {
-					showChangeLanguageDialog(language);
-				}
-			});
+			languageItem.setOnAction(event -> showChangeLanguageDialog(language));
 		}
 		
 		
 		menuOther.getItems().addAll(groupItem, filterItem, menuLanguage);
 		
 		// disabling the groups button if there is no graphView
-		menuOther.setOnShowing(new EventHandler<Event>() {
-			@Override
-			public void handle(Event e) {
-				if(GAnsApplication.this.currentGraphView == null) {
-					groupItem.setDisable(true);
-					filterItem.setDisable(true);
-				} else {
-					groupItem.setDisable(false);
-					filterItem.setDisable(false);
-				}
-				
-			}
-		});
+		menuOther.setOnShowing(e -> {
+            if(GAnsApplication.this.currentGraphView == null) {
+                groupItem.setDisable(true);
+                filterItem.setDisable(true);
+            } else {
+                groupItem.setDisable(false);
+                filterItem.setDisable(false);
+            }
+
+        });
 
 		menuBar.getMenus().addAll(menuFile, menuLayout, menuOther);
 	}
 	
 	private void setupContextMenu() {
 		MenuItem openGraph = new MenuItem(LanguageManager.getInstance().get("ctx_open"));
-		openGraph.setOnAction(new EventHandler<ActionEvent>() {
-		    public void handle(ActionEvent e) {
-		    	openGraph(GAnsApplication.this.structureView.getIdOfSelectedItem());
-		    }
-		});
+		openGraph.setOnAction(e -> openGraph(GAnsApplication.this.structureView.getIdOfSelectedItem()));
 		
 		this.structureViewContextMenu.getItems().add(openGraph);
 	}
