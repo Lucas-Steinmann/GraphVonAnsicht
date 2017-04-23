@@ -18,8 +18,8 @@ import javafx.scene.paint.Color;
  */
 public class JoanaEdge implements DirectedEdge {
     
-    private JoanaVertex source;
-    private JoanaVertex target;
+    private GAnsProperty<JoanaVertex> source;
+    private GAnsProperty<JoanaVertex> target;
     private JoanaVertex lastSource;
     private JoanaVertex lastTarget;
 	private Integer id;
@@ -30,8 +30,8 @@ public class JoanaEdge implements DirectedEdge {
 
     public JoanaEdge(String name, String label, Integer id, JoanaVertex source, JoanaVertex target, EdgeKind kind) {
         this.edgeKind = new GAnsProperty<>("edgeKind", kind);
-        this.target = target;
-        this.source = source;
+        this.source = new GAnsProperty<>("source", source);
+        this.target = new GAnsProperty<>("target", target);
         this.lastSource = source;
         this.lastTarget = target;
         this.name = new GAnsProperty<>("nameId", name);
@@ -45,10 +45,10 @@ public class JoanaEdge implements DirectedEdge {
     }
     
     public void setVertices(JoanaVertex source, JoanaVertex target){
-    	this.lastSource=this.source;
-    	this.lastTarget=this.target;
-    	this.source=source;
-    	this.target=target;
+    	this.lastSource=this.source.getValue();
+    	this.lastTarget=this.target.getValue();
+    	this.source.setValue(source);
+    	this.target.setValue(target);
     }
     
     /**
@@ -87,6 +87,8 @@ public class JoanaEdge implements DirectedEdge {
 		LinkedList<GAnsProperty<?>> properties = new LinkedList<>();
 		properties.add(name);
 		properties.add(label);
+        properties.add(source);
+        properties.add(target);
 		properties.add(edgeKind);
 		return properties;
     }
@@ -152,8 +154,8 @@ public class JoanaEdge implements DirectedEdge {
     @Override
     public List<JoanaVertex> getVertices() {
         List<JoanaVertex> result = new LinkedList<>();
-        result.add(source);
-        result.add(target);
+        result.add(source.getValue());
+        result.add(target.getValue());
         return result;
     }
 
@@ -178,8 +180,8 @@ public class JoanaEdge implements DirectedEdge {
 	    fga.addEdgeForAttribute(this, "id", this.id);
 	    fga.addEdgeForAttribute(this, "label", this.label.toString());
 
-	    fga.addEdgeForAttribute(this, "sourceVertex", this.source.getID());
-	    fga.addEdgeForAttribute(this, "targetVertex", this.target.getID());
+	    fga.addEdgeForAttribute(this, "sourceVertex", this.source.getValue().getID());
+	    fga.addEdgeForAttribute(this, "targetVertex", this.target.getValue().getID());
     }
 
     @Override
@@ -194,12 +196,12 @@ public class JoanaEdge implements DirectedEdge {
 
     @Override
     public JoanaVertex getSource() {
-        return this.source;
+        return this.source.getValue();
     }
 
     @Override
     public JoanaVertex getTarget() {
-        return this.target;
+        return this.target.getValue();
     }
 
 	public void setEdgeKind(EdgeKind edgeKind) {
