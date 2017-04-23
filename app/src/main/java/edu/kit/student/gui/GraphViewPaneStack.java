@@ -4,6 +4,7 @@ import javafx.beans.property.DoubleProperty;
 import javafx.beans.property.ReadOnlyDoubleProperty;
 import javafx.beans.property.SimpleDoubleProperty;
 import javafx.event.EventHandler;
+import javafx.geometry.Point2D;
 import javafx.scene.Group;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.input.MouseButton;
@@ -11,6 +12,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.scene.input.ScrollEvent;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.Pane;
+import javafx.scene.shape.Circle;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -143,6 +145,20 @@ public class GraphViewPaneStack {
 	Pane getRoot() {
         return wrapper;
     }
+
+	/**
+	 * Moves the graph to center the specified point.
+	 * The point is interpreted as point in the GraphView space
+	 * @param p the point to center
+	 */
+	public void center(Point2D p) {
+		// Get current center point
+		Point2D center = new Point2D(wrapper.getTranslateX() + wrapper.getWidth() / 2, wrapper.getTranslateY() + wrapper.getHeight() / 2);
+		center = graphView.sceneToLocal(wrapper.localToScene(center));
+		Point2D delta = center.subtract(p);
+		graphView.setTranslateX(graphView.getTranslateX() + delta.getX());
+		graphView.setTranslateY(graphView.getTranslateY() + delta.getY());
+	}
 
 	private class PanAndZoomPane extends Pane {
 
@@ -317,6 +333,10 @@ public class GraphViewPaneStack {
 					if (event.getClickCount() == 2) {
 						panAndZoomPane.fitWidth();
 					}
+//				} else if (event.getButton().equals(MouseButton.PRIMARY)) {
+//					if (event.getClickCount() == 2) {
+//						center(new Point2D(0, 0));
+//					}
 				}
 			}
 		};
