@@ -4,6 +4,7 @@ import edu.kit.student.graphmodel.Edge;
 import edu.kit.student.graphmodel.EdgeArrow;
 import edu.kit.student.graphmodel.EdgePath;
 import edu.kit.student.util.DoublePoint;
+import javafx.geometry.BoundingBox;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
@@ -24,8 +25,8 @@ public class EdgeShape extends GAnsGraphElement {
 	private Text text;
 	private Path path;
 	private Color color;
-//	private double middleX;
-//	private double middleY;
+	private String style = "";
+
 
 	/**
 	 * Constructs a EdgeShape with the information supplied by edge. The path of the EdgeShape is set by the EdgePath of edge.
@@ -35,10 +36,10 @@ public class EdgeShape extends GAnsGraphElement {
 		this.path = new Path();
 		this.text = new Text();
 		
-		List<PathElement> elements = new LinkedList<PathElement>();
+		List<PathElement> elements = new LinkedList<>();
 		EdgePath edgePath = edge.getPath();
 		
-		// there are a minimum of two nodes per edge, an start and an end node
+		// there are a minimum of two nodes per edge, a start and an end node
 		int nodeCount = edgePath.getNodes().size();
 		
 		double startX = edgePath.getNodes().get(0).x;
@@ -49,30 +50,6 @@ public class EdgeShape extends GAnsGraphElement {
 		// starting point of the edge
 		elements.add(new MoveTo(startX, startY));
 		
-//		if(nodeCount%2 == 0) {
-//			double x1, x2, y1, y2;
-//			if(nodeCount == 0) {
-//				x1 = startX;
-//				x2 = endX;
-//				y1 = startY;
-//				y2 = endY;
-//			} else {
-//				int listMiddle = nodeCount / 2;
-//				DoublePoint point1 = edgePath.getNodes().get(listMiddle - 1);
-//				DoublePoint point2 = edgePath.getNodes().get(listMiddle);
-//				x1 = point1.x;
-//				y1 = point1.y;
-//				x2 = point2.x;
-//				y2 = point2.y;
-//			}
-//			middleX = (x1 + x2) / 2;
-//			middleY = (y1 + y2) / 2;
-//		} else {
-//			int pos = (nodeCount - 1) / 2;
-//			middleX = edgePath.getNodes().get(pos).x;
-//			middleY = edgePath.getNodes().get(pos).y;
-//		}
-	
 		for(int i = 1; i < nodeCount - 1; i++) {
 			DoublePoint point = edgePath.getNodes().get(i);
 			elements.add(new LineTo(point.x, point.y));
@@ -91,7 +68,8 @@ public class EdgeShape extends GAnsGraphElement {
 		this.path.getElements().addAll(elements);
 		this.path.setManaged(false);
 		this.text.setManaged(false);
-		
+
+		path.intersects(new BoundingBox(0,0,0,0));
 		getChildren().addAll(this.path/*, this.text*/);
 		
 		setColor(edge.getColor());
@@ -101,7 +79,6 @@ public class EdgeShape extends GAnsGraphElement {
 	@Override
 	public void setText(String text) {
 		this.text.setText(text);
-		//this.text.relocate(middleX, middleY);
 	}
 
 	@Override
@@ -124,7 +101,7 @@ public class EdgeShape extends GAnsGraphElement {
 	public Path getElementShape() {
 		return path;
 	}
-	
+
 	private Path getArrow(EdgeArrow arrowType, double startX, double startY, ArrowDirection direction) {
 		switch(arrowType) {
 		case NONE: return new Path();
@@ -196,12 +173,21 @@ public class EdgeShape extends GAnsGraphElement {
 		}
 		
 		Path path = new Path();
-		List<PathElement> elements = new LinkedList<PathElement>();
+		List<PathElement> elements = new LinkedList<>();
 		elements.add(new MoveTo(x, y));
 		elements.add(new LineTo(x1, y1));
 		elements.add(new MoveTo(x2, y2));
 		elements.add(new LineTo(x, y));
 		path.getElements().addAll(elements);
 		return path;
+	}
+
+	public void setEdgeStyle(String style) {
+		this.style = style;
+		this.setStyle(style);
+	}
+
+	public String getEdgeStyle() {
+		return this.style;
 	}
 }

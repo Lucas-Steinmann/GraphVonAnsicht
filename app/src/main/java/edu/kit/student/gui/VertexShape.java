@@ -3,6 +3,7 @@ package edu.kit.student.gui;
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.util.DoublePoint;
 import javafx.scene.paint.Color;
+import javafx.scene.shape.Path;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 
@@ -17,8 +18,8 @@ public class VertexShape extends GAnsGraphElement {
 	private Text text;
 	private Color color;
 	private String style = "";
-	private static double mindWidth = 20;
-	private static double mindHeight = 5;
+	private final static double mindWidth = 20;
+	private final static double mindHeight = 5;
 
 	/**
 	 * Constructor
@@ -38,15 +39,7 @@ public class VertexShape extends GAnsGraphElement {
 	public VertexShape(Vertex vertex) {
 		DoublePoint size = vertex.getSize();
 		
-		this.rectangle = new Rectangle(size.x, size.y);
-		
-//		Text tmp = new Text(vertex.getLabel());
-//		if(tmp.getLayoutBounds().getWidth() + Settings.leftRightMargin > size.getKey()) {
-//			double tmpLength = tmp.getLayoutBounds().getWidth() + Settings.leftRightMargin;
-//			tmpLength = tmpLength - size.getKey();
-//			tmpLength -= new Text("...").getLayoutBounds().getWidth();
-//			//the size that needs to be removed... 
-//		}
+		this.rectangle = new Rectangle(vertex.getX(), vertex.getY(), size.x, size.y);
 		
 		this.text = new Text(vertex.getLabel());
 		getChildren().addAll(rectangle, text);

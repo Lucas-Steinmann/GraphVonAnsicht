@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javafx.scene.shape.Shape;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,35 +41,35 @@ class GraphViewSelectionModel {
 		rubberband = new SelectionGestures(viewPanes);
 	}
 
-	void addVertex(VertexShape node) {
+	private void addVertex(VertexShape node) {
 		node.setStyle("-fx-effect: dropshadow(three-pass-box, red, 4, 4, 0, 0);");
 		selectedVertexShapes.add(node);
 	}
 
-	void addEdge(EdgeShape edge) {
+	private void addEdge(EdgeShape edge) {
 		edge.setStyle("-fx-effect: dropshadow(three-pass-box, red, 4, 4, 0, 0);");
 		selectedEdgeShapes.add(edge);
 	}
 
-	void addAllVertices(Collection<VertexShape> nodes) {
+	private void addAllVertices(Collection<VertexShape> nodes) {
 		for (VertexShape node : nodes) {
 			addVertex(node);
 		}
 	}
 
-	void addAllEdges(Collection<EdgeShape> edges) {
+	private void addAllEdges(Collection<EdgeShape> edges) {
 		for (EdgeShape edge : edges) {
 			addEdge(edge);
 		}
 	}
 
-	void removeVertex(VertexShape node) {
+	private void removeVertex(VertexShape node) {
 		node.setStyle(node.getVertexStyle());
 		selectedVertexShapes.remove(node);
 	}
 
-	void removeEdge(EdgeShape edge) {
-		edge.setStyle(edge.getStyle());
+	private void removeEdge(EdgeShape edge) {
+		edge.setStyle(edge.getEdgeStyle());
 		selectedEdgeShapes.remove(edge);
 	}
 
@@ -147,12 +148,6 @@ class GraphViewSelectionModel {
 			this.menu = menu;
 		}
 
-		private void setRect(double x, double y, double width, double height) {
-			rect.setX(x);
-			rect.setY(y);
-			rect.setWidth(width);
-			rect.setHeight(height);
-		}
 
 		private void showRect() {
 		    viewPanes.getRoot().getChildren().add(rect);
@@ -160,10 +155,6 @@ class GraphViewSelectionModel {
 
 		private void hideRect() {
 			viewPanes.getRoot().getChildren().remove(rect);
-		}
-
-		private Bounds boundsInView(Bounds bounds) {
-		    return view.sceneToLocal(viewPanes.getRoot().localToScene(bounds));
 		}
 
 		EventHandler<MouseEvent> onMousePressedEventHandler = new EventHandler<MouseEvent>() {
@@ -176,7 +167,10 @@ class GraphViewSelectionModel {
 				if (event.getButton() == MouseButton.PRIMARY) {
 					// If primary is pressed a new selection is started
 					// => show empty rectangle at mouse cursor position
-					setRect(dragContext.mouseAnchorX, dragContext.mouseAnchorY, 0, 0);
+                    rect.setX(dragContext.mouseAnchorX);
+                    rect.setY(dragContext.mouseAnchorY);
+                    rect.setWidth(0);
+                    rect.setHeight(0);
 					showRect();
 				}
 			}
@@ -188,8 +182,8 @@ class GraphViewSelectionModel {
 				if (event.getButton() == MouseButton.PRIMARY) {
 				    // Offset from initial anchor point where the mouse has been clicked
 					// NOT the delta between last and this event.
-					double offsetX = event.getX() - dragContext.mouseAnchorX;
-					double offsetY = event.getY() - dragContext.mouseAnchorY;
+					final double offsetX = event.getX() - dragContext.mouseAnchorX;
+					final double offsetY = event.getY() - dragContext.mouseAnchorY;
 
 					if (offsetX >= 0) {
 						rect.setWidth(offsetX);
@@ -215,9 +209,6 @@ class GraphViewSelectionModel {
 				// selection like in explorer
 				if (event.getButton() == MouseButton.PRIMARY) {
 					if (!event.isControlDown() && !GraphViewSelectionModel.this.isEmpty()) {
-						// selection needs to be cleared before adding new shapes
-						GraphViewSelectionModel.this.clear();
-
 						if (event.getClickCount() == 2){
 						    // When double clicked on element
 							// => launch action of first menu item.
@@ -225,11 +216,15 @@ class GraphViewSelectionModel {
 								menu.getItems().iterator().next().fire();
 							}
 						}
+
+						// selection needs to be cleared before adding new shapes
+						GraphViewSelectionModel.this.clear();
 					}
 
 					// Get all intersected elements in the graph
-					Set<VertexShape> vertexShapes = intersectedVertexShapes(boundsInView(rect.getBoundsInParent()));
-					Set<EdgeShape> edgeShapes = new HashSet<>(); //intersectedEdgeShapes(rect.getBoundsInParent());
+                    Bounds selectionBounds = rect.localToScene(rect.getBoundsInLocal());
+					final Set<VertexShape> vertexShapes = intersectedVertexShapes(selectionBounds);
+					final Set<EdgeShape> edgeShapes = intersectedEdgeShapes(selectionBounds);
 
 					if (vertexShapes.isEmpty() && edgeShapes.isEmpty()) {
 					    // If user draws empty rectangle => clear selection (even if control is pressed)
@@ -255,20 +250,25 @@ class GraphViewSelectionModel {
 
 					GraphViewSelectionModel.this.log();
 
-					setRect(0,0,0,0);
+					rect.setX(0);
+					rect.setY(0);
+					rect.setWidth(0);
+					rect.setHeight(0);
 					hideRect();
 
 				} else if (event.getButton() == MouseButton.SECONDARY) {
 				    // Open menu on right mouse button click.
 					if (!event.isControlDown()) {
-					    // Instead of rectangle use a zero area box to intersect elements.
-						BoundingBox clickBound = new BoundingBox(event.getX(),event.getY(),0,0);
+					    // Instead of rectangle use a small hit box at cursor position to intersect elements.
+						// Area must be greater than zero as the area of the intersection is used to determine if
+						// a collision is taking place.
+						final BoundingBox clickBound = new BoundingBox(event.getSceneX(),event.getSceneY(),1,1);
 
 						// Get all intersected elements in the graph
 						// should mostly contain one item (if there are nodes on top of each other there
 						// can be more items contained)
-						Set<VertexShape> vertexShapes = intersectedVertexShapes(boundsInView(clickBound));
-						Set<EdgeShape> edgeShapes = new HashSet<>(); //intersectedEdgeShapes(clickBound);
+						final Set<VertexShape> vertexShapes = intersectedVertexShapes(clickBound);
+						final Set<EdgeShape> edgeShapes = intersectedEdgeShapes(clickBound);
 
 						if (vertexShapes.isEmpty() && edgeShapes.isEmpty()) {
 							// If user draws empty rectangle => clear selection (even if control is pressed)
@@ -311,9 +311,18 @@ class GraphViewSelectionModel {
 					.collect(Collectors.toSet());
 		}
 
+		/**
+		 * Checks if there is a non empty intersection between the
+		 * specified {@link Bounds} in scene space and a given {@link GAnsGraphElement}.
+		 * This uses the actual shape of element and not its bounding box.
+		 * @param bounds the {@link Bounds} to intersect
+		 * @param element the {@link GAnsGraphElement} to intersect
+		 * @return true if the element intersects with the bounds.
+		 */
 		private boolean intersects(Bounds bounds, GAnsGraphElement element) {
-			Bounds elementBounds = element.getBoundsInParent();
-			return elementBounds.intersects(bounds);
+			Shape intersect = Shape.intersect(element.getElementShape(),
+					new Rectangle(bounds.getMinX(), bounds.getMinY(), bounds.getWidth(), bounds.getHeight()));
+			return (intersect.getBoundsInLocal().getWidth() != -1 || intersect.getBoundsInLocal().getHeight() != -1);
 		}
 		
 		private final class DragContext {
