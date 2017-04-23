@@ -4,14 +4,14 @@ import javafx.scene.control.Tab;
 
 public class GraphViewTab extends Tab {
 
-	private GraphViewPanes panes;
+	private GraphViewPaneStack panes;
 	
-	public GraphViewTab(GraphViewPanes panes) {
+	public GraphViewTab(GraphViewPaneStack panes) {
 		this.panes = panes;
 		this.setContent(this.panes.getRoot());
 	}
 	
-	public GraphViewPanes getGraphViewPanes() {
+	public GraphViewPaneStack getGraphViewPanes() {
 		return panes;
 	}
 }

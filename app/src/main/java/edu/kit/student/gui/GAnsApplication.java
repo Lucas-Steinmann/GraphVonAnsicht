@@ -401,12 +401,12 @@ public class GAnsApplication {
 	private void createGraphView() {
 		GraphView graphView = new GraphView(this.mediator);
 		
-		GraphViewPanes graphViewPanes = new GraphViewPanes(graphView);
+		GraphViewPaneStack graphViewPaneStack = new GraphViewPaneStack(graphView);
 		
-		GraphViewSelectionModel selectionModel = new GraphViewSelectionModel(graphViewPanes);
+		GraphViewSelectionModel selectionModel = new GraphViewSelectionModel(graphViewPaneStack);
 		graphView.setSelectionModel(selectionModel);
 
-		GraphViewTab tab = new GraphViewTab(graphViewPanes);
+		GraphViewTab tab = new GraphViewTab(graphViewPaneStack);
 		graphViewTabPane.getTabs().add(tab);
 		graphViewTabPane.getSelectionModel().select(tab);
 		

@@ -17,9 +17,9 @@ import org.slf4j.LoggerFactory;
 import static com.sun.javafx.util.Utils.clamp;
 
 /**
- * The GraphViewPanes class encapsulates all graphical elements needed to make the GraphView behave as specified.
- * The GraphView is encapsulated in three other Nodes.
- * These Nodes are used for zooming, panning
+ * The {@link GraphViewPaneStack} class encapsulates all graphical elements needed to make the {@link GraphView} behave as specified.
+ * The {@link GraphView} is encapsulated in three other Nodes.
+ * They control zooming, panning
  * and drawing control elements (such as a selection rectangle) over the graph.
  *
  * |-----------------------------------------------|
@@ -43,25 +43,27 @@ import static com.sun.javafx.util.Utils.clamp;
  * @author Nicolas Boltz, Lucas Steinmann
  *
  */
-public class GraphViewPanes {
+public class GraphViewPaneStack {
 
 
     private final AnchorPane wrapper;
     private final GraphView graphView;
 
-    private final DoubleProperty zoomProperty = new SimpleDoubleProperty(1.0d);
+    private final DoubleProperty scaleProperty = new SimpleDoubleProperty(1.0d);
+    // Captures the last scroll direction and length
 	private final DoubleProperty deltaY = new SimpleDoubleProperty(0.0d);
 
-    private final Logger logger = LoggerFactory.getLogger(GraphViewPanes.class);
+    private final Logger logger = LoggerFactory.getLogger(GraphViewPaneStack.class);
 
 
     /**
-	 * Constructor
+	 * Constructor.
+     * Sets up all the panes and enables user controls.
 	 * 
 	 * @param graphView
-	 *            The GraphView placed inside of the panes.
+	 *            The {@link GraphView} placed inside of the panes.
 	 */
-	GraphViewPanes(GraphView graphView) {
+	GraphViewPaneStack(GraphView graphView) {
 		this.graphView = graphView;
 
         ScrollPane scrollPane = new ScrollPane();
@@ -78,7 +80,7 @@ public class GraphViewPanes {
         group.getChildren().add(this.graphView);
 
         final PanAndZoomPane panAndZoomPane = new PanAndZoomPane();
-        zoomProperty.bind(panAndZoomPane.myScale);
+        scaleProperty.bind(panAndZoomPane.myScale);
 		deltaY.bind(panAndZoomPane.deltaY);
 		panAndZoomPane.getChildren().add(group);
 
@@ -98,8 +100,13 @@ public class GraphViewPanes {
 	}
 
 
-    public ReadOnlyDoubleProperty getZoomProperty() {
-        return this.deltaY;
+    /**
+     * Returns a read only double property, which describes the value the graph is
+     * scaled with.
+     * @return the scale property
+     */
+    public ReadOnlyDoubleProperty getScaleProperty() {
+        return this.scaleProperty;
     }
 
     /**
@@ -116,7 +123,7 @@ public class GraphViewPanes {
 	 * @return The scale of the InnerPane.
 	 */
 	double getScale() {
-        return zoomProperty.get();
+        return scaleProperty.get();
     }
 
 	/**
@@ -126,7 +133,7 @@ public class GraphViewPanes {
 	 *            The scale of the InnerPane.
 	 */
     public void setScale( double scale) {
-        zoomProperty.set(scale);
+        scaleProperty.set(scale);
     }
 
     /**

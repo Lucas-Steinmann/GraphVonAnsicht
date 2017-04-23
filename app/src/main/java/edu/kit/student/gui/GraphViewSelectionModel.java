@@ -35,7 +35,7 @@ class GraphViewSelectionModel {
 	private ObservableSet<EdgeShape> selectedEdgeShapes;
 	private SelectionGestures rubberband;
 
-	GraphViewSelectionModel(GraphViewPanes viewPanes) {
+	GraphViewSelectionModel(GraphViewPaneStack viewPanes) {
 		selectedVertexShapes = FXCollections.observableSet(new HashSet<VertexShape>());
 		selectedEdgeShapes = FXCollections.observableSet(new HashSet<EdgeShape>());
 		rubberband = new SelectionGestures(viewPanes);
@@ -122,11 +122,11 @@ class GraphViewSelectionModel {
 		private final DragContext dragContext = new DragContext();
 		// The rectangle which is drawn to visualize the area to select
 		private final Rectangle rect;
-		private final GraphViewPanes viewPanes;
+		private final GraphViewPaneStack viewPanes;
 		private final GraphView view;
 		private ContextMenu menu;
 
-		private SelectionGestures(GraphViewPanes viewPanes) {
+		private SelectionGestures(GraphViewPaneStack viewPanes) {
 			this.viewPanes = viewPanes;
 			this.view = viewPanes.getGraphView();
 
@@ -137,7 +137,7 @@ class GraphViewSelectionModel {
 			rect.setFill(Color.LIGHTBLUE.deriveColor(0, 1.2, 1, 0.6));
 
 			// Hide menu when zooming (looks weird when it is drawn while graph is scaled)
-			viewPanes.getZoomProperty().addListener((ob,n,o) -> menu.hide());
+			viewPanes.getScaleProperty().addListener((ob, n, o) -> menu.hide());
 
 			viewPanes.getRoot().addEventHandler(MouseEvent.MOUSE_PRESSED, onMousePressedEventHandler);
 			viewPanes.getRoot().addEventFilter(MouseEvent.MOUSE_DRAGGED, onMouseDraggedEventHandler);
