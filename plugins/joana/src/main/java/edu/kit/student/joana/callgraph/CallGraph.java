@@ -8,10 +8,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import edu.kit.student.graphmodel.CompoundVertex;
-import edu.kit.student.graphmodel.InlineSubGraph;
-import edu.kit.student.graphmodel.Vertex;
-import edu.kit.student.graphmodel.ViewableVertex;
+import edu.kit.student.graphmodel.*;
+import edu.kit.student.graphmodel.action.EdgeAction;
 import edu.kit.student.graphmodel.action.SubGraphAction;
 import edu.kit.student.graphmodel.action.VertexAction;
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
@@ -41,8 +39,8 @@ public class CallGraph extends JoanaGraph {
     private JoanaCollapser collapser;
     
     public CallGraph(String name, Set<CallGraphVertex> vertices, Set<JoanaEdge> edges) {
-        super(name, vertices.stream().collect(Collectors.toSet()), edges);
-        this.graph = new DefaultDirectedGraph<>(vertices.stream().collect(Collectors.toSet()), edges);
+        super(name, new HashSet<>(vertices), edges);
+        this.graph = new DefaultDirectedGraph<>(new HashSet<JoanaVertex>(vertices), edges);
         for (CallGraphVertex vertex : vertices) {
             methodGraphs.add(vertex.getGraph());
         }
@@ -78,6 +76,11 @@ public class CallGraph extends JoanaGraph {
         }
 
         return actions;
+    }
+
+    @Override
+    public List<EdgeAction> getEdgeActions(Edge edge) {
+        return new LinkedList<>();
     }
 
     @Override

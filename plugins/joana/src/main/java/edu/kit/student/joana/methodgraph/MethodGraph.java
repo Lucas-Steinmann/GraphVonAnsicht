@@ -3,9 +3,11 @@ package edu.kit.student.joana.methodgraph;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import edu.kit.student.graphmodel.Edge;
 import edu.kit.student.graphmodel.InlineSubGraph;
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.ViewableVertex;
+import edu.kit.student.graphmodel.action.EdgeAction;
 import edu.kit.student.graphmodel.action.SubGraphAction;
 import edu.kit.student.graphmodel.action.VertexAction;
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
@@ -223,6 +225,11 @@ public class MethodGraph extends JoanaGraph {
                           .forEach(fa -> actions.add(newCollapseFieldAccessAction(fa)));
                           
         return actions;
+    }
+
+    @Override
+    public List<EdgeAction> getEdgeActions(Edge edge) {
+        return new LinkedList<>();
     }
 
     @Override

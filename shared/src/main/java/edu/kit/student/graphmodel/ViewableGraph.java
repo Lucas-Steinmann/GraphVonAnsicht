@@ -3,6 +3,7 @@ package edu.kit.student.graphmodel;
 import java.util.List;
 import java.util.Set;
 
+import edu.kit.student.graphmodel.action.EdgeAction;
 import edu.kit.student.graphmodel.action.SubGraphAction;
 import edu.kit.student.graphmodel.action.VertexAction;
 import edu.kit.student.objectproperty.GAnsProperty;
@@ -19,19 +20,19 @@ public interface ViewableGraph extends Graph {
 	 * Returns the name of the Graph.
 	 * @return The name of the graph.
 	 */
-	public String getName();
+	String getName();
 
 	/**
 	 * Returns the ID of the graph.
 	 * @return The id of the graph.
 	 */
-	public Integer getID();
+	Integer getID();
 	
 	/**
 	 * Returns the statistics for this graph as a list of GansProperties.
 	 * @return the statistics
 	 */
-	public List<GAnsProperty<?>> getStatistics();
+	List<GAnsProperty<?>> getStatistics();
 
 	/**
 	 * Returns a list of actions which can be executed on the specified vertex induced subgraph.
@@ -40,7 +41,7 @@ public interface ViewableGraph extends Graph {
 	 * @param vertices the vertices inducing the subgraph
 	 * @return         the list of actions
 	 */
-	public List<SubGraphAction> getSubGraphActions(Set<ViewableVertex> vertices);
+	List<SubGraphAction> getSubGraphActions(Set<ViewableVertex> vertices);
 
 	/**
 	 * Returns a list of actions which can be executed on the specified vertex.
@@ -49,64 +50,73 @@ public interface ViewableGraph extends Graph {
 	 * @param vertex the vertex
 	 * @return       the list of actions
 	 */
-	public List<VertexAction> getVertexActions(Vertex vertex);
-	
+	List<VertexAction> getVertexActions(Vertex vertex);
+
+	/**
+	 * Returns a list of actions which can be executed on the specified edge.
+	 * The first action in the list will be implicitly used as the default action
+	 * in the context of an user interface.
+	 * @param edge    the edge
+	 * @return     	the list of actions
+	 */
+	List<EdgeAction> getEdgeActions(Edge edge);
+
 	/**
 	 * Adds a vertex filter to the list of active filters for this graph.
 	 * @param filter the filter to add
 	 */
-	public void addVertexFilter(VertexFilter filter);
+	void addVertexFilter(VertexFilter filter);
 	
 	/**
 	 * Sets  vertex filter from the collection to the list of active filters for this graph.
 	 * @param filter the filter collection to add
 	 */
-	public void setVertexFilter(List<VertexFilter> filter);
+	void setVertexFilter(List<VertexFilter> filter);
 	
 	/**
 	 * Returns a unmodifiable list of all active vertex filters for this graph.
 	 * @return A list of all active vertex filters for this graph.
 	 */
-	public List<VertexFilter> getActiveVertexFilter();
+	List<VertexFilter> getActiveVertexFilter();
 	
 	/**
 	 * Adds an edge filter to the list of active filters for this graph.
 	 * @param filter the filter to add
 	 */
-	public void addEdgeFilter(EdgeFilter filter);
+	void addEdgeFilter(EdgeFilter filter);
 	
 	/**
 	 * Adds all edge filter from the collection to the list of active filters for this graph.
 	 * @param filter the filter collection to add
 	 */
-	public void setEdgeFilter(List<EdgeFilter> filter);
+	void setEdgeFilter(List<EdgeFilter> filter);
 	
 	/**
 	 * Returns a unmodifiable list of all active edge filters for this graph.
 	 * @return A list of all active edge filters for this graph.
 	 */
-	public List<EdgeFilter> getActiveEdgeFilter();
+	List<EdgeFilter> getActiveEdgeFilter();
 	
 	/**
 	 * Removes a vertex filter from the list of active filters
 	 * @param filter the filter to remove
 	 */
-	public void removeVertexFilter(VertexFilter filter);
+	void removeVertexFilter(VertexFilter filter);
 	
 	/**
 	 * Removes a edge filter from the list of active filters
 	 * @param filter the filter to remove
 	 */
-	public void removeEdgeFilter(EdgeFilter filter);
+	void removeEdgeFilter(EdgeFilter filter);
 
 	@Override
-    public Set<? extends ViewableVertex> getVertexSet();
+    Set<? extends ViewableVertex> getVertexSet();
 
 	/**
 	 * Returns the set of all conceptual subgraphs in this graph
 	 * @return the list of subgraphs
 	 */
-	public Set<? extends InlineSubGraph> getInlineSubGraphs();
+	Set<? extends InlineSubGraph> getInlineSubGraphs();
 
 	/**
 	 * Returns a list of layouts which have been registered at the corresponding
@@ -116,7 +126,7 @@ public interface ViewableGraph extends Graph {
 	 * @return A list of layouts which have been registered at the corresponding
 	 *         LayoutRegister for this graph type.
 	 */
-	public List<LayoutOption> getRegisteredLayouts();
+	List<LayoutOption> getRegisteredLayouts();
 
 	/**
 	 * Returns the default layout for this graph.
@@ -124,5 +134,5 @@ public interface ViewableGraph extends Graph {
 	 * having to decide between multiple options.
 	 * @return the default layout for this graph
 	 */
-	public LayoutOption getDefaultLayout();
+	LayoutOption getDefaultLayout();
 }

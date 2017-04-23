@@ -6,6 +6,7 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javafx.collections.SetChangeListener;
 import javafx.scene.shape.Shape;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,11 +34,22 @@ class GraphViewSelectionModel {
     private final Logger logger = LoggerFactory.getLogger(GraphViewSelectionModel.class);
 	private ObservableSet<VertexShape> selectedVertexShapes;
 	private ObservableSet<EdgeShape> selectedEdgeShapes;
+	private ObservableSet<GAnsGraphElement> selectedShapes;
 	private SelectionGestures rubberband;
 
 	GraphViewSelectionModel(GraphViewPaneStack viewPanes) {
 		selectedVertexShapes = FXCollections.observableSet(new HashSet<VertexShape>());
 		selectedEdgeShapes = FXCollections.observableSet(new HashSet<EdgeShape>());
+		selectedShapes = FXCollections.observableSet(new HashSet<GAnsGraphElement>());
+
+		// Sync super set with individual sets.
+		SetChangeListener<GAnsGraphElement> syncSetListener = change -> {
+			selectedShapes.add(change.getElementAdded());
+			selectedShapes.remove(change.getElementRemoved());
+		};
+		selectedVertexShapes.addListener(syncSetListener);
+		selectedEdgeShapes.addListener(syncSetListener);
+
 		rubberband = new SelectionGestures(viewPanes);
 	}
 
@@ -111,6 +123,10 @@ class GraphViewSelectionModel {
 
 	ObservableSet<EdgeShape> getSelectedEdgeShapes() {
 		return selectedEdgeShapes;
+	}
+
+	ObservableSet<GAnsGraphElement> getSelectedShapes() {
+		return selectedShapes;
 	}
 
 	void setContextMenu(ContextMenu menu) {

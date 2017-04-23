@@ -10,11 +10,8 @@ import java.util.OptionalDouble;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import edu.kit.student.graphmodel.DefaultVertex;
-import edu.kit.student.graphmodel.FastGraphAccessor;
-import edu.kit.student.graphmodel.InlineSubGraph;
-import edu.kit.student.graphmodel.Vertex;
-import edu.kit.student.graphmodel.ViewableVertex;
+import edu.kit.student.graphmodel.*;
+import edu.kit.student.graphmodel.action.EdgeAction;
 import edu.kit.student.graphmodel.action.SubGraphAction;
 import edu.kit.student.graphmodel.action.VertexAction;
 import edu.kit.student.graphmodel.directed.DefaultDirectedGraph;
@@ -146,6 +143,11 @@ public class FieldAccessGraph extends JoanaGraph implements InlineSubGraph {
 
     @Override
     public List<VertexAction> getVertexActions(Vertex vertex) {
+        return new LinkedList<>();
+    }
+
+    @Override
+    public List<EdgeAction> getEdgeActions(Edge edge) {
         return new LinkedList<>();
     }
 

@@ -1,14 +1,13 @@
 package edu.kit.student.gui;
 
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 
+import edu.kit.student.graphmodel.Edge;
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.ViewableGraph;
 import edu.kit.student.graphmodel.ViewableVertex;
+import edu.kit.student.graphmodel.action.Action;
+import edu.kit.student.graphmodel.action.EdgeAction;
 import edu.kit.student.graphmodel.action.SubGraphAction;
 import edu.kit.student.graphmodel.action.VertexAction;
 import edu.kit.student.plugin.EdgeFilter;
@@ -21,13 +20,7 @@ import javafx.event.ActionEvent;
 import javafx.event.EventHandler;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.CheckBox;
-import javafx.scene.control.ContextMenu;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.MenuItem;
-import javafx.scene.control.Tab;
-import javafx.scene.control.TabPane;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.layout.ColumnConstraints;
 import javafx.scene.layout.GridPane;
@@ -61,7 +54,6 @@ public class GraphView extends Pane {
 	public GraphView(GAnsMediator mediator) {
 		this.mediator = mediator;
 		this.contextMenu = new ContextMenu();
-		setupContextMenu();
 	}
 	
 	/**
@@ -111,7 +103,7 @@ public class GraphView extends Pane {
 	public void setSelectionModel(GraphViewSelectionModel selectionModel) {
 		this.selectionModel = selectionModel;
 		selectionModel.setContextMenu(this.contextMenu);
-		selectionModel.getSelectedVertexShapes().addListener(onSelectionChanged);
+		selectionModel.getSelectedShapes().addListener(onSelectionChanged);
 	}
 
 	/**
@@ -131,82 +123,90 @@ public class GraphView extends Pane {
 		return this.layout;
 	}
 	
-	private void setupContextMenu() {
-		MenuItem group = new MenuItem(LanguageManager.getInstance().get("ctx_group"));
-		group.setOnAction(e ->
-		{
-            Set<ViewableVertex> selectedVertices = new HashSet<>();
-            GraphView.this.getSelectionModel().getSelectedVertexShapes().forEach(
-                    shape -> selectedVertices.add(graphFactory.getVertexFromShape(shape)));
-            if(groupManager.openAddGroupDialog(selectedVertices)) {
-                openGroupDialog();
-                selectionModel.clear();
-            }
-        });
-		 
-		this.contextMenu.getItems().addAll(group);
-	}
-
 	/**
 	 * Fetches the applicable actions from the current selection and
 	 * adds them as menu items.
 	 */
-    private SetChangeListener<VertexShape> onSelectionChanged = change -> {
+    private SetChangeListener<GAnsGraphElement> onSelectionChanged = change -> {
         GraphView.this.contextMenu.getItems().removeAll(dynamicMenuListItems);
         dynamicMenuListItems.clear();
 
         // Map the current selection shapes back to the actual GraphElements
         Set<ViewableVertex> vertices = new HashSet<>();
+		Set<Edge> edges = new HashSet<>();
         for(VertexShape shape : getSelectionModel().getSelectedVertexShapes()) {
             vertices.add(getFactory().getVertexFromShape(shape));
         }
+		for(EdgeShape shape : getSelectionModel().getSelectedEdgeShapes()) {
+			edges.add(getFactory().getEdgeFromShape(shape));
+		}
 
         int menuIdx = 0;
-        for (SubGraphAction action : getFactory().getGraph().getSubGraphActions(vertices)) {
-            // For every action applicable on the selection create a menu item.
-            MenuItem item = new MenuItem(action.getName());
-            dynamicMenuListItems.add(item);
-            System.out.println(action.getName());
-            item.setOnAction(event -> {
-                GraphView.this.selectionModel.clear();
-
-                action.handle();
-                // TODO: Instead of layouting always, give actions a field
-				// where they specify if they need the graph to be layouted again
-                GraphView.this.getCurrentLayoutOption().chooseLayout();
-                GraphView.this.getCurrentLayoutOption().applyLayout();
-                GraphView.this.reloadGraph();
-            });
-            GraphView.this.contextMenu.getItems().add(menuIdx++, item);
-        }
+        menuIdx = addDynamicMenuItemsForActions(getFactory().getGraph().getSubGraphActions(vertices), contextMenu, menuIdx);
         // Set menu idx to 0 to add following items to the start of the menu.
         menuIdx = 0;
-        if (vertices.size() == 1) {
-            ViewableVertex vertex = vertices.iterator().next();
-            // Display link
-            int linkId = vertex.getLink();
-            if (linkId != -1) {
-                MenuItem item = new MenuItem(LanguageManager.getInstance().get("ctx_open_graph"));
-                dynamicMenuListItems.add(item);
-                // set action to open new graph
-                item.setOnAction(event -> GraphView.this.mediator.openGraph(linkId));
-                GraphView.this.contextMenu.getItems().add(menuIdx++, item);
-
-            }
-            // Display vertex actions
-            for (VertexAction action : getFactory().getGraph().getVertexActions(vertex)) {
-                MenuItem item = new MenuItem(action.getName());
-                dynamicMenuListItems.add(item);
-                item.setOnAction(event -> {
-                    action.handle();
-                    GraphView.this.getCurrentLayoutOption().chooseLayout();
-                    GraphView.this.getCurrentLayoutOption().applyLayout();
-                    GraphView.this.reloadGraph();
-                });
-                GraphView.this.contextMenu.getItems().add(menuIdx++, item);
-            }
-        }
+        if (vertices.size() + edges.size() == 1) {
+            // If only one element is selected show the actions applicable to this element.
+			if (vertices.size() == 1) {
+			    // If said element is a vertex
+				ViewableVertex vertex = vertices.iterator().next();
+				// Display link if edge has a link
+				int linkId = vertex.getLink();
+				if (linkId != -1) {
+					MenuItem item = new MenuItem(LanguageManager.getInstance().get("ctx_open_graph"));
+					dynamicMenuListItems.add(item);
+					// set action to open new graph
+					item.setOnAction(event -> GraphView.this.mediator.openGraph(linkId));
+					GraphView.this.contextMenu.getItems().add(menuIdx++, item);
+				}
+				menuIdx = addDynamicMenuItemsForActions(getFactory().getGraph().getVertexActions(vertex), contextMenu, menuIdx);
+			} else {
+				// If said element is an edge
+				Edge edge = edges.iterator().next();
+				menuIdx = addDynamicMenuItemsForActions(getFactory().getGraph().getEdgeActions(edge), contextMenu, menuIdx);
+			}
+		}
+		if (vertices.size() > 0) {
+        	// Display grouping action
+			createGroupMenuItem(vertices);
+		}
     };
+
+    private int addDynamicMenuItemsForActions(Collection<? extends Action> actions, ContextMenu menu, int idx) {
+        for (Action action : actions) {
+			MenuItem item = createMenuItem(action);
+			dynamicMenuListItems.add(item);
+			menu.getItems().add(idx++, item);
+		}
+		return idx;
+	}
+
+    private MenuItem createMenuItem(Action action) {
+		MenuItem item = new MenuItem(action.getName());
+		item.setOnAction(event -> {
+			GraphView.this.selectionModel.clear();
+			action.handle();
+			GraphView.this.getCurrentLayoutOption().chooseLayout();
+			GraphView.this.getCurrentLayoutOption().applyLayout();
+			GraphView.this.reloadGraph();
+		});
+		return item;
+	}
+
+	private void createGroupMenuItem(Set<ViewableVertex> vertices) {
+		MenuItem group = new MenuItem(LanguageManager.getInstance().get("ctx_group"));
+		group.setOnAction(e ->
+		{
+			if(groupManager.openAddGroupDialog(vertices)) {
+				openGroupDialog();
+				selectionModel.clear();
+			}
+		});
+
+		this.contextMenu.getItems().addAll(group);
+		this.dynamicMenuListItems.add(group);
+	}
+
 
 	public void openGroupDialog() {
 		groupManager.openGroupDialog();
