@@ -52,6 +52,8 @@ import javafx.stage.WindowEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.sound.sampled.Line;
+
 /**
  * Main application of GAns.
  * 
@@ -411,7 +413,7 @@ public class GAnsApplication {
 		graphViewTabPane.getSelectionModel().select(tab);
 
 		// Fill Information-View on change of selection
-		graphView.getSelectionModel().getSelectedShapes().addListener(new InformationViewUpdater(graphView));
+		graphView.getSelectionModel().getSelectedShapes().addListener(new InformationViewUpdater(graphView, informationView));
 
 	}
 
@@ -419,9 +421,12 @@ public class GAnsApplication {
 
 		final ObservableList<GAnsProperty<?>> selectedItemProperties = FXCollections.observableList(new LinkedList<>());
 		final GraphView graphView;
+		final InformationView informationView;
 
-		public InformationViewUpdater(GraphView graphView) {
+		public InformationViewUpdater(GraphView graphView, InformationView infoView) {
 		    this.graphView = graphView;
+		    this.informationView = infoView;
+		    infoView.setInformation(selectedItemProperties);
 		}
 
 		@Override
@@ -438,10 +443,10 @@ public class GAnsApplication {
 			} else if (change.wasRemoved()) {
 				Edge edge = factory.getEdgeFromShape(change.getElementRemoved());
 				if (edge != null)
-					selectedItemProperties.addAll(edge.getProperties());
+					selectedItemProperties.removeAll(edge.getProperties());
 				Vertex vertex = factory.getVertexFromShape(change.getElementRemoved());
 				if (vertex != null)
-					selectedItemProperties.addAll(vertex.getProperties());
+					selectedItemProperties.removeAll(vertex.getProperties());
 			}
 		}
 	}
