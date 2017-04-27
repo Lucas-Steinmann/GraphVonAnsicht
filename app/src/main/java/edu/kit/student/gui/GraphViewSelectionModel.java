@@ -54,12 +54,12 @@ class GraphViewSelectionModel {
 	}
 
 	private void addVertex(VertexShape node) {
-		node.setStyle("-fx-effect: dropshadow(three-pass-box, red, 4, 4, 0, 0);");
+		node.setStyle("-fx-effect: dropshadow(three-pass-box, red, 2, 2, 0, 0);");
 		selectedVertexShapes.add(node);
 	}
 
 	private void addEdge(EdgeShape edge) {
-		edge.setStyle("-fx-effect: dropshadow(three-pass-box, red, 4, 4, 0, 0);");
+		edge.setStyle("-fx-effect: dropshadow(three-pass-box, red, 0.5, 2, 0, 0);");
 		selectedEdgeShapes.add(edge);
 	}
 
@@ -194,7 +194,9 @@ class GraphViewSelectionModel {
 						// Instead of rectangle use a small hit box at cursor position to intersect elements.
 						// Area must be greater than zero as the area of the intersection is used to determine if
 						// a collision is taking place.
-						final BoundingBox clickBound = new BoundingBox(event.getSceneX(),event.getSceneY(),1,1);
+                        final int clickBoundSize = 10;
+						final BoundingBox clickBound = new BoundingBox(event.getSceneX()-clickBoundSize/2,
+								event.getSceneY()-clickBoundSize,clickBoundSize,clickBoundSize);
 
 						// Get all intersected elements in the graph
 						// should mostly contain one item (if there are nodes on top of each other there
