@@ -1,31 +1,21 @@
 package edu.kit.student.gui;
 
-import java.util.*;
-
 import edu.kit.student.graphmodel.Edge;
-import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.graphmodel.ViewableGraph;
 import edu.kit.student.graphmodel.ViewableVertex;
 import edu.kit.student.graphmodel.action.Action;
-import edu.kit.student.graphmodel.action.EdgeAction;
-import edu.kit.student.graphmodel.action.SubGraphAction;
-import edu.kit.student.graphmodel.action.VertexAction;
 import edu.kit.student.plugin.EdgeFilter;
 import edu.kit.student.plugin.LayoutOption;
-import edu.kit.student.plugin.PluginManager;
 import edu.kit.student.plugin.VertexFilter;
 import edu.kit.student.util.LanguageManager;
 import javafx.collections.SetChangeListener;
-import javafx.event.ActionEvent;
-import javafx.event.EventHandler;
-import javafx.geometry.Insets;
 import javafx.scene.Node;
-import javafx.scene.control.*;
-import javafx.scene.image.Image;
-import javafx.scene.layout.ColumnConstraints;
-import javafx.scene.layout.GridPane;
+import javafx.scene.control.ButtonType;
+import javafx.scene.control.ContextMenu;
+import javafx.scene.control.MenuItem;
 import javafx.scene.layout.Pane;
-import javafx.stage.Stage;
+
+import java.util.*;
 
 /**
  * A view used for showing and creating a graph in GAns. It supports zooming and
@@ -213,36 +203,14 @@ public class GraphView extends Pane {
 	}
 	
 	public void openFilterDialog() {
-		Dialog<ButtonType> dialog = new Dialog<>();
 
-		List<VertexFilter> selectedVertexFilter = new LinkedList<>();
-		List<EdgeFilter> selectedEdgeFilter = new LinkedList<>();
-		
-		TabPane tabPane = new TabPane();
-		
-		Tab vertexFilterTab = new Tab(LanguageManager.getInstance().get("wind_filter_vertices"));
-		vertexFilterTab.setClosable(false);
-		vertexFilterTab.setContent(setupVertexFilterPane(selectedVertexFilter));
+		List<VertexFilter> selectedVertexFilter = new LinkedList<>(this.graphFactory.getGraph().getActiveVertexFilter());
 		List<VertexFilter> vertexBackup = new LinkedList<>(selectedVertexFilter);
-		
-		Tab edgeFilterTab = new Tab(LanguageManager.getInstance().get("wind_filter_edges"));
-		edgeFilterTab.setClosable(false);
-		edgeFilterTab.setContent(setupEdgeFilterPane(selectedEdgeFilter));
+		List<EdgeFilter> selectedEdgeFilter = new LinkedList<>(this.graphFactory.getGraph().getActiveEdgeFilter());
 		List<EdgeFilter> edgeBackup = new LinkedList<>(selectedEdgeFilter);
-		
-		tabPane.getTabs().addAll(vertexFilterTab, edgeFilterTab);
-		
-		dialog.getDialogPane().setContent(tabPane);
-		dialog.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
-		dialog.setTitle(LanguageManager.getInstance().get("wind_filter_title"));
-		dialog.setHeaderText(null);
-		dialog.setGraphic(null);
-		dialog.setWidth(500);
-		dialog.setHeight(500);
-		Stage stage = (Stage) dialog.getDialogPane().getScene().getWindow();
-    	stage.getIcons().add(new Image("gans_icon.png"));
-		
-		Optional<ButtonType> result = dialog.showAndWait();
+    	FilterDialog fd = new FilterDialog(selectedVertexFilter, selectedEdgeFilter);
+
+		Optional<ButtonType> result = fd.showAndWait();
 		if(result.isPresent() && result.get() == ButtonType.OK &&
 		        !(listEqualsNoOrder(vertexBackup, selectedVertexFilter) &&
 		        listEqualsNoOrder(edgeBackup, selectedEdgeFilter))) 
@@ -262,98 +230,4 @@ public class GraphView extends Pane {
         return s1.equals(s2);
     }
 	
-	private GridPane setupVertexFilterPane(List<VertexFilter> selectedVertexFilter) {
-		List<VertexFilter> vertexFilter = PluginManager.getPluginManager().getVertexFilter();
-		List<CheckBox> vertexFilterBoxes = new LinkedList<>();
-		int column = 0;
-		int row = 0;
-		GridPane vertexFilterPane = new GridPane();
-		vertexFilterPane.setHgap(10);
-		vertexFilterPane.setVgap(10);
-		vertexFilterPane.setPadding(new Insets(10, 10, 10, 10));
-		ColumnConstraints vertexCol1 = new ColumnConstraints();
-		vertexCol1.setPercentWidth(25);
-	    ColumnConstraints vertexCol2 = new ColumnConstraints();
-	    vertexCol2.setPercentWidth(25);
-	    ColumnConstraints vertexCol3 = new ColumnConstraints();
-	    vertexCol3.setPercentWidth(25);
-	    ColumnConstraints vertexCol4 = new ColumnConstraints();
-	    vertexCol4.setPercentWidth(25);
-	    vertexFilterPane.getColumnConstraints().addAll(vertexCol1,vertexCol2,vertexCol3,vertexCol4);
-		for(VertexFilter filter : vertexFilter) {
-			if(column == 4) {
-				column = 0;
-				row++;
-			}
-			boolean selected = true;
-			if(this.graphFactory.getGraph().getActiveVertexFilter().contains(filter)) {
-				selectedVertexFilter.add(filter);
-				selected = false;
-			}
-			CheckBox box = new CheckBox(filter.getName());
-			box.setSelected(selected);
-			box.setOnAction(event -> {
-                CheckBox box1 = (CheckBox)event.getSource();
-                int filterIndex = vertexFilterBoxes.indexOf(box1);
-                if(!box1.isSelected()) {
-                    selectedVertexFilter.add(vertexFilter.get(filterIndex));
-                } else {
-                    selectedVertexFilter.remove(vertexFilter.get(filterIndex));
-                }
-
-            });
-			vertexFilterBoxes.add(box);
-			vertexFilterPane.add(box, column, row);
-			column++;
-		}
-		return vertexFilterPane;
-	}
-	
-	//Basically a copy of setupVertexFilterPane, since there is no mutual parent class
-	private GridPane setupEdgeFilterPane(List<EdgeFilter> selectedEdgeFilter) {
-		List<EdgeFilter> edgeFilter = PluginManager.getPluginManager().getEdgeFilter();
-		List<CheckBox> edgeFilterBoxes = new LinkedList<>();
-		int column = 0;
-		int row = 0;
-		GridPane edgeFilterPane = new GridPane();
-		edgeFilterPane.setHgap(10);
-		edgeFilterPane.setVgap(10);
-		edgeFilterPane.setPadding(new Insets(10, 10, 10, 10));
-		ColumnConstraints edgeCol1 = new ColumnConstraints();
-		edgeCol1.setPercentWidth(25);
-	    ColumnConstraints edgeCol2 = new ColumnConstraints();
-	    edgeCol2.setPercentWidth(25);
-	    ColumnConstraints edgeCol3 = new ColumnConstraints();
-	    edgeCol3.setPercentWidth(25);
-	    ColumnConstraints edgeCol4 = new ColumnConstraints();
-	    edgeCol4.setPercentWidth(25);
-	    edgeFilterPane.getColumnConstraints().addAll(edgeCol1,edgeCol2,edgeCol3,edgeCol4);
-		for(EdgeFilter filter : edgeFilter) {
-			if(column == 4) {
-				column = 0;
-				row++;
-			}
-			boolean selected = true;
-			if(this.graphFactory.getGraph().getActiveEdgeFilter().contains(filter)) {
-				selectedEdgeFilter.add(filter);
-				selected = false;
-			}
-			CheckBox box = new CheckBox(filter.getName());
-			box.setSelected(selected);
-			box.setOnAction(event -> {
-                CheckBox box1 = (CheckBox)event.getSource();
-                int filterIndex = edgeFilterBoxes.indexOf(box1);
-                if(!box1.isSelected()) {
-                    selectedEdgeFilter.add(edgeFilter.get(filterIndex));
-                } else {
-                    selectedEdgeFilter.remove(edgeFilter.get(filterIndex));
-                }
-
-            });
-			edgeFilterBoxes.add(box);
-			edgeFilterPane.add(box, column, row);
-			column++;
-		}
-		return edgeFilterPane;
-	}
 }
