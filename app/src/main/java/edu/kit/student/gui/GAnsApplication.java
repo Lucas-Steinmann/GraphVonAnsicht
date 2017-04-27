@@ -5,10 +5,7 @@ import java.text.ParseException;
 import java.util.*;
 import java.util.stream.Collectors;
 
-import edu.kit.student.graphmodel.Edge;
-import edu.kit.student.graphmodel.GraphModel;
-import edu.kit.student.graphmodel.Vertex;
-import edu.kit.student.graphmodel.ViewableGraph;
+import edu.kit.student.graphmodel.*;
 import edu.kit.student.objectproperty.GAnsProperty;
 import edu.kit.student.parameter.Settings;
 import edu.kit.student.plugin.Exporter;
@@ -52,6 +49,8 @@ import javafx.stage.FileChooser;
 import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.Stage;
 import javafx.stage.WindowEvent;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Main application of GAns.
@@ -75,7 +74,9 @@ public class GAnsApplication {
 	private File currentImportPath;
 	private File currentExportPath;
 	private GAnsMediator mediator;
-	
+
+	private final Logger logger = LoggerFactory.getLogger(GAnsApplication.class);
+
 	public GAnsApplication(GAnsMediator mediator) {
 		this.mediator = mediator;
 	}
@@ -408,26 +409,41 @@ public class GAnsApplication {
 		GraphViewTab tab = new GraphViewTab(graphViewPaneStack);
 		graphViewTabPane.getTabs().add(tab);
 		graphViewTabPane.getSelectionModel().select(tab);
-		
-		// Fill Information-View on change of selection
-		graphView.getSelectionModel().getSelectedShapes().addListener((SetChangeListener<GAnsGraphElement>) changedItem -> {
-            ObservableSet<VertexShape> selectedVertexShapes = graphView.getSelectionModel().getSelectedVertexShapes();
-			ObservableSet<EdgeShape> selectedEdgeShapes = graphView.getSelectionModel().getSelectedEdgeShapes();
-            List<GAnsProperty<?>> tmp = new LinkedList<>();
-            for (VertexShape element : selectedVertexShapes) {
-                GraphViewGraphFactory factory = graphView.getFactory();
-                Vertex vertex = factory.getVertexFromShape(element);
-                tmp.addAll(vertex.getProperties());
-            }
-			for (EdgeShape element : selectedEdgeShapes) {
-				GraphViewGraphFactory factory = graphView.getFactory();
-				Edge edge = factory.getEdgeFromShape(element);
-				tmp.addAll(edge.getProperties());
-			}
 
-            ObservableList<GAnsProperty<?>> properties = FXCollections.observableList(tmp);
-            informationView.setInformation(properties);
-        });
+		// Fill Information-View on change of selection
+		graphView.getSelectionModel().getSelectedShapes().addListener(new InformationViewUpdater(graphView));
+
+	}
+
+	private class InformationViewUpdater implements SetChangeListener<GAnsGraphElement> {
+
+		final ObservableList<GAnsProperty<?>> selectedItemProperties = FXCollections.observableList(new LinkedList<>());
+		final GraphView graphView;
+
+		public InformationViewUpdater(GraphView graphView) {
+		    this.graphView = graphView;
+		}
+
+		@Override
+		public void onChanged(Change<? extends GAnsGraphElement> change) {
+			GraphViewGraphFactory factory = graphView.getFactory();
+			// Urgh.. Add common interface for edge and vertex
+			if (change.wasAdded()) {
+				Edge edge = factory.getEdgeFromShape(change.getElementAdded());
+				if (edge != null)
+					selectedItemProperties.addAll(edge.getProperties());
+				Vertex vertex = factory.getVertexFromShape(change.getElementAdded());
+				if (vertex != null)
+					selectedItemProperties.addAll(vertex.getProperties());
+			} else if (change.wasRemoved()) {
+				Edge edge = factory.getEdgeFromShape(change.getElementRemoved());
+				if (edge != null)
+					selectedItemProperties.addAll(edge.getProperties());
+				Vertex vertex = factory.getVertexFromShape(change.getElementRemoved());
+				if (vertex != null)
+					selectedItemProperties.addAll(vertex.getProperties());
+			}
+		}
 	}
 	
 	private boolean openWorkspaceDialog() {
