@@ -3,7 +3,6 @@ package edu.kit.student.gui;
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.util.DoublePoint;
 import javafx.scene.paint.Color;
-import javafx.scene.shape.Path;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 
@@ -40,9 +39,12 @@ public class VertexShape extends GAnsGraphElement {
 		DoublePoint size = vertex.getSize();
 		
 		this.rectangle = new Rectangle(vertex.getX(), vertex.getY(), size.x, size.y);
-		
+
+		// TODO: Clip text when text is larger than content.
 		this.text = new Text(vertex.getLabel());
-		getChildren().addAll(rectangle, text);
+		getChildren().add(rectangle);
+		if (!getText().isEmpty())
+			getChildren().add(text);
 
 		setColor(vertex.getColor());
 		
@@ -51,6 +53,10 @@ public class VertexShape extends GAnsGraphElement {
 
 	@Override
 	public void setText(String text) {
+	    if (text.isEmpty())
+	    	getChildren().remove(this.text);
+	    else if (!getChildren().contains(this.text))
+	    	getChildren().add(this.text);
 		this.text.setText(text);
 	}
 
