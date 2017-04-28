@@ -55,15 +55,13 @@ public class FilterDialog extends Dialog<ButtonType> {
         vertexFilterTab.setClosable(false);
         vertexFilterTab.setContent(createCheckboxSetPane(activeVertexFilter,
                 PluginManager.getPluginManager().getVertexFilter(),
-                VertexFilter::getName,
-                (f -> "Hi"), 4));
+                VertexFilter::getName, VertexFilter::getGroup, 4));
 
         Tab edgeFilterTab = new Tab(LanguageManager.getInstance().get("wind_filter_edges"));
         edgeFilterTab.setClosable(false);
         edgeFilterTab.setContent(createCheckboxSetPane(activeEdgeFilter,
                 PluginManager.getPluginManager().getEdgeFilter(),
-                EdgeFilter::getName,
-                (f -> f.getName().substring(0,1)), 4));
+                EdgeFilter::getName, EdgeFilter::getGroup, 4));
 
         tabPane.getTabs().addAll(vertexFilterTab, edgeFilterTab);
 
