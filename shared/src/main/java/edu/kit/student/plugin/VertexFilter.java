@@ -1,14 +1,12 @@
 package edu.kit.student.plugin;
 
-import java.util.function.Predicate;
-
 import edu.kit.student.graphmodel.Vertex;
 
+import java.util.function.Predicate;
+
 /**
- * This Class represents a filter for vertex types. 
+ * This is a common interface for all filter for vertex types.
  * The type of the vertex can be specified through different parameters.
- * 
- *
  */
 public abstract class VertexFilter {
 
@@ -19,7 +17,7 @@ public abstract class VertexFilter {
     }
 
     /**
-     * Getter of name.
+     * Returns the name of the filter.
      * @return the name
      */
     public String getName() {
@@ -27,11 +25,21 @@ public abstract class VertexFilter {
     }
 
     /**
-     * Setter of name.
-     * @param name 
+     * Sets the name of the filter.
+     * @param name the name
      */
     public void setName(String name) { 
         this.name = name; 
+    }
+
+    /**
+     * Returns the name of the group this filter belongs to.
+     * Groups of filters are visually represented together
+     * and can be activated or deactivated as a group.
+     * @return the group name
+     */
+    public String getGroup() {
+        return "Default";
     }
 
     /**

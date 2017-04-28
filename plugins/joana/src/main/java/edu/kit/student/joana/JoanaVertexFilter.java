@@ -1,11 +1,11 @@
 package edu.kit.student.joana;
 
-import java.util.function.Predicate;
-
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.joana.JoanaVertex.VertexKind;
 import edu.kit.student.objectproperty.GAnsProperty;
 import edu.kit.student.plugin.VertexFilter;
+
+import java.util.function.Predicate;
 
 public class JoanaVertexFilter extends VertexFilter {
 
@@ -17,22 +17,20 @@ public class JoanaVertexFilter extends VertexFilter {
 		this.kind = kind;
 	}
 
-	@Override
-	public Predicate<Vertex> getPredicate() {
-		return new Predicate<Vertex>() {
+    @Override
+    public String getGroup() {
+	    return kind.backgroundColor.toString();
+    }
 
-            @Override
-            public boolean test(Vertex t) {
-                for (GAnsProperty<?> property : t.getProperties()) {
-                    if (property.getName().equals("nodeKind")) {
-                        if (property.getValue().equals(kind)) {
-                            return true;
-                        }
-                        return false;
-                    }
+    @Override
+	public Predicate<Vertex> getPredicate() {
+		return t -> {
+            for (GAnsProperty<?> property : t.getProperties()) {
+                if (property.getName().equals("nodeKind")) {
+                    return  property.getValue().equals(kind);
                 }
-                return false;
-            } 
+            }
+            return false;
         };
 	}
 }
