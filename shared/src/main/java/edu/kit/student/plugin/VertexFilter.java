@@ -1,6 +1,7 @@
 package edu.kit.student.plugin;
 
 import edu.kit.student.graphmodel.Vertex;
+import edu.kit.student.util.LanguageManager;
 
 import java.util.function.Predicate;
 
@@ -39,7 +40,7 @@ public abstract class VertexFilter {
      * @return the group name
      */
     public String getGroup() {
-        return "Default";
+        return LanguageManager.getInstance().get("filter_default_group");
     }
 
     /**

@@ -97,9 +97,11 @@ public class FilterDialog extends Dialog<ButtonType> {
         return pane;
     }
 
-    private <T> Node createCheckboxGroup(List<T> allItems, List<T> selectedItems,
+    private <T> Node createCheckboxGroup(List<T> allItems,
+                                         List<T> selectedItems,
                                          Function<T, String> itemName,
                                          String groupName, int columnCount) {
+
         GridPane gridPane = new GridPane();
         List<CheckBox> boxes = new LinkedList<>();
 
@@ -152,7 +154,6 @@ public class FilterDialog extends Dialog<ButtonType> {
         // depending on the selection state of the items in the group
         updateGroupState(boxes, groupCheckBox);
 
-
         // Connect the group box with the items in the box
         groupCheckBox.setOnAction(event -> {
             boxes.forEach(b -> b.setSelected(groupCheckBox.isSelected()));
@@ -162,31 +163,37 @@ public class FilterDialog extends Dialog<ButtonType> {
                 selectedItems.removeAll(allItems);
             }
         });
+        return createBorderedGroup(gridPane, groupCheckBox);
+    }
+
+    private Pane createBorderedGroup(Node content, Region inTitle) {
+
         StackPane pane = new StackPane() {
 
             private final static int CheckBoxPadding = 4;
 
             {
-                getChildren().add(gridPane);
-                groupCheckBox.setPadding(new Insets(0, 0, 0, CheckBoxPadding));
-                groupCheckBox.setStyle("-fx-background-color: -fx-background");
-                getChildren().add(groupCheckBox);
+                getChildren().add(content);
+                inTitle.setPadding(new Insets(0, 0, 0, CheckBoxPadding));
+                inTitle.setStyle("-fx-background-color: -fx-background");
+                getChildren().add(inTitle);
             }
 
             @Override
             protected void layoutChildren() {
                 super.layoutChildren();
-                final double groupCbHeight = groupCheckBox.prefHeight(-1);
-                final double groupCbWidth = groupCheckBox.prefWidth(groupCbHeight) + CheckBoxPadding;
-                groupCheckBox.resize(groupCbWidth, groupCbHeight);
+                final double groupCbHeight = inTitle.prefHeight(-1);
+                final double groupCbWidth = inTitle.prefWidth(groupCbHeight) + CheckBoxPadding;
+                inTitle.resize(groupCbWidth, groupCbHeight);
 
                 // Move checkbox a bit right from the top left corner
-                groupCheckBox.relocate(CheckBoxPadding * 2, -groupCbHeight / 2.0 - 1);
+                inTitle.relocate(CheckBoxPadding * 2, -groupCbHeight / 2.0 - 1);
             }
         };
         pane.setPadding(new Insets(10, 0, 10, 0));
         pane.setBorder(new Border(new BorderStroke(Color.GRAY, BorderStrokeStyle.SOLID,
                 new CornerRadii(4), new BorderWidths(1))));
+
         return pane;
     }
 
