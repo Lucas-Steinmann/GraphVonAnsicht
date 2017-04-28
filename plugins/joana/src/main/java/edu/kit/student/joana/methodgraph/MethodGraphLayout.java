@@ -279,7 +279,7 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 		List<Vertex> dummies = layer.stream().filter(v->v.getID() < 0).collect(Collectors.toList());
 		if(dummies.isEmpty()) return;
 		int dummyCount = dummies.size();
-		System.out.println("dummies: " + dummyCount);
+		//System.out.println("dummies: " + dummyCount);
 		DoublePoint dummySize = dummies.get(0).getSize(); //dummy size is the same for all dummies without set x- and y-coordinates!
 		List<Vertex> normalVertices = layer.stream().filter(v->v.getID() >= 0).collect(Collectors.toList());
 		normalVertices.sort(Comparator.comparingDouble(Vertex::getX));

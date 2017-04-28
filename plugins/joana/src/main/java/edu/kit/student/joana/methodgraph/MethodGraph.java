@@ -73,7 +73,6 @@ public class MethodGraph extends JoanaGraph {
         this.applyDefaultFilters();
     }
 
-
     /**
      * Sets the interprocedural edges of this MethodGraph.
      * Also calculates a mapping of vertex id to the interprocedural edges that are connected with this vertex with its ID.
@@ -102,6 +101,17 @@ public class MethodGraph extends JoanaGraph {
     }
     
     /**
+     * Returns the interprocedural edges where the edge itself and both vertices of it don't match any actual active filter.
+     * 
+     * @return A set of all currently not filtered interprocedural edges
+     */
+    Set<InterproceduralEdge> getNotFilteredInterproceduralEdges(){
+    	Set<InterproceduralEdge> allIEs = new HashSet<>();
+    	this.interprocEdges.values().forEach(allIEs::addAll);
+    	return this.removeFilteredInterproceduralEdges(allIEs);
+    }
+    
+    /**
      * Adds interprocedural edges to this MethodGraph. An edge contains a JoanaVertex and an ForeignGraphDummyVertex as dummy.
      * The JoanaVertex is already contained in the graph, so only the dummies will be added.
      * Every dummy vertex of an InterproceduralEdge should be assigned X- and Y-coordinates, as well as every edge should have a valid EdgePath.
@@ -117,6 +127,7 @@ public class MethodGraph extends JoanaGraph {
         Set<InterproceduralEdge> notFilteredIEs = this.removeFilteredInterproceduralEdges(interprocEdges);
     	for(InterproceduralEdge ie : notFilteredIEs){//add edges to graph
             assert(!ie.getPath().getNodes().isEmpty());
+            if(!this.graph.contains(ie.getNormalVertex())) continue; //normal vertex could be contained in a collapsed vertex(the dummy will be automatically added to the collapsed vertex as well, IE must not be drawn)
             this.graph.addVertex(ie.getDummyVertex());
     		this.graph.addEdge(ie);
     	}
@@ -130,7 +141,7 @@ public class MethodGraph extends JoanaGraph {
     	Set<InterproceduralEdge> allIEs = new HashSet<>();
     	this.interprocEdges.values().forEach(allIEs::addAll);
     	for(InterproceduralEdge ie : allIEs){
-    	    if(this.graph.contains(ie.getDummyVertex())) {
+    	    if(this.graph.contains(ie.getDummyVertex()) && this.graph.contains(ie.getNormalVertex())) {
                 this.graph.removeEdge(ie);
                 this.graph.removeVertex(ie.getDummyVertex());
             }
@@ -300,6 +311,7 @@ public class MethodGraph extends JoanaGraph {
             
             @Override
             public void handle() {
+            	adjustCollapsedInterproceduralEdges(vertices);
                 JoanaCollapsedVertex collapsed = collapse(vertices);
                 expandActions.put(collapsed, newExpandAction(collapsed, fa));
                 if (fa != null) {
@@ -307,6 +319,24 @@ public class MethodGraph extends JoanaGraph {
                 }
             }
         };
+	}
+	
+	//used by newCollapseAction. If just one vertex of an interprocedural edge is selected to collapse(contained in the given set),
+	//this function adds the corresponding vertex to the set and returns it
+	private void adjustCollapsedInterproceduralEdges(Set<ViewableVertex> vertices){
+		assert(vertices != null);
+		Set<InterproceduralEdge> allIEs = new HashSet<>();
+		this.getInterproceduralEdges().values().forEach(allIEs::addAll);
+		boolean containsN, containsD;
+		for(InterproceduralEdge ie : allIEs){
+			containsN = vertices.contains(ie.getNormalVertex());
+			containsD = vertices.contains(ie.getDummyVertex());
+			if(containsN && !containsD){
+				vertices.add(ie.getDummyVertex());
+			}else if(containsD && !containsN){
+				vertices.add(ie.getNormalVertex());
+			}
+		}
 	}
 	
 	/**
