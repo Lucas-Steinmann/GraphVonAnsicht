@@ -1,7 +1,6 @@
 package edu.kit.student.plugin;
 
 import edu.kit.student.graphmodel.Edge;
-import edu.kit.student.util.LanguageManager;
 
 import java.util.function.Predicate;
 
@@ -10,37 +9,10 @@ import java.util.function.Predicate;
  * To check if an edge passes through this filter, 
  * the client can specify it in {@code matches(Edge edge)}.
  */
-public abstract class EdgeFilter {
-
-    private String name;
+public abstract class EdgeFilter extends Filter{
 
     public EdgeFilter(String name) {
-        this.name = name;
-    }
-    /**
-     * Returns the name of the filter.
-     * @return the name of the filter
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * Sets the name of the filter.
-     * @param name the name of the filter
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    /**
-     * Returns the name of the group this filter belongs to.
-     * Groups of filters are visually represented together
-     * and can be activated or deactivated as a group.
-     * @return the group name
-     */
-    public String getGroup() {
-        return LanguageManager.getInstance().get("filter_default_group");
+        super(name);
     }
 
     /**

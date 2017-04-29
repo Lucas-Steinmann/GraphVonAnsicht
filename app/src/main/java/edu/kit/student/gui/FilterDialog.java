@@ -1,9 +1,11 @@
 package edu.kit.student.gui;
 
 import edu.kit.student.plugin.EdgeFilter;
+import edu.kit.student.plugin.Filter;
 import edu.kit.student.plugin.PluginManager;
 import edu.kit.student.plugin.VertexFilter;
 import edu.kit.student.util.LanguageManager;
+import javafx.beans.value.ChangeListener;
 import javafx.geometry.Insets;
 import javafx.scene.Node;
 import javafx.scene.control.*;
@@ -14,10 +16,7 @@ import javafx.stage.Stage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -49,21 +48,49 @@ public class FilterDialog extends Dialog<ButtonType> {
     public FilterDialog(List<VertexFilter> activeVertexFilter, List<EdgeFilter> activeEdgeFilter) {
         super();
 
+        // Create the vertex filter tab
         TabPane tabPane = new TabPane();
-
         Tab vertexFilterTab = new Tab(LanguageManager.getInstance().get("wind_filter_vertices"));
         vertexFilterTab.setClosable(false);
-        vertexFilterTab.setContent(createCheckboxSetPane(activeVertexFilter,
-                PluginManager.getPluginManager().getVertexFilter(),
-                VertexFilter::getName, VertexFilter::getGroup, 4));
 
+        //Create the edge filter tab
         Tab edgeFilterTab = new Tab(LanguageManager.getInstance().get("wind_filter_edges"));
         edgeFilterTab.setClosable(false);
-        edgeFilterTab.setContent(createCheckboxSetPane(activeEdgeFilter,
-                PluginManager.getPluginManager().getEdgeFilter(),
-                EdgeFilter::getName, EdgeFilter::getGroup, 4));
+
+        // The box controlling the state of all vertices
+        CheckBox checkAllVertex = new CheckBox(LanguageManager.getInstance().get("filter_select_all"));
+        checkAllVertex.setPadding(new Insets(0, 0, 0, 12));
+        CheckBox checkAllEdge = new CheckBox(LanguageManager.getInstance().get("filter_select_all"));
+        checkAllEdge.setPadding(new Insets(0, 0, 0, 12));
+
+
+        List<FilterCheckBox> vertexFilterCheckboxes = new LinkedList<>();
+        for (VertexFilter filter : PluginManager.getPluginManager().getVertexFilter())
+            vertexFilterCheckboxes.add(new FilterCheckBox<>(filter, activeVertexFilter));
+        List<FilterCheckBox> edgeFilterCheckboxes = new LinkedList<>();
+        for (EdgeFilter filter : PluginManager.getPluginManager().getEdgeFilter())
+            edgeFilterCheckboxes.add(new FilterCheckBox<>(filter, activeEdgeFilter));
+
+
+        // Fill with groups of checkboxes
+        Pane vertexCheckboxes = createCheckboxSetPane(vertexFilterCheckboxes, Filter::getGroup, 4);
+        Pane edgeCheckboxes = createCheckboxSetPane(edgeFilterCheckboxes, Filter::getGroup, 4);
+
+
+        new FilterGroup(checkAllVertex, vertexFilterCheckboxes);
+        new FilterGroup(checkAllEdge, edgeFilterCheckboxes);
+
+
+        VBox vertexGroups = new VBox(10, checkAllVertex, vertexCheckboxes);
+        vertexGroups.setPadding(new Insets(10, 0, 0, 0));
+        vertexFilterTab.setContent(vertexGroups);
+
+        VBox edgeGroups = new VBox(10, checkAllEdge, edgeCheckboxes);
+        edgeGroups.setPadding(new Insets(20, 0, 0, 0));
+        edgeFilterTab.setContent(edgeGroups);
 
         tabPane.getTabs().addAll(vertexFilterTab, edgeFilterTab);
+
 
         this.getDialogPane().setContent(tabPane);
         this.getDialogPane().getButtonTypes().addAll(ButtonType.OK, ButtonType.CANCEL);
@@ -76,38 +103,34 @@ public class FilterDialog extends Dialog<ButtonType> {
         stage.getIcons().add(new Image("gans_icon.png"));
     }
 
-    private <T> Pane createCheckboxSetPane(List<T> selectedItems,
-                                           List<T> allItems,
-                                           Function<T, String> itemName,
-                                           Function<T, String> groupMap,
-                                           int columnCount) {
+    private Pane createCheckboxSetPane(List<FilterCheckBox> checkBoxes,
+                                       Function<Filter, String> groupMap,
+                                       int columnCount) {
         VBox pane = new VBox(10);
         pane.setPadding(new Insets(20,0,0,0));
         // Group items after the specified group mapping
-        Map<String, List<T>> groupAll =
-                allItems.stream().collect(
-                    Collectors.groupingBy(groupMap));
+        Map<String, List<FilterCheckBox>> groupAll =
+                checkBoxes.stream().collect(
+                    Collectors.groupingBy(groupMap.compose(fcb -> fcb.filter)));
 
         // For every group create one checkbox group
         for (String group : groupAll.keySet()) {
-            pane.getChildren().add(createCheckboxGroup(groupAll.get(group),
-                    selectedItems,
-                    itemName, group, columnCount));
+            pane.getChildren().add(createCheckboxGroup(groupAll.get(group), group, columnCount));
         }
         return pane;
     }
 
-    private <T> Node createCheckboxGroup(List<T> allItems,
-                                         List<T> selectedItems,
-                                         Function<T, String> itemName,
-                                         String groupName, int columnCount) {
+    private Node createCheckboxGroup(List<FilterCheckBox> filters,
+                                     String groupName, int columnCount) {
 
         GridPane gridPane = new GridPane();
-        List<CheckBox> boxes = new LinkedList<>();
 
         // Create group box which toggles all boxes inside the group
         final CheckBox groupCheckBox = new CheckBox(groupName);
         groupCheckBox.setAllowIndeterminate(false);
+
+        FilterGroup filterGroup = new FilterGroup(groupCheckBox, new HashSet<>());
+
 
         int column = 0;
         int row = 0;
@@ -122,47 +145,16 @@ public class FilterDialog extends Dialog<ButtonType> {
             gridPane.getColumnConstraints().add(constraint);
         }
 
-        for(T item : allItems) {
+        for(FilterCheckBox box : filters) {
             if(column == columnCount) {
                 column = 0;
                 row++;
             }
-            boolean selected = true;
-            if(selectedItems.contains(item)) {
-                selected = false;
-            }
-            CheckBox box = new CheckBox(itemName.apply(item));
-            box.setSelected(selected);
-
-            // When checkbox is toggled update the set of filters
-            // and update the checkbox representing the whole group
-            box.setOnAction(event -> {
-                int filterIndex = boxes.indexOf(box);
-                if(!box.isSelected()) {
-                    selectedItems.add(allItems.get(filterIndex));
-                } else {
-                    selectedItems.remove(allItems.get(filterIndex));
-                }
-                updateGroupState(boxes, groupCheckBox);
-            });
-            boxes.add(box);
+            filterGroup.add(box);
             gridPane.add(box, column, row);
             column++;
         }
 
-        // Initialize the state of the group box
-        // depending on the selection state of the items in the group
-        updateGroupState(boxes, groupCheckBox);
-
-        // Connect the group box with the items in the box
-        groupCheckBox.setOnAction(event -> {
-            boxes.forEach(b -> b.setSelected(groupCheckBox.isSelected()));
-            if (!groupCheckBox.isSelected()) {
-                selectedItems.addAll(allItems);
-            } else {
-                selectedItems.removeAll(allItems);
-            }
-        });
         return createBorderedGroup(gridPane, groupCheckBox);
     }
 
@@ -197,23 +189,91 @@ public class FilterDialog extends Dialog<ButtonType> {
         return pane;
     }
 
-    /**
-     * Synchronizes the state of the representing group checkbox with the current state of
-     * the checkboxes in the group
-     * @param checkBoxes the checkboxes in the group
-     * @param groupCheckBox the checkbox representing the whole group
-     */
-    private void updateGroupState(Collection<CheckBox> checkBoxes, CheckBox groupCheckBox) {
-        boolean allSelected = checkBoxes.stream().allMatch(CheckBox::isSelected);
-        boolean allNotSelected = checkBoxes.stream().noneMatch(CheckBox::isSelected);
-        if (allSelected) {
-            groupCheckBox.setSelected(true);
-            groupCheckBox.setIndeterminate(false);
-        } else if (allNotSelected) {
-            groupCheckBox.setSelected(false);
-            groupCheckBox.setIndeterminate(false);
-        } else {
-            groupCheckBox.setIndeterminate(true);
+
+
+    private class FilterGroup {
+
+        public final CheckBox representingCheckBox;
+        private final List<FilterCheckBox> checkBoxGroup;
+
+        public FilterGroup(CheckBox representingCheckBox, Collection<FilterCheckBox> checkBoxes) {
+            this.representingCheckBox = representingCheckBox;
+            representingCheckBox.setOnAction(event -> updateGroup());
+            this.checkBoxGroup = new LinkedList<>();
+            addAll(checkBoxes);
         }
+
+        public void add(FilterCheckBox checkBox) {
+            this.checkBoxGroup.add(checkBox);
+            updateGroupBox();
+            checkBox.addListener((obs, o, n) -> updateGroupBox());
+        }
+
+        public void addAll(Collection<FilterCheckBox> checkBoxes) {
+            for (FilterCheckBox cb : checkBoxes)
+                add(cb);
+        }
+
+
+        /**
+         * Synchronizes the state of the representing group checkbox with the current state of
+         * the checkboxes in the group
+         */
+        private <T> void updateGroup() {
+            checkBoxGroup.forEach(checkBox -> checkBox.setSelected(representingCheckBox.isSelected()));
+        }
+
+        /**
+         * Synchronizes the state of the representing group checkbox with the current state of
+         * the checkboxes in the group.
+         * This means the state of the groupCheckBox is adapted to match the state of all checkBoxes.
+         */
+        private void updateGroupBox() {
+            boolean allSelected = checkBoxGroup.stream().allMatch(CheckBox::isSelected);
+            boolean allNotSelected = checkBoxGroup.stream().noneMatch(CheckBox::isSelected);
+
+            if (allSelected) {
+                representingCheckBox.setSelected(true);
+                representingCheckBox.setIndeterminate(false);
+            } else if (allNotSelected) {
+                representingCheckBox.setSelected(false);
+                representingCheckBox.setIndeterminate(false);
+            } else {
+                representingCheckBox.setIndeterminate(true);
+            }
+        }
+    }
+
+    private class FilterCheckBox<T extends Filter> extends CheckBox {
+        public final T filter;
+        private final List<ChangeListener<Boolean>> listeners = new LinkedList<>();
+
+        public FilterCheckBox(T filter, List<T> selectedSet) {
+            super(filter.getName());
+            this.filter = filter;
+            selectedProperty().addListener(activateListeners);
+            boolean selected = !selectedSet.contains(filter);
+            setSelected(selected);
+            addListener((obs, o, n) -> {
+                if (n)
+                    selectedSet.remove(filter);
+                else
+                    selectedSet.add(filter);
+            });
+        }
+
+        public void addListener(ChangeListener<Boolean> eventHandler) {
+            this.listeners.add(eventHandler);
+        }
+
+        public void removeListener(ChangeListener<Boolean> eventHandler) {
+            this.listeners.remove(eventHandler);
+        }
+
+        private ChangeListener<Boolean> activateListeners = (obs, o, n) -> {
+            for (ChangeListener<Boolean> listener : listeners) {
+                listener.changed(obs, o, n);
+            }
+        };
     }
 }
