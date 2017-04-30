@@ -1,19 +1,6 @@
 package edu.kit.student.gui;
 
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedHashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-
-import edu.kit.student.graphmodel.Edge;
-import edu.kit.student.graphmodel.Graph;
-import edu.kit.student.graphmodel.InlineSubGraph;
-import edu.kit.student.graphmodel.Vertex;
-import edu.kit.student.graphmodel.ViewableGraph;
-import edu.kit.student.graphmodel.ViewableVertex;
+import edu.kit.student.graphmodel.*;
 import edu.kit.student.graphmodel.ViewableVertex.VertexPriority;
 import edu.kit.student.graphmodel.serialize.SerializedEdge;
 import edu.kit.student.graphmodel.serialize.SerializedGraph;
@@ -26,6 +13,8 @@ import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.PathElement;
+
+import java.util.*;
 
 /**
  * The GraphViewGraphFactory generates the visual representation of a given
@@ -230,10 +219,10 @@ public class GraphViewGraphFactory {
 			shapeProperties.put("label", shape.getText());
 			shapeProperties.put("color", GraphViewGraphFactory.toRGBCode(shape.getColor()));
 			
-			int begin = shape.getVertexStyle().indexOf('#');
+			int begin = shape.getStyle().indexOf('#');
 			String borderColor = "";
 			if(begin != -1) {
-				borderColor = shape.getVertexStyle().substring(begin, begin + colorLength);
+				borderColor = shape.getStyle().substring(begin, begin + colorLength);
 			}
 			shapeProperties.put("border-color", borderColor);
 			

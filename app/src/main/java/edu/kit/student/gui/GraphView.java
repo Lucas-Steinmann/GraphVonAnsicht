@@ -72,8 +72,6 @@ public class GraphView extends Pane {
 		    maxY = maxY > element.getBoundsInParent().getMaxY() ? maxY : element.getBoundsInLocal().getMaxY();
 		}
 		setPrefSize(maxX, maxY);
-		
-		groupManager.applyGroups();
 	}
 
 	/**

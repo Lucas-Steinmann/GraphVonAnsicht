@@ -1,18 +1,8 @@
 package edu.kit.student.gui;
 
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.Set;
-import java.util.stream.Collectors;
-
-import javafx.collections.SetChangeListener;
-import javafx.scene.shape.Shape;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableSet;
+import javafx.collections.SetChangeListener;
 import javafx.event.EventHandler;
 import javafx.geometry.BoundingBox;
 import javafx.geometry.Bounds;
@@ -21,7 +11,16 @@ import javafx.scene.input.MouseButton;
 import javafx.scene.input.MouseEvent;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
+import javafx.scene.shape.Shape;
 import javafx.scene.shape.StrokeLineCap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * The selection model for the {@link GraphView}, that supports multiple
@@ -36,6 +35,8 @@ class GraphViewSelectionModel {
 	private ObservableSet<EdgeShape> selectedEdgeShapes;
 	private ObservableSet<GAnsGraphElement> selectedShapes;
 	private SelectionGestures rubberband;
+
+	private final int MIN_CLICKBOUND_SIZE = 10;
 
 	GraphViewSelectionModel(GraphViewPaneStack viewPanes) {
 		selectedVertexShapes = FXCollections.observableSet(new HashSet<VertexShape>());
@@ -54,8 +55,15 @@ class GraphViewSelectionModel {
 	}
 
 	private void addVertex(VertexShape node) {
-		node.setStyle("-fx-effect: dropshadow(three-pass-box, red, 2, 2, 0, 0);");
-		selectedVertexShapes.add(node);
+		//node.setStyle("-fx-effect: dropshadow(three-pass-box, red, 2, 2, 0, 0);");
+		if (selectedVertexShapes.add(node)) {
+			VertexShape.Border border = node.addBorder(Color.RED);
+			selectedVertexShapes.addListener((SetChangeListener<? super VertexShape>) change -> {
+				if (change.getElementRemoved() == node) {
+					node.removeBorder(border);
+				}
+			});
+		}
 	}
 
 	private void addEdge(EdgeShape edge) {
@@ -76,7 +84,6 @@ class GraphViewSelectionModel {
 	}
 
 	private void removeVertex(VertexShape node) {
-		node.setStyle(node.getVertexStyle());
 		selectedVertexShapes.remove(node);
 	}
 
@@ -194,9 +201,9 @@ class GraphViewSelectionModel {
 						// Instead of rectangle use a small hit box at cursor position to intersect elements.
 						// Area must be greater than zero as the area of the intersection is used to determine if
 						// a collision is taking place.
-                        final int clickBoundSize = 10;
-						final BoundingBox clickBound = new BoundingBox(event.getSceneX()-clickBoundSize/2,
-								event.getSceneY()-clickBoundSize,clickBoundSize,clickBoundSize);
+						final BoundingBox clickBound = new BoundingBox(event.getSceneX() - MIN_CLICKBOUND_SIZE/2,
+								event.getSceneY() - MIN_CLICKBOUND_SIZE,
+								MIN_CLICKBOUND_SIZE, MIN_CLICKBOUND_SIZE);
 
 						// Get all intersected elements in the graph
 						// should mostly contain one item (if there are nodes on top of each other there
@@ -270,8 +277,19 @@ class GraphViewSelectionModel {
 						GraphViewSelectionModel.this.clear();
 					}
 
+                    final Bounds selectionBounds;
+					// If rectangle is very small (e.g. because the user just clicking and did not draw a rectangle)
+					// artificially enlarge the bound of the selection
+                    if (rect.getBoundsInLocal().getWidth() < MIN_CLICKBOUND_SIZE &&
+							rect.getBoundsInLocal().getHeight() < MIN_CLICKBOUND_SIZE) {
+						selectionBounds = new BoundingBox(event.getSceneX() - MIN_CLICKBOUND_SIZE/2,
+								event.getSceneY() - MIN_CLICKBOUND_SIZE,
+								MIN_CLICKBOUND_SIZE, MIN_CLICKBOUND_SIZE);
+					} else {
+						selectionBounds = rect.localToScene(rect.getBoundsInLocal());
+					}
+
 					// Get all intersected elements in the graph
-                    Bounds selectionBounds = rect.localToScene(rect.getBoundsInLocal());
 					final Set<VertexShape> vertexShapes = intersectedVertexShapes(selectionBounds);
 					final Set<EdgeShape> edgeShapes = intersectedEdgeShapes(selectionBounds);
 

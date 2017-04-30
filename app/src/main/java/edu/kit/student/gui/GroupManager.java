@@ -1,24 +1,11 @@
 package edu.kit.student.gui;
 
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Optional;
-import java.util.Set;
-
 import edu.kit.student.graphmodel.ViewableVertex;
 import edu.kit.student.util.LanguageManager;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
-import javafx.scene.control.Button;
-import javafx.scene.control.ButtonType;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.ListCell;
-import javafx.scene.control.ListView;
-import javafx.scene.control.SelectionMode;
-import javafx.scene.control.TextInputDialog;
+import javafx.scene.control.*;
 import javafx.scene.image.Image;
 import javafx.scene.layout.HBox;
 import javafx.scene.layout.Priority;
@@ -26,6 +13,8 @@ import javafx.scene.layout.Region;
 import javafx.scene.layout.VBox;
 import javafx.scene.paint.Color;
 import javafx.stage.Stage;
+
+import java.util.*;
 
 class GroupManager {
 
@@ -131,19 +120,15 @@ class GroupManager {
 		}
 		final Button btApply = (Button) dialog.getDialogPane().lookupButton(ButtonType.APPLY);
         btApply.addEventFilter(ActionEvent.ACTION, event -> {
-		 	removedGroups.forEach(groupId -> groupMap.remove(groupId).uncolorVertices());
+		 	removedGroups.forEach(groupId -> groupMap.remove(groupId).dissolve());
 			removedGroups.clear();
-			//TODO: maybe check for made changes and only apply them.
-			applyGroups();
             event.consume();
          });
 		Optional<ButtonType> result = dialog.showAndWait();
 		if(result.isPresent()) {
 			if(result.get() == ButtonType.OK) {
-				removedGroups.forEach(groupId -> groupMap.remove(groupId).uncolorVertices());
+				removedGroups.forEach(groupId -> groupMap.remove(groupId).dissolve());
 				removedGroups.clear();
-				//TODO: maybe check for made changes and only apply them.
-				applyGroups();
 			}
 		} else {
 			removedGroups.clear();
@@ -154,19 +139,13 @@ class GroupManager {
 			}
 		}
 	}
-	
-	void applyGroups() {
-		//TODO: inefficient, could map over all groups and vertices before coloring
-		for(int i = groupIds.size() - 1; i > -1; i--) {
-			groupMap.get(groupIds.get(i)).colorVertices();
-		}
-	}
-	
+
 	private class GroupListCell extends ListCell<Integer> {
 		@Override
 		public void updateItem(Integer item, boolean empty) {
 			super.updateItem(item, empty);
 			VertexGroup group = groupMap.get(item);
+			//TODO: maybe check for made changes and only apply them.
 			if(!empty && group != null) {
 				Region spacer = new Region();
 				HBox box = new HBox(group.getLabel(), spacer, group.getPicker());

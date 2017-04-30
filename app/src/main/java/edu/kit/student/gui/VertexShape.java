@@ -2,21 +2,28 @@ package edu.kit.student.gui;
 
 import edu.kit.student.graphmodel.Vertex;
 import edu.kit.student.util.DoublePoint;
+import javafx.collections.FXCollections;
+import javafx.collections.ListChangeListener;
+import javafx.collections.ObservableList;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.Rectangle;
 import javafx.scene.text.Text;
 
+import java.util.LinkedList;
+
 /**
  * A visual representation of a vertex with a text inside of it.
  * 
- * @author Nicolas
+ * @author Nicolas Boltz, Lucas Steinmann
  */
 public class VertexShape extends GAnsGraphElement {
+
+	private final ObservableList<Border> borderList = FXCollections.observableList(new LinkedList<>());
+	private static final int BORDER_WIDTH = 2;
 
 	private Rectangle rectangle;
 	private Text text;
 	private Color color;
-	private String style = "";
 	private final static double mindWidth = 20;
 	private final static double mindHeight = 5;
 
@@ -25,19 +32,17 @@ public class VertexShape extends GAnsGraphElement {
 	 */
 	public VertexShape() {
 		rectangle = new Rectangle(mindWidth, mindHeight);
-		rectangle.setFill(Color.GREEN);
+		this.setColor(Color.GREEN);
 		text = new Text();
-
 		getChildren().addAll(rectangle, text);
 	}
-	
+
 	/**
 	 * Constructor. All settings are being automatically set through the supplied vertex.
 	 * @param vertex The vertex that will be represented.
 	 */
 	public VertexShape(Vertex vertex) {
 		DoublePoint size = vertex.getSize();
-		
 		this.rectangle = new Rectangle(vertex.getX(), vertex.getY(), size.x, size.y);
 
 		// TODO: Clip text when text is larger than content.
@@ -47,7 +52,9 @@ public class VertexShape extends GAnsGraphElement {
 			getChildren().add(text);
 
 		setColor(vertex.getColor());
-		
+
+		updateBorder();
+		borderList.addListener((ListChangeListener<Border>) c -> updateBorder());
 		relocate(vertex.getX(), vertex.getY());
 	}
 
@@ -68,7 +75,7 @@ public class VertexShape extends GAnsGraphElement {
 	@Override
 	public void setColor(Color color) {
 		this.color = color;
-		rectangle.setFill(color);
+        rectangle.setFill(Color.TRANSPARENT);
 	}
 	
 	@Override
@@ -86,12 +93,73 @@ public class VertexShape extends GAnsGraphElement {
 		return rectangle;
 	}
 	
-	public void setVertexStyle(String style) {
-		this.style = style;
-		this.setStyle(style);
+	/**
+	 * Adds the specified border to the current borders of this vertex shape at the outermost position.
+	 * @param border the border to add
+	 */
+	public void addBorder(Border border) {
+		this.borderList.add(0, border);
 	}
-	
-	public String getVertexStyle() {
-		return this.style;
+
+	/**
+	 * Adds a border with the specified color to the current borders of this vertex shape at the outermost position.
+	 * Returns a reference to the border for later removal.
+	 * @param color the color of the border to add
+	 * @return the border which has been added
+	 */
+	public Border addBorder(Color color) {
+		Border border = new Border(color);
+		this.borderList.add(border);
+		return border;
+	}
+
+	/**
+     * Removes the specified border from the list of border.
+	 * Returns true if the border was set as a border of this shape. Otherwise false.
+	 * @return true, if the border was removed, false otherwise.
+	 */
+	public boolean removeBorder(Border border) {
+		return this.borderList.remove(border);
+	}
+
+	private void updateBorder() {
+		StringBuilder cssStringB = new StringBuilder();
+
+		cssStringB.append("-fx-background-color: ");
+		// Add borders from outermost to innermost
+		for (Border border : borderList) {
+			cssStringB.append(GraphViewGraphFactory.toRGBCode(border.getColor()))
+					  .append(", ");
+		}
+		// Set inner background (the color of the vertex)
+		cssStringB.append(GraphViewGraphFactory.toRGBCode(color))
+				  .append(";\n");
+
+		cssStringB.append("-fx-background-insets: ");
+		for (int i = 0; i <= borderList.size(); i++) {
+			cssStringB.append(i * BORDER_WIDTH);
+			if (i != borderList.size())
+                  cssStringB.append(", ");
+		}
+		cssStringB.append(";\n");
+		System.out.println(cssStringB.toString());
+		this.setStyle(cssStringB.toString());
+	}
+
+	public class Border {
+
+		private Color color;
+
+		public Border(Color color) {
+			this.color = color;
+		}
+
+		public Color getColor() {
+			return color;
+		}
+
+		public void setColor(Color color) {
+			this.color = color;
+		}
 	}
 }
