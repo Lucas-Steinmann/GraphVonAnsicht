@@ -134,8 +134,9 @@ public class MethodGraph extends JoanaGraph {
     }
     
     /**
-     * removes interprocedural edges from this graph and also the dummies of it.
-     * This is used before relayouting of the graph
+     * removes interprocedural edges from this graph and also the dummy of it,
+     * keeps the corresponding normal vertex in the graph.
+     * This is used before relayouting of the graph.
      */
     void removeInterproceduralEdges(){
     	Set<InterproceduralEdge> allIEs = new HashSet<>();

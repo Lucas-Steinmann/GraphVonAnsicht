@@ -11,7 +11,7 @@ import java.util.List;
 public class InterproceduralEdge extends JoanaEdge{
 
     private JoanaEdge wrappedEdge;
-    private int dummyGraphId;
+    private Integer dummyGraphId;
     private String dummyGraphName;
     private DummyLocation location;
     private JoanaVertex normalVertex;
@@ -28,7 +28,7 @@ public class InterproceduralEdge extends JoanaEdge{
      * @param dummyGraphName name of the graph that contains the dummy
      * @param location whether the source or target vertex should be a dummy
      */
-    public InterproceduralEdge(JoanaEdge edge, int dummyGraphId, String dummyGraphName, DummyLocation location) { //TODO: maybe new constructor that sets source and target adequately(not the edges real source and target)
+    public InterproceduralEdge(JoanaEdge edge, Integer dummyGraphId, String dummyGraphName, DummyLocation location) { //TODO: maybe new constructor that sets source and target adequately(not the edges real source and target)
         super(edge.getName(), edge.getLabel(), edge.getSource(), edge.getTarget(), edge.getEdgeKind());
         this.wrappedEdge = edge;
         this.dummyGraphId = dummyGraphId;
@@ -97,12 +97,13 @@ public class InterproceduralEdge extends JoanaEdge{
 
         @Override
         public DoublePoint getSize(){
-            return new DoublePoint(10,10);
+            return new DoublePoint(10 ,10);
         }
 
         @Override
         public IntegerPoint getLeftRightMargin(){
             return new IntegerPoint(2,2);
         }
+
     }
 }

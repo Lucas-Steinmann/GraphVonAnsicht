@@ -165,7 +165,7 @@ public class SugiyamaGraph
 				tempDummies.add(tempDummy);
 				layer++;
 			}
-			this.graph.addAllVertices(tempDummies.stream().collect(Collectors.toSet()));
+			this.graph.addAllVertices(new HashSet<>(tempDummies));
 			assert(layer == tempReplacedEdge.getTarget().getLayer());	//to ensure correct layer numbers for source, target and dummies!
 			List<ISugiyamaEdge> tempSupplementEdges = new LinkedList<>();
 			//TODO: turn the replaced edge if necessary and turn also dummies, watch out to set their layers correctly
@@ -180,7 +180,7 @@ public class SugiyamaGraph
 			newSuppE = new SupplementEdge("","", tempDummies.get(tempDummies.size() - 1), tempReplacedEdge.getTarget());
 			tempSupplementEdges.add(newSuppE);
 			
-			this.graph.addAllEdges(tempSupplementEdges.stream().collect(Collectors.toSet()));
+			this.graph.addAllEdges(new HashSet<>(tempSupplementEdges));
 			SupplementPath tempSupplementPath = this.createSupplementPath(tempReplacedEdge, tempDummies, tempSupplementEdges);
 			this.supplementPaths.add(tempSupplementPath);
 //			sugyVertices.addAll(tempDummies);	//add dummies to normal vertex set
@@ -490,7 +490,7 @@ public class SugiyamaGraph
 		private ISugiyamaVertex target;
 		private boolean isReversed;
 		private EdgePath path;
-		private int id;
+		private Integer id;
 
 		SupplementEdge(String name, String label) {
 			this.name=name;
@@ -602,6 +602,11 @@ public class SugiyamaGraph
 			// TODO necessary?
 			return null;
 		}
+
+		@Override
+		public int hashCode() {
+			return id.hashCode();
+		}
 	}
 
 	/**
@@ -613,27 +618,27 @@ public class SugiyamaGraph
 		private String label;
 		private final boolean custom;
 		private DoublePoint size;
-		private int id;
+		private Integer id;
 		private double x;
 		private double y;
 
         DummyVertex(String name, String label, int layer) {
 			//super(name, label);
-			layering.addVertex(this, layer);
             this.name = name;
             this.label = label;
             this.id = IdGenerator.getInstance().createId();
+			layering.addVertex(this, layer);
 			custom = false;
 		}
 		
 		//custom dummy if size and id were set before creating a dummy
-		DummyVertex(String name, String label, int layer, DoublePoint size, int id){
+		DummyVertex(String name, String label, int layer, DoublePoint size, Integer id){
 			//super(name, label);
-			layering.addVertex(this, layer);
 			this.name = name;
 			this.label = label;
 			this.size = size;
 			this.id = id;
+			layering.addVertex(this, layer);
 			custom = true;
 		}
 
@@ -737,6 +742,11 @@ public class SugiyamaGraph
 		@Override
 		public String toString(){
 			return this.getName() + "[D" + this.getID() + "]";
+		}
+
+		@Override
+		public int hashCode() {
+			return id.hashCode();
 		}
 	}
 

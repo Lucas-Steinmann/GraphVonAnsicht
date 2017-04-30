@@ -49,7 +49,7 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 	
     private final Logger logger = LoggerFactory.getLogger(MethodGraphLayout.class);
 	private SugiyamaLayoutAlgorithm<MethodGraph> sugiyamaLayoutAlgorithm;
-	private int dummyId = -1;
+	private Integer dummyId = -1;
 	
 	public MethodGraphLayout() {
 		this.sugiyamaLayoutAlgorithm = new SugiyamaLayoutAlgorithm<>();
@@ -144,7 +144,7 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 	//For setting dummies: calc how much dummies per layer, position of vertices in this layer then add dummies, and random assign the dummies layers
 	//maybe go over every edge that skips layer and search in every layer for a free dummy for assigning!
 	/**
-	 * Draws all edges contained in a FieldAccess and coming into and going out of a FieldAcces new.
+	 * Draws all edges contained in a FieldAccess and coming into and going out of a FieldAccess new.
 	 * The coordinates of vertices stay the same.
 	 */
 	private void drawEdgesNew(MethodGraph graph, FieldAccess fa){
@@ -717,8 +717,8 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 //		System.out.println(res);
 //	}
 	
-	private int getDummyID(){
-		int temp = this.dummyId;
+	private Integer getDummyID(){
+		Integer temp = this.dummyId;
 		dummyId--;
 		return temp;
 	}
@@ -840,7 +840,7 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
     private static class JoanaDummyVertex implements Vertex{
     	private double x;
     	private double y;
-    	private final int id;
+    	private final Integer id;
     	private final String name;
     	private final String label;
     	private final DoublePoint size;
@@ -919,6 +919,11 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 		public Color getColor() {
 			// not necessary
 			return null;
+		}
+
+		@Override
+		public int hashCode() {
+			return id.hashCode();
 		}
     }
 
