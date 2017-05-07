@@ -377,9 +377,11 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 				for(int i = index1 + upOrDown; Math.abs(i - index2) > 0; i+=upOrDown){//adds dummies to the list
 //					List<Vertex> layerDummies = layerNumToVertices.get(i).stream().filter(v->v.getID() < 0).collect(Collectors.toList());
 					List<Vertex> layerDummies = tempLayerNumToVertices.get(i);
-					int randomIndex = (int)Math.round(Math.floor(Math.random()*layerDummies.size()));
-					dummies.add(layerDummies.get(randomIndex));
-					layerDummies.remove(randomIndex);
+					//int randomIndex = (int)Math.round(Math.floor(Math.random()*layerDummies.size()));
+					//dummies.add(layerDummies.get(randomIndex));
+					//layerDummies.remove(randomIndex);
+                    dummies.add(layerDummies.get(0));
+                    layerDummies.remove(0);
 				}
 				supplementEdges.add(new DefaultDirectedEdge<>("","",e.getSource(), dummies.get(0)));
 				for(int i = 0; i < dummies.size() - 1; i++){
@@ -432,9 +434,11 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 				for(int i = index1 + upOrDown; Math.abs(i - index2) > 0; i+=upOrDown){//adds dummies the list
 //					List<Vertex> layerDummies = layerNumToVertices.get(i).stream().filter(v->v.getID() < 0).collect(Collectors.toList());
 					List<Vertex> layerDummies = tempLayerNumToVertices.get(i);
-					int randomIndex = (int)Math.round(Math.floor(Math.random()*layerDummies.size()));
-					dummies.add(layerDummies.get(randomIndex));
-					layerDummies.remove(randomIndex);
+					//int randomIndex = (int)Math.round(Math.floor(Math.random()*layerDummies.size()));
+					//dummies.add(layerDummies.get(randomIndex));
+					//layerDummies.remove(randomIndex);
+                    dummies.add(layerDummies.get(0));
+                    layerDummies.remove(0);
 				}
 				supplementEdges.add(new DefaultDirectedEdge<>("","",source, dummies.get(0)));
 				for(int i = 0; i < dummies.size() - 1; i++){

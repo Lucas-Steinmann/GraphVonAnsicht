@@ -104,12 +104,34 @@ public class EdgeShape extends GAnsGraphElement {
 
 	private Path getArrow(EdgeArrow arrowType, double startX, double startY, ArrowDirection direction) {
 		switch(arrowType) {
-		case NONE: return new Path();
-		case ARROW: return arrowPath(startX, startY, direction);
-		default: return new Path(); //default is an undirected edge
+			case NONE: return new Path();
+			case ARROW: return arrowPath(startX, startY, direction);
+			default: return new Path(); //default is an undirected edge
 		}
 	}
-	
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		EdgeShape edgeShape = (EdgeShape) o;
+
+		if (text != null ? !text.equals(edgeShape.text) : edgeShape.text != null) return false;
+		if (path != null ? !path.equals(edgeShape.path) : edgeShape.path != null) return false;
+		if (color != null ? !color.equals(edgeShape.color) : edgeShape.color != null) return false;
+		return style != null ? style.equals(edgeShape.style) : edgeShape.style == null;
+	}
+
+	/*@Override
+	public int hashCode() {
+		int result = text != null ? text.hashCode() : 0;
+		result = 31 * result + (path != null ? path.hashCode() : 0);
+		result = 31 * result + (color != null ? color.hashCode() : 0);
+		result = 31 * result + (style != null ? style.hashCode() : 0);
+		return result;
+	}*/
+
 	/**
 	 * Describes the position of the arrow on the vertex
 	 */

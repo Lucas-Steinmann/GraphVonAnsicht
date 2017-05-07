@@ -477,7 +477,19 @@ public class SugiyamaGraph
         public int hashCode() {
             return getReplacedEdge().hashCode();
         }
-		
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			SupplementPath that = (SupplementPath) o;
+
+			if (replacedEdge != null ? !replacedEdge.equals(that.replacedEdge) : that.replacedEdge != null)
+				return false;
+			if (dummies != null ? !dummies.equals(that.dummies) : that.dummies != null) return false;
+			return supplementEdges != null ? supplementEdges.equals(that.supplementEdges) : that.supplementEdges == null;
+		}
 	}
 	/**
 	 * A supplement edge which is part of a {@link SupplementPath}.

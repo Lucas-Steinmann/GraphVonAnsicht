@@ -104,4 +104,47 @@ public class JoanaVertexBuilder implements IVertexBuilder {
         this.name = id;
     }
 
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        JoanaVertexBuilder that = (JoanaVertexBuilder) o;
+
+        if (proc != that.proc) return false;
+        if (bcIndex != that.bcIndex) return false;
+        if (sr != that.sr) return false;
+        if (sc != that.sc) return false;
+        if (er != that.er) return false;
+        if (ec != that.ec) return false;
+        if (name != null ? !name.equals(that.name) : that.name != null) return false;
+        if (label != null ? !label.equals(that.label) : that.label != null) return false;
+        if (kind != that.kind) return false;
+        if (javaSource != null ? !javaSource.equals(that.javaSource) : that.javaSource != null) return false;
+        if (operation != that.operation) return false;
+        if (bcName != null ? !bcName.equals(that.bcName) : that.bcName != null) return false;
+        if (localDef != null ? !localDef.equals(that.localDef) : that.localDef != null) return false;
+        if (localUse != null ? !localUse.equals(that.localUse) : that.localUse != null) return false;
+        return joanaObjectPool != null ? joanaObjectPool.equals(that.joanaObjectPool) : that.joanaObjectPool == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = name != null ? name.hashCode() : 0;
+        result = 31 * result + (label != null ? label.hashCode() : 0);
+        result = 31 * result + (kind != null ? kind.hashCode() : 0);
+        result = 31 * result + (javaSource != null ? javaSource.hashCode() : 0);
+        result = 31 * result + proc;
+        result = 31 * result + (operation != null ? operation.hashCode() : 0);
+        result = 31 * result + (bcName != null ? bcName.hashCode() : 0);
+        result = 31 * result + bcIndex;
+        result = 31 * result + sr;
+        result = 31 * result + sc;
+        result = 31 * result + er;
+        result = 31 * result + ec;
+        result = 31 * result + (localDef != null ? localDef.hashCode() : 0);
+        result = 31 * result + (localUse != null ? localUse.hashCode() : 0);
+        result = 31 * result + (joanaObjectPool != null ? joanaObjectPool.hashCode() : 0);
+        return result;
+    }
 }

@@ -63,4 +63,24 @@ public class JoanaEdgeBuilder implements IEdgeBuilder {
                     "Found JoanaEdge with an invalid source or target vertex.");
         }
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        JoanaEdgeBuilder that = (JoanaEdgeBuilder) o;
+
+        if (sourceId != null ? !sourceId.equals(that.sourceId) : that.sourceId != null) return false;
+        if (targetId != null ? !targetId.equals(that.targetId) : that.targetId != null) return false;
+        return edgeKind == that.edgeKind;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = sourceId != null ? sourceId.hashCode() : 0;
+        result = 31 * result + (targetId != null ? targetId.hashCode() : 0);
+        result = 31 * result + (edgeKind != null ? edgeKind.hashCode() : 0);
+        return result;
+    }
 }
