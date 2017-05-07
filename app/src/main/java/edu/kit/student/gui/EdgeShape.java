@@ -27,6 +27,11 @@ public class EdgeShape extends GAnsGraphElement {
 	private Color color;
 	private String style = "";
 
+	private double arrowPathMinHeight = 6; //maybe adjust these 4 values
+	private double arrowPathMinWidth = 3;
+	private double arrowPathMaxHeight = 12;
+	private double arrowPathMaxWidth = 6;
+
 
 	/**
 	 * Constructs a EdgeShape with the information supplied by edge. The path of the EdgeShape is set by the EdgePath of edge.
@@ -60,10 +65,13 @@ public class EdgeShape extends GAnsGraphElement {
 		
 		DoublePoint point1 = edgePath.getNodes().get(nodeCount - 2);
 		DoublePoint point2 = edgePath.getNodes().get(nodeCount - 1);
-		
+
+		//calculating size of the arrow head
+		DoublePoint arrowHeadSize = getArrowHeadSize(edge.getPath());
+
 		// adding the arrowhead to the edge
 		elements.addAll(getArrow(edge.getArrowHead(), endX, endY, 
-				ArrowDirection.calculateDirection(point1.x, point1.y, point2.x, point2.y)).getElements());
+				ArrowDirection.calculateDirection(point1.x, point1.y, point2.x, point2.y), arrowHeadSize.x, arrowHeadSize.y).getElements());
 		
 		this.path.getElements().addAll(elements);
 		this.path.setManaged(false);
@@ -74,6 +82,23 @@ public class EdgeShape extends GAnsGraphElement {
 		
 		setColor(edge.getColor());
 		setText(edge.getLabel());
+	}
+
+	private DoublePoint getArrowHeadSize(EdgePath path){
+		List<DoublePoint> points = path.getNodes();
+		double width, height;
+		DoublePoint p1, p2; //last two points (p1:n-2; p2:n-1)
+		assert(path.getNodes().size() >= 2);
+		p1 = points.get(points.size() - 2);
+		p2 = points.get(points.size() - 1);
+		if(dEquals(p1.x, p2.x))
+			height = Math.abs(p1.y - p2.y);
+		else
+			height = Math.abs(p1.x - p2.x);
+		height -= 1.75; //in order to get a bit distance to a possibly nearby edge, in case of a kink.
+		height = Math.max(this.arrowPathMinHeight, Math.min(this.arrowPathMaxHeight, height));
+		width = height / 2;
+		return new DoublePoint(width,height);
 	}
 
 	@Override
@@ -102,12 +127,16 @@ public class EdgeShape extends GAnsGraphElement {
 		return path;
 	}
 
-	private Path getArrow(EdgeArrow arrowType, double startX, double startY, ArrowDirection direction) {
+	private Path getArrow(EdgeArrow arrowType, double startX, double startY, ArrowDirection direction, double width, double height){
 		switch(arrowType) {
 			case NONE: return new Path();
-			case ARROW: return arrowPath(startX, startY, direction);
+			case ARROW: return arrowPath(startX, startY, direction, width, height);
 			default: return new Path(); //default is an undirected edge
 		}
+	}
+
+	private Path getArrow(EdgeArrow arrowType, double startX, double startY, ArrowDirection direction) {
+		return getArrow(arrowType, startX, startY, direction, arrowPathMaxWidth, arrowPathMaxHeight);
 	}
 
 	@Override
@@ -123,17 +152,25 @@ public class EdgeShape extends GAnsGraphElement {
 		return style != null ? style.equals(edgeShape.style) : edgeShape.style == null;
 	}
 
-	/*@Override
+	@Override
 	public int hashCode() {
 		int result = text != null ? text.hashCode() : 0;
 		result = 31 * result + (path != null ? path.hashCode() : 0);
 		result = 31 * result + (color != null ? color.hashCode() : 0);
 		result = 31 * result + (style != null ? style.hashCode() : 0);
 		return result;
-	}*/
+	}
 
 	/**
-	 * Describes the position of the arrow on the vertex
+	 * Describes the position of the arrow on the vertex.
+	 *        |
+	 *        | TOP
+	 *       _V__
+	 * LEFT |    | RIGHT
+	 * ---->|____|<-------
+	 *        ^
+	 *        | BOTTOM
+	 *        |
 	 */
 	private enum ArrowDirection {
 		LEFT, RIGHT, TOP, BOTTOM;
@@ -158,50 +195,82 @@ public class EdgeShape extends GAnsGraphElement {
 			return TOP; //As a default top is used, but should never be reached with orthogonal paths
 		}
 	}
-	
-	// startingpoints x and y of the shape
-	private Path arrowPath(double x, double y, ArrowDirection direction) {
-		double x1, y1, x2, y2;
-		switch(direction) {
-		case LEFT: 
-			x1 = x - 12;
-			x2 = x1;
-			y1 = y - 6;
-			y2 = y + 6;
-			break;
-		case RIGHT:
-			x1 = x + 12;
-			x2 = x1;
-			y1 = y - 6;
-			y2 = y + 6;
-			break;
-		case TOP:
-			x1 = x - 6;
-			x2 = x + 6;
-			y1 = y - 12;
-			y2 = y1;
-			break;
-		case BOTTOM:
-			x1 = x - 6;
-			x2 = x + 6;
-			y1 = y + 12;
-			y2 = y1;
-			break;
-		default:
-			x1 = 0;
-			x2 = 0;
-			y1 = 0;
-			y2 = 0;
+
+	/**
+	 * Draws the arrow and returns its path.
+	 * x,y: starting point on the shape
+	 * direction: see ArrowDirection
+	 * height, width: height/width of the arrow head
+	 *
+	 */
+	private Path arrowPath(double x, double y, ArrowDirection direction, double width, double height){
+		width = Math.max(this.arrowPathMinWidth, Math.min(this.arrowPathMaxWidth, width));
+		height = Math.max(this.arrowPathMinHeight, Math.min(this.arrowPathMaxHeight, height));
+		double x1, x2, y1, y2, offX1, offX2, offY1, offY2;
+		switch(direction){
+			case LEFT:
+				x1 = x - height;
+				x2 = x1;
+				y1 = y - width;
+				y2 = y + width;
+				offX1 = -0.175;
+				offX2 = -0.175;
+				offY1 = -0.275;
+				offY2 = 0.275;
+				break;
+			case RIGHT:
+				x1 = x + height;
+				x2 = x1;
+				y1 = y - width;
+				y2 = y + width;
+				offX1 = 0.175;
+				offX2 = 0.175;
+				offY1 = -0.275;
+				offY2 = 0.275;
+				break;
+			case TOP:
+				x1 = x - width;
+				x2 = x + width;
+				y1 = y - height;
+				y2 = y1;
+				offX1 = -0.275;
+				offX2 = 0.275;
+				offY1 = -0.175;
+				offY2 = -0.175;
+				break;
+			case BOTTOM:
+				x1 = x - width;
+				x2 = x + width;
+				y1 = y + height;
+				y2 = y1;
+				offX1 = -0.275;
+				offX2 = 0.275;
+				offY1 = 0.175;
+				offY2 = 0.175;
+				break;
+			default:
+				x1 = 0;
+				x2 = 0;
+				y1 = 0;
+				y2 = 0;
+				offX1 = 0;
+				offX2 = 0;
+				offY1 = 0;
+				offY2 = 0;
 		}
-		
 		Path path = new Path();
 		List<PathElement> elements = new LinkedList<>();
-		elements.add(new MoveTo(x, y));
-		elements.add(new LineTo(x1, y1));
-		elements.add(new MoveTo(x2, y2));
-		elements.add(new LineTo(x, y));
+		elements.add(new MoveTo(x + offX1, y + offY1));
+		elements.add(new LineTo(x1 + offX1, y1 + offY1));
+		elements.add(new MoveTo(x + offX2, y + offY2));
+		elements.add(new LineTo(x2 + offX2, y2 + offY2));
 		path.getElements().addAll(elements);
 		return path;
+	}
+
+
+	private Path arrowPath(double x, double y, ArrowDirection direction) {
+		return arrowPath(x, y, direction, arrowPathMaxHeight, arrowPathMaxWidth);
 	}
 
 	public void setEdgeStyle(String style) {
@@ -211,5 +280,9 @@ public class EdgeShape extends GAnsGraphElement {
 
 	public String getEdgeStyle() {
 		return this.style;
+	}
+
+	private boolean dEquals(double a, double b){
+		return Math.abs(a-b) < Math.pow(10, -6);
 	}
 }
