@@ -310,7 +310,7 @@ public class DefaultDirectedGraph<V extends Vertex, E extends DirectedEdge>
 	                                    .map(Vertex::getName)
 	                                    .collect(Collectors.joining(",", "Vertices: {", "}\n"));
 	    String edges = getEdgeSet().stream()
-	                               .map(e -> e.toString())
+	                               .map(Object::toString)
                                    .collect(Collectors.joining(",\n", "Edges: {\n", "}\n"));
 	    return vertices + edges;
 	}

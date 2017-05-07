@@ -874,4 +874,38 @@ public class MethodGraph extends JoanaGraph {
             }
 		}
 	}
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        MethodGraph that = (MethodGraph) o;
+
+        if (entry != null ? !entry.equals(that.entry) : that.entry != null) return false;
+        if (fieldAccesses != null ? !fieldAccesses.equals(that.fieldAccesses) : that.fieldAccesses != null)
+            return false;
+        if (graph != null ? !graph.equals(that.graph) : that.graph != null) return false;
+        if (fieldAccessCount != null ? !fieldAccessCount.equals(that.fieldAccessCount) : that.fieldAccessCount != null)
+            return false;
+        if (expandActions != null ? !expandActions.equals(that.expandActions) : that.expandActions != null)
+            return false;
+        if (fcollapser != null ? !fcollapser.equals(that.fcollapser) : that.fcollapser != null) return false;
+        if (collapser != null ? !collapser.equals(that.collapser) : that.collapser != null) return false;
+        return interprocEdges != null ? interprocEdges.equals(that.interprocEdges) : that.interprocEdges == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (entry != null ? entry.hashCode() : 0);
+        result = 31 * result + (fieldAccesses != null ? fieldAccesses.hashCode() : 0);
+        result = 31 * result + (graph != null ? graph.hashCode() : 0);
+        result = 31 * result + (fieldAccessCount != null ? fieldAccessCount.hashCode() : 0);
+        result = 31 * result + (expandActions != null ? expandActions.hashCode() : 0);
+        result = 31 * result + (fcollapser != null ? fcollapser.hashCode() : 0);
+        result = 31 * result + (collapser != null ? collapser.hashCode() : 0);
+        result = 31 * result + (interprocEdges != null ? interprocEdges.hashCode() : 0);
+        return result;
+    }
 }

@@ -162,4 +162,19 @@ public abstract class JoanaGraph
         edgeFilter.add(heFilter);
         edgeFilter.add(psFilter);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        JoanaGraph that = (JoanaGraph) o;
+
+        if (id != null ? !id.equals(that.id) : that.id != null) return false;
+        if (name != null ? !name.equals(that.name) : that.name != null) return false;
+        if (edgeCount != null ? !edgeCount.equals(that.edgeCount) : that.edgeCount != null) return false;
+        if (vertexCount != null ? !vertexCount.equals(that.vertexCount) : that.vertexCount != null) return false;
+        if (vertexFilter != null ? !vertexFilter.equals(that.vertexFilter) : that.vertexFilter != null) return false;
+        return edgeFilter != null ? edgeFilter.equals(that.edgeFilter) : that.edgeFilter == null;
+    }
 }

@@ -125,4 +125,36 @@ public class MethodGraphBuilder implements IGraphBuilder {
 
         return new MethodGraph(new HashSet<>(vertices.values()), edges, name);
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        MethodGraphBuilder that = (MethodGraphBuilder) o;
+
+        if (name != null ? !name.equals(that.name) : that.name != null) return false;
+        if (data != null ? !data.equals(that.data) : that.data != null) return false;
+        if (joanaObjectPool != null ? !joanaObjectPool.equals(that.joanaObjectPool) : that.joanaObjectPool != null)
+            return false;
+        if (vertexBuilders != null ? !vertexBuilders.equals(that.vertexBuilders) : that.vertexBuilders != null)
+            return false;
+        if (vertexIds != null ? !vertexIds.equals(that.vertexIds) : that.vertexIds != null) return false;
+        if (vertices != null ? !vertices.equals(that.vertices) : that.vertices != null) return false;
+        if (edges != null ? !edges.equals(that.edges) : that.edges != null) return false;
+        return edgeBuilders != null ? edgeBuilders.equals(that.edgeBuilders) : that.edgeBuilders == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = name != null ? name.hashCode() : 0;
+        result = 31 * result + (data != null ? data.hashCode() : 0);
+        result = 31 * result + (joanaObjectPool != null ? joanaObjectPool.hashCode() : 0);
+        result = 31 * result + (vertexBuilders != null ? vertexBuilders.hashCode() : 0);
+        result = 31 * result + (vertexIds != null ? vertexIds.hashCode() : 0);
+        result = 31 * result + (vertices != null ? vertices.hashCode() : 0);
+        result = 31 * result + (edges != null ? edges.hashCode() : 0);
+        result = 31 * result + (edgeBuilders != null ? edgeBuilders.hashCode() : 0);
+        return result;
+    }
 }

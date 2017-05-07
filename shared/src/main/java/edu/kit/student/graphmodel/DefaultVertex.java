@@ -159,4 +159,22 @@ public class DefaultVertex implements ViewableVertex {
 	public VertexPriority getPriority() {
 		return VertexPriority.HIGH;
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		DefaultVertex that = (DefaultVertex) o;
+
+		if (Double.compare(that.x, x) != 0) return false;
+		if (Double.compare(that.y, y) != 0) return false;
+		if (link != that.link) return false;
+		if (name != null ? !name.equals(that.name) : that.name != null) return false;
+		if (id != null ? !id.equals(that.id) : that.id != null) return false;
+		if (label != null ? !label.equals(that.label) : that.label != null) return false;
+		if (leftRightMargin != null ? !leftRightMargin.equals(that.leftRightMargin) : that.leftRightMargin != null)
+			return false;
+		return data != null ? data.equals(that.data) : that.data == null;
+	}
 }

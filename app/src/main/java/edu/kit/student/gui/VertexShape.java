@@ -146,6 +146,28 @@ public class VertexShape extends GAnsGraphElement {
 		this.setStyle(cssStringB.toString());
 	}
 
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		VertexShape that = (VertexShape) o;
+
+		if (borderList != null ? !borderList.equals(that.borderList) : that.borderList != null) return false;
+		if (rectangle != null ? !rectangle.equals(that.rectangle) : that.rectangle != null) return false;
+		if (text != null ? !text.equals(that.text) : that.text != null) return false;
+		return color != null ? color.equals(that.color) : that.color == null;
+	}
+
+	/*@Override
+	public int hashCode() {
+		int result = borderList != null ? borderList.hashCode() : 0;
+		result = 31 * result + (rectangle != null ? rectangle.hashCode() : 0);
+		result = 31 * result + (text != null ? text.hashCode() : 0);
+		result = 31 * result + (color != null ? color.hashCode() : 0);
+		return result;
+	}*/
+
 	public class Border {
 
 		private Color color;

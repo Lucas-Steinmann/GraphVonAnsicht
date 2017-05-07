@@ -77,4 +77,26 @@ public class RelativeLayerConstraint implements Constraint
 				", distance=" + distance +
 				'}';
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		RelativeLayerConstraint that = (RelativeLayerConstraint) o;
+
+		if (exact != that.exact) return false;
+		if (distance != that.distance) return false;
+		if (top != null ? !top.equals(that.top) : that.top != null) return false;
+		return bottom != null ? bottom.equals(that.bottom) : that.bottom == null;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = top != null ? top.hashCode() : 0;
+		result = 31 * result + (bottom != null ? bottom.hashCode() : 0);
+		result = 31 * result + (exact ? 1 : 0);
+		result = 31 * result + distance;
+		return result;
+	}
 }

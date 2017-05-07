@@ -247,9 +247,9 @@ public class GraphViewGraphFactory {
 	}
 	
 	private Set<SerializedEdge> serializeEdges() {
-		Set<SerializedEdge> set = new HashSet<SerializedEdge>();
+		Set<SerializedEdge> set = new HashSet<>();
 		for(EdgeShape shape : edges.keySet()) {
-			Map<String,String> shapeProperties = new HashMap<String,String>();
+			Map<String,String> shapeProperties = new HashMap<>();
 			Path path = shape.getElementShape();
 			shapeProperties.put("label", shape.getText());
 			// fragile, hashCode() is impl. dependent, could change in later releases
@@ -270,7 +270,7 @@ public class GraphViewGraphFactory {
 				}
 			}
 			
-			Map<String,String> metaProperties = new HashMap<String,String>();
+			Map<String,String> metaProperties = new HashMap<>();
 			Edge edge = edges.get(shape);
 			for(GAnsProperty<?> property : edge.getProperties()) {
 				metaProperties.put(property.getName(), property.getValueAsString());

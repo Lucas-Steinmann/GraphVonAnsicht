@@ -226,7 +226,22 @@ public class VertexPositioner implements IVertexPositioner {
 	}
 
 
-    //builds a segment hierarchy for a given List of segments, and gives back one segments containing up to 4 children segments, which contain up to 4 child segments...
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		VertexPositioner that = (VertexPositioner) o;
+
+		return logger != null ? logger.equals(that.logger) : that.logger == null;
+	}
+
+	@Override
+	public int hashCode() {
+		return logger != null ? logger.hashCode() : 0;
+	}
+
+	//builds a segment hierarchy for a given List of segments, and gives back one segments containing up to 4 children segments, which contain up to 4 child segments...
 	//lists in the list describe different layer containing segment.
 	//this method looks for duplicates in the given segment list. Its therefore possible to take all vertices on a layer and map them to the segment which contains them and give in to this method.
 	private Segment buildSegmentHierarchy(List<List<Segment>> layers){
@@ -268,6 +283,7 @@ public class VertexPositioner implements IVertexPositioner {
 			}else{
         		return new Segment(children);
 			}
+
 		}
 		return buildSegmentHierarchy(newSegmentLayers);
     }
@@ -383,6 +399,7 @@ public class VertexPositioner implements IVertexPositioner {
 	}
 
 	private class Segment {
+
 		private List<ISugiyamaVertex> vertices;
 		private boolean corrected;
 		private boolean changed;
@@ -593,6 +610,34 @@ public class VertexPositioner implements IVertexPositioner {
 		}
 
 		private class BoundingBox {
+			@Override
+			public boolean equals(Object o) {
+				if (this == o) return true;
+				if (o == null || getClass() != o.getClass()) return false;
+
+				BoundingBox that = (BoundingBox) o;
+
+				if (Double.compare(that.left, left) != 0) return false;
+				if (Double.compare(that.top, top) != 0) return false;
+				if (Double.compare(that.right, right) != 0) return false;
+				return Double.compare(that.bottom, bottom) == 0;
+			}
+
+			@Override
+			public int hashCode() {
+				int result;
+				long temp;
+				temp = Double.doubleToLongBits(left);
+				result = (int) (temp ^ (temp >>> 32));
+				temp = Double.doubleToLongBits(top);
+				result = 31 * result + (int) (temp ^ (temp >>> 32));
+				temp = Double.doubleToLongBits(right);
+				result = 31 * result + (int) (temp ^ (temp >>> 32));
+				temp = Double.doubleToLongBits(bottom);
+				result = 31 * result + (int) (temp ^ (temp >>> 32));
+				return result;
+			}
+
 			private double left;
 			private double top;
 			private double right;
@@ -659,6 +704,35 @@ public class VertexPositioner implements IVertexPositioner {
 						", bottom=" + bottom +
 						'}';
 			}
+		}
+
+		@Override
+		public boolean equals(Object o) {
+			if (this == o) return true;
+			if (o == null || getClass() != o.getClass()) return false;
+
+			Segment segment = (Segment) o;
+
+			if (corrected != segment.corrected) return false;
+			if (changed != segment.changed) return false;
+			if (id != segment.id) return false;
+			if (parentId != segment.parentId) return false;
+			if (vertices != null ? !vertices.equals(segment.vertices) : segment.vertices != null) return false;
+			if (boundingBox != null ? !boundingBox.equals(segment.boundingBox) : segment.boundingBox != null)
+				return false;
+			return children != null ? children.equals(segment.children) : segment.children == null;
+		}
+
+		@Override
+		public int hashCode() {
+			int result = vertices != null ? vertices.hashCode() : 0;
+			result = 31 * result + (corrected ? 1 : 0);
+			result = 31 * result + (changed ? 1 : 0);
+			result = 31 * result + (boundingBox != null ? boundingBox.hashCode() : 0);
+			result = 31 * result + id;
+			result = 31 * result + parentId;
+			result = 31 * result + (children != null ? children.hashCode() : 0);
+			return result;
 		}
 	}
 }

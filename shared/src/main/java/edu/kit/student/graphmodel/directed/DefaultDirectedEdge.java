@@ -168,4 +168,20 @@ public class DefaultDirectedEdge<V extends Vertex> implements DirectedEdge {
     public int hashCode() {
         return id.hashCode();
     }
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		DefaultDirectedEdge<?> that = (DefaultDirectedEdge<?>) o;
+
+		if (target != null ? !target.equals(that.target) : that.target != null) return false;
+		if (source != null ? !source.equals(that.source) : that.source != null) return false;
+		if (name != null ? !name.equals(that.name) : that.name != null) return false;
+		if (id != null ? !id.equals(that.id) : that.id != null) return false;
+		if (label != null ? !label.equals(that.label) : that.label != null) return false;
+		if (path != null ? !path.equals(that.path) : that.path != null) return false;
+		return data != null ? data.equals(that.data) : that.data == null;
+	}
 }

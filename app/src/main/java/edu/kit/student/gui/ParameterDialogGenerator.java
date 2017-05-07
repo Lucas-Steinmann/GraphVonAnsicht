@@ -103,7 +103,7 @@ public class ParameterDialogGenerator extends ParameterVisitor {
 	public void visit(DoubleParameter parameter) {
 		// The factories purpose is so that 3 decimals can be shown in the spinner, also it prevents illegal input.
 		SpinnerValueFactory.DoubleSpinnerValueFactory factory = new SpinnerValueFactory.DoubleSpinnerValueFactory(
-				parameter.getMin(), parameter.getMax(), parameter.getValue(), parameter.getAmoutPerStep());
+				parameter.getMin(), parameter.getMax(), parameter.getValue(), parameter.getAmountPerStep());
 
 		factory.setConverter(this.doubleConverter);
 

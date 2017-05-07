@@ -7,5 +7,5 @@ package edu.kit.student.graphmodel;
  *
  */
 public enum EdgeArrow {
-	NONE, ARROW;
+	NONE, ARROW
 }

@@ -61,4 +61,22 @@ public class AbsoluteLayerConstraint implements Constraint {
 				", layer=" + layer +
 				'}';
 	}
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+
+		AbsoluteLayerConstraint that = (AbsoluteLayerConstraint) o;
+
+		if (layer != that.layer) return false;
+		return vertices != null ? vertices.equals(that.vertices) : that.vertices == null;
+	}
+
+	@Override
+	public int hashCode() {
+		int result = vertices != null ? vertices.hashCode() : 0;
+		result = 31 * result + layer;
+		return result;
+	}
 }

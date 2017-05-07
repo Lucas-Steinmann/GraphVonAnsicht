@@ -18,6 +18,53 @@ public class JoanaVertex extends DefaultVertex implements ViewableVertex {
     private GAnsProperty<JavaSource> nodeSource;
     private GAnsProperty<Integer> nodeProc;
     private GAnsProperty<Operation> nodeOperation;
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        JoanaVertex that = (JoanaVertex) o;
+
+        if (sizeSet != that.sizeSet) return false;
+        if (nodeKind != null ? !nodeKind.equals(that.nodeKind) : that.nodeKind != null) return false;
+        if (nodeSource != null ? !nodeSource.equals(that.nodeSource) : that.nodeSource != null) return false;
+        if (nodeProc != null ? !nodeProc.equals(that.nodeProc) : that.nodeProc != null) return false;
+        if (nodeOperation != null ? !nodeOperation.equals(that.nodeOperation) : that.nodeOperation != null)
+            return false;
+        if (nodeBcName != null ? !nodeBcName.equals(that.nodeBcName) : that.nodeBcName != null) return false;
+        if (nodeBcIndex != null ? !nodeBcIndex.equals(that.nodeBcIndex) : that.nodeBcIndex != null) return false;
+        if (nodeSr != null ? !nodeSr.equals(that.nodeSr) : that.nodeSr != null) return false;
+        if (nodeSc != null ? !nodeSc.equals(that.nodeSc) : that.nodeSc != null) return false;
+        if (nodeEr != null ? !nodeEr.equals(that.nodeEr) : that.nodeEr != null) return false;
+        if (nodeEc != null ? !nodeEc.equals(that.nodeEc) : that.nodeEc != null) return false;
+        if (nodeLocalDef != null ? !nodeLocalDef.equals(that.nodeLocalDef) : that.nodeLocalDef != null) return false;
+        if (nodeLocalUse != null ? !nodeLocalUse.equals(that.nodeLocalUse) : that.nodeLocalUse != null) return false;
+        if (setSize != null ? !setSize.equals(that.setSize) : that.setSize != null) return false;
+        return nodeLabel != null ? nodeLabel.equals(that.nodeLabel) : that.nodeLabel == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        result = 31 * result + (nodeKind != null ? nodeKind.hashCode() : 0);
+        result = 31 * result + (nodeSource != null ? nodeSource.hashCode() : 0);
+        result = 31 * result + (nodeProc != null ? nodeProc.hashCode() : 0);
+        result = 31 * result + (nodeOperation != null ? nodeOperation.hashCode() : 0);
+        result = 31 * result + (nodeBcName != null ? nodeBcName.hashCode() : 0);
+        result = 31 * result + (nodeBcIndex != null ? nodeBcIndex.hashCode() : 0);
+        result = 31 * result + (nodeSr != null ? nodeSr.hashCode() : 0);
+        result = 31 * result + (nodeSc != null ? nodeSc.hashCode() : 0);
+        result = 31 * result + (nodeEr != null ? nodeEr.hashCode() : 0);
+        result = 31 * result + (nodeEc != null ? nodeEc.hashCode() : 0);
+        result = 31 * result + (nodeLocalDef != null ? nodeLocalDef.hashCode() : 0);
+        result = 31 * result + (nodeLocalUse != null ? nodeLocalUse.hashCode() : 0);
+        result = 31 * result + (setSize != null ? setSize.hashCode() : 0);
+        result = 31 * result + (sizeSet ? 1 : 0);
+        result = 31 * result + (nodeLabel != null ? nodeLabel.hashCode() : 0);
+        return result;
+    }
+
     private GAnsProperty<String> nodeBcName;
     private GAnsProperty<Integer> nodeBcIndex;
     private GAnsProperty<Integer> nodeSr;

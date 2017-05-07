@@ -37,4 +37,22 @@ public class LayerContainsOnlyConstraint implements Constraint {
                 ", Layer=" + Layer +
                 '}';
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        LayerContainsOnlyConstraint that = (LayerContainsOnlyConstraint) o;
+
+        if (Layer != that.Layer) return false;
+        return vertices != null ? vertices.equals(that.vertices) : that.vertices == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = vertices != null ? vertices.hashCode() : 0;
+        result = 31 * result + Layer;
+        return result;
+    }
 }

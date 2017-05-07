@@ -65,7 +65,7 @@ public class JoanaCollapsedVertex extends JoanaCompoundVertex {
 	
 	@Override
 	public List<GAnsProperty<?>> getProperties() {
-		List<GAnsProperty<?>> properties = new LinkedList<GAnsProperty<?>>();
+		List<GAnsProperty<?>> properties = new LinkedList<>();
 		properties.add(this.label);
 		properties.add(this.kind);
 		properties.add(this.vertexCount);

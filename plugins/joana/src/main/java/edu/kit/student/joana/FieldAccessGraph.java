@@ -238,5 +238,35 @@ public class FieldAccessGraph extends JoanaGraph implements InlineSubGraph {
 
         return new DoublePoint(maxx,maxy);
     }
-    
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        if (!super.equals(o)) return false;
+
+        FieldAccessGraph that = (FieldAccessGraph) o;
+
+        if (Double.compare(that.x, x) != 0) return false;
+        if (Double.compare(that.y, y) != 0) return false;
+        if (graph != null ? !graph.equals(that.graph) : that.graph != null) return false;
+        if (fieldEntry != null ? !fieldEntry.equals(that.fieldEntry) : that.fieldEntry != null) return false;
+        if (size != null ? !size.equals(that.size) : that.size != null) return false;
+        return collapser != null ? collapser.equals(that.collapser) : that.collapser == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = super.hashCode();
+        long temp;
+        result = 31 * result + (graph != null ? graph.hashCode() : 0);
+        result = 31 * result + (fieldEntry != null ? fieldEntry.hashCode() : 0);
+        result = 31 * result + (size != null ? size.hashCode() : 0);
+        temp = Double.doubleToLongBits(x);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        temp = Double.doubleToLongBits(y);
+        result = 31 * result + (int) (temp ^ (temp >>> 32));
+        result = 31 * result + (collapser != null ? collapser.hashCode() : 0);
+        return result;
+    }
 }
