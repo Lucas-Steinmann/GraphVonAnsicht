@@ -167,19 +167,19 @@ public class VertexShape extends GAnsGraphElement {
 		return result;
 	}*/
 
-	public class Border {
+	class Border {
 
 		private Color color;
 
-		public Border(Color color) {
+		Border(Color color) {
 			this.color = color;
 		}
 
-		public Color getColor() {
+		Color getColor() {
 			return color;
 		}
 
-		public void setColor(Color color) {
+		void setColor(Color color) {
 			this.color = color;
 		}
 	}
