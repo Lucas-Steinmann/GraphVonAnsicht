@@ -12,7 +12,7 @@ import edu.kit.student.util.DoublePoint;
 public class FieldAccess extends JoanaCompoundVertex {
 
 	private FieldAccessGraph graph;
-	
+
     /**
      * Constructor.
      *
@@ -58,5 +58,4 @@ public class FieldAccess extends JoanaCompoundVertex {
         super.setY(y);
         graph.setY(y);
     }
-
 }

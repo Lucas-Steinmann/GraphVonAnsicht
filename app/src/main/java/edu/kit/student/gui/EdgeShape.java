@@ -27,7 +27,7 @@ public class EdgeShape extends GAnsGraphElement {
 	private Color color;
 	private String style = "";
 
-	private double arrowPathMinHeight = 6; //maybe adjust these 4 values
+	private double arrowPathMinHeight = 6; //maybe adjust these values
 	private double arrowPathMinWidth = 3;
 	private double arrowPathMaxHeight = 12;
 	private double arrowPathMaxWidth = 6;
@@ -176,6 +176,7 @@ public class EdgeShape extends GAnsGraphElement {
 		LEFT, RIGHT, TOP, BOTTOM;
 		
 		public static ArrowDirection calculateDirection(double x1, double y1, double x2, double y2) {
+			assert(x1 == x2 ^ y1 == y2);
 			if(x1 == x2) {
 				if(y1 < y2) {
 					return TOP;
@@ -191,7 +192,6 @@ public class EdgeShape extends GAnsGraphElement {
 					return RIGHT;
 				}
 			}
-			
 			return TOP; //As a default top is used, but should never be reached with orthogonal paths
 		}
 	}
@@ -270,7 +270,7 @@ public class EdgeShape extends GAnsGraphElement {
 
 
 	private Path arrowPath(double x, double y, ArrowDirection direction) {
-		return arrowPath(x, y, direction, arrowPathMaxHeight, arrowPathMaxWidth);
+		return arrowPath(x, y, direction, arrowPathMaxWidth, arrowPathMaxHeight);
 	}
 
 	public void setEdgeStyle(String style) {

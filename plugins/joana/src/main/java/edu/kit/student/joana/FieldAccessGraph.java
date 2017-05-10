@@ -30,7 +30,7 @@ public class FieldAccessGraph extends JoanaGraph implements InlineSubGraph {
     private DefaultDirectedGraph<JoanaVertex, JoanaEdge> graph;
     private JoanaVertex fieldEntry;
     private DoublePoint size = DoublePoint.zero();
-    private double x = 0d,y = 0d;
+    private double x = 0d, y = 0d;
 	public static double paddingx = 80;
 	public static double paddingy = 120;
 
@@ -39,7 +39,7 @@ public class FieldAccessGraph extends JoanaGraph implements InlineSubGraph {
     public FieldAccessGraph(String name, Set<JoanaVertex> vertices, Set<JoanaEdge> edges) {
         //TODO: Check whether the sets build a valid field access
         super(name, vertices, edges);
-        Set<JoanaEdge> innerEdges = edges.stream().filter((e) -> vertices.contains(e.getSource()) && vertices.contains(e.getTarget())).collect(Collectors.toSet());
+        Set<JoanaEdge> innerEdges = edges.stream().filter(e -> vertices.contains(e.getSource()) && vertices.contains(e.getTarget())).collect(Collectors.toSet());
         graph = new DefaultDirectedGraph<>(vertices, innerEdges);
 
         Map<JoanaEdge, DirectedOnionPath<JoanaEdge, JoanaCompoundVertex>> onionEdges = new HashMap<>();
@@ -208,16 +208,16 @@ public class FieldAccessGraph extends JoanaGraph implements InlineSubGraph {
         double miny = Double.MAX_VALUE;
         OptionalDouble tmpx = this.getVertexSet().stream().mapToDouble(DefaultVertex::getX).min();
         OptionalDouble tmpy = this.getVertexSet().stream().mapToDouble(DefaultVertex::getY).min();
-        if(tmpx.isPresent()) minx = Math.min(minx,tmpx.getAsDouble());
-        if(tmpy.isPresent()) miny = Math.min(miny,tmpy.getAsDouble());
+        if(tmpx.isPresent()) minx = Math.min(minx, tmpx.getAsDouble());
+        if(tmpy.isPresent()) miny = Math.min(miny, tmpy.getAsDouble());
         for(JoanaEdge e : this.getEdgeSet()){
             tmpx = e.getPath().getNodes().stream().mapToDouble(p->p.x).min();
             tmpy = e.getPath().getNodes().stream().mapToDouble(p->p.y).min();
-            if(tmpx.isPresent()) minx = Math.min(minx,tmpx.getAsDouble());
-            if(tmpy.isPresent()) miny = Math.min(miny,tmpy.getAsDouble());
+            if(tmpx.isPresent()) minx = Math.min(minx, tmpx.getAsDouble());
+            if(tmpy.isPresent()) miny = Math.min(miny, tmpy.getAsDouble());
         }
 
-        return new DoublePoint(minx,miny);
+        return new DoublePoint(minx, miny);
     }
 
     //maximum x and y coordinate of vertices and edges in this graph
@@ -227,16 +227,16 @@ public class FieldAccessGraph extends JoanaGraph implements InlineSubGraph {
         double maxy = Double.MIN_VALUE;
         OptionalDouble tmpx = this.getVertexSet().stream().mapToDouble(DefaultVertex::getX).max();
         OptionalDouble tmpy = this.getVertexSet().stream().mapToDouble(DefaultVertex::getY).max();
-        if(tmpx.isPresent()) maxx = Math.max(maxx,tmpx.getAsDouble());
-        if(tmpy.isPresent()) maxy = Math.max(maxy,tmpy.getAsDouble());
+        if(tmpx.isPresent()) maxx = Math.max(maxx, tmpx.getAsDouble());
+        if(tmpy.isPresent()) maxy = Math.max(maxy, tmpy.getAsDouble());
         for(JoanaEdge e : this.getEdgeSet()){
             tmpx = e.getPath().getNodes().stream().mapToDouble(p->p.x).max();
             tmpy = e.getPath().getNodes().stream().mapToDouble(p->p.y).max();
-            if(tmpx.isPresent()) maxx = Math.max(maxx,tmpx.getAsDouble());
-            if(tmpy.isPresent()) maxy = Math.max(maxy,tmpy.getAsDouble());
+            if(tmpx.isPresent()) maxx = Math.max(maxx, tmpx.getAsDouble());
+            if(tmpy.isPresent()) maxy = Math.max(maxy, tmpy.getAsDouble());
         }
 
-        return new DoublePoint(maxx,maxy);
+        return new DoublePoint(maxx, maxy);
     }
 
     @Override
