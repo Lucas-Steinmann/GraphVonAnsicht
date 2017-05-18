@@ -15,7 +15,12 @@ import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.Pane;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 /**
  * A view used for showing and creating a graph in GAns. It supports zooming and
@@ -28,7 +33,7 @@ public class GraphView extends Pane {
 	private GraphViewSelectionModel selectionModel;
 	private GraphViewGraphFactory graphFactory;
 	private LayoutOption layout;
-	
+
 	private ContextMenu contextMenu;
     private List<MenuItem> dynamicMenuListItems = new LinkedList<>();
     
@@ -41,9 +46,11 @@ public class GraphView extends Pane {
 	 * 
 	 * @param mediator to connect with context menu
 	 */
-	public GraphView(GAnsMediator mediator) {
+	public GraphView(GAnsMediator mediator, GraphViewSelectionModel selectionModel) {
 		this.mediator = mediator;
 		this.contextMenu = new ContextMenu();
+		this.selectionModel = selectionModel;
+		selectionModel.getSelectedShapes().addListener(onSelectionChanged);
 	}
 	
 	/**
@@ -84,25 +91,19 @@ public class GraphView extends Pane {
 	}
 	
 	/**
-	 * Sets the selection model of the GraphView.
-	 * 
-	 * @param selectionModel of the GraphView.
-	 */
-	public void setSelectionModel(GraphViewSelectionModel selectionModel) {
-		this.selectionModel = selectionModel;
-		selectionModel.setContextMenu(this.contextMenu);
-		selectionModel.getSelectedShapes().addListener(onSelectionChanged);
-	}
-
-	/**
 	 * Returns the selection model of the GraphView.
-	 * 
+	 *
 	 * @return The selection model of the GraphView.
 	 */
 	public GraphViewSelectionModel getSelectionModel() {
 		return this.selectionModel;
 	}
-	
+
+	public ContextMenu getContextMenu() {
+		return contextMenu;
+	}
+
+
 	public void setCurrentLayoutOption(LayoutOption layout) {
 		this.layout = layout;
 	}
