@@ -189,7 +189,25 @@ public class GAnsProperty<T> {
 	public void removeListenerFromValue(ChangeListener<T> listener) {
 		propertyValue().removeListener(listener);
 	}
-	
+
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (!(o instanceof GAnsProperty)) return false;
+
+		GAnsProperty<?> that = (GAnsProperty<?>) o;
+
+		if (!getName().equals(that.getName())) return false;
+		return getValue().equals(that.getValue());
+	}
+
+	@Override
+	public int hashCode() {
+		int result = getName().hashCode();
+		result = 31 * result + getValue().hashCode();
+		return result;
+	}
+
 	@Override
 	public String toString() {
 		return "Property: " + this.name + ", " + this.value.toString();
