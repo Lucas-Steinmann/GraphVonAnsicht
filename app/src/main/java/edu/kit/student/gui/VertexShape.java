@@ -142,7 +142,6 @@ public class VertexShape extends GAnsGraphElement {
                   cssStringB.append(", ");
 		}
 		cssStringB.append(";\n");
-		System.out.println(cssStringB.toString());
 		this.setStyle(cssStringB.toString());
 	}
 
