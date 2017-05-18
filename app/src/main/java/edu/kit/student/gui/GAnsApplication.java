@@ -1,11 +1,7 @@
 package edu.kit.student.gui;
 
-import java.io.*;
-import java.text.ParseException;
-import java.util.*;
-import java.util.stream.Collectors;
-
-import edu.kit.student.graphmodel.*;
+import edu.kit.student.graphmodel.GraphModel;
+import edu.kit.student.graphmodel.ViewableGraph;
 import edu.kit.student.objectproperty.GAnsProperty;
 import edu.kit.student.parameter.Settings;
 import edu.kit.student.plugin.Exporter;
@@ -21,9 +17,6 @@ import javafx.beans.value.ChangeListener;
 import javafx.beans.value.ObservableValue;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
-import javafx.collections.ObservableSet;
-import javafx.collections.SetChangeListener;
-import javafx.event.ActionEvent;
 import javafx.event.Event;
 import javafx.event.EventHandler;
 import javafx.geometry.Orientation;
@@ -52,7 +45,22 @@ import javafx.stage.WindowEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.sound.sampled.Line;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.text.ParseException;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 /**
  * Main application of GAns.
@@ -121,7 +129,7 @@ public class GAnsApplication {
 					ViewableGraph graph = model.getGraphFromId(GAnsApplication.this.structureView.getIdOfSelectedItem());
 					
 					ObservableList<GAnsProperty<?>> statistics = FXCollections.observableList(graph.getStatistics());
-					informationView.setInformation(statistics);
+					informationView.setFocus(statistics);
 					mouseEvent.consume();
 				}
 			}
@@ -333,7 +341,7 @@ public class GAnsApplication {
 			Importer importer = importerList.get(supportedFileExtensions.indexOf(fileExtension));
 			importer.importGraph(workspace.getGraphModelBuilder(), inputStream);
 			this.graphViewTabPane.getTabs().clear();
-			this.informationView.setInformation(FXCollections.observableList(new LinkedList<>()));
+			this.informationView.setFocus(FXCollections.observableList(new LinkedList<>()));
 			this.model = workspace.getGraphModel();
 			ViewableGraph currentGraph = this.model.getRootGraphs().get(0);
 			openGraph(currentGraph);
@@ -401,56 +409,21 @@ public class GAnsApplication {
 	}
 	
 	private void createGraphView() {
-		GraphView graphView = new GraphView(this.mediator);
-		
+
+
+		GraphViewSelectionModel selectionModel = new GraphViewSelectionModel();
+		GraphView graphView = new GraphView(this.mediator, selectionModel);
 		GraphViewPaneStack graphViewPaneStack = new GraphViewPaneStack(graphView);
-		
-		GraphViewSelectionModel selectionModel = new GraphViewSelectionModel(graphViewPaneStack);
-		graphView.setSelectionModel(selectionModel);
+		GraphViewSelectionController selectionController
+				= new GraphViewSelectionController(selectionModel, graphViewPaneStack, informationView);
 
 		GraphViewTab tab = new GraphViewTab(graphViewPaneStack);
 		graphViewTabPane.getTabs().add(tab);
 		graphViewTabPane.getSelectionModel().select(tab);
 
-		// Fill Information-View on change of selection
-		graphView.getSelectionModel().getSelectedShapes().addListener(new InformationViewUpdater(graphView, informationView));
-
 	}
 
-	private class InformationViewUpdater implements SetChangeListener<GAnsGraphElement> {
 
-		final ObservableList<GAnsProperty<?>> selectedItemProperties = FXCollections.observableList(new LinkedList<>());
-		final GraphView graphView;
-		final InformationView informationView;
-
-		public InformationViewUpdater(GraphView graphView, InformationView infoView) {
-		    this.graphView = graphView;
-		    this.informationView = infoView;
-		    infoView.setInformation(selectedItemProperties);
-		}
-
-		@Override
-		public void onChanged(Change<? extends GAnsGraphElement> change) {
-			GraphViewGraphFactory factory = graphView.getFactory();
-			// Urgh.. Add common interface for edge and vertex
-			if (change.wasAdded()) {
-				Edge edge = factory.getEdgeFromShape(change.getElementAdded());
-				if (edge != null)
-					selectedItemProperties.addAll(edge.getProperties());
-				Vertex vertex = factory.getVertexFromShape(change.getElementAdded());
-				if (vertex != null)
-					selectedItemProperties.addAll(vertex.getProperties());
-			} else if (change.wasRemoved()) {
-				Edge edge = factory.getEdgeFromShape(change.getElementRemoved());
-				if (edge != null)
-					selectedItemProperties.removeAll(edge.getProperties());
-				Vertex vertex = factory.getVertexFromShape(change.getElementRemoved());
-				if (vertex != null)
-					selectedItemProperties.removeAll(vertex.getProperties());
-			}
-		}
-	}
-	
 	private boolean openWorkspaceDialog() {
 		List<String> workspaceNames = new ArrayList<>();
 		List<WorkspaceOption> options = PluginManager.getPluginManager().getWorkspaceOptions();
