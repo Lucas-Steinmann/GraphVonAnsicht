@@ -68,6 +68,7 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 	 */
 	public void layout(MethodGraph graph) {
 		logger.info("Graph before: Vertices: "+graph.getVertexSet().size()+", Edges: "+graph.getEdgeSet().size());
+		graph.invalidateProperties(); //invalidated all saved properties of its data structures
 		this.layoutFieldAccessGraphs(graph);
 		List<FieldAccess> collapsedFAs = graph.collapseFieldAccesses();
 		
@@ -119,6 +120,7 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 		
 		logger.info("Graph after: Vertices: "+graph.getVertexSet().size()+", Edges: "+graph.getEdgeSet().size());
 		expandFieldAccesses(graph, collapsedFAs);
+		collapsedFAs.forEach(this::checkIntegrity); //makes more sense here because expandFAs sets the coordinates of previous layouted FA-vertices, and -edges adequately
 
 		collapsedFAs.forEach(fa->drawEdgesNew(graph, fa));	//new version
 		
@@ -137,6 +139,30 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 			fieldAccessSugAlgo.layout(fag);
 		}
 	}
+
+	//checks the set coordinates of the vertices in the FA, especially checks if no vertex goes out of the FA
+	private void checkIntegrity(FieldAccess fa){
+		FieldAccessGraph fag = fa.getGraph();
+		//assert(dEquals(fa.getX(), fag.getX())); //as the FieldAccess itself is layouted later this is normally not necessary here
+		assert(fa.getSize().equals(fag.getSize()));
+		double faStartX = fa.getX();
+		double faEndX = fa.getX() + fa.getSize().x;
+		double faStartY = fa.getY();
+		double faEndY = fa.getY() + fa.getSize().y;
+		double fagStartX = fag.getX();
+		double fagEndX = fag.getX() + fa.getSize().x;
+		double fagStartY = fag.getY();
+		double fagEndY = fag.getY() + fa.getSize().y;
+
+		System.out.println("FA-Points: X("+faStartX + "|" + faEndX + "), Y(" + faStartY + "|" + faEndY + ")");
+		System.out.println("FAG-Points: X("+fagStartX + "|" + fagEndX + "), Y(" + fagStartY + "|" + fagEndY + ")");
+		for(JoanaVertex v : fa.getGraph().getVertexSet()){
+			System.out.println("Vertex-X(" + v.getX() + "|" + (v.getX() + v.getSize().x) + ")");
+			assert(v.getX() > fagStartX && (v.getX() + v.getSize().x) < fagEndX);
+			System.out.println("Vertex-Y(" + v.getY() + "|" + (v.getY() + v.getSize().y) + ")");
+			assert(v.getY() > fagStartY && (v.getY() + v.getSize().y) < fagEndY);
+		}
+	}
 	
 	
 	//This method initializes everything necessary for drawing every edge in an FieldAccess new.
@@ -151,8 +177,12 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 		//maybe split more functionality into private methods
 		double boxYtop = fa.getY();
 		double boxYbottom = fa.getY() + fa.getSize().y;
+		System.out.println("fa-graph edges: " + fa.getGraph().getEdgeSet().size());
+		//System.out.println("fa-graph vertices: " + fa.getGraph().getVertexSet().size());
 		List<JoanaVertex> faVertices = new ArrayList<>(graph.removeFilteredVertices(fa.getGraph().getVertexSet()));
 		List<JoanaEdge> faEdges = new ArrayList<>(graph.removeFilteredEdges(fa.getGraph().getEdgeSet()));
+		System.out.println("faEdges: " + faEdges.size());
+		//System.out.println("faVertices: " + faVertices.size());
 		Set<DirectedEdge> newFAedges = new HashSet<>();	//new edges from outside to the next layer, not describing a path
 		faVertices.sort(Comparator.comparingDouble(DefaultVertex::getY));	//sort vertices in ascending order of y values
 		Map<Integer, List<Vertex>> layerNumToVertices = new HashMap<>();
@@ -162,7 +192,7 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 		//add y vals for layers
 		layerYvals.add(boxYtop);
 		for(Vertex v : faVertices){
-			if(getIndex(layerYvals,v.getY()) == -1){
+			if(getIndex(layerYvals, v.getY()) == -1){
 				layerYvals.add(v.getY());
 			}
 		}
@@ -172,7 +202,7 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 			layerNumToVertices.put(i, new ArrayList<>());
 		}
 		for(JoanaVertex v : faVertices){	//add field access vertices to mapping of layers
-			int index = getIndex(layerYvals,v.getY());
+			int index = getIndex(layerYvals, v.getY());
 			assert(index != -1);
 			layerNumToVertices.get(index).add(v);
 		}
@@ -189,8 +219,11 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 				layerNumToVertices.get(i).add(new JoanaDummyVertex("","", getDummyID(), new DoublePoint(2, layerVertexHeight)));
 			}
 		}
+		System.out.println("FA-Points: X("+fa.getX() + "|" + (fa.getX() + fa.getSize().x) + "), Y(" + fa.getY() + "|" + (fa.getY() + fa.getSize().y) + ")");
 		for(JoanaEdge e : fromOutEdges){	//add dummy vertices for vertices from outside on top and bottom layer
 			List<DoublePoint> points = e.getPath().getNodes();
+			System.out.println("First point's y:" + points.get(0).y);
+			System.out.println("Last point's y:" + points.get(points.size() - 1).y);
 			DoublePoint borderDummySize = new DoublePoint(2, 5);//just a simple size for dummies on first or last layer
 			//cases: top of box and bottom, in and out of the box.
 			double start = -1;
@@ -279,7 +312,7 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 		List<Vertex> dummies = layer.stream().filter(v->v.getID() < 0).collect(Collectors.toList());
 		if(dummies.isEmpty()) return;
 		int dummyCount = dummies.size();
-		//System.out.println("dummies: " + dummyCount);
+		System.out.println("dummies in actual layer: " + dummyCount);
 		DoublePoint dummySize = dummies.get(0).getSize(); //dummy size is the same for all dummies without set x- and y-coordinates!
 		List<Vertex> normalVertices = layer.stream().filter(v->v.getID() >= 0).collect(Collectors.toList());
 		normalVertices.sort(Comparator.comparingDouble(Vertex::getX));
@@ -297,14 +330,22 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 		int[] amountDummiesPerSegment = new int[distancePoints.size() / 2];
 		for(int i = 0; i < distancePoints.size() / 2; i++){
 			freeSegmentsSpace[i] = distancePoints.get(2 * i + 1) - distancePoints.get(2 * i);
+			System.out.println("distancePoints: "+distancePoints.get(2*i+1) + "|" + distancePoints.get(2*i));
+			assert(freeSegmentsSpace[i] > 0);
 			freeSpace += freeSegmentsSpace[i];//count the width of total available space in this layer for positioning dummies
 		}
 		int assignedDummies = 0;
 		for(int i = 0; i < freeSegmentsSpace.length - 1; i++){
 		    amountDummiesPerSegment[i] = Math.toIntExact(Math.round((freeSegmentsSpace[i] / freeSpace) * dummyCount));
+		    assert(amountDummiesPerSegment[i] >= 0);
+		    assert(amountDummiesPerSegment[i] <= dummyCount);
 		    assignedDummies += amountDummiesPerSegment[i];
         }
         amountDummiesPerSegment[amountDummiesPerSegment.length - 1] = dummyCount - assignedDummies; //to be sure there was no dummy lost through rounding
+		assert(amountDummiesPerSegment[amountDummiesPerSegment.length - 1] >= 0);
+		for(int i = 0; i < distancePoints.size()/2; i++){
+			System.out.println("amountDummiesPerSegment " + i + ": " + amountDummiesPerSegment[i]);
+		}
         //calculate for every free space distances between dummies and thus there positions! (maybe set dummies x-size to 1)
         double yVal = normalVertices.get(0).getY(); //y-coord from all normal vertices on the layer should be the same. Also used for setting dummies' y-coordinate
         int dummyIdx = 0; //index for access in dummy list
@@ -770,7 +811,8 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
                 v.setX(v.getX() + fa.getX() + FieldAccessGraph.paddingx/2d);
                 v.setY(v.getY() + fa.getY() + FieldAccessGraph.paddingy/2d);
             }
-			for(JoanaEdge e : fa.getGraph().getEdgeSet()){
+            Set<JoanaEdge> edges = graph.removeFilteredEdges(fa.getGraph().getEdgeSet());
+			for(JoanaEdge e : edges){
 				List<DoublePoint> points = e.getPath().getNodes();
 				List<DoublePoint> newPoints = new LinkedList<>();
 				assert(!points.isEmpty());

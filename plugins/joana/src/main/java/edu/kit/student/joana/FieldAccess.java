@@ -27,6 +27,10 @@ public class FieldAccess extends JoanaCompoundVertex {
         this.graph = graph;
     }
 
+    public void invalidateGraphProperties(){
+        this.graph.invalidateProperties();
+    }
+
     @Override
     public void addToFastGraphAccessor(FastGraphAccessor fga) {
         // TODO Auto-generated method stub
@@ -58,4 +62,14 @@ public class FieldAccess extends JoanaCompoundVertex {
         super.setY(y);
         graph.setY(y);
     }
+
+    /*@Override
+    public double getX(){
+        return graph.getX();
+    }
+
+    @Override
+    public double getY(){
+        return graph.getY();
+    }*/
 }
