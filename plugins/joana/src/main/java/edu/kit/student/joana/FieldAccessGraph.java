@@ -31,6 +31,7 @@ public class FieldAccessGraph extends JoanaGraph implements InlineSubGraph {
     private JoanaVertex fieldEntry;
     private DoublePoint size = DoublePoint.zero();
     private double x = 0d, y = 0d;
+    private boolean dirtyProperties = false; //tells if the actual saved properties like x,y,size are still valid (in case of a relayout the saved values are not appropriate set and have to be recalculated)
 	public static double paddingx = 80;
 	public static double paddingy = 120;
 
@@ -60,6 +61,10 @@ public class FieldAccessGraph extends JoanaGraph implements InlineSubGraph {
     
     public Set<JoanaVertex> expand(JoanaCollapsedVertex vertex) {
         return collapser.expand(vertex);
+    }
+
+    public void invalidateProperties(){
+        this.dirtyProperties = true;
     }
 
     @Override
@@ -164,10 +169,13 @@ public class FieldAccessGraph extends JoanaGraph implements InlineSubGraph {
     }
 
     @Override
-    public DoublePoint getSize() {
-        if(!this.size.equals(DoublePoint.zero())) return this.size;
+    public DoublePoint getSize() { //TODO: think if calculation is necessary. But else the FieldAccess has to set FAG's size if its size was set
+        //return this.size;
+        if(!this.size.equals(DoublePoint.zero()) && !dirtyProperties) return this.size;
+        this.dirtyProperties = false;
         DoublePoint min = this.getMinCoordinate();
         DoublePoint max = this.getMaxCoordinate();
+        assert(max.x > min.x && max.y > min.y);
         DoublePoint ret = new DoublePoint(max.x - min.x + paddingx, max.y - min.y + paddingy);
         this.size = ret;
         return ret;
@@ -176,17 +184,20 @@ public class FieldAccessGraph extends JoanaGraph implements InlineSubGraph {
 
     @Override
     public double getX() {
-        if(!Objects.equals(this.x,0d)) return this.x;
+        //return this.x;
+        if(!Objects.equals(this.x,0d) && !dirtyProperties) return this.x;
+        this.dirtyProperties = false;
         double ret = this.getMinCoordinate().x - paddingx / 2;
         this.x = ret;
         return ret;
     }
 
-
     @Override
     public double getY() {
-        if(!Objects.equals(this.y,0d)) return this.y;
-        double ret = this.getMinCoordinate().y - paddingx / 2;
+        //return this.y;
+        if(!Objects.equals(this.y,0d) && !dirtyProperties) return this.y;
+        this.dirtyProperties = false;
+        double ret = this.getMinCoordinate().y - paddingy / 2;
         this.y = ret;
         return ret;
     }
@@ -225,8 +236,8 @@ public class FieldAccessGraph extends JoanaGraph implements InlineSubGraph {
         if(this.getVertexSet().isEmpty()) return DoublePoint.zero();
         double maxx = Double.MIN_VALUE;
         double maxy = Double.MIN_VALUE;
-        OptionalDouble tmpx = this.getVertexSet().stream().mapToDouble(DefaultVertex::getX).max();
-        OptionalDouble tmpy = this.getVertexSet().stream().mapToDouble(DefaultVertex::getY).max();
+        OptionalDouble tmpx = this.getVertexSet().stream().mapToDouble(v -> v.getX()+ v.getSize().x).max();//   TODO: both lines have to be changed!!!!!
+        OptionalDouble tmpy = this.getVertexSet().stream().mapToDouble(v -> v.getY()+ v.getSize().y).max();//
         if(tmpx.isPresent()) maxx = Math.max(maxx, tmpx.getAsDouble());
         if(tmpy.isPresent()) maxy = Math.max(maxy, tmpy.getAsDouble());
         for(JoanaEdge e : this.getEdgeSet()){
@@ -249,6 +260,7 @@ public class FieldAccessGraph extends JoanaGraph implements InlineSubGraph {
 
         if (Double.compare(that.x, x) != 0) return false;
         if (Double.compare(that.y, y) != 0) return false;
+        if (dirtyProperties != that.dirtyProperties) return false;
         if (graph != null ? !graph.equals(that.graph) : that.graph != null) return false;
         if (fieldEntry != null ? !fieldEntry.equals(that.fieldEntry) : that.fieldEntry != null) return false;
         if (size != null ? !size.equals(that.size) : that.size != null) return false;
@@ -266,7 +278,9 @@ public class FieldAccessGraph extends JoanaGraph implements InlineSubGraph {
         result = 31 * result + (int) (temp ^ (temp >>> 32));
         temp = Double.doubleToLongBits(y);
         result = 31 * result + (int) (temp ^ (temp >>> 32));
+        result = 31 * result + (dirtyProperties ? 1 : 0);
         result = 31 * result + (collapser != null ? collapser.hashCode() : 0);
         return result;
     }
+
 }

@@ -74,6 +74,15 @@ public class MethodGraph extends JoanaGraph {
     }
 
     /**
+     * Used before relayouting.
+     * Clears in every data structure used the saved properties. (e.g. in FieldAccessGraph its coordinate and size)
+     * Necessary to be sure these properties are calculated freshly and the old values won't be used.
+     */
+    public void invalidateProperties(){
+        this.fieldAccesses.forEach(FieldAccess::invalidateGraphProperties);
+    }
+
+    /**
      * Sets the interprocedural edges of this MethodGraph.
      * Also calculates a mapping of vertex id to the interprocedural edges that are connected with this vertex with its ID.
      * 

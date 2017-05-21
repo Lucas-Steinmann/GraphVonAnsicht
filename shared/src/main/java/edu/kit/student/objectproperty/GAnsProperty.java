@@ -190,7 +190,7 @@ public class GAnsProperty<T> {
 		propertyValue().removeListener(listener);
 	}
 
-	@Override
+	/*@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (!(o instanceof GAnsProperty)) return false;
@@ -206,7 +206,7 @@ public class GAnsProperty<T> {
 		int result = getName().hashCode();
 		result = 31 * result + getValue().hashCode();
 		return result;
-	}
+	}*/
 
 	@Override
 	public String toString() {
