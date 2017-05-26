@@ -73,8 +73,8 @@ public class FilterDialog extends Dialog<ButtonType> {
 
 
         // Fill with groups of checkboxes
-        Pane vertexCheckboxes = createCheckboxSetPane(vertexFilterCheckboxes, Filter::getGroup, 4);
-        Pane edgeCheckboxes = createCheckboxSetPane(edgeFilterCheckboxes, Filter::getGroup, 4);
+        Pane vertexCheckboxes = createCheckboxSetPane(vertexFilterCheckboxes, Filter::getGroup, 6);
+        Pane edgeCheckboxes = createCheckboxSetPane(edgeFilterCheckboxes, Filter::getGroup, 6);
 
 
         new FilterGroup(checkAllVertex, vertexFilterCheckboxes);

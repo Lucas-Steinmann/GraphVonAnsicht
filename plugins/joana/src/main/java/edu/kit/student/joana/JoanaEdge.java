@@ -99,7 +99,7 @@ public class JoanaEdge implements DirectedEdge {
 	}
     
     public enum EdgeKind {
-    	DEBUG, CD, CE, CF, CL, DD, DH, HE, PI, PO, PS, RF, SU, NF, JF, UN, CC, JD, NTSCD,
+    	DEBUG, CD, CE, CF, CL, DD, DH, HE, PI, PO, PS, PE, RF, SU, NF, JF, UN, CC, JD, NTSCD,
     	SD, DA, DL, VD, RD, SH, SF, ID, IW, RY, FORK, FORK_IN, FORK_OUT, JOIN, JOIN_OUT,
     	CONFLICT_DATA, CONFLICT_ORDER, FD, FI, UNKNOWN;
     	
@@ -145,6 +145,7 @@ public class JoanaEdge implements DirectedEdge {
         	case CL: return Color.web("0x006400");
         	case FORK_IN:
         	case PI: return Color.web("0x3CB371");
+        	case PE: return Color.web("00e7ffff");
         	case PS: return Color.web("0x000000");
         	default: return Color.web("0xFFC125");
         	}
