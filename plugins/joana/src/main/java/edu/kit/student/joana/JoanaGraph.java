@@ -158,9 +158,11 @@ public abstract class JoanaGraph
         JoanaEdgeFilter cfFilter = new JoanaEdgeFilter(EdgeKind.CF);
         JoanaEdgeFilter heFilter = new JoanaEdgeFilter(EdgeKind.HE);
         JoanaEdgeFilter psFilter = new JoanaEdgeFilter(EdgeKind.PS);
+        JoanaEdgeFilter peFilter = new JoanaEdgeFilter(EdgeKind.PE);
         edgeFilter.add(cfFilter);
         edgeFilter.add(heFilter);
         edgeFilter.add(psFilter);
+        edgeFilter.add(peFilter);
     }
 
     @Override
