@@ -219,11 +219,11 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 				layerNumToVertices.get(i).add(new JoanaDummyVertex("","", getDummyID(), new DoublePoint(2, layerVertexHeight)));
 			}
 		}
-		System.out.println("FA-Points: X("+fa.getX() + "|" + (fa.getX() + fa.getSize().x) + "), Y(" + fa.getY() + "|" + (fa.getY() + fa.getSize().y) + ")");
+		//System.out.println("FA-Points: X("+fa.getX() + "|" + (fa.getX() + fa.getSize().x) + "), Y(" + fa.getY() + "|" + (fa.getY() + fa.getSize().y) + ")");
 		for(JoanaEdge e : fromOutEdges){	//add dummy vertices for vertices from outside on top and bottom layer
 			List<DoublePoint> points = e.getPath().getNodes();
-			System.out.println("First point's y:" + points.get(0).y);
-			System.out.println("Last point's y:" + points.get(points.size() - 1).y);
+			//System.out.println("First point's y:" + points.get(0).y);
+			//System.out.println("Last point's y:" + points.get(points.size() - 1).y);
 			DoublePoint borderDummySize = new DoublePoint(2, 5);//just a simple size for dummies on first or last layer
 			//cases: top of box and bottom, in and out of the box.
 			double start = -1;
@@ -312,7 +312,7 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 		List<Vertex> dummies = layer.stream().filter(v->v.getID() < 0).collect(Collectors.toList());
 		if(dummies.isEmpty()) return;
 		int dummyCount = dummies.size();
-		System.out.println("dummies in actual layer: " + dummyCount);
+		//System.out.println("dummies in actual layer: " + dummyCount);
 		DoublePoint dummySize = dummies.get(0).getSize(); //dummy size is the same for all dummies without set x- and y-coordinates!
 		List<Vertex> normalVertices = layer.stream().filter(v->v.getID() >= 0).collect(Collectors.toList());
 		normalVertices.sort(Comparator.comparingDouble(Vertex::getX));
@@ -330,7 +330,7 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
 		int[] amountDummiesPerSegment = new int[distancePoints.size() / 2];
 		for(int i = 0; i < distancePoints.size() / 2; i++){
 			freeSegmentsSpace[i] = distancePoints.get(2 * i + 1) - distancePoints.get(2 * i);
-			System.out.println("distancePoints: "+distancePoints.get(2*i+1) + "|" + distancePoints.get(2*i));
+			//System.out.println("distancePoints: "+distancePoints.get(2*i+1) + "|" + distancePoints.get(2*i));
 			assert(freeSegmentsSpace[i] > 0);
 			freeSpace += freeSegmentsSpace[i];//count the width of total available space in this layer for positioning dummies
 		}
@@ -343,9 +343,9 @@ public class MethodGraphLayout implements LayoutAlgorithm<MethodGraph> {
         }
         amountDummiesPerSegment[amountDummiesPerSegment.length - 1] = dummyCount - assignedDummies; //to be sure there was no dummy lost through rounding
 		assert(amountDummiesPerSegment[amountDummiesPerSegment.length - 1] >= 0);
-		for(int i = 0; i < distancePoints.size()/2; i++){
-			System.out.println("amountDummiesPerSegment " + i + ": " + amountDummiesPerSegment[i]);
-		}
+		//for(int i = 0; i < distancePoints.size()/2; i++){
+		//	System.out.println("amountDummiesPerSegment " + i + ": " + amountDummiesPerSegment[i]);
+		//}
         //calculate for every free space distances between dummies and thus there positions! (maybe set dummies x-size to 1)
         double yVal = normalVertices.get(0).getY(); //y-coord from all normal vertices on the layer should be the same. Also used for setting dummies' y-coordinate
         int dummyIdx = 0; //index for access in dummy list

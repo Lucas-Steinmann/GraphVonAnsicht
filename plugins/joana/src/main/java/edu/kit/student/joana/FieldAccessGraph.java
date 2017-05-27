@@ -236,8 +236,8 @@ public class FieldAccessGraph extends JoanaGraph implements InlineSubGraph {
         if(this.getVertexSet().isEmpty()) return DoublePoint.zero();
         double maxx = Double.MIN_VALUE;
         double maxy = Double.MIN_VALUE;
-        OptionalDouble tmpx = this.getVertexSet().stream().mapToDouble(v -> v.getX()+ v.getSize().x).max();//   TODO: both lines have to be changed!!!!!
-        OptionalDouble tmpy = this.getVertexSet().stream().mapToDouble(v -> v.getY()+ v.getSize().y).max();//
+        OptionalDouble tmpx = this.getVertexSet().stream().mapToDouble(v -> v.getX()+ v.getSize().x).max();
+        OptionalDouble tmpy = this.getVertexSet().stream().mapToDouble(v -> v.getY()+ v.getSize().y).max();
         if(tmpx.isPresent()) maxx = Math.max(maxx, tmpx.getAsDouble());
         if(tmpy.isPresent()) maxy = Math.max(maxy, tmpy.getAsDouble());
         for(JoanaEdge e : this.getEdgeSet()){
