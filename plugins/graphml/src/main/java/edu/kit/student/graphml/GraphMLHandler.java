@@ -10,7 +10,13 @@ import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-import java.util.*;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.Stack;
 
 /**
  * Handler for the SAXParser for GraphML.
@@ -35,7 +41,7 @@ public class GraphMLHandler extends DefaultHandler {
     private List<Key> declaredKeys;
 
     private Key currentKey;
-    private String currentValue;
+    private StringBuilder currentValue = new StringBuilder();
     private Map<Key, String> currentData;
     private String currentId;
     private GmlToken currentObject;
@@ -296,7 +302,7 @@ public class GraphMLHandler extends DefaultHandler {
                     logger.warn("GraphML data extension found. Data extensions are not supported. Skipping data..");
                     foundExtraData = true;
                 }
-                currentValue = "";
+                currentValue.setLength(0);
             } else {
                 String message = "Found invalid tag: " + qName;
                 logger.error(message);
@@ -315,13 +321,13 @@ public class GraphMLHandler extends DefaultHandler {
 
         } else if (qName.equalsIgnoreCase(GmlToken.DATA.getXmlTag())) {
             if (currentObject.equals(GmlToken.GRAPH))
-                currentGraph.addData(currentKey.getName(), currentValue);
+                currentGraph.addData(currentKey.getName(), currentValue.toString());
             else if (currentObject == GmlToken.GRAPHML)
-                graphMLData.put(currentKey, currentValue);
+                graphMLData.put(currentKey, currentValue.toString());
             else
-                currentData.put(currentKey, currentValue);
+                currentData.put(currentKey, currentValue.toString());
             currentKey = null;
-            currentValue = null;
+            currentValue.setLength(0);
 
         } else if (qName.equalsIgnoreCase(GmlToken.NODE.getXmlTag())) {
             if (blackList.contains(currentId)) {
@@ -356,17 +362,14 @@ public class GraphMLHandler extends DefaultHandler {
         } else if (qName.equalsIgnoreCase(GmlToken.KEY.getXmlTag())) {
             currentKey = null;
         } else if (qName.equalsIgnoreCase(GmlToken.DEFAULT.getXmlTag())) {
-            currentKey.defaultValue = currentValue;
-            currentValue = null;
+            currentKey.defaultValue = currentValue.toString();
+            currentValue.setLength(0);
         }
     }
 
     @Override
     public void characters(char[] ch, int start, int length) throws SAXException {
-        if (currentValue == null)
-            currentValue = String.copyValueOf(ch, start, length).trim();
-        else
-            currentValue += String.copyValueOf(ch, start, length).trim();
+        currentValue.append(String.copyValueOf(ch, start, length).trim());
     }
 
     private void throwMissingField(GmlToken element, GmlToken field) throws SAXException {
