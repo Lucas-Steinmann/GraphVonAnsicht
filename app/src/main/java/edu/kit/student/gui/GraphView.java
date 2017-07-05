@@ -9,6 +9,14 @@ import edu.kit.student.plugin.EdgeFilter;
 import edu.kit.student.plugin.LayoutOption;
 import edu.kit.student.plugin.VertexFilter;
 import edu.kit.student.util.LanguageManager;
+
+import java.util.Collection;
+import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
+
 import javafx.collections.ListChangeListener;
 import javafx.collections.SetChangeListener;
 import javafx.event.ActionEvent;
@@ -18,13 +26,6 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.ContextMenu;
 import javafx.scene.control.MenuItem;
 import javafx.scene.layout.Pane;
-
-import java.util.Collection;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
 
 /**
  * A fxml used for showing and creating a graph in GAns. It supports zooming and
@@ -254,9 +255,9 @@ public class GraphView extends Pane {
 		fdc.showAndWait().filter(FilterDialogController.APPLYANDLAYOUT::equals).ifPresent(b -> {
 			if (model.changedSinceBackup()) {
 			    if (model.isFixVertices())
-			        layout.setFixVertices(true);
+			        getCurrentLayoutOption().setFixVertices(true);
 				applyAndLayout(model.getVertexFilters(), model.getEdgeFilters());
-				layout.setFixVertices(false);
+				getCurrentLayoutOption().setFixVertices(false);
 				assert !needLayout();
 			}
         });
@@ -280,7 +281,7 @@ public class GraphView extends Pane {
 		lastLayoutVFilter.addAll(graphFactory.getGraph().getActiveVertexFilter());
 		lastLayoutEFilter.addAll(graphFactory.getGraph().getActiveEdgeFilter());
 		assert !needLayout();
-		this.layout.applyLayout();
+		getCurrentLayoutOption().applyLayout();
 		reloadGraph();
 	}
 

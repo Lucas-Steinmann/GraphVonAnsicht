@@ -102,11 +102,11 @@ public class CrossMinimizer implements ICrossMinimizer {
 				undo.add(new ArrayList<>(layer));
 			}
 
-			logger.info("optimize up");
+//			logger.info("optimize up");
 			for (int i = 1; i < layerCount; i++) {
 				optimizeLayer(graph, i, Direction.UP);
 			}
-			logger.info("optimize down");
+//			logger.info("optimize down");
 			for (int i = layerCount - 2; i >= 0; i--) {
 				optimizeLayer(graph, i, Direction.DOWN);
 			}

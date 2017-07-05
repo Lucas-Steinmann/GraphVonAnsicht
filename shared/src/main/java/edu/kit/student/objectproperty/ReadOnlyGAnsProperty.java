@@ -1,10 +1,10 @@
 package edu.kit.student.objectproperty;
 
-import javafx.beans.value.ChangeListener;
 
 /**
- * A {@link ReadOnlyGAnsProperty} is a single read-only property, which can be used to describe
+ * A {@link ReadOnlyGAnsProperty} can be used to describe
  * a property of an object in the GAns-Framework.
+ * It encapsulates the name and the value of the property.
  *
  * @param <T> The type of element that is to be stored in the GAnsProperty.
  * @author Lucas Steinmann
@@ -27,23 +27,16 @@ public interface ReadOnlyGAnsProperty<T> {
     T getValue();
 
     /**
-     * Returns the string representation of the value of this GAnsProperty.
-     *
-     * @return the string representation of the value of this GAnsProperty.
-     */
-    String getValueAsString();
-
-    /**
      * Adds a {@link ChangeListener} to the value of the property.
      *
      * @param listener the listener that will be added.
      */
-    void addListener(ChangeListener<T> listener);
+    void addListener(ChangeListener<? super T> listener);
 
     /**
      * Removes a {@link ChangeListener} from the value of the property.
      *
      * @param listener the listener that will be removed.
      */
-    void removeListener(ChangeListener<T> listener);
+    void removeListener(ChangeListener<? super T> listener);
 }

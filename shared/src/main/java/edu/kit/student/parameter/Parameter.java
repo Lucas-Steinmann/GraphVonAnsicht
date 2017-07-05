@@ -1,14 +1,11 @@
 package edu.kit.student.parameter;
 
 import edu.kit.student.objectproperty.GAnsProperty;
-import javafx.beans.property.BooleanProperty;
-import javafx.beans.property.SimpleBooleanProperty;
-import javafx.beans.value.ChangeListener;
 
 /**
  * An abstract parameter class.
  * A parameter contains a value and a name.
- * Clients can set {@link ChangeListener} to track changes of the value.
+ * Clients can set {@link edu.kit.student.objectproperty.ChangeListener} to track changes of the value.
  *
  * <p>
  * Classes inheriting from this class can be visited by a ParameterVisitor.
@@ -24,7 +21,7 @@ public abstract class Parameter<V> extends GAnsProperty<V> implements ReadOnlyPa
 	private V tempValue;
 
 
-	private final BooleanProperty disabled = new SimpleBooleanProperty(false);
+	private final GAnsProperty<Boolean> disabled = new GAnsProperty<>("disabled", false);
 	
 	/**
 	 * Constructor, setting the name and value of the property.
@@ -75,7 +72,7 @@ public abstract class Parameter<V> extends GAnsProperty<V> implements ReadOnlyPa
 	    this.disabled.setValue(enabled);
 	}
 
-	public BooleanProperty disabledProperty() {
+	public GAnsProperty<Boolean> disabledProperty() {
 		return disabled;
 	}
 }

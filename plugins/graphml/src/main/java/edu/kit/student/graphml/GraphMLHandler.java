@@ -80,7 +80,7 @@ public class GraphMLHandler extends DefaultHandler {
 
     @Override
     public void endDocument() throws SAXException {
-        logger.debug("Finished reading GML-File.");
+        logger.info("Finished reading GML-File.");
         super.endDocument();
     }
 

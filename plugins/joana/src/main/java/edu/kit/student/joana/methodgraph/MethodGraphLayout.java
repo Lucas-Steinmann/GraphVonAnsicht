@@ -27,7 +27,6 @@ import edu.kit.student.sugiyama.SugiyamaLayoutAlgorithm;
 import edu.kit.student.sugiyama.steps.LayerAssigner;
 import edu.kit.student.util.DoublePoint;
 import edu.kit.student.util.IntegerPoint;
-import javafx.scene.paint.Color;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,6 +42,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
+
+import javafx.scene.paint.Color;
 
 
 /**
@@ -352,12 +353,8 @@ public class MethodGraphLayout extends LayoutAlgorithm<MethodGraph> {
 		//maybe split more functionality into private methods
 		double boxYtop = fa.getY();
 		double boxYbottom = fa.getY() + fa.getSize().y;
-		System.out.println("fa-graph edges: " + fa.getGraph().getEdgeSet().size());
-		//System.out.println("fa-graph vertices: " + fa.getGraph().getVertexSet().size());
 		List<JoanaVertex> faVertices = new ArrayList<>(graph.removeFilteredVertices(fa.getGraph().getVertexSet()));
 		List<JoanaEdge> faEdges = new ArrayList<>(graph.removeFilteredEdges(fa.getGraph().getEdgeSet()));
-		System.out.println("faEdges: " + faEdges.size());
-		//System.out.println("faVertices: " + faVertices.size());
 		Set<DirectedEdge> newFAedges = new HashSet<>();	//new edges from outside to the next layer, not describing a path
 		faVertices.sort(Comparator.comparingDouble(DefaultVertex::getY));	//sort vertices in ascending order of y values
 		Map<Integer, List<Vertex>> layerNumToVertices = new HashMap<>();

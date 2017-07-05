@@ -1,20 +1,32 @@
 package edu.kit.student.gui;
 
-import edu.kit.student.graphmodel.*;
+import edu.kit.student.graphmodel.Edge;
+import edu.kit.student.graphmodel.Graph;
+import edu.kit.student.graphmodel.InlineSubGraph;
+import edu.kit.student.graphmodel.Vertex;
+import edu.kit.student.graphmodel.ViewableGraph;
+import edu.kit.student.graphmodel.ViewableVertex;
 import edu.kit.student.graphmodel.ViewableVertex.VertexPriority;
 import edu.kit.student.graphmodel.serialize.SerializedEdge;
 import edu.kit.student.graphmodel.serialize.SerializedGraph;
 import edu.kit.student.graphmodel.serialize.SerializedVertex;
 import edu.kit.student.objectproperty.GAnsProperty;
 import edu.kit.student.util.DoublePoint;
+
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.LinkedHashSet;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+
 import javafx.geometry.Bounds;
 import javafx.scene.paint.Color;
 import javafx.scene.shape.LineTo;
 import javafx.scene.shape.MoveTo;
 import javafx.scene.shape.Path;
 import javafx.scene.shape.PathElement;
-
-import java.util.*;
 
 /**
  * The GraphViewGraphFactory generates the visual representation of a given
@@ -237,7 +249,7 @@ public class GraphViewGraphFactory {
 			Map<String,String> metaProperties = new HashMap<String,String>();
 			Vertex vertex = vertices.get(shape);
 			for(GAnsProperty<?> property : vertex.getProperties()) {
-				metaProperties.put(property.getName(), property.getValueAsString());
+				metaProperties.put(property.getName(), property.getValue().toString());
 			}
 			SerializedVertex serialized = new SerializedVertex(shapeProperties, metaProperties);
 			set.add(serialized);
@@ -273,7 +285,7 @@ public class GraphViewGraphFactory {
 			Map<String,String> metaProperties = new HashMap<>();
 			Edge edge = edges.get(shape);
 			for(GAnsProperty<?> property : edge.getProperties()) {
-				metaProperties.put(property.getName(), property.getValueAsString());
+				metaProperties.put(property.getName(), property.getValue().toString());
 			}
 			SerializedEdge serialized = new SerializedEdge(shapeProperties, metaProperties);
 			set.add(serialized);
